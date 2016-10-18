@@ -85,7 +85,6 @@
         <property name="maxInMemorySize" value="40960" /> 
     </bean>
 
-
 	<!-- 引入dapplicationContext配置文件 -->
 	<import resource="applicationContext.xml" />
 	

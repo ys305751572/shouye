@@ -61,9 +61,11 @@ public class BladeController implements ConstCurd, ConstCache{
 
 	@Resource
 	private HttpServletRequest request;
-	
-	@Resource
-	private HttpServletResponse response;
+
+//	private HttpServletRequest request = null;
+
+//	@Resource
+//	private HttpServletResponse response;
 
 	@ResponseBody
 	@ExceptionHandler(Exception.class)
@@ -108,7 +110,7 @@ public class BladeController implements ConstCurd, ConstCache{
 			log.error(msg, ex);
 		}
 	}
-	
+
 	public HttpServletRequest getRequest() {
 		return this.request;
 	}
@@ -149,10 +151,10 @@ public class BladeController implements ConstCurd, ConstCache{
 	}
 
 	/** ============================     mapping    =================================================  */
-	
+
 	/**
 	 * 表单值映射为javabean
-	 * 
+	 *
 	 * @param beanClass
 	 *            javabean.class
 	 * @return T
@@ -163,7 +165,7 @@ public class BladeController implements ConstCurd, ConstCache{
 
 	/**
 	 * 表单值映射为javabean
-	 * 
+	 *
 	 * @param switchMap
 	 *            字段混淆Map  map.put("前端字段","数据库字段");
 	 * @param beanClass
@@ -176,7 +178,7 @@ public class BladeController implements ConstCurd, ConstCache{
 
 	/**
 	 * 表单值映射为javabean
-	 * 
+	 *
 	 * @param paraPerfix
 	 *            name前缀
 	 * @param beanClass
@@ -189,7 +191,7 @@ public class BladeController implements ConstCurd, ConstCache{
 
 	/**
 	 * 表单值映射为javabean
-	 * 
+	 *
 	 * @param paraPerfix
 	 *            name前缀
 	 * @param switchMap
@@ -204,7 +206,7 @@ public class BladeController implements ConstCurd, ConstCache{
 
 	/**
 	 * 表单值映射为Maps
-	 * 
+	 *
 	 * @return Maps
 	 */
 	public Record getMaps() {
@@ -213,7 +215,7 @@ public class BladeController implements ConstCurd, ConstCache{
 
 	/**
 	 * 表单值映射为Maps
-	 * 
+	 *
 	 * @param switchMap 字段混淆Map  map.put("前端字段","数据库字段");
 	 * @return Maps
 	 */
@@ -223,7 +225,7 @@ public class BladeController implements ConstCurd, ConstCache{
 
 	/**
 	 * 表单值映射为Maps
-	 * 
+	 *
 	 * @param paraPerfix  name前缀
 	 * @return Maps
 	 */
@@ -233,7 +235,7 @@ public class BladeController implements ConstCurd, ConstCache{
 
 	/**
 	 * 表单值映射为Maps
-	 * 
+	 *
 	 * @param paraPerfix name前缀
 	 * @param switchMap 字段混淆Map  map.put("前端字段","数据库字段");
 	 * @return Maps
@@ -241,7 +243,7 @@ public class BladeController implements ConstCurd, ConstCache{
 	public Record getMaps(String paraPerfix, Map<String, Object> switchMap) {
 		return paraMapsInject(switchMap, paraPerfix);
 	}
-	
+
 	private <T> T paraInject(Class<T> beanClass) {
 		return (T) BeanInjector.inject(beanClass, this.request);
 	}
@@ -257,7 +259,7 @@ public class BladeController implements ConstCurd, ConstCache{
 	private <T> T paraInject(Class<T> beanClass, Map<String, Object> switchMap, String paraPerfix) {
 		return (T) BeanInjector.inject(beanClass, switchMap, paraPerfix, this.request);
 	}
-	
+
 	private Record paraMapsInject() {
 		return BeanInjector.injectMaps(this.request);
 	}
@@ -286,9 +288,9 @@ public class BladeController implements ConstCurd, ConstCache{
 	private <T> T paraReverse(Map<String, Object> reverseMap, Object model) {
 		return (T) BeanKit.reverse(reverseMap, model);
 	}
-	
+
 	/**============================     file    =================================================  */
-	
+
 	/**
 	 * 获取BladeFile封装类
 	 * @param file
@@ -297,7 +299,7 @@ public class BladeController implements ConstCurd, ConstCache{
 	public BladeFile getFile(MultipartFile file){
 		return getFile(file, null);
 	}
-	
+
 	/**
 	 * 获取BladeFile封装类
 	 * @param file
@@ -307,7 +309,7 @@ public class BladeController implements ConstCurd, ConstCache{
 	public BladeFile getFile(MultipartFile file, String path){
 		return new BladeFile(file, path);
 	}
-	
+
 	/**
 	 * 获取BladeFile封装类
 	 * @param files
@@ -316,7 +318,7 @@ public class BladeController implements ConstCurd, ConstCache{
 	public List<BladeFile> getFiles(List<MultipartFile> files){
 		return getFiles(files, null);
 	}
-	
+
 	/**
 	 * 获取BladeFile封装类
 	 * @param files
@@ -331,8 +333,8 @@ public class BladeController implements ConstCurd, ConstCache{
 		return list;
 	}
 
-	
-	/**   
+
+	/**
 	 * 返回ajaxresult
 	 * @param data
 	 * @return AjaxResult
@@ -340,8 +342,8 @@ public class BladeController implements ConstCurd, ConstCache{
 	public AjaxResult json(Object data) {
 		return new AjaxResult().success(data);
 	}
-	
-	/**   
+
+	/**
 	 * 返回ajaxresult
 	 * @param data
 	 * @param message
@@ -350,8 +352,8 @@ public class BladeController implements ConstCurd, ConstCache{
 	public AjaxResult json(Object data, String message) {
 		return json(data).setMessage(message);
 	}
-	
-	/**   
+
+	/**
 	 * 返回ajaxresult
 	 * @param data
 	 * @param message
@@ -361,8 +363,8 @@ public class BladeController implements ConstCurd, ConstCache{
 	public AjaxResult json(Object data, String message, int code) {
 		return json(data, message).setCode(code);
 	}
-	
-	/**   
+
+	/**
 	 * 返回ajaxresult
 	 * @param message
 	 * @return AjaxResult
@@ -370,8 +372,8 @@ public class BladeController implements ConstCurd, ConstCache{
 	public AjaxResult success(String message) {
 		return new AjaxResult().addSuccess(message);
 	}
-	
-	/**   
+
+	/**
 	 * 返回ajaxresult
 	 * @param message
 	 * @return AjaxResult
@@ -379,8 +381,8 @@ public class BladeController implements ConstCurd, ConstCache{
 	public AjaxResult error(String message) {
 		return new AjaxResult().addError(message);
 	}
-	
-	/**   
+
+	/**
 	 * 返回ajaxresult
 	 * @param message
 	 * @return AjaxResult
@@ -388,8 +390,8 @@ public class BladeController implements ConstCurd, ConstCache{
 	public AjaxResult warn(String message) {
 		return new AjaxResult().addWarn(message);
 	}
-	
-	/**   
+
+	/**
 	 * 返回ajaxresult
 	 * @param message
 	 * @return AjaxResult
@@ -397,10 +399,10 @@ public class BladeController implements ConstCurd, ConstCache{
 	public AjaxResult fail(String message) {
 		return new AjaxResult().addFail(message);
 	}
-	
-	
+
+
 	/** ============================     paginate    =================================================  */
-	
+
 	private Object basepage(String slaveName, String source, IQuery intercept){
 		Integer page = getParameterToInt("page", 1);
 		Integer rows = getParameterToInt("rows", 10);
@@ -416,7 +418,7 @@ public class BladeController implements ConstCurd, ConstCache{
 		Object grid = GridManager.paginate(slaveName, page, rows, source, where, sort, order, intercept, this);
 		return grid;
 	}
-	
+
 	/**
 	 * @param 数据源
 	 * @return
@@ -424,7 +426,7 @@ public class BladeController implements ConstCurd, ConstCache{
 	protected Object paginate(String source){
 		return basepage(null, source, Cst.me().getDefaultPageFactory());
 	}
-	
+
 	/**
 	 * @param 数据源
 	 * @param 自定义拦截器
@@ -433,7 +435,7 @@ public class BladeController implements ConstCurd, ConstCache{
 	protected Object paginate(String source, IQuery intercept){
 		return basepage(null, source, intercept);
 	}
-	
+
 	/**
 	 * @param 数据库别名
 	 * @param 数据源
@@ -442,7 +444,7 @@ public class BladeController implements ConstCurd, ConstCache{
 	protected Object paginate(String slaveName, String source){
 		return basepage(slaveName, source, Cst.me().getDefaultPageFactory());
 	}
-	
+
 	/**
 	 * @param 数据库别名
 	 * @param 数据源

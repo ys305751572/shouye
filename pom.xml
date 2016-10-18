@@ -25,12 +25,13 @@
 
 	<dependencies>
 		<!-- junit -->
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
+			<version>4.10</version>
 		</dependency>
+
 		<!-- logs -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -66,6 +67,8 @@
 			<scope>provided</scope>
 		</dependency>
 
+
+
 		<!--Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -99,11 +102,14 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
+			<version>3.2.5.RELEASE</version>
 		</dependency>
-		
+
+
 		<!--spring-aop依赖 -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -202,11 +208,6 @@
 			<groupId>net.coobird</groupId>
 			<artifactId>thumbnailator</artifactId>
 			<version>0.4.8</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
 		</dependency>
 
 	</dependencies>
