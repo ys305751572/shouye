@@ -40,8 +40,6 @@
 			pager : pager_selector,
 			postData: { sort: "status asc, account", order: "asc"}
 		});
-		
-
 	}
 	
 	
@@ -91,7 +89,7 @@
 			@		  	{name:"电话",index:"PHONE",type:"text"},
 			@			{name:"状态",index:"STATUS",type:"select_901"}
 			@		   ];
-			@ include("/common/_function/_search.html",{"col":_col}){}
+			@ include("/common/_function/_search_list.html",{"col":_col}){}
 			<!-- 按钮组 -->
 			<div class="welljq well-sm" id="btns"></div>
 			<!-- grid -->
