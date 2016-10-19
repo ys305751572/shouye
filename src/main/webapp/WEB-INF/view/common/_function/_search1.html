@@ -2,23 +2,68 @@
 
 <div class="wellsearch well-sm" id="searchfield">
 	<div class="col-xs-8 input-group">
-		@for(x in col){
-		<input type="hidden" id="size" value="${xLP.size}">
-		<div class="input-group-btn" id="seach">
-			<input data-toggle="dropdown"
-					class="btn btn-sx btn-white dropdown-toggle" disabled="disabled" id="searchthis${xLP.index}" value="${x.name!}" style="width: 90px">
-			<input type="hidden" id="key" value="${x.index!}">
-			<input type="hidden" id="type" value="${x.type!}">
-			<input type="hidden" id="index" value="${xLP.index}">
-		</div>
 
-		<div id="divinput${xLP.index }">
-			<input type="text"  id="inputs${xLP.index }" class="form-control" style="margin-left:-3px;width: auto"/>
+		<!-- 简单查询第一组 -->
+		<div class="input-group-btn">
+			<button data-toggle="dropdown"
+					class="btn btn-sx btn-white dropdown-toggle">
+				<span id="searchthis1">请选择</span>
+				<i class="ace-icon fa fa-angle-down icon-on-right"></i>
+			</button>
+
+			<ul class="dropdown-menu">
+				<li>
+					<a href="#" onclick="changethis('','请选择','',1)">
+						清空
+					</a>
+				</li>
+				<li class="divider" style="margin-top:1px;"></li>
+				@for(x in col){
+				<li>
+					<a href="#" onclick="changethis('${x.index!}','${x.name!}','${x.type!}',1)">
+						${x.name!}
+					</a>
+				</li>
+				@}
+			</ul>
 		</div>
-		<input type="hidden" id="hides${xLP.index }"/>
+		<div id="divinput1">
+			<input type="text"  id="inputs1" class="form-control" style="margin-left:-3px;"/>
+		</div>
+		<input type="hidden" id="hides1"/>
 
 		<span class="input-group-btn"></span>
-		@}
+
+		<!-- 简单查询第二组 -->
+		<div class="input-group-btn">
+			<button data-toggle="dropdown"
+					class="btn btn-sx btn-white dropdown-toggle">
+				<span id="searchthis2">请选择</span>
+				<i class="ace-icon fa fa-angle-down icon-on-right"></i>
+			</button>
+
+			<ul class="dropdown-menu">
+				<li>
+					<a href="#" onclick="changethis('','请选择','',2)">
+						清空
+					</a>
+				</li>
+				<li class="divider" style="margin-top:1px;"></li>
+				@for(x in col){
+				<li>
+					<a href="#" onclick="changethis('${x.index!}_2nd','${x.name!}','${x.type!}',2)">
+						${x.name!}
+					</a>
+				</li>
+				@}
+			</ul>
+		</div>
+		<div id="divinput2">
+			<input type="text"  id="inputs2" class="form-control" style="margin-left:-3px;"/>
+		</div>
+		<input type="hidden" id="hides2"/>
+
+		<span class="input-group-btn"></span>
 
 		<!-- 简单查询按钮 -->
 		<div class="input-group-btn">
@@ -29,24 +74,10 @@
 
 </div>
 
-<div class="welljq well-sm" id="tags" style="padding: 2px;">
-	<span style="float: left">已添加筛选条件:</span>
-</div>
 
 <script type="text/javascript">
 	var isAutoPage = true;
-	var size = $("#size").val();
 	$(function () {
-
-		//查询模块
-		$("div #seach").each(function(){
-			var name = $(this).find('input').eq(0).val();
-			var key = $(this).find('input').eq(1).val();
-			var type = $(this).find('input').eq(2).val();
-			var index = $(this).find('input').eq(3).val();
-			changethis(key,name,type,index);
-		});
-
 		$("#gotoSearch").bind("click", function () {
 			var key1 = $("#hides1").val();
 			var key2 = $("#hides2").val();
@@ -86,48 +117,8 @@
 		});
 	});
 
-	//下拉框
-	function select(data) {
-
-		var option = "#"+data+" option:selected";
-		var id = "#"+data;
-		$(id).change(function(){
-			var val = $(option).val();
-			var text = $(option).text();
-			tags(data,val,text)
-		});
-	}
-
-	//标签
-	function tags(id,val,text){
-		var html = "";
-		html += "<div id='"+id+"' class='o_choose' data-type='' style='background: #666;color: white;float: left;position: relative;font-size: 10px;width: auto;text-indent: 10px;margin:0 5px 0 0'>"+text;
-		html += "	<span class='o_close' data-percent='' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>                                                              		";
-		html += "	<input type='hidden' value='"+val+"'>                                                              		";
-		html += "</div>   ";
-
-		console.log(id)
-		$("#tags div").each(function(){
-			var _id = $(this).prop("id");
-			console.log($(this))
-			if(id==_id){
-				console.log("删除DIV:"+_id);
-				$(this).find("span").remove();
-				$(this).remove();
-			}
-		});
-
-		$("#tags").append(html);
-		seach()
-	}
-
-	//查询
-	function seach(){
-
-
-	}
-
 	function changethis(key, value, type, num) {
+		console.log(type)
 		isAutoPage = false;
 		if (BladeTool.isEmpty(key)) {
 			resetInput(num);
@@ -138,8 +129,6 @@
 				if (data.code === 0) {
 					$("#divinput" + num).html(data.data);
 				}
-				var id = $(data.data).prop("id");
-				select(id);
 			}, "json");
 		}
 		else if (type == "selectDept") {
@@ -147,8 +136,6 @@
 				if (data.code === 0) {
 					$("#divinput" + num).html(data.data);
 				}
-				var id = $(data.data).prop("id");
-				select(id);
 			}, "json");
 		}
 		else if (type == "selectUser") {
@@ -156,8 +143,6 @@
 				if (data.code === 0) {
 					$("#divinput" + num).html(data.data);
 				}
-				var id = $(data.data).prop("id");
-				select(id);
 			}, "json");
 		}
 		else if (type == "selectRole") {
@@ -165,8 +150,6 @@
 				if (data.code === 0) {
 					$("#divinput" + num).html(data.data);
 				}
-				var id = $(data.data).prop("id");
-				select(id);
 			}, "json");
 		}
 		else if (type.indexOf("opentree_") >= 0) {

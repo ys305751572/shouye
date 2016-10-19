@@ -1,55 +1,14 @@
 <div class="wellsearch well-sm" id="searchfield">
 	<div class="col-sm-9 input-group">
 		<!-- 简单查询第一组 -->
-        <div class="col-sm-4">
-            <label class="col-sm-5 control-label no-padding-right" >账户账户</label>
-            <div class="col-sm-7">
-                <input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入账户" class="form-control" />
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <label class="col-sm-5 control-label no-padding-right" >账户账户</label>
-            <div class="col-sm-7">
-                <input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入账户" class="form-control" />
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <label class="col-sm-5 control-label no-padding-right" >账户账户</label>
-            <div class="col-sm-7">
-                <input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入账户" class="form-control" />
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <label class="col-sm-5 control-label no-padding-right" >账户账户</label>
-            <div class="col-sm-7">
-                <input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入账户" class="form-control" />
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <label class="col-sm-5 control-label no-padding-right" >账户账户</label>
-            <div class="col-sm-7">
-                <input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入账户" class="form-control" />
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <label class="col-sm-5 control-label no-padding-right" >账户账户</label>
-            <div class="col-sm-7">
-                <input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入账户" class="form-control" />
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <label class="col-sm-5 control-label no-padding-right" >账户账户</label>
-            <div class="col-sm-7">
-                <input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入账户" class="form-control" />
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <label class="col-sm-5 control-label no-padding-right" >账户账户</label>
-            <div class="col-sm-7">
-                <input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入账户" class="form-control" />
-            </div>
-        </div>
-
+		@for(x in col){
+		<div class="col-sm-4">
+			<label class="col-sm-5 control-label no-padding-right" >${x.name!}</label>
+			<div class="col-sm-7">
+				<input type="text" name="TFW_USER.ACCOUNT"  placeholder="请输入${x.name!}" class="form-control" />
+			</div>
+		</div>
+		@}
 
 
 		<!--<input type="hidden" id="hides1"/>-->
@@ -62,6 +21,7 @@
 		<!--</div>-->
 	</div>
 </div>
+
 <div class="welljq well-sm" id="tags" style="padding: 2px;">
 	<span style="float: left">已添加筛选条件:</span>
 	<div class='o_choose' data-type='' style="background: #666;color: white;float: left;position: relative;font-size: 10px;width: auto;text-indent: 10px;margin:0 5px 0 0">测试
@@ -71,11 +31,17 @@
 		<span class='o_close' data-percent='' style="cursor: pointer;color: #ccc;margin: 0 5px auto">x</span>
 	</div>
 </div>
+
 <div class="welljq well-sm" id="checks" style="padding: 2px;">
+	@for(col in colcheck) {
+		${col.name!}==${col.disable!}
+	}
+
 	<input type="checkbox" checked/><span>全部</span>&nbsp;
 	<input type="checkbox" id="avater" checked="checked"/><span>头像</span>&nbsp;
 	<input type="checkbox"/><span>名字</span>&nbsp;
 </div>
+
 <script type="text/javascript">
 	var isAutoPage = true;
 	$(function () {
