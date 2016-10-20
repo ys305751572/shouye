@@ -20,7 +20,7 @@
 	
 	function initGrid(){
 		var grid_url = ctx+"/${code}/list";//查询列表接口
-		var _colnames=[ "序列","角色名称","上级角色","所在部门", "别名"];
+		var _colnames=[ "序列","角色名称","上级角色","所在部门", "备注"];
 		var _colmodel=[   {name:"ID",index:"ID", width:80,hidden:true},
 						  {name:"NAME",index:"NAME", width:100},
 						  {name:"PNAME",index:"PID", width:100},
@@ -37,7 +37,6 @@
 			pager : pager_selector,
 			postData: {sort: "id", order: "asc"}
 		});
-		
 
 	}
 	
@@ -107,6 +106,13 @@
 			@ include("/common/_function/_search.html",{"col":_col}){}
 			<!-- 按钮组 -->
 			<div class="welljq well-sm" id="btns"></div>
+			<div class="welljq well-sm" id="columns">
+				<input type="checkbox" value="NAME" class="cbox" checked="checked"/>角色名称
+				<input type="checkbox" value="PNAME" class="cbox" checked="checked"/>上级角色
+				<input type="checkbox" value="DEPTNAME" class="cbox" checked="checked"/>所在部门
+				<input type="checkbox" value="TIPS" class="cbox" checked="checked"/>备注
+				<input type="checkbox" value="SEX" class="cbox" checked="checked"/>性别
+			</div>
 			<!-- grid -->
 			<table id="grid-table"></table>
 			<!-- 分页 -->
