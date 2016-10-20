@@ -59,9 +59,9 @@ import com.smallchill.core.toolbox.log.LogManager;
 public class BladeController implements ConstCurd, ConstCache{
 	private static final Logger log = LoggerFactory.getLogger(BladeController.class);
 
-	@Resource
+//	@Resource
+//	private HttpServletRequest request;
 	private HttpServletRequest request;
-
 //	private HttpServletRequest request = null;
 
 //	@Resource

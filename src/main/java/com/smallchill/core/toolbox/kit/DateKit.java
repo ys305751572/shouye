@@ -66,6 +66,19 @@ public class DateKit {
 	}
 
 	/**
+	 * 获取当天在次月的天数
+	 * @param index
+	 * @return
+	 */
+	public static Integer getDay(Integer index) {
+		Calendar calendar = Calendar.getInstance();
+		if(index != null) {
+			calendar.add(Calendar.DAY_OF_MONTH,index);
+		}
+		return calendar.get(Calendar.DAY_OF_MONTH);
+	}
+
+	/**
 	 * 获取YYYY-MM-DD格式
 	 * 
 	 * @return

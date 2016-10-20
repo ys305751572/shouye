@@ -178,7 +178,7 @@ public class StatisticalServiceImpl {
      *
      * @param list
      */
-    public StatisticalResult processingResult(List<Record> list, Conditions conditions) {
+    private StatisticalResult processingResult(List<Record> list, Conditions conditions) {
         double totalRecord = 0;
         for (Record record : list) {
             totalRecord += Double.parseDouble(record.get("order_num").toString());
@@ -188,15 +188,6 @@ public class StatisticalServiceImpl {
             double per = data / totalRecord * 100;
             record.put("per", NumberKit.format(per) + "%");
         }
-        if (conditions.getBeforDays() != null) {
-            // 7天以内的用 N天前
-            // 7天已上的用 日期
-            // 填充中间没有的天数
-
-        }
-        if ("MONTH".endsWith(conditions.getTimeType())) {
-            // 填充中间没有的月份
-        }
         StatisticalResult result = new StatisticalResult();
         result.setAll(totalRecord);
         result.setList(list);
@@ -204,6 +195,34 @@ public class StatisticalServiceImpl {
     }
 
     public void fill(List<Record> list, Conditions conditions) {
+        if (conditions.getBeforDays() != null) {
+            // 填充中间没有的天数
+            if (conditions.getBeforDays() <= 7) {
+                // 7天以内的用 N天前
+                // 填充中间没有的天数
+                int dayOfMonth = DateKit.getDay(-1);
+                for (int i = 1; i <= 7; i++) {
+                    if(!isExist(list,String.valueOf(dayOfMonth))) {
 
+                    }
+                }
+            } else {
+                // 7天已上的用 日期
+                // 填充中间没有的天数
+            }
+
+        }
+        if ("MONTH".endsWith(conditions.getTimeType())) {
+            // 填充中间没有的月份
+        }
+    }
+
+    public boolean isExist(List<Record> list, String key) {
+        for (Record record : list) {
+            if (record.get(key) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

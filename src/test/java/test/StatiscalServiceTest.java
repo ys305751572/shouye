@@ -29,7 +29,7 @@ public class StatiscalServiceTest extends BaseJunit4Test{
 
     @Test
     public void testTimeStatistics() {
-        Conditions conditions = Conditions.create().setGroupByName("CREATETIME").setTimeTypeIsLong(false).setTimeType(Conditions.Time.MOMTH);
+        Conditions conditions = Conditions.create().setGroupByName("CREATETIME").setTimeTypeIsLong(false).setTimeType(Conditions.Time.DAY).setBeforDays(20);
         StatisticalResult result = service.timeStatistics(Attach.class,conditions);
         System.out.println(result.toString());
     }
