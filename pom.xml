@@ -103,11 +103,11 @@
 			<artifactId>spring-aop</artifactId>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
-		<!--<dependency>-->
-			<!--<groupId>org.springframework</groupId>-->
-			<!--<artifactId>spring-test</artifactId>-->
-			<!--<version>3.2.5.RELEASE</version>-->
-		<!--</dependency>-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>3.2.5.RELEASE</version>
+		</dependency>
 
 
 		<!--spring-aop依赖 -->
@@ -203,6 +203,15 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.8.Final</version>
 		</dependency>
+
+		<!-- guava -->
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>net.coobird</groupId>

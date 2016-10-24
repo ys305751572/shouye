@@ -56,8 +56,7 @@ public class RoleController extends BaseController{
 	@ResponseBody
 	@RequestMapping(KEY_LIST)
 	public Object list() {
-		Object gird = paginate(LIST_SOURCE, new RoleIntercept());
-		return gird;
+		return paginate(LIST_SOURCE, new RoleIntercept());
 	}
 	
 	@RequestMapping(KEY_ADD)
