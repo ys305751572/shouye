@@ -1,6 +1,7 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.api.function.modal.UserDomain;
+import com.smallchill.api.function.service.UserDomainService;
 import com.smallchill.core.base.service.BaseService;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.UserInfoService;
@@ -17,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserInfoService {
 
-
+    @Autowired
+    private UserDomainService userDomainService;
 
     @Transactional
     @Override
@@ -56,8 +58,28 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
                     ud.setDomainId(domainId);
                     ud.setPid(pid);
                     ud.setName(name);
+                    userDomainService.save(ud);
+                }
+            }
+        }
 
+        // ---------------------- 处理专业-------------------------
+        if(StringUtils.isNotBlank(professional)) {
+            String[] professionals = professional.split("\\|");
+            for (String c : professionals) {
+                if(StringUtils.isNotBlank(c)) {
+                    String[] ss = c.split(",");
+                    int userId = Integer.parseInt(ss[0]);
+                    int domainId = Integer.parseInt(ss[1]);
+                    int pid = Integer.parseInt(ss[2]);
+                    String name = ss[3];
 
+                    UserDomain ud = new UserDomain();
+                    ud.setUserId(userId);
+                    ud.setDomainId(domainId);
+                    ud.setPid(pid);
+                    ud.setName(name);
+                    userDomainService.save(ud);
                 }
             }
         }
