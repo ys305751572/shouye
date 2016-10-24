@@ -1,5 +1,7 @@
 package com.smallchill.platform.model;
 
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
 import org.beetl.sql.core.annotatoin.Table;
 import com.smallchill.core.annotation.BindID;
 import com.smallchill.core.base.model.BaseModel;
@@ -30,6 +32,8 @@ public class UserLogin extends BaseModel {
     @Column(name = "create_time")
     private Long createTime;
 
+    @AutoID
+    @SeqID(name = "SEQ_NOTICE")
     public Integer getId() {
         return id;
     }

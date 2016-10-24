@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping(value = "/api/index")
-public class LoginController extends BaseController{
+public class LoginController extends BaseController {
 
     @Autowired
     private VcodeService vcodeService;
