@@ -6,14 +6,11 @@ import com.smallchill.core.toolbox.kit.DateKit;
 import com.smallchill.core.toolbox.kit.NumberKit;
 import com.smallchill.platform.model.Conditions;
 import com.smallchill.platform.model.StatisticalResult;
-import com.sun.javafx.geom.AreaOp;
 import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.annotatoin.Table;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 统计查询
@@ -99,10 +96,10 @@ public class StatisticalServiceImpl {
             String timeType = "";
             switch (conditions.getTimeType()) {
                 case "month":
-                    timeType = "%m";
+                    timeType = "%Y-%m";
                     break;
                 case "day":
-                    timeType = "%d";
+                    timeType = "%Y-%m-%d";
             }
             sql.append(" ,DATE_FORMAT(");
             if (conditions.isTimeTypeIsLong()) {
@@ -149,7 +146,7 @@ public class StatisticalServiceImpl {
             long endTime = calendar.getTimeInMillis();
             Date endTimeDATE = calendar.getTime();
 
-            calendar.add(Calendar.DAY_OF_MONTH, -1 - conditions.getBeforDays());
+            calendar.add(Calendar.DAY_OF_MONTH, -1 * conditions.getBeforDays());
             long startTime = calendar.getTimeInMillis();
             Date startTimeDate = calendar.getTime();
             sql.append(" and t.");
@@ -190,36 +187,67 @@ public class StatisticalServiceImpl {
         }
         StatisticalResult result = new StatisticalResult();
         result.setAll(totalRecord);
+        if(conditions.getBeforDays() != null || "MONTH".endsWith(conditions.getTimeType())) {
+            result.setList(fill(list,conditions));
+            return result;
+        }
         result.setList(list);
         return result;
     }
 
-    public void fill(List<Record> list, Conditions conditions) {
+    public List<Record> fill(List<Record> list, Conditions conditions) {
+        List<Record> newList = new ArrayList<>();
         if (conditions.getBeforDays() != null) {
             // 填充中间没有的天数
             if (conditions.getBeforDays() <= 7) {
                 // 7天以内的用 N天前
                 // 填充中间没有的天数
-                int dayOfMonth = DateKit.getDay(-1);
                 for (int i = 1; i <= 7; i++) {
-                    if(!isExist(list,String.valueOf(dayOfMonth))) {
-
+                    String dayFormat = DateKit.getBeforeDay(-1 * i);
+                    if (!isExist(list,newList,String.valueOf(dayFormat),i)) {
+                        newList.add(createNewRecord(i + "天前"));
                     }
                 }
             } else {
                 // 7天已上的用 日期
                 // 填充中间没有的天数
-            }
+                int beforeDays = conditions.getBeforDays();
+                for (int i = 1;i <= beforeDays; i++) {
+                    String dayFormat = DateKit.getBeforeDay(-1 * i);
+                    if (!isExist(list, newList,String.valueOf(dayFormat),null)) {
+                        newList.add(createNewRecord(dayFormat));
+                    }
 
+                }
+            }
         }
         if ("MONTH".endsWith(conditions.getTimeType())) {
             // 填充中间没有的月份
+            for (int i = 1; i <= 12; i++) {
+                String dayFormat = DateKit.getBeforMonth(i);
+                if (!isExist(list,newList, String.valueOf(dayFormat),null)) {
+                    newList.add(createNewRecord( i + "月份"));
+                }
+            }
         }
+        return newList;
     }
 
-    public boolean isExist(List<Record> list, String key) {
+    public Record createNewRecord(String colName) {
+        Record record = Record.create();
+        record.put("col_name",colName);
+        record.put("order_num","0");
+        record.put("per","0%");
+        return record;
+    }
+
+    public boolean isExist(List<Record> list,List<Record> newList, String key,Integer index) {
         for (Record record : list) {
-            if (record.get(key) != null) {
+            if (key.equals(record.get("col_name"))) {
+                if(index != null) {
+                    record.set("col_name",index + "天前");
+                }
+                newList.add(record);
                 return true;
             }
         }

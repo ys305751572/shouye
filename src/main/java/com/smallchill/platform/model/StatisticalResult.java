@@ -31,10 +31,11 @@ public class StatisticalResult {
 
     @Override
     public String toString() {
-        String str = "";
+        System.out.println("总计:" + all);
         for (Record record : list) {
-            str += "数量:" + record.get("order_num") + "==名字:" +record.get("col_name") + "==所占百分比:" + record.get("per") ;
+            System.out.println(record.get("order_num") + "|" +record.get("col_name") + "|" + record.get("per") );
         }
-        return "total:" + all + ",集合:" + str;
+        System.out.println();
+        return "";
     }
 }

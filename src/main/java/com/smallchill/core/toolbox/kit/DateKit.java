@@ -70,12 +70,21 @@ public class DateKit {
 	 * @param index
 	 * @return
 	 */
-	public static Integer getDay(Integer index) {
+	public static String getBeforeDay(Integer index) {
 		Calendar calendar = Calendar.getInstance();
 		if(index != null) {
 			calendar.add(Calendar.DAY_OF_MONTH,index);
 		}
-		return calendar.get(Calendar.DAY_OF_MONTH);
+		return format(calendar.getTime(),"yyyy-MM-dd");
+
+	}
+
+	public static String getBeforMonth(Integer index) {
+		Calendar calendar = Calendar.getInstance();
+		if(index != null) {
+			calendar.add(Calendar.MONTH,index);
+		}
+		return format(calendar.getTime(),"yyyy-MM");
 	}
 
 	/**
@@ -342,8 +351,9 @@ public class DateKit {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(getDays());
-		System.out.println(getAfterDayWeek("3"));
+//		System.out.println(getDays());
+//		System.out.println(getAfterDayWeek("3"));
+		System.out.println(getBeforMonth(0));
 	}
 
 }
