@@ -91,7 +91,7 @@ public class QuickCacheKit implements ConstCache{
         }
          **/
 
-        /**  **/
+        /**
         String ip = "127.0.0.1";
         for(int j =0; j < 10; j++) {
             System.out.println("第" + (j+1) + "轮访问");
@@ -134,6 +134,6 @@ public class QuickCacheKit implements ConstCache{
                 }
             }
         }
-
+         **/
     }
 }
