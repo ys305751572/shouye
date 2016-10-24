@@ -6,13 +6,15 @@ package com.smallchill.api.common.model;
  */
 public enum ErrorType {
 
-    ERROR_CODE_0001("参数不正确", 1002),
-    ERROR_CODE_0002("服务器繁忙，请稍后再试", 1001),
+    ERROR_CODE_SERVER_EXCEPTION("服务器繁忙，请稍后再试", 1001),
+    ERROR_CODE_PARAM_EXCEPTION("参数不正确", 1002),
 
-    ERROR_CODE_0003("该用户不存在", 2001),
-    ERROR_CODE_0004("验证码错误", 2002),
-    ERROR_CODE_0005("旧密码错误", 2003),
-    ERROR_CODE_0006("旧密码和新密码不能一样", 2004);
+    ERROR_CODE_USERNOTFOUND("该用户不存在", 2001),
+    ERROR_CODE_USERHASLOCK("该用户被封号", 2005),
+    ERROR_CODE_USERHASFREEZE("该用户被冻结", 2006),
+    ERROR_CODE_VALIDATECODE_FAIL("验证码错误", 2002),
+    ERROR_CODE_OLDPWD_FAIL("旧密码错误", 2003),
+    ERROR_CODE_OLDANDNEWPWD_SAME("旧密码和新密码不能一样", 2004);
 
     private String name;
     private int code;

@@ -76,6 +76,14 @@ public class DateTimeKit {
 		return formatDateTime(new DateTime());
 	}
 
+
+	/**
+	 * 当前时间 ,13位时间戳
+	 * @return 当前时间的标准形式字符串
+	 */
+	public static Long nowLong() {
+		return System.currentTimeMillis();
+	}
 	/**
 	 * 当前日期，格式 yyyy-MM-dd
 	 * @return 当前日期的标准形式字符串

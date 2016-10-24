@@ -4,9 +4,6 @@ import com.alibaba.druid.support.json.JSONUtils;
 import com.smallchill.core.base.model.BaseModel;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
-import com.smallchill.system.model.Role;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,8 +103,8 @@ public class Result {
      */
     public static Result fail() {
         Result result = new Result();
-        result.status = ErrorType.ERROR_CODE_0001.getCode();
-        result.msg = ErrorType.ERROR_CODE_0001.getName();
+        result.status = ErrorType.ERROR_CODE_SERVER_EXCEPTION.getCode();
+        result.msg = ErrorType.ERROR_CODE_SERVER_EXCEPTION.getName();
         return result;
     }
 
@@ -138,7 +135,7 @@ public class Result {
 //        Result result = Result.success(jqGrid);
 //        System.out.println(JsonKit.toJson(result));
 
-        Result result = Result.fail(ErrorType.ERROR_CODE_0002);
+        Result result = Result.fail(ErrorType.ERROR_CODE_USERHASLOCK);
         System.out.println(JsonKit.toJson(result));
     }
 }

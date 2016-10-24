@@ -24,11 +24,13 @@ public class UserLogin extends BaseModel {
     @Column(name = "password")
     private String password;
     @Column(name = "status")
-    private String status;
+    private Integer status;
     @Column(name = "unlock_time")
     private Long unlockTime;
     @Column(name = "last_login_ip")
     private String lastLoginIp;
+    @Column(name = "last_login_time")
+    private Long lastLoginTime;
     @Column(name = "create_time")
     private Long createTime;
 
@@ -36,6 +38,14 @@ public class UserLogin extends BaseModel {
     @SeqID(name = "SEQ_NOTICE")
     public Integer getId() {
         return id;
+    }
+
+    public Long getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Long lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
     }
 
     public void setId(Integer id) {
@@ -58,11 +68,11 @@ public class UserLogin extends BaseModel {
         this.password = password;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -88,5 +98,13 @@ public class UserLogin extends BaseModel {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public boolean isLock(){
+        return this.status == 1;
+    }
+
+    public boolean isFreeze() {
+        return this.status == 2;
     }
 }

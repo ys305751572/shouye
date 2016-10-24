@@ -9,4 +9,6 @@ import com.smallchill.web.model.UserInfo;
  */
 public interface UserInfoService extends IService<UserInfo> {
 
+    UserInfo updateUserInfo(UserInfo userInfo);
+
 }

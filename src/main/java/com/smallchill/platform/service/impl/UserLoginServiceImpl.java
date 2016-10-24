@@ -1,9 +1,21 @@
 package com.smallchill.platform.service.impl;
 
+import com.smallchill.api.common.exception.UserFreezeException;
+import com.smallchill.api.common.exception.UserLockException;
+import com.smallchill.api.common.exception.UserNotFoundException;
 import com.smallchill.core.base.service.BaseService;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.core.toolbox.kit.NetKit;
 import com.smallchill.platform.model.UserLogin;
 import com.smallchill.platform.service.UserLoginService;
+import com.smallchill.web.model.UserInfo;
+import com.smallchill.web.service.UserInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -13,4 +25,46 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserLoginServiceImpl extends BaseService<UserLogin> implements UserLoginService {
 
+    @Autowired
+    private UserInfoService userInfoService;
+
+    @Override
+    public UserLogin loginCheck(String mobile) throws UserNotFoundException, UserLockException, UserFreezeException {
+        UserLogin userLogin = findFirstBy("login_username = #{username}", Record.create().set("username", mobile));
+        if (userLogin == null) throw new UserNotFoundException();
+        if (userLogin.isLock()) throw new UserLockException();
+        if (userLogin.isFreeze()) throw new UserFreezeException();
+        return userLogin;
+    }
+
+    @Transactional
+    @Override
+    public UserInfo afterLoginQuery(UserLogin userLogin, HttpServletRequest request) {
+        updateUserLoginInfo(userLogin, request);
+        return getUserInfo(userLogin.getId());
+    }
+
+    /**
+     * 修改用户登录信息
+     * 修改登录IP
+     * 修改最后登录时间
+     * @param userLogin 用户登录信息
+     * @param request request
+     */
+    private void updateUserLoginInfo(UserLogin userLogin, HttpServletRequest request) {
+        userLogin.setLastLoginIp(NetKit.getRealIp(request));
+        userLogin.setLastLoginTime(DateTimeKit.nowLong());
+        this.update(userLogin);
+    }
+
+    public UserInfo getUserInfo(int id) {
+        UserInfo userInfo = userInfoService.findById(id);
+        if(userInfo != null) {
+            return userInfo;
+        }
+        else {
+            // TODO 在tb_user_info表中初始化一条info信息
+        }
+        return null;
+    }
 }

@@ -1,9 +1,13 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.function.modal.UserDomain;
 import com.smallchill.core.base.service.BaseService;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.UserInfoService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -13,4 +17,64 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserInfoService {
 
+
+
+    @Transactional
+    @Override
+    public UserInfo updateUserInfo(UserInfo userInfo) {
+        processUserInfo(userInfo);
+        if(userInfo.getId() != null) {
+            _update(userInfo);
+        }
+        else {
+            _save(userInfo);
+        }
+        return null;
+    }
+
+    /**
+     * 处理userinfo
+     * 处理行业/职业关联关系
+     * @param userInfo
+     */
+    private void processUserInfo(UserInfo userInfo) {
+        String career = userInfo.getCareer();
+        String professional = userInfo.getProfessional();
+        // 处理行业（领域）
+        if(StringUtils.isNotBlank(career)) {
+            String[] careers = career.split("\\|");
+            for (String c : careers) {
+                if(StringUtils.isNotBlank(c)) {
+                    String[] ss = c.split(",");
+                        int userId = Integer.parseInt(ss[0]);
+                        int domainId = Integer.parseInt(ss[1]);
+                        int pid = Integer.parseInt(ss[2]);
+                        String name = ss[3];
+
+                    UserDomain ud = new UserDomain();
+                    ud.setUserId(userId);
+                    ud.setDomainId(domainId);
+                    ud.setPid(pid);
+                    ud.setName(name);
+
+
+                }
+            }
+        }
+    }
+
+    /**
+     * 新增
+     * @param userInfo
+     */
+    private void _save(UserInfo userInfo) {
+
+    }
+
+    /**
+     * 编辑
+     * @param userInfo
+     */
+    private void _update(UserInfo userInfo) {
+    }
 }
