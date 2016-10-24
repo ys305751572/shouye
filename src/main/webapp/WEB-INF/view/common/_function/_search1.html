@@ -121,9 +121,9 @@
 				filter = _filter;
 			}
 			var where = (BladeTool.isEmpty(filter)) ? "" : filter.replace("}", "");
-			console.log("------------------------seach1---------------------------------")
-			console.log("---where1---");
-			console.log(where)
+//			console.log("------------------------seach1---------------------------------")
+//			console.log("---where1---");
+//			console.log(where)
 			if (BladeTool.isNotEmpty(key1) && BladeTool.isNotEmpty(value1)) {
 				where += (BladeTool.isEmpty(filter) ? "{" : ",") + "\"" + key1 + "\":\"" + value1 + "\"";
 			}
@@ -135,8 +135,8 @@
 			if (BladeTool.isNotEmpty(key3) && BladeTool.isNotEmpty(value3)) {
 				where += (BladeTool.isEmpty(where) ? "{" : ",") + "\"" + key3 + "\":\"" + value3 + "\"";
 			}
-			console.log("---where2---");
-			console.log(where)
+//			console.log("---where2---");
+//			console.log(where)
 
 			if (BladeTool.isNotEmpty(where) && BladeTool.isEmpty(exwhere)) {
 				console.log(1);
@@ -151,16 +151,16 @@
 				where = BladeTool.format(exwhere);
 			}
 
-			console.log("---where3---");
-			console.log(where)
+//			console.log("---where3---");
+//			console.log(where)
 
 			where = (BladeTool.isEmpty(key1) && BladeTool.isEmpty(key2) && BladeTool.isEmpty(key3) && BladeTool.isEmpty(where)) ? "" : encodeURI(where);
 			var pageNum = $jqGrid.getGridParam('page');
 			$jqGrid.jqGrid("setGridParam", { postData: { where: where }, page: (isAutoPage) ? pageNum : 1 }).trigger("reloadGrid");
 
-			console.log("---where4---");
-			console.log(where)
-			console.log("------------------------end1---------------------------------")
+//			console.log("---where4---");
+//			console.log(where)
+//			console.log("------------------------end1---------------------------------")
 		});
 
 		$("#gotoReset").bind("click", function () {

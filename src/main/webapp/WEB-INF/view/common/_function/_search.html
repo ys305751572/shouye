@@ -1,38 +1,38 @@
-<div class="wellsearch well-sm" id="searchfield" xmlns:c="http://www.w3.org/1999/XSL/Transform">
-    <div class="col-xs-8 input-group">
-
-        @for(x in col){
+<div class="welljq well-sm" id="searchfield" xmlns:c="http://www.w3.org/1999/XSL/Transform">
+    @for(x in col){
+    <div class="col-sm-3 input-group" style="float: left;margin: 0 0 10px 0">
         <input type="hidden" id="size" value="${xLP.size}">
-        <div class="input-group-btn" id="search">
+        <div class="input-group-btn search" id="search${xLP.index}" >
             <input data-toggle="dropdown"
                    class="btn btn-sx btn-white dropdown-toggle" disabled="disabled" id="searchthis${xLP.index}"
-                   value="${x.name!}" style="width: 90px;margin-left: 10px;">
+                   value="${x.name!}" style="width: 90px;">
             <input type="hidden" id="key" value="${x.index!}">
             <input type="hidden" id="type" value="${x.type!}">
             <input type="hidden" id="index" value="${xLP.index}">
         </div>
 
-        <div id="divinput${xLP.index }">
+        <div id="divinput${xLP.index }" class="keyword">
             <input type="text" id="inputs${xLP.index }" class="form-control" style="margin:10px 10px 0 0;width: auto"/>
         </div>
         <input type="hidden" id="hides${xLP.index }"/>
 
         <span class="input-group-btn"></span>
-        @}
     </div>
+    @}
 
-    <div class="col-xs-8 input-group">
+    <div class="col-xs-10 input-group">
         <!--简单查询按钮-->
         <div class="input-group-btn">
-            <input type="text" id="add" class="form-control" style="margin:10px 10px 0 10px;width: auto"/>
-            <button class="btn btn-sx btn-white" id="gotoSearch" onclick="" style="margin:10px 10px 0 0;">添加</button>
+            <button class="btn btn-sx btn-white" id="gotoSearch" style="margin:10px 10px 0 0;">添加</button>
         </div>
     </div>
 
 </div>
 
-<div class="welljq well-sm" id="tags" style="padding: 2px;">
-    <span style="float: left">已添加筛选条件:</span>
+<div class="welljq well-sm " >
+    <span>已添加筛选条件:</span>
+    <div id="tags"></div>
+    <div class="col-sm-10 input-group"></div>
 </div>
 
 <script type="text/javascript">
@@ -56,7 +56,7 @@
 
 
         //查询模块
-        $("div #search").each(function () {
+        $("div .search").each(function () {
             var name = $(this).find('input').eq(0).val();
             var key = $(this).find('input').eq(1).val();
             var type = $(this).find('input').eq(2).val();
@@ -65,61 +65,44 @@
         });
 
 
-        /*		$("#gotoSearch").bind("click", function () {
-         var key1 = $("#hides3").val();
-         var key2 = $("#hides2").val();
-         var value1 = $("#inputs3").val();
-         var value2 = $("#inputs2").val();
-         var filter = "";
-         if (typeof (_filter) != "undefined") {
-         filter = _filter;
-         }
-         var where = (BladeTool.isEmpty(filter)) ? "" : filter.replace("}", "");
-         if (BladeTool.isNotEmpty(key1) && BladeTool.isNotEmpty(value1)) {
-         where += (BladeTool.isEmpty(filter) ? "{" : ",") + "\"" + key1 + "\":\"" + value1 + "\"";
-         }
-         if (BladeTool.isNotEmpty(key2) && BladeTool.isNotEmpty(value2)) {
-         where += (BladeTool.isEmpty(where) ? "{" : ",") + "\"" + key2 + "\":\"" + value2 + "\"";
-         }
-         if (BladeTool.isNotEmpty(where) && BladeTool.isEmpty(exwhere)) {
-         where += "}";
-         }
-         else if (BladeTool.isNotEmpty(where) && BladeTool.isNotEmpty(exwhere)) {
-         where += exwhere.replace("{", ",");
-         }
-         else {
-         where = BladeTool.format(exwhere);
-         }
-         where = (BladeTool.isEmpty(key1) && BladeTool.isEmpty(key2) && BladeTool.isEmpty(where)) ? "" : encodeURI(where);
-
-         var pageNum = $jqGrid.getGridParam('page');
-         $jqGrid.jqGrid("setGridParam", { postData: { where: where }, page: (isAutoPage) ? pageNum : 1 }).trigger("reloadGrid");
+        $("#gotoSearch").bind("click", function () {
+            keyword();
          });
 
-         $("#gotoReset").bind("click", function () {
-         changethis("", "请选择", "", 1);
-         changethis("", "请选择", "", 2);
-         btn_stage.bind(toolbar);
-         reloadGrid();
-         });*/
     });
 
     //下拉框
     function select(data, key) {
-        var option = "#" + data + " option:selected";
         var id = "#" + data;
+        var option = id + " option:selected";
         $(id).change(function () {
             var val = $(option).val();
             var text = $(option).text();
-            tags(data, val, text, key)
+            tags(data, val, text, key , 1)
         });
     }
 
+    //查询关键字
+    function keyword(){
+        $("div .keyword input").each(function(){
+            if($(this).val()!=""){
+
+                var val = $(this).val();
+                var data = $(this).prop("id");
+                var index = data.replace(/[^0-9]/ig,"");
+                var id = "#search" + index;
+                var key = $(id).find("input").eq(1).val();
+                tags(data, val, val, key);
+            }
+        });
+        search();
+    }
+
     //标签
-    function tags(id, val, text, key) {
-        console.log("id:" + id);
+    function tags(id, val, text, key,index) {
+
         var html = "";
-        html += "<div id='" + id + "' class='o_choose' data-type='' style='background: #666;color: white;float: left;position: relative;font-size: 10px;width: auto;text-indent: 10px;margin:0 5px 0 0'>" + text;
+        html += "<div id='" + id + "' class='col-sm-3 input-group' data-type='' style='float:left;background: #666;color: white;position: relative;font-size: 10px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + text;
         html += "	<span class='o_close' data-percent='' onclick='doDelete(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
         html += "	<input type='hidden' value='" + val + "'> 	";
         html += "	<input type='hidden' value='" + key + "'> 	";
@@ -135,10 +118,17 @@
             html = '';
         }
         $("#tags").append(html);
-        search();
+
+        if(index == 1){
+            search();
+        }
+
     }
 
     function doDelete(btn) {
+        var _id = $(btn).parent().prop("id");
+        var id = "#"+_id;
+        $(id).val("");
         $(btn).parent().remove();
         search();
     }
@@ -151,8 +141,8 @@
             var value = $(this).find("input").eq(0).val();
             var key = $(this).find("input").eq(1).val();
             myMap.set(key, value);
-
         });
+        console.log(myMap);
 
         var filter = "";
         if (typeof (_filter) != "undefined") {
@@ -281,7 +271,7 @@
 
 
     function resetInput(num) {
-        $("#divinput" + num).html("<input type=\"text\"  id=\"inputs" + num + "\" class=\"form-control\" style=\"margin-left:-3px;\"/>");
+        $("#divinput" + num).html("<input type=\"text\"  id=\"inputs" + num + "\" class=\"form-control\" style=\"margin:0 10px 0 -3px;width:109px;\"/>");
     }
 
     function openTree(type, index, name) {

@@ -153,7 +153,7 @@ public class CacheController extends BladeController {
 					}
 				});
 		StringBuilder sb = new StringBuilder();
-		sb.append("<select class=\"form-control\" style=\"margin-left:-3px;cursor:pointer;width:auto;\" id=\"inputs"
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
 				+ num + "\">");
 		sb.append("<option value></option>");
 		for (Map<String, Object> dic : dict) {
@@ -188,7 +188,7 @@ public class CacheController extends BladeController {
 					}
 				});
 		StringBuilder sb = new StringBuilder();
-		sb.append("<select class=\"form-control\" style=\"margin-left:-3px;cursor:pointer;width:auto;\" id=\"inputs"
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
 				+ num + "\">");
 		sb.append("<option value></option>");
 		for (Map<String, Object> _dept : dept) {
@@ -209,7 +209,7 @@ public class CacheController extends BladeController {
 					}
 				});
 		StringBuilder sb = new StringBuilder();
-		sb.append("<select class=\"form-control\" style=\"margin-left:-3px;cursor:pointer;width:auto;\" id=\"inputs"
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
 				+ num + "\">");
 		sb.append("<option value></option>");
 		for (Map<String, Object> _dept : dept) {
@@ -230,7 +230,7 @@ public class CacheController extends BladeController {
 					}
 				});
 		StringBuilder sb = new StringBuilder();
-		sb.append("<select class=\"form-control\" style=\"margin-left:-3px;cursor:pointer;width:auto;\" id=\"inputs"
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
 				+ num + "\">");
 		sb.append("<option value></option>");
 		for (Map<String, Object> _dept : dept) {
