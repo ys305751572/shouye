@@ -15,6 +15,8 @@
  */
 package com.smallchill.system.controller;
 
+import com.smallchill.system.model.Demo;
+import com.smallchill.system.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -36,6 +38,8 @@ import com.smallchill.system.meta.intercept.RoleIntercept;
 import com.smallchill.system.model.Role;
 import com.smallchill.system.service.RoleService;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/role")
 public class RoleController extends BaseController{
@@ -46,6 +50,9 @@ public class RoleController extends BaseController{
 	
 	@Autowired
 	RoleService service;
+
+	@Autowired
+	DemoService demoService;
 
 	@RequestMapping("/")
 	public String index(ModelMap mm) {
@@ -95,7 +102,15 @@ public class RoleController extends BaseController{
 		mm.put("code", CODE);
 		return BASE_PATH + "role_view.html";
 	}
-	
+
+	@RequestMapping("/demo")
+	public String demo(ModelMap mm) {
+		List<Demo> demoList = demoService.findAll();
+		mm.put("demoList", JsonKit.toJson(demoList));
+		mm.put("code", CODE);
+		return BASE_PATH + "role_demo.html";
+	}
+
 	@RequestMapping("/authority/{roleId}/{roleName}")
 	public String authority(@PathVariable String roleId, @PathVariable String roleName, ModelMap mm) {
 		if(!ShiroKit.hasAnyRoles(ConstShiro.ADMINISTRATOR + "," + ConstShiro.ADMIN)){
@@ -138,7 +153,29 @@ public class RoleController extends BaseController{
 			return error(SAVE_FAIL_MSG);
 		}
 	}
-	
+
+	@ResponseBody
+	@RequestMapping("/demo_save")
+	public AjaxResult demo_save(String vals) {
+		String[] ss = JsonKit.parse(vals,String[].class);
+		Demo demo = mapping("demo", Demo.class);
+		Integer index = 0;
+		for(String s : ss){
+			demo.setGroup(s);
+			boolean temp = demoService.save(demo);
+			if(!temp){
+				index++;
+			}
+		}
+		if (index==0) {
+//			CacheKit.removeAll(ROLE_CACHE);
+//			CacheKit.removeAll(MENU_CACHE);
+			return success(SAVE_SUCCESS_MSG);
+		} else {
+			return error(SAVE_FAIL_MSG);
+		}
+	}
+
 	@ResponseBody
 	@RequestMapping(KEY_UPDATE)
 	public AjaxResult update() {

@@ -66,10 +66,17 @@ var exwhere;
         var rows = getGridXls().length;
         var rowData=getRowData();
         var split = "/";
+
     	if (this.alias == "add") {
         	this.open(this.url);
             return;
         }
+
+    	if (this.alias == "demo") {
+            this.open(this.url);
+            return;
+        }
+
         if (this.alias == "addex") {
             if (rows > 1) {
                 layer_alert('只能选择一条数据作为父!', "warn");
@@ -488,6 +495,7 @@ var exwhere;
 // 根据模块code生成  每个工具条上面的 btn
 function initMenuBtn(obj, code) {
     $.post(ctx + "/cache/getBtn", { code: code }, function (data) {
+        console.log(data);
         if (data.code === 0) {
             toolbar = obj;
             btnjsons = data.data;
