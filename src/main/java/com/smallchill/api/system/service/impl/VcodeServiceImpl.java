@@ -52,7 +52,7 @@ public class VcodeServiceImpl implements VcodeService {
             return (String) QuickCacheKit.initSms().get(key, new Callable() {
                 @Override
                 public Object call() throws Exception {
-                    return Boolean.FALSE;
+                    return "" + Boolean.FALSE;
                 }
             });
         } catch (ExecutionException e) {

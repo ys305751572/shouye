@@ -18,6 +18,9 @@ public class UserInfo extends BaseModel {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "user_id")
+    private Integer userId;
+
     @Column(name = "username")
     private String username = "";
 
@@ -110,6 +113,14 @@ public class UserInfo extends BaseModel {
 
     @Column(name = "create_time")
     private Long createTime;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public Integer getProductType() {
         return productType;

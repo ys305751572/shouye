@@ -18,4 +18,6 @@ public interface UserLoginService extends IService<UserLogin> {
     UserLogin loginCheck(String mobile) throws UserNotFoundException, UserLockException, UserFreezeException;
 
     UserInfo afterLoginQuery(UserLogin userLogin, HttpServletRequest request);
+
+    boolean userIfExtis(String mobile);
 }

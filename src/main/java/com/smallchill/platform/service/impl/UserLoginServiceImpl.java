@@ -45,6 +45,16 @@ public class UserLoginServiceImpl extends BaseService<UserLogin> implements User
     }
 
     /**
+     * 查询用户是否存在
+     * @param mobile
+     * @return
+     */
+    @Override
+    public boolean userIfExtis(String mobile) {
+        return this.count("mobile = #{mobile}",Record.create().set("mobile",mobile)) > 0;
+    }
+
+    /**
      * 修改用户登录信息
      * 修改登录IP
      * 修改最后登录时间

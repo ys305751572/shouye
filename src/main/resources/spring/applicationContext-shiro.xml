@@ -31,6 +31,7 @@
 		<property name="filterChainDefinitions">
 			<value>
 				/static/** = anon <!-- 不需要认证 -->
+				/api/** = anon <!-- 不需要认证 -->
 				/login = anon
 				/captcha = anon
 				/** = authc <!-- 需要认证 -->

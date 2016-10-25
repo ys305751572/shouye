@@ -1,5 +1,8 @@
 package com.smallchill.platform.model;
 
+import com.smallchill.core.toolbox.kit.DateKit;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.core.toolbox.support.DateTime;
 import org.beetl.sql.core.annotatoin.AutoID;
 import org.beetl.sql.core.annotatoin.SeqID;
 import org.beetl.sql.core.annotatoin.Table;
@@ -20,17 +23,17 @@ public class UserLogin extends BaseModel {
     @Column(name = "id")
     private Integer id;
     @Column(name = "login_username")
-    private String username;
+    private String username = "";
     @Column(name = "password")
-    private String password;
+    private String password = "";
     @Column(name = "status")
-    private Integer status;
+    private Integer status = 0;
     @Column(name = "unlock_time")
-    private Long unlockTime;
+    private Long unlockTime = -1L;
     @Column(name = "last_login_ip")
-    private String lastLoginIp;
+    private String lastLoginIp = "";
     @Column(name = "last_login_time")
-    private Long lastLoginTime;
+    private Long lastLoginTime = DateTimeKit.nowLong();
     @Column(name = "create_time")
     private Long createTime;
 

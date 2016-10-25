@@ -10,11 +10,10 @@ public enum ErrorType {
     ERROR_CODE_PARAM_EXCEPTION("参数不正确", 1002),
 
     ERROR_CODE_USERNOTFOUND("该用户不存在", 2001),
-    ERROR_CODE_USERHASLOCK("该用户被封号", 2005),
-    ERROR_CODE_USERHASFREEZE("该用户被冻结", 2006),
     ERROR_CODE_VALIDATECODE_FAIL("验证码错误", 2002),
-    ERROR_CODE_OLDPWD_FAIL("旧密码错误", 2003),
-    ERROR_CODE_OLDANDNEWPWD_SAME("旧密码和新密码不能一样", 2004);
+    ERROR_CODE_USERHASLOCK("该用户被封号", 2003),
+    ERROR_CODE_USERHASFREEZE("该用户被冻结", 2004),
+    ERROR_CODE_USERHASEXTIS("该用户已存在", 2005);
 
     private String name;
     private int code;

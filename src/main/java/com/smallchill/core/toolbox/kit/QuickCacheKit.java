@@ -49,7 +49,12 @@ public class QuickCacheKit implements ConstCache{
     }
 
     public static Cache initSms() {
-        return init(SMS_CACHE,SMS_TIMEOUT,null);
+        return init(SMS_CACHE, SMS_TIMEOUT, new RemovalListener() {
+            @Override
+            public void onRemoval(RemovalNotification removalNotification) {
+                System.out.println(DateKit.getTime() + "=======================删除=====================");
+            }
+        });
     }
 
     public static LoadingCache initLockIp() {
