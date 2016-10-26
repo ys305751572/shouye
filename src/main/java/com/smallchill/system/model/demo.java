@@ -9,7 +9,7 @@ import org.beetl.sql.core.annotatoin.Table;
 /**
  * Created by Administrator on 2016/10/25.
  */
-@Table(name = "tfw_demo")
+@Table(name = "tfw_group")
 @BindID(name = "id")
 @SuppressWarnings("serial")
 public class Demo extends BaseModel {

@@ -15,6 +15,7 @@
  */
 package com.smallchill.system.model;
 
+import org.beetl.sql.core.TailBean;
 import org.beetl.sql.core.annotatoin.AutoID;
 import org.beetl.sql.core.annotatoin.SeqID;
 import org.beetl.sql.core.annotatoin.Table;
@@ -27,7 +28,7 @@ import javax.persistence.Column;
 @Table(name = "tfw_role")
 @BindID(name = "id")
 @SuppressWarnings("serial")
-public class Role extends BaseModel {
+public class Role extends TailBean {
 	private Integer id;
 	private Integer deptid;
 	private String name;

@@ -19,6 +19,7 @@ import com.smallchill.system.model.Demo;
 import com.smallchill.system.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,7 @@ import com.smallchill.system.model.Role;
 import com.smallchill.system.service.RoleService;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/role")
@@ -55,7 +57,9 @@ public class RoleController extends BaseController{
 	DemoService demoService;
 
 	@RequestMapping("/")
-	public String index(ModelMap mm) {
+	public String index(ModelMap mm, Model model) {
+		List<Demo> demoList = demoService.findAll();
+		mm.put("demoList", JsonKit.toJson(demoList));
 		mm.put("code", CODE);
 		return BASE_PATH + "role.html";
 	}
@@ -111,6 +115,39 @@ public class RoleController extends BaseController{
 		return BASE_PATH + "role_demo.html";
 	}
 
+
+	@ResponseBody
+	@RequestMapping("/demo_save")
+	public AjaxResult demo_save(String vals) {
+		String[] ss = JsonKit.parse(vals,String[].class);
+		Integer index = 0;
+		for(String s : ss){
+			Demo demo = new Demo();
+			demo.setGroup(s);
+			boolean temp = demoService.save(demo);
+			if(!temp){
+				index++;
+			}
+		}
+		if (index==0) {
+			return success(SAVE_SUCCESS_MSG);
+		} else {
+			return error(SAVE_FAIL_MSG);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping("/demo_del")
+	public AjaxResult demo_del(int id) {
+		Integer index = demoService.delete(id);
+		if (index!=0) {
+			return success(DEL_SUCCESS_MSG);
+		} else {
+			return error(DEL_FAIL_MSG);
+		}
+	}
+
+
 	@RequestMapping("/authority/{roleId}/{roleName}")
 	public String authority(@PathVariable String roleId, @PathVariable String roleName, ModelMap mm) {
 		if(!ShiroKit.hasAnyRoles(ConstShiro.ADMINISTRATOR + "," + ConstShiro.ADMIN)){
@@ -154,27 +191,6 @@ public class RoleController extends BaseController{
 		}
 	}
 
-	@ResponseBody
-	@RequestMapping("/demo_save")
-	public AjaxResult demo_save(String vals) {
-		String[] ss = JsonKit.parse(vals,String[].class);
-		Demo demo = mapping("demo", Demo.class);
-		Integer index = 0;
-		for(String s : ss){
-			demo.setGroup(s);
-			boolean temp = demoService.save(demo);
-			if(!temp){
-				index++;
-			}
-		}
-		if (index==0) {
-//			CacheKit.removeAll(ROLE_CACHE);
-//			CacheKit.removeAll(MENU_CACHE);
-			return success(SAVE_SUCCESS_MSG);
-		} else {
-			return error(SAVE_FAIL_MSG);
-		}
-	}
 
 	@ResponseBody
 	@RequestMapping(KEY_UPDATE)

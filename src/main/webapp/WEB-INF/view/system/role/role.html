@@ -1,6 +1,5 @@
 @layout("/common/_curd/_container.html"){
 
-
 <script type="text/javascript">
 	var ctx="${basePath}";
 	var grid_selector = "#grid-table";
@@ -9,6 +8,9 @@
 	$(function(){
 		initGrid();
 		initMenuBtn("btns","${code}");
+		$("#group_select option").change(function () {
+			console.log(1)
+		})
 	});
 	
 	/**
@@ -19,13 +21,27 @@
 	}
 	
 	function initGrid(){
+		var list = JSON.parse('${demoList}');
 		var grid_url = ctx+"/${code}/list";//查询列表接口
-		var _colnames=[ "序列","角色名称","上级角色","所在部门", "备注"];
+		var _colnames=[ "序列","角色名称","上级角色","所在部门", "备注","分组"];
 		var _colmodel=[   {name:"ID",index:"ID", width:80,hidden:true},
 						  {name:"NAME",index:"NAME", width:100},
 						  {name:"PNAME",index:"PID", width:100},
 						  {name:"DEPTNAME",index:"DEPTID", width:100},
-						  {name:"TIPS",index:"TIPS", width:80}
+						  {name:"TIPS",index:"TIPS", width:80},
+						  {name:"groups",index:"ID", width:100,
+							  formatter: function(cellvalue, options, rowObject) {
+								  console.log(rowObject.ID)
+								  var html = "";
+								  html += "<select style='float: right' id='group_select'>";
+								  html += "<option></option>";
+								  for(var i=0;i< list.length;i++){
+									  html += "<option value='"+list[i].id+"'>"+list[i].group+"</option>";
+								  }
+								  html += "</select>";
+								  return (typeof (cellvalue)=='undefined' ? "" : cellvalue)+html;
+							  }
+						  }
 						];
 		
 		jQuery(grid_selector).jqGrid({
@@ -39,7 +55,8 @@
 		});
 
 	}
-	
+
+
 	function initZtree(){
 		var setting = {
 				data: {
@@ -107,7 +124,7 @@
 			<!-- 按钮组 -->
 			<div class="welljq well-sm" id="btns"></div>
 			<div class="welljq well-sm" id="columns">
-				<input type="checkbox" value="NAME" class="cbox" checked="checked"/>角色名称
+				<input type="checkbox" value="NAME" class="cbox" checked="checked" disabled="disabled"/>角色名称
 				<input type="checkbox" value="PNAME" class="cbox" checked="checked"/>上级角色
 				<input type="checkbox" value="DEPTNAME" class="cbox" checked="checked"/>所在部门
 				<input type="checkbox" value="TIPS" class="cbox" checked="checked"/>备注
