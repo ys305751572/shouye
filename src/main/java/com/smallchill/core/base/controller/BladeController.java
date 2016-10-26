@@ -17,6 +17,7 @@ package com.smallchill.core.base.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,9 +25,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.smallchill.api.common.model.QueryWhere;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -62,9 +63,9 @@ import com.smallchill.core.toolbox.log.LogManager;
 public class BladeController implements ConstCurd, ConstCache {
     private static final Logger log = LoggerFactory.getLogger(BladeController.class);
 
-//    @Resource
-//    private HttpServletRequest request;
-	private HttpServletRequest request = null;
+    @Resource
+    private HttpServletRequest request;
+//	private HttpServletRequest request = null;
 
 //	@Resource
 //	private HttpServletResponse response;
@@ -157,8 +158,7 @@ public class BladeController implements ConstCurd, ConstCache {
     /**
      * 表单值映射为javabean
      *
-     * @param beanClass
-     *            javabean.class
+     * @param beanClass javabean.class
      * @return T
      */
     public <T> T mapping(Class<T> beanClass) {
@@ -168,10 +168,8 @@ public class BladeController implements ConstCurd, ConstCache {
     /**
      * 表单值映射为javabean
      *
-     * @param switchMap
-     *            字段混淆Map  map.put("前端字段","数据库字段");
-     * @param beanClass
-     *            javabean.class
+     * @param switchMap 字段混淆Map  map.put("前端字段","数据库字段");
+     * @param beanClass javabean.class
      * @return T
      */
     public <T> T mapping(Map<String, Object> switchMap, Class<T> beanClass) {
@@ -181,10 +179,8 @@ public class BladeController implements ConstCurd, ConstCache {
     /**
      * 表单值映射为javabean
      *
-     * @param paraPerfix
-     *            name前缀
-     * @param beanClass
-     *            javabean.class
+     * @param paraPerfix name前缀
+     * @param beanClass  javabean.class
      * @return T
      */
     public <T> T mapping(String paraPerfix, Class<T> beanClass) {
@@ -194,12 +190,9 @@ public class BladeController implements ConstCurd, ConstCache {
     /**
      * 表单值映射为javabean
      *
-     * @param paraPerfix
-     *            name前缀
-     * @param switchMap
-     *            字段混淆Map map.put("前端字段","数据库字段");
-     * @param beanClass
-     *            javabean.class
+     * @param paraPerfix name前缀
+     * @param switchMap  字段混淆Map map.put("前端字段","数据库字段");
+     * @param beanClass  javabean.class
      * @return T
      */
     public <T> T mapping(String paraPerfix, Map<String, Object> switchMap, Class<T> beanClass) {
@@ -228,7 +221,7 @@ public class BladeController implements ConstCurd, ConstCache {
     /**
      * 表单值映射为Maps
      *
-     * @param paraPerfix  name前缀
+     * @param paraPerfix name前缀
      * @return Maps
      */
     public Record getMaps(String paraPerfix) {
@@ -239,7 +232,7 @@ public class BladeController implements ConstCurd, ConstCache {
      * 表单值映射为Maps
      *
      * @param paraPerfix name前缀
-     * @param switchMap 字段混淆Map  map.put("前端字段","数据库字段");
+     * @param switchMap  字段混淆Map  map.put("前端字段","数据库字段");
      * @return Maps
      */
     public Record getMaps(String paraPerfix, Map<String, Object> switchMap) {
@@ -295,6 +288,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 获取BladeFile封装类
+     *
      * @param file
      * @return
      */
@@ -304,6 +298,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 获取BladeFile封装类
+     *
      * @param file
      * @param path
      * @return
@@ -314,6 +309,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 获取BladeFile封装类
+     *
      * @param files
      * @return
      */
@@ -323,6 +319,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 获取BladeFile封装类
+     *
      * @param files
      * @param path
      * @return
@@ -338,6 +335,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 返回ajaxresult
+     *
      * @param data
      * @return AjaxResult
      */
@@ -347,6 +345,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 返回ajaxresult
+     *
      * @param data
      * @param message
      * @return AjaxResult
@@ -357,6 +356,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 返回ajaxresult
+     *
      * @param data
      * @param message
      * @param code
@@ -368,6 +368,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 返回ajaxresult
+     *
      * @param message
      * @return AjaxResult
      */
@@ -377,6 +378,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 返回ajaxresult
+     *
      * @param message
      * @return AjaxResult
      */
@@ -386,6 +388,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 返回ajaxresult
+     *
      * @param message
      * @return AjaxResult
      */
@@ -395,6 +398,7 @@ public class BladeController implements ConstCurd, ConstCache {
 
     /**
      * 返回ajaxresult
+     *
      * @param message
      * @return AjaxResult
      */
@@ -403,7 +407,9 @@ public class BladeController implements ConstCurd, ConstCache {
     }
 
 
-    /** ============================     paginate    =================================================  */
+    /**
+     * ============================     paginate    =================================================
+     */
 
     private Object basepage(String slaveName, String source, IQuery intercept) {
         Integer page = getParameterToInt("page", 1);
@@ -417,12 +423,12 @@ public class BladeController implements ConstCurd, ConstCache {
             sort = sidx + " " + sord
                     + (StrKit.notBlank(sort) ? ("," + sort) : "");
         }
-        Object grid = GridManager.paginate(slaveName, page, rows, source, where, sort, order, intercept, this);
-        return grid;
+        return GridManager.paginate(slaveName, page, rows, source, where, sort, order, intercept, this);
     }
 
     /**
      * 接口翻页处理
+     *
      * @param source sql配置文档
      * @return page
      */
@@ -436,9 +442,34 @@ public class BladeController implements ConstCurd, ConstCache {
         request.removeAttribute("pageSize");
         request.removeAttribute("sort");
         request.removeAttribute("order");
-        Map queryString = request.getParameterMap();
-        String where = JsonKit.toJson(queryString);
+        Map<String, String[]> queryString = request.getParameterMap();
+
+        Map<String, String> parmasMap = new HashMap<>();
+        for (Map.Entry<String, String[]> element : queryString.entrySet()) {
+            if (StringUtils.isNotBlank(element.getValue()[0])) {
+                parmasMap.put(element.getKey(), element.getValue()[0]);
+            }
+        }
+
+        String where = JsonKit.toJson(parmasMap);
         return (JqGrid) GridManager.paginate(slaveName, page, rows, source, where, sort, order, intercept, this);
+    }
+
+    /**
+     * @param source
+     * @param intercept
+     * @return
+     */
+    protected JqGrid apiPaginate(String source, IQuery intercept) {
+        return apiPaginate(null, source, intercept);
+    }
+
+    /**
+     * @param source
+     * @return
+     */
+    protected JqGrid apiPaginate(String source) {
+        return apiPaginate(null, source, null);
     }
 
     /**

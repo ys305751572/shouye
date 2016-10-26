@@ -1,6 +1,7 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.core.toolbox.LeomanKit;
+import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.GroupBank;
@@ -13,10 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * 组织service
@@ -101,5 +98,11 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     @Override
     public void editGroup(GroupVo groupVo) {
 
+    }
+
+    @Override
+    public JqGrid page(String source) {
+
+        return null;
     }
 }

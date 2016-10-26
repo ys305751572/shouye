@@ -1,6 +1,8 @@
 package com.smallchill.web.service;
 
+import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.core.base.service.IService;
+import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.vo.GroupVo;
 
@@ -22,5 +24,5 @@ public interface GroupService extends IService<Group>{
      */
     void editGroup(GroupVo groupVo);
 
-
+    JqGrid page(String source);
 }
