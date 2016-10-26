@@ -1,7 +1,7 @@
 package com.smallchill.web.service.impl;
 
-import com.smallchill.web.model.GroupTag;
-import com.smallchill.web.service.GroupTagService;
+import com.smallchill.web.model.GroupExtend;
+import com.smallchill.web.service.GroupExtendService;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 
@@ -11,6 +11,6 @@ import com.smallchill.core.base.service.BaseService;
  * 2016-10-25 17:46:14
  */
 @Service
-public class GroupTagServiceImpl extends BaseService<GroupTag> implements GroupTagService {
+public class GroupExtendServiceImpl extends BaseService<GroupExtend> implements GroupExtendService {
 
 }
