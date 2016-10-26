@@ -2,6 +2,8 @@ package com.smallchill.core.toolbox;
 
 import com.smallchill.core.toolbox.kit.NumberKit;
 
+import java.util.UUID;
+
 /**
  * 公共方法
  * Created by yesong on 2016/10/24 0024.
@@ -27,5 +29,13 @@ public class LeomanKit {
             buffer.append(NumberKit.generateRandomNumber(10));
         }
         return buffer.toString();
+    }
+
+    /**
+     * 生成UUID
+     * @return
+     */
+    public static String generateUUID() {
+        return UUID.randomUUID().toString().replace("-","");
     }
 }
