@@ -13,7 +13,11 @@ public enum ErrorType {
     ERROR_CODE_VALIDATECODE_FAIL("验证码错误", 2002),
     ERROR_CODE_USERHASLOCK("该用户被封号", 2003),
     ERROR_CODE_USERHASFREEZE("该用户被冻结", 2004),
-    ERROR_CODE_USERHASEXTIS("该用户已存在", 2005);
+    ERROR_CODE_USERHASEXTIS("该用户已存在", 2005),
+
+    ERROR_CODE_USERHASJOIN("您已加入过该组织,请不要重复加入", 3001),
+    ERROR_CODE_USERHASAPPROVAL("您已发送过申请,请耐心等待", 3002),
+    ERROR_CODE_USERINBLANK("您已被该群加入黑名单,无法加入", 3003);
 
     private String name;
     private int code;

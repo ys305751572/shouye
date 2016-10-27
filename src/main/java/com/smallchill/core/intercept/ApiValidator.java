@@ -1,54 +1,42 @@
-/**
- * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.smallchill.core.intercept;
 
+import com.smallchill.api.common.model.ErrorType;
+import com.smallchill.api.common.model.Result;
+import com.smallchill.core.aop.Invocation;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.kit.DateKit;
+import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.core.toolbox.kit.LogKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+
+import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.smallchill.core.aop.Invocation;
-import com.smallchill.core.toolbox.Func;
-import com.smallchill.core.toolbox.kit.DateKit;
-import com.smallchill.core.toolbox.kit.LogKit;
-import com.smallchill.core.toolbox.kit.StrKit;
-
 /**
- * @author James Zhan, Chill Zhuang
+ * api 参数验证
+ * Created by yesong on 2016/10/27 0027.
  */
-public abstract class BladeValidator extends BladeInterceptor {
+public abstract class ApiValidator extends ApiInterceptor {
+
     protected boolean succeed = true;
     protected HttpServletRequest request;
-
     protected static final String emailAddressPattern = "\\b(^['_A-Za-z0-9-]+(\\.['_A-Za-z0-9-]+)*@([A-Za-z0-9-])+(\\.[A-Za-z0-9-]+)*((\\.[A-Za-z0-9]{2,})|(\\.[A-Za-z0-9]{2,}\\.[A-Za-z0-9]{2,}))$)\\b";
 
-    protected void addError(String errorMessage) {
+    protected void addError(ErrorType errorType) {
         if (succeed) {
             this.succeed = false;
-            result.addError(errorMessage);
+            result = Result.fail(errorType);
         } else {
             throw new RuntimeException();
         }
     }
 
     final public Object intercept(Invocation inv) {
-        BladeValidator validator;
+        ApiValidator validator = null;
         try {
             validator = getClass().newInstance();
         } catch (Exception e) {
@@ -63,7 +51,7 @@ public abstract class BladeValidator extends BladeInterceptor {
         if (validator.succeed) {
             return invoke();
         } else {
-            return validator.result;
+            return JsonKit.toJson(validator.result);
         }
     }
 
@@ -75,116 +63,116 @@ public abstract class BladeValidator extends BladeInterceptor {
     /**
      * Judge whether the two values are equal
      */
-    protected void validateTwoEqual(String field1, String field2, String errorMessage) {
+    protected void validateTwoEqual(String field1, String field2, ErrorType errorType) {
         if (Func.isAllEmpty(field1, field2)) {// 字符串为 null 或者为 "" 时返回 true
-            addError(errorMessage);
+            addError(errorType);
         }
         String value1 = request.getParameter(field1);
         String value2 = request.getParameter(field2);
         if (!value1.equals(value2)) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
     /**
      * Judge whether the two values are not equal
      */
-    protected void validateTwoNotEqual(String field1, String field2, String errorMessage) {
+    protected void validateTwoNotEqual(String field1, String field2, ErrorType errorType) {
         if (Func.isAllEmpty(field1, field2)) {// 字符串为 null 或者为 "" 时返回 true
-            addError(errorMessage);
+            addError(errorType);
         }
         String value1 = request.getParameter(field1);
         String value2 = request.getParameter(field2);
         if (value1.equals(value2)) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
     /**
      * Check sql
      */
-    protected void validateSql(String field, String errorMessage) {
+    protected void validateSql(String field, ErrorType errorType) {
         if (StrKit.isBlank(field)) {// 字符串为 null 或者为 "" 时返回 true
-            addError(errorMessage);
+            addError(errorType);
         }
         String sql = request.getParameter(field);
         sql = sql.toLowerCase();
         if (sql.indexOf("delete") >= 0 || sql.indexOf("update") >= 0
                 || sql.indexOf("insert") >= 0 || sql.indexOf("drop") >= 0) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
     /**
      * Validate the illegal characters
      */
-    protected void validateStringExt(String field, String errorMessage) {
+    protected void validateStringExt(String field, ErrorType errorType) {
         if (Func.isAllEmpty(field)) {// 字符串为 null 或者为 "" 时返回 true
-            addError(errorMessage);
+            addError(errorType);
         }
         String val = request.getParameter(field);
         if (val.contains("<")) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
     /**
      * Validate Required. Allow space characters.
      */
-    protected void validateRequired(String field, String errorMessage) {
+    protected void validateRequired(String field, ErrorType errorType) {
         String value = request.getParameter(field);
         if (value == null || "".equals(value)) // 经测试,form表单域无输入时值为"",跳格键值为"\t",输入空格则为空格" "
-            addError(errorMessage);
+            addError(errorType);
     }
 
     /**
      * Validate required string.
      */
-    protected void validateRequiredString(String field, String errorMessage) {
+    protected void validateRequiredString(String field, ErrorType errorType) {
         if (StrKit.isBlank(request.getParameter(field)))
-            addError(errorMessage);
+            addError(errorType);
     }
 
     /**
      * Validate integer.
      */
     protected void validateInteger(String field, int min, int max,
-                                   String errorMessage) {
+                                   ErrorType errorType) {
         validateIntegerValue(request.getParameter(field), min, max,
-                errorMessage);
+                errorType);
     }
 
     private void validateIntegerValue(String value, int min, int max,
-                                      String errorMessage) {
+                                      ErrorType errorType) {
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         try {
             int temp = Integer.parseInt(value.trim());
             if (temp < min || temp > max)
-                addError(errorMessage);
+                addError(errorType);
         } catch (Exception e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
     /**
      * Validate integer.
      */
-    protected void validateInteger(String field, String errorMessage) {
-        validateIntegerValue(request.getParameter(field), errorMessage);
+    protected void validateInteger(String field, ErrorType errorType) {
+        validateIntegerValue(request.getParameter(field), errorType);
     }
 
-    private void validateIntegerValue(String value, String errorMessage) {
+    private void validateIntegerValue(String value, ErrorType errorType) {
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         try {
             Integer.parseInt(value.trim());
         } catch (Exception e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
@@ -192,41 +180,41 @@ public abstract class BladeValidator extends BladeInterceptor {
      * Validate long.
      */
     protected void validateLong(String field, long min, long max,
-                                String errorMessage) {
-        validateLongValue(request.getParameter(field), min, max, errorMessage);
+                                ErrorType errorType) {
+        validateLongValue(request.getParameter(field), min, max, errorType);
     }
 
     private void validateLongValue(String value, long min, long max,
-                                   String errorMessage) {
+                                   ErrorType errorType) {
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         try {
             long temp = Long.parseLong(value.trim());
             if (temp < min || temp > max)
-                addError(errorMessage);
+                addError(errorType);
         } catch (Exception e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
     /**
      * Validate long.
      */
-    protected void validateLong(String field, String errorMessage) {
-        validateLongValue(request.getParameter(field), errorMessage);
+    protected void validateLong(String field, ErrorType errorType) {
+        validateLongValue(request.getParameter(field), errorType);
     }
 
-    private void validateLongValue(String value, String errorMessage) {
+    private void validateLongValue(String value, ErrorType errorType) {
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         try {
             Long.parseLong(value.trim());
         } catch (Exception e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
@@ -234,48 +222,48 @@ public abstract class BladeValidator extends BladeInterceptor {
      * Validate double.
      */
     protected void validateDouble(String field, double min, double max,
-                                  String errorMessage) {
+                                  ErrorType errorType) {
         String value = request.getParameter(field);
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         try {
             double temp = Double.parseDouble(value.trim());
             if (temp < min || temp > max)
-                addError(errorMessage);
+                addError(errorType);
         } catch (Exception e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
     /**
      * Validate double.
      */
-    protected void validateDouble(String field, String errorMessage) {
+    protected void validateDouble(String field, ErrorType errorType) {
         String value = request.getParameter(field);
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         try {
             Double.parseDouble(value.trim());
         } catch (Exception e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
     /**
      * Validate date. Date formate: yyyy-MM-dd
      */
-    protected void validateDate(String field, String errorMessage) {
+    protected void validateDate(String field, ErrorType errorType) {
         String value = request.getParameter(field);
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         if (!DateKit.isValidDate(Func.format(value))) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
@@ -283,18 +271,18 @@ public abstract class BladeValidator extends BladeInterceptor {
      * Validate date.
      */
     protected void validateDate(String field, Date min, Date max,
-                                String errorMessage) {
+                                ErrorType errorType) {
         String value = request.getParameter(field);
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         try {
             Date temp = DateKit.parseTime(Func.format(value));
             if (temp.before(min) || temp.after(max))
-                addError(errorMessage);
+                addError(errorType);
         } catch (Exception e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
@@ -302,14 +290,14 @@ public abstract class BladeValidator extends BladeInterceptor {
      * Validate date. Date formate: yyyy-MM-dd
      */
     protected void validateDate(String field, String min, String max,
-                                String errorMessage) {
+                                ErrorType errorType) {
         // validateDate(field, Date.valueOf(min), Date.valueOf(max), errorKey,
-        // errorMessage); 为了兼容 64位 JDK
+        // errorType); 为了兼容 64位 JDK
         try {
             validateDate(field, DateKit.parseTime(Func.format(min)),
-                    DateKit.parseTime(Func.format(max)), errorMessage);
+                    DateKit.parseTime(Func.format(max)), errorType);
         } catch (Exception e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
@@ -317,44 +305,44 @@ public abstract class BladeValidator extends BladeInterceptor {
      * Validate equal field. Usually validate password and password again
      */
     protected void validateEqualField(String field_1, String field_2,
-                                      String errorMessage) {
+                                      ErrorType errorType) {
         String value_1 = request.getParameter(field_1);
         String value_2 = request.getParameter(field_2);
         if (value_1 == null || value_2 == null || (!value_1.equals(value_2)))
-            addError(errorMessage);
+            addError(errorType);
     }
 
     /**
      * Validate equal string.
      */
-    protected void validateEqualString(String s1, String s2, String errorMessage) {
+    protected void validateEqualString(String s1, String s2, ErrorType errorType) {
         if (s1 == null || s2 == null || (!s1.equals(s2)))
-            addError(errorMessage);
+            addError(errorType);
     }
 
     /**
      * Validate equal integer.
      */
     protected void validateEqualInteger(Integer i1, Integer i2,
-                                        String errorMessage) {
+                                        ErrorType errorType) {
         if (i1 == null || i2 == null || (i1.intValue() != i2.intValue()))
-            addError(errorMessage);
+            addError(errorType);
     }
 
     /**
      * Validate email.
      */
-    protected void validateEmail(String field, String errorMessage) {
-        validateRegex(field, emailAddressPattern, false, errorMessage);
+    protected void validateEmail(String field, ErrorType errorType) {
+        validateRegex(field, emailAddressPattern, false, errorType);
     }
 
     /**
      * Validate URL.
      */
-    protected void validateUrl(String field, String errorMessage) {
+    protected void validateUrl(String field, ErrorType errorType) {
         String value = request.getParameter(field);
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         try {
@@ -365,7 +353,7 @@ public abstract class BladeValidator extends BladeInterceptor {
             // protocol, hack it
             new URL(value);
         } catch (MalformedURLException e) {
-            addError(errorMessage);
+            addError(errorType);
         }
     }
 
@@ -373,56 +361,56 @@ public abstract class BladeValidator extends BladeInterceptor {
      * Validate regular expression.
      */
     protected void validateRegex(String field, String regExpression,
-                                 boolean isCaseSensitive, String errorMessage) {
+                                 boolean isCaseSensitive, ErrorType errorType) {
         String value = request.getParameter(field);
         if (value == null) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         Pattern pattern = isCaseSensitive ? Pattern.compile(regExpression)
                 : Pattern.compile(regExpression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(value);
         if (!matcher.matches())
-            addError(errorMessage);
+            addError(errorType);
     }
 
     /**
      * Validate regular expression and case sensitive.
      */
     protected void validateRegex(String field, String regExpression,
-                                 String errorMessage) {
-        validateRegex(field, regExpression, true, errorMessage);
+                                 ErrorType errorType) {
+        validateRegex(field, regExpression, true, errorType);
     }
 
     /**
      * Validate string.
      */
     protected void validateString(String field, int minLen, int maxLen,
-                                  String errorMessage) {
+                                  ErrorType errorType) {
         validateStringValue(request.getParameter(field), minLen, maxLen,
-                errorMessage);
+                errorType);
     }
 
     private void validateStringValue(String value, int minLen, int maxLen,
-                                     String errorMessage) {
+                                     ErrorType errorType) {
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         if (value.length() < minLen || value.length() > maxLen)
-            addError(errorMessage);
+            addError(errorType);
     }
 
     /**
      * validate boolean.
      */
-    protected void validateBoolean(String field, String errorMessage) {
-        validateBooleanValue(request.getParameter(field), errorMessage);
+    protected void validateBoolean(String field, ErrorType errorType) {
+        validateBooleanValue(request.getParameter(field), errorType);
     }
 
-    private void validateBooleanValue(String value, String errorMessage) {
+    private void validateBooleanValue(String value, ErrorType errorType) {
         if (StrKit.isBlank(value)) {
-            addError(errorMessage);
+            addError(errorType);
             return;
         }
         value = value.trim().toLowerCase();
@@ -431,7 +419,6 @@ public abstract class BladeValidator extends BladeInterceptor {
         } else if ("0".equals(value) || "false".equals(value)) {
             return;
         }
-        addError(errorMessage);
+        addError(errorType);
     }
-
 }

@@ -1,6 +1,8 @@
 package test;
 
+import com.smallchill.web.model.GroupApproval;
 import com.smallchill.web.model.vo.GroupVo;
+import com.smallchill.web.service.GroupApprovalService;
 import com.smallchill.web.service.GroupExtendService;
 import com.smallchill.web.service.GroupService;
 import org.junit.Test;
@@ -19,6 +21,9 @@ public class GroupServiceTest extends BaseJunit4Test{
 
     @Autowired
     private GroupExtendService groupExtendService;
+
+    @Autowired
+    private GroupApprovalService groupApprovalService;
 
     @Transactional
     @Test
@@ -68,5 +73,13 @@ public class GroupServiceTest extends BaseJunit4Test{
     @Test
     public void testGetCost() {
         System.out.println(groupExtendService.getCost(9));
+    }
+
+    @Test
+    public void testIsApp() {
+//        GroupApproval ga = new GroupApproval();
+//        ga.setGroupId(9);
+//        ga.setUserId(5);
+//        System.out.println(groupApprovalService.isApprival(ga));
     }
 }

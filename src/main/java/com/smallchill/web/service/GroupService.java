@@ -26,4 +26,5 @@ public interface GroupService extends IService<Group> {
     void editGroup(GroupVo groupVo);
 
     JqGrid page(String source);
+
 }

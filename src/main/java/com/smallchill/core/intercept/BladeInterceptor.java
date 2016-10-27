@@ -24,5 +24,5 @@ public abstract class BladeInterceptor implements Interceptor{
 	protected Object invoke(){
 		return null;
 	}
-	
+
 }

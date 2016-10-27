@@ -728,13 +728,12 @@ public class Blade {
 
 	/**
 	 * 是否存在
-	 * 
+	 *
 	 * @param sqlTemplate
-	 * @param paras
 	 * @return
 	 */
 	public boolean isExist(String sqlTemplate, Object modelOrMap) {
-		int count = getSqlManager().execute(sqlTemplate, this.modelClass, modelOrMap).size();
+		int count = getSqlManager().execute(sqlTemplate, Integer.class, modelOrMap).size();
 		if (count != 0) {
 			return true;
 		}
