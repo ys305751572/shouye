@@ -4,7 +4,7 @@ import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInBlankException;
 import com.smallchill.api.common.model.ErrorType;
-import com.smallchill.api.function.meta.GroupValidator;
+import com.smallchill.api.function.meta.validate.GroupValidator;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
 import com.smallchill.core.toolbox.grid.JqGrid;

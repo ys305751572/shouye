@@ -1,4 +1,4 @@
-package com.smallchill.api.function.meta;
+package com.smallchill.api.function.meta.validate;
 
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.core.aop.Invocation;
