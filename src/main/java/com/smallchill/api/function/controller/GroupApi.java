@@ -16,6 +16,10 @@ public class GroupApi extends BaseController{
 
     private static String LIST_SOURCE = "Group.list";
 
+    /**
+     * 组织列表
+     * @return result
+     */
     @RequestMapping(value = "/list")
     @ResponseBody
     public String list() {
@@ -27,5 +31,15 @@ public class GroupApi extends BaseController{
             return fail();
         }
         return success(page);
+    }
+
+    /**
+     * 加入组织
+     * @return
+     */
+    @RequestMapping(value = "/join")
+    @ResponseBody
+    public String join() {
+        return success();
     }
 }
