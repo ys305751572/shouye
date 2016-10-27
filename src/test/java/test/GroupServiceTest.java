@@ -1,6 +1,7 @@
 package test;
 
 import com.smallchill.web.model.vo.GroupVo;
+import com.smallchill.web.service.GroupExtendService;
 import com.smallchill.web.service.GroupService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class GroupServiceTest extends BaseJunit4Test{
 
     @Autowired
     private GroupService groupService;
+
+    @Autowired
+    private GroupExtendService groupExtendService;
 
     @Transactional
     @Test
@@ -59,5 +63,10 @@ public class GroupServiceTest extends BaseJunit4Test{
         vo.setIsOpen4(1);
 
         groupService.saveGroup(vo);
+    }
+
+    @Test
+    public void testGetCost() {
+        System.out.println(groupExtendService.getCost(9));
     }
 }

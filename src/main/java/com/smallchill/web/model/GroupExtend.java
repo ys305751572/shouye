@@ -44,15 +44,15 @@ public class GroupExtend extends BaseModel {
     private Integer approvalAdminId;
     @Column(name = "create_admin_id")
     private Integer createAdminId;
-    @Column(name = "cast")
-    private Integer cast = 0;
+    @Column(name = "cost")
+    private Integer cost = 0;
 
-    public Integer getCast() {
-        return cast;
+    public Integer getCost() {
+        return cost;
     }
 
-    public void setCast(Integer cast) {
-        this.cast = cast;
+    public void setCost(Integer cost) {
+        this.cost = cost;
     }
 
     public Integer getGroupId() {
