@@ -15,7 +15,7 @@ import org.beetl.sql.core.annotatoin.Table;
 public class Demo extends BaseModel {
 
     private Integer id;
-    private String group;
+    private String groups;
 
     @AutoID
     @SeqID(name = "SEQ_DEMO")
@@ -27,11 +27,11 @@ public class Demo extends BaseModel {
         this.id = id;
     }
 
-    public String getGroup() {
-        return group;
+    public String getGroups() {
+        return groups;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setGroups(String groups) {
+        this.groups = groups;
     }
 }

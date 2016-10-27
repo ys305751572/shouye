@@ -72,6 +72,7 @@ var exwhere;
             return;
         }
 
+        //标记(*)
     	if (this.alias == "demo") {
             this.open(this.url);
             return;

@@ -16,7 +16,9 @@
 package com.smallchill.system.controller;
 
 import com.smallchill.system.model.Demo;
+import com.smallchill.system.model.RoleGroup;
 import com.smallchill.system.service.DemoService;
+import com.smallchill.system.service.RoleGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,6 +57,9 @@ public class RoleController extends BaseController{
 
 	@Autowired
 	DemoService demoService;
+
+	@Autowired
+	RoleGroupService roleGroupService;
 
 	@RequestMapping("/")
 	public String index(ModelMap mm, Model model) {
@@ -120,16 +125,16 @@ public class RoleController extends BaseController{
 	@RequestMapping("/demo_save")
 	public AjaxResult demo_save(String vals) {
 		String[] ss = JsonKit.parse(vals,String[].class);
-		Integer index = 0;
+		boolean index = true;
 		for(String s : ss){
 			Demo demo = new Demo();
-			demo.setGroup(s);
+			demo.setGroups(s);
 			boolean temp = demoService.save(demo);
 			if(!temp){
-				index++;
+				index = false;
 			}
 		}
-		if (index==0) {
+		if (index) {
 			return success(SAVE_SUCCESS_MSG);
 		} else {
 			return error(SAVE_FAIL_MSG);
@@ -138,7 +143,12 @@ public class RoleController extends BaseController{
 
 	@ResponseBody
 	@RequestMapping("/demo_del")
-	public AjaxResult demo_del(int id) {
+	public AjaxResult demo_del(Integer id) {
+		if(id==null) return error(DEL_FAIL_MSG);
+		List<RoleGroup> roleGroups = roleGroupService.findBy("groupid = "+id,RoleGroup.class);
+		for(RoleGroup roleGroup : roleGroups){
+			roleGroupService.delete(roleGroup.getId());
+		}
 		Integer index = demoService.delete(id);
 		if (index!=0) {
 			return success(DEL_SUCCESS_MSG);
@@ -146,6 +156,39 @@ public class RoleController extends BaseController{
 			return error(DEL_FAIL_MSG);
 		}
 	}
+
+
+	@ResponseBody
+	@RequestMapping("/groups_del")
+	public AjaxResult groups_del(String group,Integer roleid) {
+		Demo demo = demoService.findFirstBy("groups = '"+group.trim()+"'",Demo.class);
+		RoleGroup roleGroup = roleGroupService.findFirstBy("groupid = "+demo.getId() +" AND roleid = "+roleid,RoleGroup.class);
+		Integer index = roleGroupService.delete(roleGroup.getId());
+		if (index!=0) {
+			return success(DEL_SUCCESS_MSG);
+		} else {
+			return error(DEL_FAIL_MSG);
+		}
+	}
+	@ResponseBody
+	@RequestMapping("/groups_add")
+	public AjaxResult groups_add(Integer groupid,Integer roleid) {
+		RoleGroup roleGroup = new RoleGroup();
+		List<RoleGroup> _r = roleGroupService.findBy("groupid = "+groupid +" AND roleid = "+roleid,RoleGroup.class);
+		if(!_r.isEmpty()){
+			return error("已存在");
+		}
+		roleGroup.setGroupid(groupid);
+		roleGroup.setRoleid(roleid);
+		boolean index = roleGroupService.save(roleGroup);
+		if (index) {
+			return success(SAVE_SUCCESS_MSG);
+		} else {
+			return error(SAVE_FAIL_MSG);
+		}
+	}
+
+
 
 
 	@RequestMapping("/authority/{roleId}/{roleName}")

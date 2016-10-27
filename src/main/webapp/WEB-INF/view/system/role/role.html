@@ -4,13 +4,10 @@
 	var ctx="${basePath}";
 	var grid_selector = "#grid-table";
 	var pager_selector = "#grid-pager";
-	
+	var hidden = 1;
 	$(function(){
 		initGrid();
 		initMenuBtn("btns","${code}");
-		$("#group_select option").change(function () {
-			console.log(1)
-		})
 	});
 	
 	/**
@@ -29,17 +26,44 @@
 						  {name:"PNAME",index:"PID", width:100},
 						  {name:"DEPTNAME",index:"DEPTID", width:100},
 						  {name:"TIPS",index:"TIPS", width:80},
-						  {name:"groups",index:"ID", width:100,
+						  {name:"groups",index:"ID",width:500,
 							  formatter: function(cellvalue, options, rowObject) {
-								  console.log(rowObject.ID)
+								  var rowId = rowObject.ID;
 								  var html = "";
-								  html += "<select style='float: right' id='group_select'>";
+								  html += "<select style='float: right' id='group_select' onchange='groups_add(this,"+rowId+")'>";
 								  html += "<option></option>";
 								  for(var i=0;i< list.length;i++){
-									  html += "<option value='"+list[i].id+"'>"+list[i].group+"</option>";
+									  html += "<option value='"+list[i].id+"' >"+list[i].groups+"</option>";
 								  }
 								  html += "</select>";
-								  return (typeof (cellvalue)=='undefined' ? "" : cellvalue)+html;
+
+								  var cellvalues = cellvalue+"";
+								  var a = cellvalues.split(",");
+								  var cev = "";
+								  for(var j=0;j<a.length;j++){
+									  if(a[j] != "undefined"){
+										  if(j<3){
+											  cev += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + a[j];
+											  cev += "	<span class='o_close' data-percent='' onclick=\"group_del('"+a[j]+"',"+rowId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+											  cev += "</div>   ";
+										  }else{
+											  cev += "<div class='col-sm-3 input-group hid' style='display: none;float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0;'>" + a[j];
+											  cev += "	<span class='o_close' data-percent='' onclick=\"group_del('"+a[j]+"',"+rowId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+											  cev += "</div>   ";
+
+											  if((j+1)==a.length){
+												  cev += "<div class='col-sm-3 input-group' style='float:left'>";
+												  cev += "<button onclick='hid(this)'>更多</button>";
+												  cev += "</div>   ";
+											  }
+										  }
+
+
+									  }
+
+								  }
+
+								  return cev+html;
 							  }
 						  }
 						];
@@ -47,6 +71,8 @@
 		jQuery(grid_selector).jqGrid({
 			url:grid_url,
 		    shrinkToFit:true,//适用于较少字段,响应式
+			autowidth : true,
+			forceFit : true,
 			colNames:_colnames,
 			colModel:_colmodel, 
 			jsonReader:{id:"ID"},
@@ -54,6 +80,45 @@
 			postData: {sort: "id", order: "asc"}
 		});
 
+	}
+
+	function hid(data){
+		if($(data).text()=="更多"){
+			$(data).parent().parent().find("div.col-sm-3.input-group.hid").css('display','block');
+			$(data).text("隐藏");
+		}else {
+			$(data).parent().parent().find("div.col-sm-3.input-group.hid").css('display','none');
+			$(data).text("更多");
+		}
+	}
+
+
+	function group_del(group,roleid){
+		console.log(group);
+		console.log(roleid);
+		$.post("${basePath}/${code}/groups_del", { group: group ,roleid:roleid}, function (data) {
+			if (data.code === 0) {
+				$(grid_selector).trigger("reloadGrid");
+			}
+			else {
+				layer_post(data);
+			}
+		}, "json");
+	}
+
+	function groups_add(group,roleid){
+		var groupid = $(group).val();
+		if(groupid==""){
+			return;
+		}
+		$.post("${basePath}/${code}/groups_add", { groupid: groupid ,roleid:roleid}, function (data) {
+			if (data.code === 0) {
+				$(grid_selector).trigger("reloadGrid");
+			}
+			else {
+				layer_post(data);
+			}
+		}, "json");
 	}
 
 
@@ -90,7 +155,7 @@
 		    searchGrid();
 	    }
 
-	};
+	}
 </script>
 
 

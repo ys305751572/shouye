@@ -22,16 +22,12 @@
 		<div class="col-md-offset-1 col-md-10">
 			<button class="btn btn-info" type="submit" id="btn_save">
 				<i class="ace-icon fa fa-check bigger-110"></i>
-				新增
-			</button>
-
-			&nbsp; &nbsp; &nbsp;
-			<button class="btn" type="button" id="btn_close">
-				<i class="ace-icon fa fa-close bigger-110"></i>
-				关闭
+				确定设置
 			</button>
 		</div>
 	</div>
+
+	<script src="${basePath}/static/validate/jquery-html5Validate.js"></script>
 	<script src="${basePath}/static/laydate/laydate.js"></script>
 	<script type="text/javascript">
 
@@ -40,9 +36,9 @@
 			var b = JSON.parse(a);
 			for(var i=0;i< b.length;i++){
 				var html = "";
-				html += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + b[i].group;
+				html += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + b[i].groups;
 				html += "	<span class='o_close' data-percent='' onclick='doDelete(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
-				html += "	<input type='hidden' name='DEMO.GROUP' value='" + b[i].group + "'> 	";
+				html += "	<input type='hidden' name='DEMO.GROUPS' value='" + b[i].groups + "'> 	";
 				html += "	<input type='hidden' name='DEMO.ID' value='" + b[i].id + "'> 	";
 				html += "</div>   ";
 				$("#group").append(html);
@@ -53,7 +49,7 @@
 		function grouping(data){
 			var val = $(data).parent().find("input").eq(0).val();
 			if(val==""){
-				alert("不能为空");
+				layer_alert("不能为空","error");
 				return;
 			}
 
@@ -62,14 +58,14 @@
 				i++;
 			});
 			if(i==10){
-				alert("最多只能有十个标签");
+				layer_alert("最多只能有十个标签","error");
 				return;
 			}
 
 			var html = "";
 			html += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + val;
 			html += "	<span class='o_close' data-percent='' onclick='doDelete(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
-			html += "	<input type='hidden' name='DEMO.GROUP' value='" + val + "'> 	";
+			html += "	<input type='hidden' name='DEMO.GROUPS' value='" + val + "'> 	";
 			html += "	<input type='hidden' name='DEMO.ID' value=''> 	";
 			html += "</div>   ";
 			$(data).parent().find("input").eq(0).val("");
@@ -81,9 +77,14 @@
 			var id = $(btn).parent().find("input[name='DEMO.ID']").val();
 			if(id!=""){
 				$.post("${basePath}/${code}/demo_del", { id: id }, function (data) {
+					console.log("code=====");
+					console.log(data.code);
+					console.log("data=====");
+					console.log(data);
 					if (data.code === 0) {
 						$(btn).parent().remove();
 						layer_alert(data.message, "success");
+						parent.searchGrid();
 					}
 					else {
 						layer_post(data);
@@ -97,23 +98,62 @@
 		$("#btn_save").on("click",function(){
 			var vals = [];
 			$("#group div").each(function(){
-				var value = $(this).find("input[name='DEMO.GROUP']").val();
+				var value = $(this).find("input[name='DEMO.GROUPS']").val();
 				var key = $(this).find("input[name='DEMO.ID']").val();
 				if(key==""){
 					vals.push(value);
 				}
 			});
-			console.log(vals);
-			$.post("${basePath}/${code}/demo_save", { vals : JSON.stringify(vals)}, function (data) {
-				if (data.code === 0) {
-					layer_alert(data.message, "success");
-				}
-				else {
-					layer_post(data);
-				}
-			}, "json");
-		})
 
+			if(vals == ""){
+				return;
+			}
+			console.log("start---");
+
+			$.ajax({
+				"url": "${basePath}/${code}/demo_save",
+				"data": {
+					vals : JSON.stringify(vals)
+				},
+				"dataType": "json",
+				"type": "POST",
+				success : function(data){
+					console.log("=====草拟吗叫你一声你敢进来吗?=====");
+					console.log("code=====");
+					console.log(data.code);
+					console.log("data=====");
+					console.log(data);
+					if (data.code === 0) {
+						parent.searchGrid();
+						console.log("WTF");
+						layer_alert(data.message, "success");
+					}
+					else {
+						layer_post(data);
+					}
+				}
+			});
+
+//			$.post("${basePath}/${code}/demo_save", { vals : JSON.stringify(vals)}, function (data) {
+//				console.log("=====草拟吗叫你一声你敢进来吗?=====");
+//				console.log("code=====");
+//				console.log(data.code);
+//				console.log("data=====");
+//				console.log(data);
+//				if (data.code === 0) {
+//					parent.searchGrid();
+//					console.log("WTF");
+//					layer_alert(data.message, "success");
+//					$(grid_selector).trigger("reloadGrid");
+//					location.reload();
+//				}
+//				else {
+//					layer_post(data);
+//				}
+//			});
+
+			console.log("end---");
+		});
 	</script>
 
 	<div class="space-4"></div>
