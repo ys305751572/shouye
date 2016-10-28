@@ -124,4 +124,60 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
         return null;
     }
+
+    /**
+     * 申请审批-批准
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     */
+    @Override
+    public void approval(Integer groupId, Integer userId) {
+
+    }
+
+    /**
+     * 申请审批-拒绝
+     *
+     * @param groupId 组织Id
+     * @param userId  用户ID
+     */
+    @Override
+    public void refuse(Integer groupId, Integer userId) {
+
+    }
+
+    /**
+     * 申请审批-拉黑
+     * 被拉黑的用户无法再次加入组织
+     * @param groupId 组织ID
+     * @param userId 用户ID
+     */
+    @Override
+    public void blank(Integer groupId, Integer userId) {
+
+    }
+
+    /**
+     * 申请审批-移除黑名单
+     * 被移除黑名单的用户在组织里的状态改为退出
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     */
+    @Override
+    public void unblank(Integer groupId, Integer userId) {
+
+    }
+
+
+    /**
+     * 审核改变状态
+     * @param groupId 组织Id
+     * @param userId 用户ID
+     * @param status 状态
+     */
+    private void audit(Integer groupId, Integer userId, Integer status) {
+
+    }
 }

@@ -27,4 +27,37 @@ public interface GroupService extends IService<Group> {
 
     JqGrid page(String source);
 
+    /**
+     * 申请审批-批准
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     */
+    void approval(Integer groupId, Integer userId);
+
+    /**
+     * 申请审批-拒绝
+     *
+     * @param groupId 组织Id
+     * @param userId  用户ID
+     */
+    void refuse(Integer groupId, Integer userId);
+
+    /**
+     * 申请审批-拉黑
+     * 被拉黑的用户无法再次加入组织
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     */
+    void blank(Integer groupId, Integer userId);
+
+    /**
+     * 申请审批-移除黑名单
+     * 被移除黑名单的用户在组织里的状态改为退出
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     */
+    void unblank(Integer groupId, Integer userId);
 }
