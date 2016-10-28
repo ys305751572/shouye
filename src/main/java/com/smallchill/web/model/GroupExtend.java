@@ -1,5 +1,7 @@
 package com.smallchill.web.model;
 
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
 import org.beetl.sql.core.annotatoin.Table;
 import com.smallchill.core.annotation.BindID;
 import com.smallchill.core.base.model.BaseModel;
@@ -16,6 +18,8 @@ import javax.persistence.Column;
 @SuppressWarnings("serial")
 public class GroupExtend extends BaseModel {
 
+    @Column(name = "id")
+    private Integer id;
     @Column(name = "group_id")
     private Integer groupId;
     @Column(name = "idcard")
@@ -165,5 +169,15 @@ public class GroupExtend extends BaseModel {
 
     public void setCreateAdminId(Integer createAdminId) {
         this.createAdminId = createAdminId;
+    }
+
+    @AutoID
+    @SeqID(name = "SEQ_DEMO")
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

@@ -17,8 +17,8 @@ public class GroupVo {
     private String bankAccout;
     private Integer bankId;
     private String bankName;
-    private Integer BanckProvince;
-    private Integer BankCity;
+    private Integer banckProvince;
+    private Integer bankCity;
     private String branchName;
     private String password;
     private Integer type;
@@ -196,19 +196,19 @@ public class GroupVo {
     }
 
     public Integer getBanckProvince() {
-        return BanckProvince;
+        return banckProvince;
     }
 
     public void setBanckProvince(Integer banckProvince) {
-        BanckProvince = banckProvince;
+        this.banckProvince = banckProvince;
     }
 
     public Integer getBankCity() {
-        return BankCity;
+        return bankCity;
     }
 
     public void setBankCity(Integer bankCity) {
-        BankCity = bankCity;
+        this.bankCity = bankCity;
     }
 
     public String getBranchName() {

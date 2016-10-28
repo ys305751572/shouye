@@ -1,0 +1,174 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form data-url="${basePath}/group/save" method="post" class="form-horizontal" role="form"
+	  xmlns:blade="http://www.w3.org/1999/xhtml">
+	<div class="space-4"></div>
+	<!-- #section:elements.form -->
+
+	<div class="form-group">
+		<h4 class="col-sm-2 control-label no-padding-right" > --组织信息-- </h4>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 组织名称 </label>
+		<div class="col-sm-3">
+			<input type="text" name="name"  placeholder="" class="form-control" />
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" >组织代码证号</label>
+		<div class="col-sm-3">
+			<input type="text" name="code" value="" placeholder="" class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 组织代码证扫描件 </label>
+		<div class="col-sm-3">
+			<input type="text" name="" class="form-control"  value="" placeholder="" /> <!--codeImage-->
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" > 营业执照注册号 </label>
+		<div class="col-sm-3">
+			<input type="text" name="license" class="form-control"  value="" placeholder="" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >营业执照扫描件</label>
+
+		<div class="col-sm-3">
+			<input type="text" name="" value="" placeholder="" class="form-control" /> <!--licenseImage-->
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" >运营者身份证姓名</label>
+		<div class="col-sm-3">
+			<input type="text" name="artificialPersonName" value="" placeholder="" class="form-control"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 运营者身份证号码 </label>
+		<div class="col-sm-3">
+			<input type="text" name="artificialPersonIdcard"  value="" placeholder="" class="form-control" />
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" >运营者手机号码</label>
+		<div class="col-sm-3">
+			<input type="text" name="artificialPersonMobile"  value="" placeholder="" class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >短信验证码</label>
+		<div class="col-sm-3">
+			<input type="text"   name="" value="" placeholder="" class="form-control" />
+		</div>
+
+	</div>
+
+	<div class="form-group">
+		<h4 class="col-sm-2 control-label no-padding-right" > --银行卡设置-- </h4>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >银行账户类型</label>
+		<div class="col-sm-3">
+			<input type="text" value="对公银行账户" class="form-control" disabled="disabled"/>
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" >银行开户名</label>
+		<div class="col-sm-3">
+			<input type="text" name="bankUserName" value="" placeholder="" class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >银行账号</label>
+		<div class="col-sm-3">
+			<input type="text" name="bankAccout" value="" placeholder="" class="form-control" />
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" >开户银行</label>
+		<div class="col-sm-3">
+			<input type="text" name="bankId" value="" placeholder="没有表" class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >开户行所在省</label>
+		<div class="col-sm-3" >
+			<input type="text" name="banckProvince" value="" placeholder="没有表" class="form-control" />
+		</div>
+		<label class="col-sm-2 control-label no-padding-right" >开户行所在市</label>
+		<div class="col-sm-3">
+			<input type="text" name="bankCity" value="" placeholder="没有表" class="form-control" />
+		</div>
+
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >开户行支行名称</label>
+		<div class="col-sm-3">
+			<input type="text" name="branchName" value="" placeholder="" class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<h4 class="col-sm-2 control-label no-padding-right" > --账号资料-- </h4>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >头像</label>
+		<div class="col-sm-3">
+			<input type="text" name="" value="" placeholder="" class="form-control" />	<!--avater-->
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" >组织ID</label>
+		<div class="col-sm-3">
+			<input type="text" name="idcard" value="" placeholder="" class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >设置密码</label>
+		<div class="col-sm-3">
+			<input type="text" name="password" value="" placeholder="" class="form-control" />
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" >组织类型</label>
+		<div class="col-sm-3">
+			<blade:select type="dict" code="908" name="tb_group.type" value="0" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >所在省</label>
+		<div class="col-sm-3">
+			<input type="text" name="province" value="" placeholder="没有表" class="form-control" />
+		</div>
+		<label class="col-sm-2 control-label no-padding-right" >所在市</label>
+		<div class="col-sm-3">
+			<input type="text" name="city" value="" placeholder="没有表" class="form-control" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >填写关键字</label>
+		<div class="col-sm-3">
+			<input type="text" name="targat" value="" placeholder="没有表" class="form-control" />
+		</div>
+
+		<label class="col-sm-2 control-label no-padding-right" >服务热线</label>
+		<div class="col-sm-3">
+			<input type="text" name="" value="" placeholder="没有表" class="form-control" />
+		</div>
+	</div>
+
+
+	<script src="${basePath}/static/laydate/laydate.js"></script>
+	<script type="text/javascript">
+
+
+	</script>
+
+	<div class="space-4"></div>
+	<!-- 按钮 -->
+	@ include("/common/_curd/_btn.html",{btn_save:"新增",btn_close:"关闭"}) {}
+</form>
+@}
