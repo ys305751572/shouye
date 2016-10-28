@@ -1,5 +1,6 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserGroup;
 import com.smallchill.web.service.UserGroupService;
 import org.springframework.stereotype.Service;
@@ -13,5 +14,4 @@ import com.smallchill.core.base.service.BaseService;
  */
 @Service
 public class UserGroupServiceImpl extends BaseService<UserGroup> implements UserGroupService {
-
 }

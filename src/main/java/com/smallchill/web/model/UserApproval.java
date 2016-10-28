@@ -20,8 +20,11 @@ public class UserApproval extends BaseModel {
     @Column(name = "group_id")
     private Integer groupId;
 
-    @Column(name = "user_id")
-    private Integer userId;
+    @Column(name = "from_user_id")
+    private Integer fromUserId;
+
+    @Column(name = "to_user_id")
+    private Integer toUserId;
 
     @Column(name = "introduce_user_id")
     private Integer introduceUserId;
@@ -30,9 +33,19 @@ public class UserApproval extends BaseModel {
     private String validateInfo = "";
     @Column(name = "status")
     private Integer status;
+    @Column(name = "type")
+    private Integer type;
 
     @Column(name = "create_time")
     private Long createTime;
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
     public Integer getId() {
         return id;
@@ -50,12 +63,20 @@ public class UserApproval extends BaseModel {
         this.groupId = groupId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getFromUserId() {
+        return fromUserId;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setFromUserId(Integer fromUserId) {
+        this.fromUserId = fromUserId;
+    }
+
+    public Integer getToUserId() {
+        return toUserId;
+    }
+
+    public void setToUserId(Integer toUserId) {
+        this.toUserId = toUserId;
     }
 
     public Integer getIntroduceUserId() {
