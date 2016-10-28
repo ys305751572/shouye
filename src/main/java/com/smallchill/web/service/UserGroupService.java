@@ -9,4 +9,5 @@ import com.smallchill.web.model.UserGroup;
  */
 public interface UserGroupService extends IService<UserGroup> {
 
+
 }

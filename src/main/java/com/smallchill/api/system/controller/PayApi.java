@@ -5,6 +5,7 @@ import com.smallchill.common.base.BaseController;
 import com.smallchill.core.toolbox.LeomanKit;
 import com.smallchill.web.service.GroupExtendService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -15,6 +16,7 @@ import java.util.Map;
  * Created by yesong on 2016/10/27 0027.
  */
 @RequestMapping(value = "/api/pay")
+@Controller
 public class PayApi extends BaseController {
 
     @Autowired
