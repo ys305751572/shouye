@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 组织测试类
  * Created by yesong on 2016/10/26 0026.
  */
-public class GroupServiceTest extends BaseJunit4Test{
+public class GroupServiceTest extends BaseJunit4Test {
 
 
     @Autowired
@@ -81,5 +81,10 @@ public class GroupServiceTest extends BaseJunit4Test{
 //        ga.setGroupId(9);
 //        ga.setUserId(5);
 //        System.out.println(groupApprovalService.isApprival(ga));
+    }
+
+    @Test
+    public void testAudit() {
+        groupService.approval(9, 5);
     }
 }

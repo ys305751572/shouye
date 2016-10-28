@@ -60,4 +60,12 @@ public interface GroupService extends IService<Group> {
      * @param userId  用户ID
      */
     void unblank(Integer groupId, Integer userId);
+
+    /**
+     * 修改审核状态
+     * @param groupId
+     * @param userId
+     * @param status
+     */
+    void audit(Integer groupId, Integer userId, Integer status);
 }

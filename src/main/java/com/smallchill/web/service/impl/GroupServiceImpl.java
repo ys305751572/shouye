@@ -1,15 +1,15 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.core.toolbox.LeomanKit;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.GroupBank;
 import com.smallchill.web.model.GroupExtend;
+import com.smallchill.web.model.UserGroup;
 import com.smallchill.web.model.vo.GroupVo;
-import com.smallchill.web.service.GroupBankService;
-import com.smallchill.web.service.GroupExtendService;
-import com.smallchill.web.service.GroupService;
+import com.smallchill.web.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
@@ -28,8 +28,16 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     @Autowired
     private GroupExtendService groupExtendService;
 
+    @Autowired
+    private UserGroupService userGroupService;
+
+    @Autowired
+    private GroupApprovalService groupApprovalService;
+
+
     /**
      * 新建组织
+     *
      * @param groupVo 组织信息
      */
     @Transactional
@@ -49,6 +57,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     /**
      * 保存组织拓展信息
+     *
      * @param groupVo 组织信息
      * @param groupId 组织ID
      */
@@ -67,6 +76,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     /**
      * 保存组织银行信息
+     *
      * @param groupVo 组织信息
      * @param groupId 组织ID
      */
@@ -86,6 +96,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     /**
      * 保存组织基本信息
+     *
      * @param groupVo
      * @return
      */
@@ -121,7 +132,6 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     @Override
     public JqGrid page(String source) {
-
         return null;
     }
 
@@ -131,9 +141,17 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      * @param groupId 组织ID
      * @param userId  用户ID
      */
+    @Transactional
     @Override
     public void approval(Integer groupId, Integer userId) {
-
+        // 1.改变审核表中状态为1：批准
+        // 2.tb_user_group表新增会员信息
+        this.audit(groupId, userId, 1);
+        UserGroup ug = new UserGroup();
+        ug.setGroupId(groupId);
+        ug.setUserId(userId);
+        ug.setCreateTime(DateTimeKit.nowLong());
+        userGroupService.save(ug);
     }
 
     /**
@@ -144,18 +162,21 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      */
     @Override
     public void refuse(Integer groupId, Integer userId) {
-
+        // 1.改变审核表中状态 为2：拒绝
+        this.audit(groupId, userId, 2);
     }
 
     /**
      * 申请审批-拉黑
      * 被拉黑的用户无法再次加入组织
+     *
      * @param groupId 组织ID
-     * @param userId 用户ID
+     * @param userId  用户ID
      */
     @Override
     public void blank(Integer groupId, Integer userId) {
-
+        // 1.改变审核表中状态 为3：拉黑
+        this.audit(groupId, userId, 3);
     }
 
     /**
@@ -167,17 +188,28 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      */
     @Override
     public void unblank(Integer groupId, Integer userId) {
-
+        // 1.删除申请记录
+        Record record = Record.create();
+        record.put("groupId", groupId);
+        record.put("userId", userId);
+        userGroupService.deleteBy("group_id = #{groupId} and user_id = #{userId}", record);
     }
 
 
     /**
      * 审核改变状态
-     * @param groupId 组织Id
-     * @param userId 用户ID
-     * @param status 状态
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     * @param status  状态
      */
-    private void audit(Integer groupId, Integer userId, Integer status) {
-
+    @Override
+    public void audit(Integer groupId, Integer userId, Integer status) {
+        String set = "set status = " + status;
+        String where = " group_id = #{groupId} and user_id = #{userId}";
+        Record record = Record.create();
+        record.put("groupId", groupId);
+        record.put("userId", userId);
+        groupApprovalService.updateBy(set, where, record);
     }
 }
