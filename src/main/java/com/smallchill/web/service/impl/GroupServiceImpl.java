@@ -28,6 +28,10 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     @Autowired
     private GroupExtendService groupExtendService;
 
+    /**
+     * 新建组织
+     * @param groupVo 组织信息
+     */
     @Transactional
     @Override
     public void saveGroup(GroupVo groupVo) {
@@ -43,6 +47,11 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         }
     }
 
+    /**
+     * 保存组织拓展信息
+     * @param groupVo 组织信息
+     * @param groupId 组织ID
+     */
     private void saveGroupTag(GroupVo groupVo, Integer groupId) {
         GroupExtend gg = new GroupExtend();
         gg.setGroupId(groupId);
@@ -56,6 +65,11 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         groupExtendService.save(gg);
     }
 
+    /**
+     * 保存组织银行信息
+     * @param groupVo 组织信息
+     * @param groupId 组织ID
+     */
     private void saveGroupBank(GroupVo groupVo, Integer groupId) {
         GroupBank groupBank = new GroupBank();
         groupBank.setGroupId(groupId);
@@ -70,6 +84,11 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         groupBankService.save(groupBank);
     }
 
+    /**
+     * 保存组织基本信息
+     * @param groupVo
+     * @return
+     */
     private int saveGroupInfo(GroupVo groupVo) {
         Group group = new Group();
         group.setName(groupVo.getName());
