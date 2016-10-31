@@ -58,10 +58,10 @@
 				});
 			});
 			
-			
-			
-			
-			
+
+
+
+
 			function initImgUpload(id, type){
 				$.post("${ctxPath}/kindeditor/initimg", {id : id}, function(data){
 					if(data.code === 0){

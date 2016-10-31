@@ -1,174 +1,347 @@
 @layout("/common/_curd/_container.html"){
 <!-- PAGE CONTENT BEGINS -->
+<link rel="stylesheet" media="screen" href="${basePath}/static/jquery-res/css/zzsc.css" />
+<style>
+	.but{
+		width: 50px;
+		height: 34px;
+		background: #6fb3e0;
+		font-weight: bold;
+		color: white;
+		border: 0 none;
+		border-radius: 1px;
+		cursor: pointer;
+
+	}
+	.but:hover, .but:focus {
+		box-shadow: 0 0 0 2px white, 0 0 0 3px #6fb3e0;
+	}
+</style>
 <form data-url="${basePath}/group/save" method="post" class="form-horizontal" role="form"
-	  xmlns:blade="http://www.w3.org/1999/xhtml">
-	<div class="space-4"></div>
-	<!-- #section:elements.form -->
+	  xmlns:blade="http://www.w3.org/1999/xhtml" id="msform">
+	<!-- fieldsets -->
+	<fieldset>
+		<div class="form-group">
+			<h4 class="col-sm-2 control-label no-padding-right" > --组织信息-- </h4>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" > 组织名称 </label>
+			<div class="col-sm-3">
+				<input type="text" name="name"  placeholder="" class="form-control" />
+			</div>
 
-	<div class="form-group">
-		<h4 class="col-sm-2 control-label no-padding-right" > --组织信息-- </h4>
-	</div>
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" > 组织名称 </label>
-		<div class="col-sm-3">
-			<input type="text" name="name"  placeholder="" class="form-control" />
+			<label class="col-sm-2 control-label no-padding-right" >组织代码证号</label>
+			<div class="col-sm-3">
+				<input type="text" name="code" value="" placeholder="" class="form-control" />
+			</div>
 		</div>
 
-		<label class="col-sm-2 control-label no-padding-right" >组织代码证号</label>
-		<div class="col-sm-3">
-			<input type="text" name="code" value="" placeholder="" class="form-control" />
-		</div>
-	</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" > 组织代码证扫描件 </label>
+			<div class="col-sm-3">
+				<input type="text" name="" class="form-control"  value="" placeholder="" /> <!--codeImage-->
+			</div>
 
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" > 组织代码证扫描件 </label>
-		<div class="col-sm-3">
-			<input type="text" name="" class="form-control"  value="" placeholder="" /> <!--codeImage-->
-		</div>
-
-		<label class="col-sm-2 control-label no-padding-right" > 营业执照注册号 </label>
-		<div class="col-sm-3">
-			<input type="text" name="license" class="form-control"  value="" placeholder="" />
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >营业执照扫描件</label>
-
-		<div class="col-sm-3">
-			<input type="text" name="" value="" placeholder="" class="form-control" /> <!--licenseImage-->
+			<label class="col-sm-2 control-label no-padding-right" > 营业执照注册号 </label>
+			<div class="col-sm-3">
+				<input type="text" name="license" class="form-control"  value="" placeholder="" />
+			</div>
 		</div>
 
-		<label class="col-sm-2 control-label no-padding-right" >运营者身份证姓名</label>
-		<div class="col-sm-3">
-			<input type="text" name="artificialPersonName" value="" placeholder="" class="form-control"/>
-		</div>
-	</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >营业执照扫描件</label>
 
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" > 运营者身份证号码 </label>
-		<div class="col-sm-3">
-			<input type="text" name="artificialPersonIdcard"  value="" placeholder="" class="form-control" />
-		</div>
+			<div class="col-sm-3">
+				<input type="text" name="" value="" placeholder="" class="form-control" /> <!--licenseImage-->
+			</div>
 
-		<label class="col-sm-2 control-label no-padding-right" >运营者手机号码</label>
-		<div class="col-sm-3">
-			<input type="text" name="artificialPersonMobile"  value="" placeholder="" class="form-control" />
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >短信验证码</label>
-		<div class="col-sm-3">
-			<input type="text"   name="" value="" placeholder="" class="form-control" />
+			<label class="col-sm-2 control-label no-padding-right" >运营者身份证姓名</label>
+			<div class="col-sm-3">
+				<input type="text" name="artificialPersonName" value="" placeholder="" class="form-control"/>
+			</div>
 		</div>
 
-	</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" > 运营者身份证号码 </label>
+			<div class="col-sm-3">
+				<input type="text" name="artificialPersonIdcard"  value="" placeholder="" class="form-control" />
+			</div>
 
-	<div class="form-group">
-		<h4 class="col-sm-2 control-label no-padding-right" > --银行卡设置-- </h4>
-	</div>
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >银行账户类型</label>
-		<div class="col-sm-3">
-			<input type="text" value="对公银行账户" class="form-control" disabled="disabled"/>
-		</div>
-
-		<label class="col-sm-2 control-label no-padding-right" >银行开户名</label>
-		<div class="col-sm-3">
-			<input type="text" name="bankUserName" value="" placeholder="" class="form-control" />
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >银行账号</label>
-		<div class="col-sm-3">
-			<input type="text" name="bankAccout" value="" placeholder="" class="form-control" />
+			<label class="col-sm-2 control-label no-padding-right" >运营者手机号码</label>
+			<div class="col-sm-3">
+				<input type="text" name="artificialPersonMobile"  value="" placeholder="" class="form-control" />
+			</div>
 		</div>
 
-		<label class="col-sm-2 control-label no-padding-right" >开户银行</label>
-		<div class="col-sm-3">
-			<input type="text" name="bankId" value="" placeholder="没有表" class="form-control" />
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >开户行所在省</label>
-		<div class="col-sm-3" >
-			<input type="text" name="banckProvince" value="" placeholder="没有表" class="form-control" />
-		</div>
-		<label class="col-sm-2 control-label no-padding-right" >开户行所在市</label>
-		<div class="col-sm-3">
-			<input type="text" name="bankCity" value="" placeholder="没有表" class="form-control" />
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >短信验证码</label>
+			<div class="col-sm-3">
+				<input type="text"   name="" value="" placeholder="" class="form-control" />
+			</div>
 		</div>
 
-	</div>
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >开户行支行名称</label>
-		<div class="col-sm-3">
-			<input type="text" name="branchName" value="" placeholder="" class="form-control" />
+		<div class="form-group">
+			<h4 class="col-sm-2 control-label no-padding-right" > --银行卡设置-- </h4>
 		</div>
-	</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >银行账户类型</label>
+			<div class="col-sm-3">
+				<input type="text" value="对公银行账户" class="form-control" disabled="disabled"/>
+			</div>
 
-	<div class="form-group">
-		<h4 class="col-sm-2 control-label no-padding-right" > --账号资料-- </h4>
-	</div>
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >头像</label>
-		<div class="col-sm-3">
-			<input type="text" name="" value="" placeholder="" class="form-control" />	<!--avater-->
+			<label class="col-sm-2 control-label no-padding-right" >银行开户名</label>
+			<div class="col-sm-3">
+				<input type="text" name="bankUserName" value="" placeholder="" class="form-control" />
+			</div>
 		</div>
 
-		<label class="col-sm-2 control-label no-padding-right" >组织ID</label>
-		<div class="col-sm-3">
-			<input type="text" name="idcard" value="" placeholder="" class="form-control" />
-		</div>
-	</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >银行账号</label>
+			<div class="col-sm-3">
+				<input type="text" name="bankAccout" value="" placeholder="" class="form-control" />
+			</div>
 
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >设置密码</label>
-		<div class="col-sm-3">
-			<input type="text" name="password" value="" placeholder="" class="form-control" />
-		</div>
-
-		<label class="col-sm-2 control-label no-padding-right" >组织类型</label>
-		<div class="col-sm-3">
-			<blade:select type="dict" code="908" name="tb_group.type" value="0" />
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >所在省</label>
-		<div class="col-sm-3">
-			<input type="text" name="province" value="" placeholder="没有表" class="form-control" />
-		</div>
-		<label class="col-sm-2 control-label no-padding-right" >所在市</label>
-		<div class="col-sm-3">
-			<input type="text" name="city" value="" placeholder="没有表" class="form-control" />
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" >填写关键字</label>
-		<div class="col-sm-3">
-			<input type="text" name="targat" value="" placeholder="没有表" class="form-control" />
+			<label class="col-sm-2 control-label no-padding-right" >开户银行</label>
+			<div class="col-sm-3">
+				<input type="text" name="bankId" value="" placeholder="没有表" class="form-control" />
+			</div>
 		</div>
 
-		<label class="col-sm-2 control-label no-padding-right" >服务热线</label>
-		<div class="col-sm-3">
-			<input type="text" name="" value="" placeholder="没有表" class="form-control" />
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >开户行所在省</label>
+			<div class="col-sm-3" >
+				<input type="text" name="banckProvince" value="" placeholder="没有表" class="form-control" />
+			</div>
+			<label class="col-sm-2 control-label no-padding-right" >开户行所在市</label>
+			<div class="col-sm-3">
+				<input type="text" name="bankCity" value="" placeholder="没有表" class="form-control" />
+			</div>
+
 		</div>
-	</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >开户行支行名称</label>
+			<div class="col-sm-3">
+				<input type="text" name="branchName" value="" placeholder="" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<h4 class="col-sm-2 control-label no-padding-right" > --账号资料-- </h4>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >头像</label>
+			<div class="col-sm-3">
+				<input type="text" name="" value="" placeholder="" class="form-control" />	<!--avater-->
+			</div>
+
+			<label class="col-sm-2 control-label no-padding-right" >组织ID</label>
+			<div class="col-sm-3">
+				<input type="text" name="idcard" value="" placeholder="" class="form-control" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >设置密码</label>
+			<div class="col-sm-3">
+				<input type="text" name="password" value="" placeholder="" class="form-control" />
+			</div>
+
+			<label class="col-sm-2 control-label no-padding-right" >组织类型</label>
+			<div class="col-sm-3">
+				<blade:select type="dict" code="908" name="tb_group.type" value="0" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >所在省</label>
+			<div class="col-sm-3">
+				<input type="text" name="province" value="" placeholder="没有表" class="form-control" />
+			</div>
+			<label class="col-sm-2 control-label no-padding-right" >所在市</label>
+			<div class="col-sm-3">
+				<input type="text" name="city" value="" placeholder="没有表" class="form-control" />
+			</div>
+		</div>
+
+		<!--demo-->
+
+		<div id="phone">
+			<div class="form-group">
+				<label class="col-sm-2 control-label no-padding-right" >服务热线</label>
+				<div class="col-sm-2">
+					<input type="text" name="" value="" placeholder="区号" class="form-control" maxlength="4"/>
+				</div>
+				<div class="col-sm-3">
+					<input type="text" name="" value="" placeholder="固定号码" class="form-control" maxlength="8"/>
+				</div>
+				<div class="col-sm-1">
+					<input type="button" name="" class="but" value="添加" onclick="phoneAdd()"/>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >填写关键字</label>
+			<div class="col-sm-3">
+				<input type="text" id="targat" value="" placeholder="可输入10个字" class="form-control" maxlength="10"/>
+			</div>
+			<div class="col-sm-1">
+				<input type="button" name="" class="but" value="添加" onclick="keyWorkAdd(this)"/>
+			</div>
+		</div>
+
+		<div class="form-group" id="keyWork">
+			<label class="col-sm-2 control-label no-padding-right" ></label>
+
+		</div>
+		<input type="button" name="next" class="next action-button" value="下一步" />
+	</fieldset>
+
+	<!--第二步-->
+	<fieldset>
+
+		<div class="form-group">
+			<h4 class="col-sm-2 control-label no-padding-right" > --页签1-- </h4>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >页签标题</label>
+			<div class="col-sm-8">
+				<input type="text" name="title1" value="输入标题(6个字)" class="form-control" maxlength="6"/>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >详情内容</label>
+			<div class="col-sm-8">
+				<textarea  id="content1" name="content" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
+			</div>
+		</div>
+		<input type="button" name="previous" class="previous action-button" value="上一步" />
+		<input type="button" name="next" class="next action-button" value="下一步" />
+	</fieldset>
+
+	<!--第三步-->
+	<fieldset>
+
+		<div class="form-group">
+			<h4 class="col-sm-2 control-label no-padding-right" > --页签2-- </h4>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >页签标题</label>
+			<div class="col-sm-8">
+				<input type="text" name="title2" value="输入标题(6个字)" class="form-control" maxlength="6"/>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >详情内容</label>
+			<div class="col-sm-8">
+				<textarea  id="content2" name="content" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
+			</div>
+		</div>
+		<input type="button" name="previous" class="previous action-button" value="上一步" />
+		<input type="button" name="next" class="next action-button" value="下一步" />
+	</fieldset>
+
+	<!--第四步-->
+	<fieldset>
+
+		<div class="form-group">
+			<h4 class="col-sm-2 control-label no-padding-right" > --页签3-- </h4>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >页签标题</label>
+			<div class="col-sm-8">
+				<input type="text" name="title3" value="输入标题(6个字)" class="form-control" maxlength="6"/>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >详情内容</label>
+			<div class="col-sm-8">
+				<textarea  id="content3" name="content" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
+			</div>
+		</div>
+		<input type="button" name="previous" class="previous action-button" value="上一步" />
+		<input type="button" id="submit" name="submit" class="submit action-button" value="提交" />
+	</fieldset>
+
+<div class="space-4"></div>
+</form>
 
 
 	<script src="${basePath}/static/laydate/laydate.js"></script>
+	<script src="${basePath}/static/jquery/jquery-2.1.4.min.js"></script>
+	<script src="${basePath}/static/jquery-res/js/jquery.easing.min.js"></script>
+	<script src="${basePath}/static/jquery-res/js/zzsc.js"></script>
+
+<link rel="stylesheet" href="${basePath}/static/kindeditor/themes/default/default.css" />
+<link rel="stylesheet" href="${basePath}/static/kindeditor/plugins/code/prettify.css" />
+<script charset="utf-8" src="${basePath}/static/kindeditor/kindeditor.js"></script>
+<script charset="utf-8" src="${basePath}/static/kindeditor/lang/zh_CN.js"></script>
+<script charset="utf-8" src="${basePath}/static/kindeditor/plugins/code/prettify.js"></script>
+
 	<script type="text/javascript">
+		function phoneAdd(){
+			var html = "";
+			html += " <div class='form-group'>																				";
+			html += " 	<label class='col-sm-2 control-label no-padding-right' ></label>                                    ";
+			html += " 	<div class='col-sm-2'>                                                                              ";
+			html += " 		<input type='text' name='' value='' placeholder='区号' class='form-control' maxlength='4'/>     ";
+			html += " 	</div>                                                                                              ";
+			html += " 	<div class='col-sm-3'>                                                                              ";
+			html += " 		<input type='text' name='' value='' placeholder='固定号码' class='form-control' maxlength='8'/> ";
+			html += " 	</div>                                                                                              ";
+			html += " 	<div class='col-sm-1'>                                                                              ";
+			html += " 		<input type='button' name='' class='but' value='删除' onclick='phoneDel(this)'/>                                        ";
+			html += " 	</div>                                                                                              ";
+			html += " </div>                                                                                                ";
+
+			$("#phone").append(html);
+		}
+
+		function phoneDel(data){
+			$(data).parent().parent().remove();
+		}
+
+		function keyWorkAdd(data){
+			var text = $("#targat").val();
+			if(text == ''){
+				return;
+			}
+
+			var length = $("#keyWork").children("div").length;
+			if(length>4){
+				layer_alert("最多只能添加5个关键字!","warn");
+				return;
+			}
+
+			var html = "";
+			html += "<div class='col-sm-2 input-group' data-type='' style='float:left;background: #6fb3e0;color: #dde9ff;position: relative;font-size: 14px;width: auto;height:30px;line-height:30px;text-indent: 10px;margin:0 5px 5px 0'>" + text;
+			html += "	<span class='o_close' data-percent='' onclick='keyWorkDel(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+			html += "	<input type='hidden' name='targat' value='" + text + "'>";
+			html += "</div>   ";
+
+			$("#keyWork").append(html);
+			$("#targat").val("");
+		}
+
+		function keyWorkDel(data){
+			$(data).parent().remove();
+		}
 
 
-	</script>
 
-	<div class="space-4"></div>
-	<!-- 按钮 -->
-	@ include("/common/_curd/_btn.html",{btn_save:"新增",btn_close:"关闭"}) {}
-</form>
+	KindEditor.ready(function(K) {
+
+		var options = {
+			cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
+			items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
+			filterMode : true
+		};
+		var editor = K.create('textarea[name="content"]', options);
+	});
+
+</script>
+
+
 @}
