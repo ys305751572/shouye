@@ -32,7 +32,7 @@ public class UserApproval extends BaseModel {
     @Column(name = "validate_info")
     private String validateInfo = "";
     @Column(name = "status")
-    private Integer status;
+    private Integer status = 0;
     @Column(name = "type")
     private Integer type;
 

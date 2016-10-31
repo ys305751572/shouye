@@ -17,7 +17,13 @@ public enum ErrorType {
 
     ERROR_CODE_USERHASJOIN("您已加入过该组织,请不要重复加入", 3001),
     ERROR_CODE_USERHASAPPROVAL("您已发送过申请,请耐心等待", 3002),
-    ERROR_CODE_USERINBLANK("您已被该群加入黑名单,无法加入", 3003);
+    ERROR_CODE_USERINBLANK("您已被该群加入黑名单,无法加入", 3003),
+
+    ERROR_CODE_APP_USERHASJOIN("您已经跟该用户为好友关系", 4001),
+    ERROR_CODE_APP_USERHASAPPROVAL("您已跟该用户发送过申请,请不要重复申请", 4002),
+    ERROR_CODE_APP_USERNOTFRIEND("您跟该用户尚未结识，无法申请加入熟人", 4004),
+    ERROR_CODE_APP_USERINBLANK("您已被该用户加入黑名单,无法加入", 4003);
+
 
     private String name;
     private int code;

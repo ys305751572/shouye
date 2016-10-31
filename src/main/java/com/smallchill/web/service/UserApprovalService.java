@@ -1,7 +1,12 @@
 package com.smallchill.web.service;
 
+import com.smallchill.api.common.exception.UserHasApprovalException;
+import com.smallchill.api.common.exception.UserHasFriendException;
+import com.smallchill.api.common.exception.UserInBlankException;
+import com.smallchill.api.common.exception.UsernotFriendException;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.web.model.UserApproval;
+import com.smallchill.web.service.impl.BothUserHasApprovalException;
 
 /**
  * 用户审核
@@ -19,7 +24,7 @@ public interface UserApprovalService extends IService<UserApproval>{
      * 4.附近的人结识
      * 5.熟人的熟人结识
      */
-    void toUserOneWay(UserApproval ua);
+    void toUserOneWay(UserApproval ua) throws UserInBlankException, UserHasApprovalException, UsernotFriendException, BothUserHasApprovalException, UserHasFriendException;
 
     /**
      * 发送审核申请-双向；
@@ -34,16 +39,55 @@ public interface UserApprovalService extends IService<UserApproval>{
      * 2.通过活动临时群
      * 3.通过查看交集
      */
-    void toGroup(UserApproval ua);
+    void toGroup(UserApproval ua) throws UserInBlankException, UserHasApprovalException, UsernotFriendException, BothUserHasApprovalException, UserHasFriendException;
 
     /**
-     * 组织审核
-     * 发送审核消息给接收用户
+     * 组织审核同意
+     * @param ua
      */
-    void groupApproval(UserApproval ua);
+    void groupApprovalAgree(UserApproval ua);
 
     /**
-     * 用户审核
+     * 组织审核拒绝
+     * @param ua
      */
-    void userApproval(UserApproval ua);
+    void groupApprovalRefuse(UserApproval ua);
+
+    /**
+     * 组织审核拉黑
+     * @param ua
+     */
+    void groupApprovalBlank(UserApproval ua);
+
+    /**
+     * 组织审核移除黑名单
+     * @param ua
+     */
+    void groupApprovalUnBlank(UserApproval ua);
+
+    /**
+     * 用户审核同意
+     * @param ua
+     */
+    void userApprovalAgree(UserApproval ua);
+
+    /**
+     * 用户审核拒绝
+     * @param ua
+     */
+    void userApprovalRefuse(UserApproval ua);
+
+    /**
+     * 用户审核拉黑
+     * @param ua
+     */
+    void userApprovalBlank(UserApproval ua);
+
+    /**
+     * 用户审核移除黑名单
+     * @param ua
+     */
+    void userApprovalUnBlank(UserApproval ua);
+
+    void resetStatus(UserApproval ua);
 }

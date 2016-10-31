@@ -1,9 +1,21 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.common.exception.UserHasApprovalException;
+import com.smallchill.api.common.exception.UserHasFriendException;
+import com.smallchill.api.common.exception.UserInBlankException;
+import com.smallchill.api.common.exception.UsernotFriendException;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.UserApproval;
+import com.smallchill.web.model.UserFriend;
 import com.smallchill.web.service.UserApprovalService;
+import com.smallchill.web.service.UserFriendService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 用户审核
@@ -13,7 +25,13 @@ import com.smallchill.core.base.service.BaseService;
 @Service
 public class UserApprovalServiceImpl extends BaseService<UserApproval> implements UserApprovalService {
 
-    /**************************************************发送**********************************************************
+    @Autowired
+    private UserFriendService userFriendService;
+
+    /**************************************************
+     * 发送******************************************
+     * <p>
+     * <p>
      * 发送审核申请-单向；
      * 只发送给接收用户
      * 1.组织审核通过后
@@ -23,8 +41,14 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * 5.熟人的熟人结识
      */
     @Override
-    public void toUserOneWay(UserApproval ua) {
-        this.save(ua);
+    public void toUserOneWay(UserApproval ua) throws UserInBlankException, UserHasApprovalException,
+            UsernotFriendException, BothUserHasApprovalException, UserHasFriendException {
+        if (this.requestValidate(ua)) {
+            ua.setIntroduceUserId(0);
+            ua.setGroupId(0);
+            ua.setCreateTime(DateTimeKit.nowLong());
+            this.save(ua);
+        }
     }
 
     /**
@@ -32,9 +56,25 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * 同时发送给接收用户和发送用户
      * 1.引荐
      */
+    @Transactional
     @Override
     public void toUserTwoWay(UserApproval ua) {
 
+        ua.setGroupId(0);
+        ua.setStatus(0);
+
+        UserApproval ua2 = new UserApproval();
+        ua2.setFromUserId(ua.getToUserId());
+        ua2.setToUserId(ua.getFromUserId());
+        ua2.setType(ua.getType());
+        ua2.setIntroduceUserId(ua.getIntroduceUserId());
+//        ua2.setGroupId(ua.getGroupId());
+        ua2.setValidateInfo(ua.getValidateInfo());
+        ua2.setStatus(0);
+        ua2.setGroupId(0);
+        ua2.setCreateTime(DateTimeKit.nowLong());
+        this.save(ua);
+        this.save(ua2);
     }
 
     /**
@@ -44,27 +84,217 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * 3.通过查看交集
      */
     @Override
-    public void toGroup(UserApproval ua) {
-
+    public void toGroup(UserApproval ua) throws UserInBlankException, UserHasApprovalException,
+            UsernotFriendException, BothUserHasApprovalException, UserHasFriendException {
+        if (this.requestValidate(ua)) {
+            this.save(ua);
+        }
     }
 
-    /** ************************************************审核**********************************************************
-     * 组织审核
-     * 发送审核消息给接收用户
+    /** ************************************************审核*******************************************************/
+
+
+    /**
+     * 组织审核同意
+     *
+     * @param ua 申请消息
      */
     @Override
-    public void groupApproval(UserApproval ua) {
-        // 同意
-        // 拒绝
-        // 拉黑
+    public void groupApprovalAgree(UserApproval ua) {
+        this.approval(ua, 1);
     }
 
     /**
-     * 用户审核
+     * 组织审核忽略（拒绝）
+     *
+     * @param ua 申请消息
      */
     @Override
-    public void userApproval(UserApproval ua) {
-        // 同意
-        // 拒绝
+    public void groupApprovalRefuse(UserApproval ua) {
+        this.approval(ua, 2);
+    }
+
+    /**
+     * 组织审核拉黑
+     *
+     * @param ua 申请消息
+     */
+    @Override
+    public void groupApprovalBlank(UserApproval ua) {
+        this.approval(ua, 3);
+    }
+
+    /**
+     * 组织审核移除黑名单
+     *
+     * @param ua 申请消息
+     */
+    @Override
+    public void groupApprovalUnBlank(UserApproval ua) {
+        this.approval(ua, 4);
+    }
+
+    /**
+     * 用户审核同意
+     *
+     * @param ua 申请消息
+     */
+    @Override
+    public void userApprovalAgree(UserApproval ua) {
+        this.approval(ua, 1);
+    }
+
+    /**
+     * 用户审核拒绝
+     *
+     * @param ua 申请消息
+     */
+    @Override
+    public void userApprovalRefuse(UserApproval ua) {
+        this.approval(ua, 2);
+    }
+
+    /**
+     * 用户审核拉黑
+     *
+     * @param ua 申请消息
+     */
+    @Override
+    public void userApprovalBlank(UserApproval ua) {
+        this.approval(ua, 3);
+    }
+
+    /**
+     * 用户审核移除黑名单
+     *
+     * @param ua 申请消息
+     */
+    @Override
+    public void userApprovalUnBlank(UserApproval ua) {
+        this.approval(ua, 4);
+    }
+
+    /**
+     * 重置审核记录
+     * @param ua fromUserId and toUserId
+     */
+    @Override
+    public void resetStatus(UserApproval ua) {
+        String set = "status = 2";
+        String where = "(from_user_id = #{fromUserId} and to_user_id = #{toUserId}) or (from_user_id = #{toUserId} and to_user_id = #{fromUserId})";
+        Record record = Record.create();
+        record.put("fromUserId", ua.getFromUserId());
+        record.put("toUserId", ua.getToUserId());
+        this.updateBy(set, where, record);
+    }
+
+    /**
+     * 根据用户ID查询申请信息
+     *
+     * @param fromUserId 申请发起人
+     * @param toUserId   申请接受人
+     * @return 申请信息
+     */
+    private List<UserApproval> getsByFromUserIdAndToUserId(int fromUserId, int toUserId) {
+        String sql = "(from_user_id = #{fromUserId} OR to_user_id = #{fromUserId}) and (from_user_id = #{toUserId} OR to_user_id = #{toUserId})";
+        Record record = Record.create();
+        record.put("fromUserId", fromUserId);
+        record.put("toUserId", toUserId);
+        return this.findBy(sql, record);
+    }
+
+    /**
+     * 根据用户ID查询申请信息
+     *
+     * @param fromUserId 申请发起人
+     * @param toUserId   申请接受人
+     * @return 申请信息
+     */
+    private UserApproval getByFromUserIdAndToUserId(int fromUserId, int toUserId) {
+        String sql = "from_user_id = #{fromUserId} and to_user_id = #{toUserId}";
+        Record record = Record.create();
+        record.put("fromUserId", fromUserId);
+        record.put("toUserId", toUserId);
+        return this.findFirstBy(sql, record);
+    }
+
+    /**
+     * 审核
+     *
+     * @param ua 申请信息
+     */
+    private void approval(UserApproval ua, Integer status) {
+        UserApproval dist = this.getByFromUserIdAndToUserId(ua.getFromUserId(), ua.getToUserId());
+        if(dist != null) {
+            dist.setStatus(status);
+            this.update(dist);
+            // 新增好友
+            if(status == 1) {
+                UserFriend uf = new UserFriend();
+                uf.setStatus(0);
+                uf.setType(ua.getType());
+                uf.setUserId(ua.getToUserId());
+                uf.setFriendId(ua.getFromUserId());
+                userFriendService.addFriend(uf);
+            }
+
+            // 拉黑好友
+            if(status == 3) {
+                UserFriend uf = new UserFriend();
+                uf.setUserId(ua.getToUserId());
+                uf.setFriendId(ua.getFromUserId());
+                UserFriend _uf = userFriendService.getByUserIdAndFriendId(uf);
+                if (_uf != null) {
+                    _uf.setStatus(1);
+                    userFriendService.update(_uf);
+                }
+            }
+        }
+    }
+
+    /**
+     * 请求验证
+     *
+     * @param src 请求信息
+     * @return result
+     */
+    private boolean requestValidate(UserApproval src) throws UsernotFriendException, UserHasApprovalException,
+            UserInBlankException, BothUserHasApprovalException, UserHasFriendException {
+
+        List<UserApproval> list = this.getsByFromUserIdAndToUserId(src.getFromUserId(), src.getToUserId());
+        if (list == null || list.size() == 0) {
+            return true;
+        }
+        if (list.size() > 1) {
+            throw new BothUserHasApprovalException();
+        }
+        if (list.size() == 1) {
+            UserApproval dist = list.get(0);
+            if (dist == null && src.getType() == 1) return true;
+            if (dist == null && src.getType() == 2) throw new UsernotFriendException();
+            if (dist.getStatus() == 0) throw new UserHasApprovalException();
+            if (dist.getStatus() == 1) throw new UserHasFriendException();
+            if (dist.getStatus() == 3) throw new UserInBlankException();
+
+
+            UserApproval _dist = list.get(0);
+            _dist.setValidateInfo(src.getValidateInfo());
+            _dist.setStatus(0);
+            _dist.setFromUserId(src.getFromUserId());
+            _dist.setToUserId(src.getToUserId());
+            this.update(_dist);
+        }
+        return false;
+    }
+
+    /**
+     * 审核验证
+     *
+     * @param src  请求信息
+     * @param dist 数据库信息
+     * @return result
+     */
+    private boolean auditValidate(UserApproval src, UserApproval dist) {
+        return true;
     }
 }
