@@ -25,7 +25,6 @@ public class Group extends BaseModel {
     @Column(name = "avater")
     private String avater;
 
-
     @Column(name = "type")
     private Integer type;
     @Column(name = "province")
@@ -43,6 +42,16 @@ public class Group extends BaseModel {
     @Column(name = "status")
     private Integer status = 0;
 
+    //组织审核状态 0:待审核 1:申请重审 2:审核通过 3:否决
+    @Column(name = "audit_status")
+    private Integer auditStatus;
+    //审核备注
+    @Column(name = "audit_comment")
+    private String auditComment;
+    //审核状态改变的时间
+    @Column(name = "update_time")
+    private Long throughTime;
+    //创建时间
     @Column(name = "create_time")
     private Long createTime;
 
@@ -236,5 +245,27 @@ public class Group extends BaseModel {
         this.status = status;
     }
 
+    public Integer getAuditStatus() {
+        return auditStatus;
+    }
 
+    public void setAuditStatus(Integer auditStatus) {
+        this.auditStatus = auditStatus;
+    }
+
+    public String getAuditComment() {
+        return auditComment;
+    }
+
+    public void setAuditComment(String auditComment) {
+        this.auditComment = auditComment;
+    }
+
+    public Long getThroughTime() {
+        return throughTime;
+    }
+
+    public void setThroughTime(Long throughTime) {
+        this.throughTime = throughTime;
+    }
 }

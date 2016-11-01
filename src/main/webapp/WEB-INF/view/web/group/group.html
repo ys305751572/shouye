@@ -1,161 +1,43 @@
+
 @layout("/common/_curd/_container.html"){
+<head>
 
-<script type="text/javascript">
-    var ctx="${basePath}";
-    var grid_selector = "#grid-table";
-    var pager_selector = "#grid-pager";
-    var hidden = 1;
-    $(function(){
-        initGrid();
-        initMenuBtn("btns","${code}");
-    });
+</head>
+<body>
+<ul id="myTab" class="nav nav-tabs">
+    <li class="active">
+        <a href="#group_list_page" data-toggle="tab" onclick="showPage('group_list_page','${basePath}/group/group_index')">
+            组织列表
+        </a>
+    </li>
+    <li>
+        <a href="#group_audit_page" data-toggle="tab" onclick="showPage('group_audit_page','${basePath}/groupAudit/group_audit')">
+            待审组织
+        </a>
+    </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+    <div class="tab-pane fade in active" id="group_list_page">
 
-    /**
-     *用于执行按钮加载事件结束后操作的ajax请求(否则会导致回调覆盖,也可以使用 async:false)
-     */
-    function doOther(){
-        initZtree();
-    }
-
-    function initGrid(){
-        var grid_url = ctx+"/${code}/list";//查询列表接口
-        var _colnames=[
-            "序列",
-            "头像",
-            "组织ID",
-            "名称",
-            "组织类型",
-            "组织关键字",
-            "会员数量",
-            "干事数量",
-            "入会费",
-            "活动举办数量",
-            "创建时间",
-            "创建者",
-            "审核者",
-            "状态"
-        ];
-        var _colmodel=[
-            {name:"id",index:"id", width:80,hidden:true},
-            {name:"avater",index:"avater", width:100},
-            {name:"idcard",index:"idcard", width:100},
-            {name:"gName",index:"gName", width:100},
-            {name:"gType",index:"gType", width:80},
-            {name:"targat",index:"targat", width:80},
-            {name:"memberCount",index:"memberCount", width:80},
-            {name:"adminCount",index:"adminCount", width:80},
-            {name:"cost",index:"cost", width:80},
-            {name:"activityCount",index:"activityCount", width:80},
-            {name:"throughTime",index:"throughTime", width:80},
-            {name:"createName",index:"createName", width:80},
-            {name:"approvalName",index:"approvalName", width:80},
-            {name:"status",index:"status", width:80}
-        ];
-
-        jQuery(grid_selector).jqGrid({
-            url:grid_url,
-            shrinkToFit:true,//适用于较少字段,响应式
-            autowidth : true,
-            forceFit : true,
-            colNames:_colnames,
-            colModel:_colmodel,
-            jsonReader:{id:"ID"},
-            pager : pager_selector,
-            postData: {sort: "id", order: "asc"}
-        });
-
-    }
-
-    function initZtree(){
-        var setting = {
-            data: {
-                simpleData: {
-                    enable: true
-                }
-            },
-            callback: {
-                beforeClick: zTreeBeforeClick
-            }
-        };
-        $.post("${basePath}/cache/roleTreeList", function(data){
-            if(data.code===0){
-                $.fn.zTree.init($("#zTree"), setting, data.data);
-            }
-            else{
-                layer_alert("数据加载失败", "error");
-            }
-        }, "json");
-    }
-
-    function zTreeBeforeClick(treeId, treeNode, clickFlag) {
-        var id=treeNode.id;
-        if(id==""){
-            exwhere="";
-            searchGrid();
-            return;
-        }
-        else{
-            exwhere="{\"pId_equal\":\""+id+"\",\"or_id_equal\":\""+id+"\"}";
-            searchGrid();
-        }
-
-    }
-</script>
-
-
-<!-- 配置grid -->
-<div class="row">
-    <div class="col-sm-3">
-        <div class="widget-box widget-color-blue2">
-            <div class="widget-header">
-                <h4 class="widget-title lighter smaller">角色组织架构</h4>
-            </div>
-
-            <div class="widget-body">
-                <div class="widget-main padding-8">
-                    <ul id="zTree" class="ztree"></ul>
-                </div>
-            </div>
-        </div>
     </div>
+    <div class="tab-pane fade" id="group_audit_page">
 
-
-    <div class="col-xs-9 tb-grid">
-        <!-- 配置查询 -->
-        @ var _col=[
-        @			  {name:"组织类型",index:"gName", type:"select_908"},
-        @			  {name:"名称",index:"name", type:"selectGroup"},
-        @			  {name:"所在部门",index:"DEPTID", type:"selectDept"},
-        @			  {name:"备注",index:"TIPS", type:"text"},
-        @			  {name:"性别",index:"SEX",type:"select_101"}
-        @		   ];
-        @ include("/common/_function/_search.html",{"col":_col}){}
-        <!-- 按钮组 -->
-        <div class="welljq well-sm" id="btns"></div>
-        <div class="welljq well-sm" id="columns">
-            <input type="checkbox" value="avater" class="cbox" checked="checked" disabled="disabled"/>头像
-            <input type="checkbox" value="idcard" class="cbox" checked="checked"/>组织ID
-            <input type="checkbox" value="gName" class="cbox" checked="checked"/>名称
-            <input type="checkbox" value="gType" class="cbox" checked="checked"/>组织类型
-            <input type="checkbox" value="targat" class="cbox" checked="checked"/>组织关键字
-            <input type="checkbox" value="memberCount" class="cbox" checked="checked"/>会员数量
-            <input type="checkbox" value="adminCount" class="cbox" checked="checked"/>干事数量
-            <input type="checkbox" value="cost" class="cbox" checked="checked"/>入会费
-            <input type="checkbox" value="activityCount" class="cbox" checked="checked"/>活动举办数量
-            <input type="checkbox" value="throughTime" class="cbox" checked="checked"/>创建时间
-            <input type="checkbox" value="createName" class="cbox" checked="checked"/>创建者
-            <input type="checkbox" value="approvalName" class="cbox" checked="checked"/>审核者
-            <input type="checkbox" value="status" class="cbox" checked="checked"/>状态
-        </div>
-        <!-- grid -->
-        <table id="grid-table"></table>
-        <!-- 分页 -->
-        <div id="grid-pager"></div>
     </div>
 </div>
 
-<!-- 引入列表页所需js -->
-@include("/common/_listscript.html"){}
-<link rel="stylesheet" href="${basePath}/static/zTree/css/zTreeStyle/zTreeStyle.css" />
-<script src="${basePath}/static/zTree/js/jquery.ztree.core.js" type="text/javascript" ></script>
-@}	
+<script type="text/javascript">
+    $(function(){
+        showPage('group_list_page','${basePath}/group/group_index');
+    });
+
+
+    function showPage(tabId, url){
+        $('#myTab a[href="#'+tabId+'"]').tab('show'); // 显示点击的tab页面
+        $('#'+tabId).load(url); // ajax加载页面
+    }
+
+</script>
+
+</body>
+
+@}

@@ -27,12 +27,12 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" > 组织名称 </label>
 			<div class="col-sm-3">
-				<input type="text" name="name"  placeholder="" class="form-control" />
+				<input type="text" name="name" id="name" placeholder="" class="form-control" />
 			</div>
 
 			<label class="col-sm-2 control-label no-padding-right" >组织代码证号</label>
 			<div class="col-sm-3">
-				<input type="text" name="code" value="" placeholder="" class="form-control" />
+				<input type="text" name="code" id="code" value="" placeholder="" class="form-control" />
 			</div>
 		</div>
 
@@ -44,7 +44,7 @@
 
 			<label class="col-sm-2 control-label no-padding-right" > 营业执照注册号 </label>
 			<div class="col-sm-3">
-				<input type="text" name="license" class="form-control"  value="" placeholder="" />
+				<input type="text" name="license" id="license" class="form-control"  value="" placeholder="" />
 			</div>
 		</div>
 
@@ -57,19 +57,19 @@
 
 			<label class="col-sm-2 control-label no-padding-right" >运营者身份证姓名</label>
 			<div class="col-sm-3">
-				<input type="text" name="artificialPersonName" value="" placeholder="" class="form-control"/>
+				<input type="text" name="artificialPersonName" id="artificialPersonName" value="" placeholder="" class="form-control"/>
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" > 运营者身份证号码 </label>
 			<div class="col-sm-3">
-				<input type="text" name="artificialPersonIdcard"  value="" placeholder="" class="form-control" />
+				<input type="text" name="artificialPersonIdcard" id="artificialPersonIdcard"  value="" placeholder="" class="form-control" />
 			</div>
 
 			<label class="col-sm-2 control-label no-padding-right" >运营者手机号码</label>
 			<div class="col-sm-3">
-				<input type="text" name="artificialPersonMobile"  value="" placeholder="" class="form-control" />
+				<input type="text" name="artificialPersonMobile" id="artificialPersonMobile"  value="" placeholder="" class="form-control" />
 			</div>
 		</div>
 
@@ -91,37 +91,43 @@
 
 			<label class="col-sm-2 control-label no-padding-right" >银行开户名</label>
 			<div class="col-sm-3">
-				<input type="text" name="bankUserName" value="" placeholder="" class="form-control" />
+				<input type="text" name="bankUserName" id="bankUserName" value=""  placeholder="" class="form-control" />
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >银行账号</label>
 			<div class="col-sm-3">
-				<input type="text" name="bankAccout" value="" placeholder="" class="form-control" />
+				<input type="text" name="bankAccout" id="bankAccout" value="" placeholder=""  class="form-control" />
 			</div>
 
 			<label class="col-sm-2 control-label no-padding-right" >开户银行</label>
 			<div class="col-sm-3">
-				<input type="text" name="bankId" value="" placeholder="没有表" class="form-control" />
+				<input type="text" name="bankId" id="bankId" value="" placeholder="没有表" class="form-control" />
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >开户行所在省</label>
 			<div class="col-sm-3" >
-				<input type="text" name="banckProvince" value="" placeholder="没有表" class="form-control" />
+				<select name="banckProvince" id="banckProvince" class="form-control">
+					<option value=""></option>
+					<option value="0">省</option>
+				</select>
 			</div>
 			<label class="col-sm-2 control-label no-padding-right" >开户行所在市</label>
 			<div class="col-sm-3">
-				<input type="text" name="bankCity" value="" placeholder="没有表" class="form-control" />
+				<select name="bankCity" id="bankCity" class="form-control">
+					<option value=""></option>
+					<option value="0">市</option>
+				</select>
 			</div>
 
 		</div>
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >开户行支行名称</label>
 			<div class="col-sm-3">
-				<input type="text" name="branchName" value="" placeholder="" class="form-control" />
+				<input type="text" name="branchName" id="branchName" value="" placeholder="" class="form-control" />
 			</div>
 		</div>
 
@@ -136,30 +142,36 @@
 
 			<label class="col-sm-2 control-label no-padding-right" >组织ID</label>
 			<div class="col-sm-3">
-				<input type="text" name="idcard" value="" placeholder="" class="form-control" />
+				<input type="text" name="idcard" id="idcard" value="" placeholder="" class="form-control" />
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >设置密码</label>
 			<div class="col-sm-3">
-				<input type="text" name="password" value="" placeholder="" class="form-control" />
+				<input type="text" name="password" id="password" value="" placeholder="" class="form-control" />
 			</div>
 
 			<label class="col-sm-2 control-label no-padding-right" >组织类型</label>
 			<div class="col-sm-3">
-				<blade:select type="dict" code="908" name="tb_group.type" value="0" />
+				<blade:select type="dict" id="dict" code="908" name="tb_group.type" value="0" />
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >所在省</label>
 			<div class="col-sm-3">
-				<input type="text" name="province" value="" placeholder="没有表" class="form-control" />
+				<select name="province" id="province" class="form-control">
+					<option value=""></option>
+					<option value="0">省</option>
+				</select>
 			</div>
 			<label class="col-sm-2 control-label no-padding-right" >所在市</label>
 			<div class="col-sm-3">
-				<input type="text" name="city" value="" placeholder="没有表" class="form-control" />
+				<select name="city" id="city" class="form-control">
+					<option value=""></option>
+					<option value="0">市</option>
+				</select>
 			</div>
 		</div>
 
@@ -205,14 +217,14 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >页签标题</label>
 			<div class="col-sm-8">
-				<input type="text" name="title1" value="输入标题(6个字)" class="form-control" maxlength="6"/>
+				<input type="text" name="title1" id="title1" value="" placeholder="输入标题(6个字)" class="form-control" maxlength="6"/>
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >详情内容</label>
 			<div class="col-sm-8">
-				<textarea  id="content1" name="content" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
+				<textarea  id="content1" name="content1" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
 			</div>
 		</div>
 		<input type="button" name="previous" class="previous action-button" value="上一步" />
@@ -228,14 +240,14 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >页签标题</label>
 			<div class="col-sm-8">
-				<input type="text" name="title2" value="输入标题(6个字)" class="form-control" maxlength="6"/>
+				<input type="text" name="title2" id="title2" placeholder="输入标题(6个字)" class="form-control" maxlength="6"/>
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >详情内容</label>
 			<div class="col-sm-8">
-				<textarea  id="content2" name="content" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
+				<textarea  id="content2" name="content2" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
 			</div>
 		</div>
 		<input type="button" name="previous" class="previous action-button" value="上一步" />
@@ -251,14 +263,14 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >页签标题</label>
 			<div class="col-sm-8">
-				<input type="text" name="title3" value="输入标题(6个字)" class="form-control" maxlength="6"/>
+				<input type="text" name="title3" id="title3" placeholder="输入标题(6个字)" class="form-control" maxlength="6"/>
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >详情内容</label>
 			<div class="col-sm-8">
-				<textarea  id="content3" name="content" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
+				<textarea  id="content3" name="content3" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
 			</div>
 		</div>
 		<input type="button" name="previous" class="previous action-button" value="上一步" />
@@ -268,78 +280,183 @@
 <div class="space-4"></div>
 </form>
 
-
-	<script src="${basePath}/static/laydate/laydate.js"></script>
-	<script src="${basePath}/static/jquery/jquery-2.1.4.min.js"></script>
-	<script src="${basePath}/static/jquery-res/js/jquery.easing.min.js"></script>
-	<script src="${basePath}/static/jquery-res/js/zzsc.js"></script>
-
+<script src="${basePath}/static/laydate/laydate.js"></script>
+<script src="${basePath}/static/jquery/jquery-2.1.4.min.js"></script>
+<script src="${basePath}/static/jquery-res/js/jquery.easing.min.js"></script>
+<script src="${basePath}/static/jquery-res/js/zzsc.js"></script>
 <link rel="stylesheet" href="${basePath}/static/kindeditor/themes/default/default.css" />
 <link rel="stylesheet" href="${basePath}/static/kindeditor/plugins/code/prettify.css" />
 <script charset="utf-8" src="${basePath}/static/kindeditor/kindeditor.js"></script>
 <script charset="utf-8" src="${basePath}/static/kindeditor/lang/zh_CN.js"></script>
 <script charset="utf-8" src="${basePath}/static/kindeditor/plugins/code/prettify.js"></script>
 
-	<script type="text/javascript">
-		function phoneAdd(){
-			var html = "";
-			html += " <div class='form-group'>																				";
-			html += " 	<label class='col-sm-2 control-label no-padding-right' ></label>                                    ";
-			html += " 	<div class='col-sm-2'>                                                                              ";
-			html += " 		<input type='text' name='' value='' placeholder='区号' class='form-control' maxlength='4'/>     ";
-			html += " 	</div>                                                                                              ";
-			html += " 	<div class='col-sm-3'>                                                                              ";
-			html += " 		<input type='text' name='' value='' placeholder='固定号码' class='form-control' maxlength='8'/> ";
-			html += " 	</div>                                                                                              ";
-			html += " 	<div class='col-sm-1'>                                                                              ";
-			html += " 		<input type='button' name='' class='but' value='删除' onclick='phoneDel(this)'/>                                        ";
-			html += " 	</div>                                                                                              ";
-			html += " </div>                                                                                                ";
+<script type="text/javascript">
+	function phoneAdd(){
+		var html = "";
+		html += " <div class='form-group'>																				";
+		html += " 	<label class='col-sm-2 control-label no-padding-right' ></label>                                    ";
+		html += " 	<div class='col-sm-2'>                                                                              ";
+		html += " 		<input type='text' name='' value='' placeholder='区号' class='form-control' maxlength='4'/>     ";
+		html += " 	</div>                                                                                              ";
+		html += " 	<div class='col-sm-3'>                                                                              ";
+		html += " 		<input type='text' name='' value='' placeholder='固定号码' class='form-control' maxlength='8'/> ";
+		html += " 	</div>                                                                                              ";
+		html += " 	<div class='col-sm-1'>                                                                              ";
+		html += " 		<input type='button' name='' class='but' value='删除' onclick='phoneDel(this)'/>                                        ";
+		html += " 	</div>                                                                                              ";
+		html += " </div>                                                                                                ";
+		$("#phone").append(html);
+	}
 
-			$("#phone").append(html);
+	function phoneDel(data){
+		$(data).parent().parent().remove();
+	}
+
+	function keyWorkAdd(data){
+		var text = $("#targat").val();
+		if(text == ''){
+			return;
 		}
 
-		function phoneDel(data){
-			$(data).parent().parent().remove();
+		var length = $("#keyWork").children("div").length;
+		if(length>4){
+			layer_alert("最多只能添加5个关键字!","warn");
+			return;
 		}
 
-		function keyWorkAdd(data){
-			var text = $("#targat").val();
-			if(text == ''){
-				return;
-			}
+		var html = "";
+		html += "<div class='col-sm-2 input-group' data-type='' style='float:left;background: #6fb3e0;color: #dde9ff;position: relative;font-size: 14px;width: auto;height:30px;line-height:30px;text-indent: 10px;margin:0 5px 5px 0'>" + text;
+		html += "	<span class='o_close' data-percent='' onclick='keyWorkDel(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+		html += "	<input type='hidden' name='targat' value='" + text + "'>";
+		html += "</div>   ";
 
-			var length = $("#keyWork").children("div").length;
-			if(length>4){
-				layer_alert("最多只能添加5个关键字!","warn");
-				return;
-			}
+		$("#keyWork").append(html);
+		$("#targat").val("");
+	}
 
-			var html = "";
-			html += "<div class='col-sm-2 input-group' data-type='' style='float:left;background: #6fb3e0;color: #dde9ff;position: relative;font-size: 14px;width: auto;height:30px;line-height:30px;text-indent: 10px;margin:0 5px 5px 0'>" + text;
-			html += "	<span class='o_close' data-percent='' onclick='keyWorkDel(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
-			html += "	<input type='hidden' name='targat' value='" + text + "'>";
-			html += "</div>   ";
-
-			$("#keyWork").append(html);
-			$("#targat").val("");
-		}
-
-		function keyWorkDel(data){
-			$(data).parent().remove();
-		}
+	function keyWorkDel(data){
+		$(data).parent().remove();
+	}
 
 
+	$(function(){
+		var editor1;
+		var editor2;
+		var editor3;
 
-	KindEditor.ready(function(K) {
+		KindEditor.ready(function(K) {
+			var options1 = {
+				cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
+				items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
+				filterMode : true
+			};
+			 editor1 = K.create('textarea[name="content1"]', options1);
 
-		var options = {
-			cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
-			items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
-			filterMode : true
-		};
-		var editor = K.create('textarea[name="content"]', options);
-	});
+			var options2 = {
+				cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
+				items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
+				filterMode : true
+			};
+			 editor2 = K.create('textarea[name="content2"]', options2);
+
+			var options3 = {
+				cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
+				items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
+				filterMode : true
+			};
+			 editor3 = K.create('textarea[name="content3"]', options3);
+
+		});
+
+
+		$("#submit").on("click",function(){
+			editor1.sync();
+			editor2.sync();
+			editor3.sync();
+
+			var name = $('#name').val();
+			var code = $('#code').val();
+			var license = $('#license').val();
+			var artificialPersonName = $('#artificialPersonName').val();
+			var artificialPersonIdcard = $('#artificialPersonIdcard').val();
+			var artificialPersonMobile = $('#artificialPersonMobile').val();
+			var bankUserName = $('#bankUserName').val();
+			var bankAccout = $('#bankAccout').val();
+			var bankId = $('#bankId').val();
+			var bankName = $('#bankName').val();
+			var banckProvince = $('#banckProvince').val();
+			var bankCity = $('#bankCity').val();
+			var branchName = $('#branchName').val();
+			var password = $('#password').val();
+			var type = $('#type').val();
+			var province = $('#province').val();
+			var city = $('#city').val();
+			var title1 = $('#title1').val();
+			var isOpen1 = $('#isOpen1').val();
+			var title2 = $('#title2').val();
+			var isOpen2 = $('#isOpen2').val();
+			var title3 = $('#title3').val();
+			var isOpen3 = $('#isOpen3').val();
+
+			var content1 = $('#content1').val();
+			var content2 = $('#content2').val();
+			var content3 = $('#content3').val();
+			var targat = [];
+			$("#keyWork div").each(function () {
+				var value = $(this).find("input[name='targat']").val();
+				targat.push(value)
+			});
+			$.post(
+					"${ctxPath}/${code}/save",
+					{
+						name : name,
+						code : code,
+						license : license,
+						artificialPersonName : artificialPersonName,
+						artificialPersonIdcard : artificialPersonIdcard,
+						artificialPersonMobile : artificialPersonMobile,
+						bankUserName : bankUserName,
+						bankAccout : bankAccout,
+						bankId : bankId,
+						bankName : bankName,
+						banckProvince : banckProvince,
+						bankCity : bankCity,
+						branchName : branchName,
+						password : password,
+						type : type,
+						province : province,
+						city : city,
+						title1 : title1,
+						isOpen1 : isOpen1,
+						title2 : title2,
+						isOpen2 : isOpen2,
+						title3 : title3,
+						isOpen3 : isOpen3,
+						content1 : content1,
+						content2 : content2,
+						content3 : content3,
+						targat : JSON.stringify(targat)
+
+					},
+					function (data) {
+						if (data.code === 0) {
+							parent.searchGrid();
+							layer_alert(data.message, "success");
+						}
+						else {
+							layer_post(data);
+						}
+					}
+			)
+
+
+		})
+
+	})
+
+
+
+
 
 </script>
 
