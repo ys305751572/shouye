@@ -2,19 +2,27 @@ package com.smallchill.web.controller;
 
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.web.meta.intercept.GroupIntercept;
+import com.smallchill.web.model.Group;
 import com.smallchill.web.model.vo.GroupVo;
 import com.smallchill.web.service.GroupBankService;
 import com.smallchill.web.service.GroupExtendService;
 import com.smallchill.web.service.GroupService;
+import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 组织管理
@@ -25,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 public class GroupController extends BaseController {
 
     private static String LIST_SOURCE = "Group.list";
-    private static String AUDIT_SOURCE = "Group.audit";
     private static String BASE_PATH = "/web/group/";
     private static String CODE = "group";
     private static String PERFIX = "tb_group";
@@ -51,22 +58,26 @@ public class GroupController extends BaseController {
         return BASE_PATH + "group_list.html";
     }
 
- /*   @RequestMapping(value = "/group_audit")
-    public String groupAudit(ModelMap mm) {
-        mm.put("code", CODE);
-        return BASE_PATH + "group_audit.html";
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/group_audit_list")
-    public Object auditList() {
-        return paginate(AUDIT_SOURCE, new GroupIntercept());
-    }*/
-
     @ResponseBody
     @RequestMapping(KEY_LIST)
-    public Object list() {
-        return paginate(LIST_SOURCE, new GroupIntercept());
+    public Object list(HttpServletRequest request) {
+        JqGrid object = (JqGrid) paginate(LIST_SOURCE, new GroupIntercept());
+        List<CaseInsensitiveHashMap> groupList2 = object.getRows();
+
+        //查询结果所有ID
+        List<Integer> groupIds = new ArrayList<>();
+        for (CaseInsensitiveHashMap map : groupList2) {
+            Integer id = (Integer) map.get("ID");
+            groupIds.add(id);
+        }
+        request.getSession().setAttribute("groupIds",groupIds);
+
+        //查询结果的所有会员数
+
+        //查询结果的所有干事数
+
+
+        return object;
     }
 
 
@@ -74,6 +85,51 @@ public class GroupController extends BaseController {
     public String add(ModelMap mm) throws JSONException {
         mm.put("code", CODE);
         return BASE_PATH + "group_add.html";
+    }
+
+    //消息发送页面
+    @RequestMapping("/message" + "/{id}")
+    public String groupMessages(ModelMap mm,@PathVariable String id) {
+        Group group = groupService.findById(id);
+        mm.put("group", group);
+        mm.put("code", CODE);
+        return BASE_PATH + "group_message.html";
+    }
+
+    //消息发送
+    @ResponseBody
+    @RequestMapping("/send_message")
+    public AjaxResult sendMessage(HttpServletRequest request,String groupId,Integer send,String sendTime,String title,String content) {
+
+        boolean index = groupService.sendMessage(request,groupId,send,sendTime,title,content);
+        if (index) {
+            return success(SEND_SUCCESS_MSG);
+        } else {
+            return error(SEND_FAIL_MSG);
+        }
+    }
+
+    //消息发送
+    @ResponseBody
+    @RequestMapping("/audit_status")
+    public AjaxResult auditStatus(Integer id,Integer status) {
+        try{
+            groupService.audit(id,status);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error("失败");
+
+        }
+        return success("成功");
+
+    }
+
+
+    //跳转该组织的会员页面(暂无)
+    @RequestMapping("/members")
+    public String groupMembers(ModelMap mm) {
+        mm.put("code", CODE);
+        return null;
     }
 
     @ResponseBody

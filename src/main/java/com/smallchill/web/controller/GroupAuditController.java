@@ -28,8 +28,6 @@ public class GroupAuditController extends BaseController {
     private static String BASE_PATH = "/web/group/";
     private static String CODE = "groupAudit";
     private static String PERFIX = "tb_group";
-    private static String EXTEND = "tb_group_extend";
-    private static String BANK = "tb_group_bank";
 
     @Autowired
     GroupService groupService;

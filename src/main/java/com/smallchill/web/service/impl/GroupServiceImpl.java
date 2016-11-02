@@ -10,10 +10,14 @@ import com.smallchill.web.model.GroupExtend;
 import com.smallchill.web.model.UserGroup;
 import com.smallchill.web.model.vo.GroupVo;
 import com.smallchill.web.service.*;
+import org.beetl.sql.core.kit.StringKit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 组织service
@@ -197,7 +201,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
 
     /**
-     * 审核改变状态
+     * 审核改变状态(审核用户)
      *
      * @param groupId 组织ID
      * @param userId  用户ID
@@ -212,4 +216,51 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         record.put("userId", userId);
         groupApprovalService.updateBy(set, where, record);
     }
+
+    /**
+     * 修改审核状态(审核组织)
+     * @param groupId
+     * @param status
+     */
+    @Override
+    public void audit(Integer groupId, Integer status) {
+        String set = "set audit_status = #{status}";
+        String where = " id = #{groupId}";
+        Record record = Record.create();
+        record.put("groupId", groupId);
+        record.put("status", status);
+        updateBy(set, where, record);
+    }
+
+    @Override
+    /**
+     * 发送消息
+     * @param id        组织ID
+     * @param send      发送类型
+     * @param sendTime  定时发送时间
+     * @param title     标题
+     * @param content   内容
+     */
+
+    public Boolean sendMessage(HttpServletRequest request,String id, Integer send, String sendTime, String title, String content) {
+        try{
+            if(StringKit.isNotBlank(id)){
+                //给一个组织发送信息
+
+
+            }else {
+                //给查询结果的所有组织
+                List<Integer> ids = (List<Integer>) request.getSession().getAttribute("groupIds");
+
+            }
+
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
+
 }

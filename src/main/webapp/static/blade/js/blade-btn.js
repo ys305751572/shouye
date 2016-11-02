@@ -66,6 +66,37 @@ var exwhere;
         var rows = getGridXls().length;
         var rowData=getRowData();
         var split = "/";
+        console.log(this.alias);
+        console.log(ids);
+        console.log(rowData);
+
+        //发送消息按钮
+        if (this.alias == "message") {
+            if (rows > 1) {
+                layer_alert('只能选择一条数据!', "warn");
+                return;
+            }
+            var url = this.url;
+            this.open(url + split + ids, ids);
+            return;
+        }
+
+        //会员列表按钮
+        if (this.alias == "members") {
+            if (rows == 0) {
+                layer_alert('请选择一条数据!', "warn");
+                return;
+            }
+            if (rows > 1) {
+                layer_alert('只能选择一条数据!', "warn");
+                return;
+            }
+
+            var url = this.url;
+            this.open(url + split + ids, ids);
+            return;
+        }
+
 
     	if (this.alias == "add") {
         	this.open(this.url);

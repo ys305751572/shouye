@@ -1,20 +1,20 @@
-<div class="welljq well-sm" id="searchfield" xmlns:c="http://www.w3.org/1999/XSL/Transform">
-    @for(x in col){
+<div class="welljq well-sm" id="_searchfield" xmlns:c="http://www.w3.org/1999/XSL/Transform">
+    @for(y in _col){
     <div class="col-sm-1 input-group" style="float: left;margin: 0 0 10px 0">
-        <input type="hidden" id="size" value="${xLP.size}">
-        <div class="input-group-btn search" id="search${xLP.index}" >
+        <input type="hidden" id="size" value="${yLP.size}">
+        <div class="input-group-btn search" id="_search${yLP.index}" >
             <input data-toggle="dropdown"
-                   class="btn btn-sx btn-white dropdown-toggle" disabled="disabled" id="searchthis${xLP.index}"
-                   value="${x.name!}" style="width: 90px;">
-            <input type="hidden" id="key" value="${x.index!}">
-            <input type="hidden" id="type" value="${x.type!}">
-            <input type="hidden" id="index" value="${xLP.index}">
+                   class="btn btn-sx btn-white dropdown-toggle" disabled="disabled" id="searchthis${yLP.index}"
+                   value="${y.name!}" style="width: 90px;">
+            <input type="hidden" id="key" value="${y.index!}">
+            <input type="hidden" id="type" value="${y.type!}">
+            <input type="hidden" id="index" value="${yLP.index}">
         </div>
 
-        <div id="divinput${xLP.index }" class="keyword">
-            <input type="text" id="inputs${xLP.index }" class="form-control" style="margin:10px 10px 0 0;width: auto"/>
+        <div id="_divinput${yLP.index }" class="keyword">
+            <input type="text" id="inputs${yLP.index }" class="form-control" style="margin:10px 10px 0 0;width: auto"/>
         </div>
-        <input type="hidden" id="hides${xLP.index }"/>
+        <input type="hidden" id="hides${yLP.index }"/>
 
         <span class="input-group-btn"></span>
     </div>
@@ -23,14 +23,14 @@
     <div class="col-xs-11 input-group">
         <!--简单查询按钮-->
         <div class="input-group-btn">
-            <button class="btn btn-sx btn-white" id="gotoSearch" style="margin:10px 10px 0 0;">添加</button>
+            <button class="btn btn-sx btn-white" id="_gotoSearch" style="margin:10px 10px 0 0;">添加</button>
         </div>
     </div>
 
 </div>
 
 <div class="welljq well-sm " style="height: auto">
-    <div id="tags" style="">
+    <div id="_tags" style="">
         <span style="float: left">已添加筛选条件:</span>
     </div>
     <div class="col-sm-11 input-group"></div>
@@ -57,58 +57,63 @@
 
 
         //查询模块
-        $("#searchfield div .search").each(function () {
+        $("#_searchfield div .search").each(function () {
             var name = $(this).find('input').eq(0).val();
             var key = $(this).find('input').eq(1).val();
             var type = $(this).find('input').eq(2).val();
             var index = $(this).find('input').eq(3).val();
-            changethis(key, name, type, index);
+            _changethis(key, name, type, index);
         });
 
 
-        $("#gotoSearch").bind("click", function () {
-            keyword();
-         });
+        $("#_gotoSearch").bind("click", function () {
+            _keyword();
+        });
 
     });
 
     //下拉框
-    function select(data, key) {
-        var id = "#searchfield #" + data;
+    function _select(data, key) {
+        var id = "#_searchfield #" + data;
         var option = id + " option:selected";
+        console.log("_select data :" + id);
+        console.log("_select key :" + option);
+        console.log($(id));
         $(id).change(function () {
             var val = $(option).val();
             var text = $(option).text();
-            tags(data, val, text, key , 1)
+            console.log("_select val :" + val);
+            console.log("_select text :" + text);
+            _tags(data, val, text, key , 1)
         });
     }
 
     //查询关键字
-    function keyword(){
-        $("#searchfield div .keyword input").each(function(){
+    function _keyword(){
+        $("#_searchfield div .keyword input").each(function(){
             if($(this).val()!=""){
                 var val = $(this).val();
                 var data = $(this).prop("id");
                 var index = data.replace(/[^0-9]/ig,"");
-                var id = "#search" + index;
+                var id = "#_search" + index;
                 var key = $(id).find("input").eq(1).val();
-                tags(data, val, val, key);
+                _tags(data, val, val, key);
             }
         });
-        search();
+        _search();
     }
 
     //标签
-    function tags(id, val, text, key,index) {
+    function _tags(id, val, text, key,index) {
 
         var html = "";
         html += "<div id='" + id + "' class='col-sm-3 input-group' data-type='' style='float:left;background: #666;color: white;position: relative;font-size: 10px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + text;
-        html += "	<span class='o_close' data-percent='' onclick='doDelete(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+        html += "	<span class='o_close' data-percent='' onclick='_doDelete(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
         html += "	<input type='hidden' value='" + val + "'> 	";
         html += "	<input type='hidden' value='" + key + "'> 	";
         html += "</div>   ";
 
-        $("#tags div").each(function () {
+        $("#_tags div").each(function () {
             var _id = $(this).prop("id");
             if (id == _id) {
                 $(this).remove();
@@ -117,26 +122,26 @@
         if (text == '' || text == null) {
             html = '';
         }
-        $("#tags").append(html);
+        $("#_tags").append(html);
 
         if(index == 1){
-            search();
+            _search();
         }
 
     }
 
-    function doDelete(btn) {
+    function _doDelete(btn) {
         var _id = $(btn).parent().prop("id");
-        var id = "#searchfield #"+_id;
+        var id = "#_searchfield #"+_id;
         $(id).val("");
         $(btn).parent().remove();
-        search();
+        _search();
     }
 
     //查询
-    function search() {
+    function _search() {
         var myMap = new Map();
-        $("#tags div").each(function () {
+        $("#_tags div").each(function () {
             var id = $(this).prop("id");
             var value = $(this).find("input").eq(0).val();
             var key = $(this).find("input").eq(1).val();
@@ -208,7 +213,7 @@
 //        console.log("------------------------end---------------------------------")
     }
 
-    function changethis(key, value, type, num) {
+    function _changethis(key, value, type, num) {
         isAutoPage = false;
         if (BladeTool.isEmpty(key)) {
             resetInput(num);
@@ -216,51 +221,52 @@
         if (type.indexOf("select_") >= 0) {
             var code = type.replace("select_", "");
             $.post("${basePath}/cache/getSelect", {code: code, num: num}, function (data) {
+                console.log(data.data);
                 if (data.code === 0) {
-                    $("#divinput" + num).html(data.data);
+                    $("#_divinput" + num).html(data.data);
                 }
                 var id = $(data.data).prop("id");
-                select(id, key);
+                _select(id, key);
             }, "json");
         }
         else if (type == "selectDept") {
             $.post("${basePath}/cache/getDeptSelect", {num: num}, function (data) {
                 if (data.code === 0) {
-                    $("#divinput" + num).html(data.data);
+                    $("#_divinput" + num).html(data.data);
                 }
                 var id = $(data.data).prop("id");
-                select(id, key);
+                _select(id, key);
             }, "json");
         }
         else if (type == "selectUser") {
             $.post("${basePath}/cache/getUserSelect", {num: num}, function (data) {
                 if (data.code === 0) {
-                    $("#divinput" + num).html(data.data);
+                    $("#_divinput" + num).html(data.data);
                 }
                 var id = $(data.data).prop("id");
-                select(id, key);
+                _select(id, key);
             }, "json");
         }
         else if (type == "selectRole") {
             $.post("${basePath}/cache/getRoleSelect", {num: num}, function (data) {
                 if (data.code === 0) {
-                    $("#divinput" + num).html(data.data);
+                    $("#_divinput" + num).html(data.data);
                 }
                 var id = $(data.data).prop("id");
-                select(id, key);
+                _select(id, key);
             }, "json");
         }
         else if (type.indexOf("opentree_") >= 0) {
             var html = "<input type=\"text\"  id=\"inputs" + num + "_INPUT\" class=\"form-control\" style=\"margin-left:-3px;\"/>";
             html += "<input type=\"hidden\"  id=\"inputs" + num + "\" />";
-            $("#divinput" + num).html(html);
+            $("#_divinput" + num).html(html);
 
             $("#inputs" + num + "_INPUT").bind("click", function () {
                 openTree(type, "inputs" + num, "请选择");
             });
         }
         else if (type == "date") {
-            $("#divinput" + num).html("<input type=\"datetime-local\"  id=\"inputs" + num + "\" class=\"form-control\" style=\"margin-left:-3px;\"/>");
+            $("#_divinput" + num).html("<input type=\"datetime-local\"  id=\"inputs" + num + "\" class=\"form-control\" style=\"margin-left:-3px;\"/>");
         }
         else if (type == "text") {
             resetInput(num);
@@ -271,7 +277,7 @@
 
 
     function resetInput(num) {
-        $("#divinput" + num).html("<input type=\"text\"  id=\"inputs" + num + "\" class=\"form-control\" style=\"margin:0 10px 0 -3px;width:109px;\"/>");
+        $("#_divinput" + num).html("<input type=\"text\"  id=\"inputs" + num + "\" class=\"form-control\" style=\"margin:0 10px 0 -3px;width:109px;\"/>");
     }
 
     function openTree(type, index, name) {

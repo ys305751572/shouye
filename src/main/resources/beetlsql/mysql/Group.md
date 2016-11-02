@@ -1,11 +1,11 @@
 list
 ===
 SELECT
-    tg.id AS id,
+    tg.id AS ID,
     tg.avater AS avater,
     tge.idcard AS idcard,
     tg.name AS gName,
-    tfd.name AS gType,+
+    tfd.name AS gType,
     tg.type AS type,
     tg.targat AS targat,
     tg.member_count AS memberCount,

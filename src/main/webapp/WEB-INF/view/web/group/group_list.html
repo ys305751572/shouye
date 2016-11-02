@@ -31,13 +31,18 @@
             "入会费",
             "入会费",
             "活动举办数量",
+            "日报数量",
+            "辖下杂志",
+            "内容发布数量",
+            "历史进账",
             "创建时间",
             "创建者",
             "审核者",
-            "状态"
+            "账号状态",
+            "操作"
         ];
         var _colmodel=[
-            {name:"id",index:"id", width:80,hidden:true},
+            {name:"ID",index:"ID", width:80,hidden:true},
             {name:"avater",index:"avater", width:120},
             {name:"idcard",index:"idcard", width:120},
             {name:"gName",index:"gName", width:120},
@@ -56,6 +61,10 @@
                 }
             },
             {name:"activityCount",index:"activityCount", width:140},
+            {formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
+            {formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
+            {formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
+            {formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
             {name:"throughTime",index:"throughTime", width:120},
             {name:"createName",index:"createName", width:120},
             {name:"approvalName",index:"approvalName", width:120},
@@ -78,7 +87,28 @@
                                 "<p style='color: red'>"+date+"</p>"
                     }
                 }
+            },
+            {
+                width: 300,
+                formatter: function (cellvalue, options, rowObject) {
+                    var id = rowObject.ID;
+                    var status = rowObject.status;
+
+                    var departure = "<button title='封号' class='btn btn-primary btn-circle edit' onclick=\"\">" +
+                            "<i class='fa fa-circle-o'></i> 封号</button>";
+
+                    var enterprise = "<button title='解封' class='btn btn-primary btn-circle edit' onclick=\"\">" +
+                            "<i class='fa fa-circle'></i> 解封</button>";
+
+                    if (status == "-1") {
+                        return departure;
+                    } else {
+                        return enterprise;
+                    }
+
+                }
             }
+
         ];
 
         jQuery(grid_selector).jqGrid({
@@ -161,7 +191,7 @@
         <div class="welljq well-sm" id="columns">
             <input type="checkbox" value="avater" class="cbox" checked="checked" disabled="disabled"/>头像
             <input type="checkbox" value="idcard" class="cbox" checked="checked"/>组织ID
-            <input type="checkbox" value="gName" class="cbox" checked="checked"/>名称
+            <input type="checkbox" value="gName" class="cbox" checked="checked" disabled="disabled"/>名称
             <input type="checkbox" value="gType" class="cbox" checked="checked"/>组织类型
             <input type="checkbox" value="targat" class="cbox" checked="checked"/>组织关键字
             <input type="checkbox" value="memberCount" class="cbox" checked="checked"/>会员数量
@@ -171,7 +201,7 @@
             <input type="checkbox" value="throughTime" class="cbox" checked="checked"/>创建时间
             <input type="checkbox" value="createName" class="cbox" checked="checked"/>创建者
             <input type="checkbox" value="approvalName" class="cbox" checked="checked"/>审核者
-            <input type="checkbox" value="status" class="cbox" checked="checked"/>状态
+            <input type="checkbox" value="status" class="cbox" checked="checked" disabled="disabled"/>账号状态
         </div>
         <!-- grid -->
         <table id="grid-table"></table>

@@ -95,4 +95,12 @@ public interface ConstCurd {
 	 * 还原失败
 	 */
 	final static String RESTORE_FAIL_MSG = "还原失败！";
+	/**
+	 * 发送消息成功
+	 */
+	final static String SEND_SUCCESS_MSG = "发送成功！";
+	/**
+	 * 发送消息失败
+	 */
+	final static String SEND_FAIL_MSG = "发送失败！";
 }
