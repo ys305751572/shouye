@@ -6,6 +6,7 @@ import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -19,11 +20,11 @@ public interface ShoupageService {
 
     int countNew(Integer userId);
 
-    List<UserVo> listNew(Integer userId);
+    Map<String,List<UserVo>> listNew(Integer userId);
 
     int countIntereste(Integer userId);
 
-    InteresteGroupAndUser listIntereste(Integer userId);
+    Map<String,Object> listIntereste(Integer userId);
 
     int countInterested(Integer userId);
 

@@ -4,6 +4,8 @@ import com.alibaba.druid.support.json.JSONUtils;
 import com.smallchill.core.base.model.BaseModel;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,14 +75,23 @@ public class Result {
      * @param data 返回参数
      * @return result
      */
-    public static Result success(Object data) {
+    public static Result success(Object data,String... name) {
         Result result = new Result();
         result.status = 0;
         result.msg = "";
+
         if (data instanceof List) {
-            result.data.put("list", (List) data);
+            result.data.put("list", data);
         } else if (data instanceof Map) {
-            result.data.put("object", data);
+            System.out.println("name.length == 0:" + name.length);
+            String key;
+            if(name.length == 0 || StringUtils.isBlank(name[0])) {
+                key = "object";
+            }
+            else {
+                key = name[0];
+            }
+            result.data.put(key, data);
         } else if (data instanceof BaseModel) {
             String objName = data.getClass().getSimpleName().toLowerCase();
             result.data.put(objName, data);

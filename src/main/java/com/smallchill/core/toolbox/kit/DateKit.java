@@ -76,7 +76,19 @@ public class DateKit {
 			calendar.add(Calendar.DAY_OF_MONTH,index);
 		}
 		return format(calendar.getTime(),"yyyy-MM-dd");
+	}
 
+	/**
+	 * 获取当天在次月的天数
+	 * @param index
+	 * @return
+	 */
+	public static long getBeforeDayLong(Integer index) {
+		Calendar calendar = Calendar.getInstance();
+		if(index != null) {
+			calendar.add(Calendar.DAY_OF_MONTH,index);
+		}
+		return calendar.getTimeInMillis();
 	}
 
 	public static String getBeforMonth(Integer index) {

@@ -5,8 +5,11 @@ import com.smallchill.api.common.exception.UserHasFriendException;
 import com.smallchill.api.common.exception.UserInBlankException;
 import com.smallchill.api.common.exception.UsernotFriendException;
 import com.smallchill.core.base.service.IService;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.service.impl.BothUserHasApprovalException;
+
+import java.util.List;
 
 /**
  * 用户审核
@@ -90,4 +93,13 @@ public interface UserApprovalService extends IService<UserApproval>{
     void userApprovalUnBlank(UserApproval ua);
 
     void resetStatus(UserApproval ua);
+
+    /**
+     * 调用MD文件sql
+     * @param source mdw文件sql key
+     * @param where 查询条件
+     * @param modalOrMap 条件内容
+     * @return 结果集
+     */
+    List<Record> exceuteBySource(String source, String where, Object modalOrMap);
 }

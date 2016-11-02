@@ -4,6 +4,8 @@ import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasFriendException;
 import com.smallchill.api.common.exception.UserInBlankException;
 import com.smallchill.api.common.exception.UsernotFriendException;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.UserApproval;
@@ -186,6 +188,19 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
         record.put("fromUserId", ua.getFromUserId());
         record.put("toUserId", ua.getToUserId());
         this.updateBy(set, where, record);
+    }
+
+    /**
+     * 调用MD文件sql
+     * @param source mdw文件sql key
+     * @param where 查询条件
+     * @param modalOrMap 条件内容
+     * @return 结果集
+     */
+    @Override
+    public List<Record> exceuteBySource(String source, String where, Object modalOrMap) {
+        String sql = Blade.dao().getScript(source).getSql();
+        return Db.init().selectList(sql, where, modalOrMap);
     }
 
     /**

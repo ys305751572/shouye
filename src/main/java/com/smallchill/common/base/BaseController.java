@@ -42,8 +42,8 @@ public class BaseController extends BladeController {
      * @param data 结果
      * @return result
      */
-    public String success(Object data) {
-        return toJson(Result.success(data));
+    public String success(Object data, String... name) {
+        return toJson(Result.success(data, name));
     }
 
     /**
