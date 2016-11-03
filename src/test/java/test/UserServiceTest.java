@@ -3,9 +3,11 @@ package test;
 import com.smallchill.api.common.model.Result;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.ShoupageService;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.web.model.UserFriend;
 import com.smallchill.web.service.UserFriendService;
+import com.smallchill.web.service.UserInfoService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,6 +25,9 @@ public class UserServiceTest extends BaseJunit4Test{
 
     @Autowired
     private ShoupageService shoupageService;
+
+    @Autowired
+    private UserInfoService userInfoService;
 
     @Test
     public void testUserFriendDel() {
@@ -65,6 +70,14 @@ public class UserServiceTest extends BaseJunit4Test{
     @Test
     public void testAcquaintances() {
         List<UserVo> list = shoupageService.listAcquaintances(5);
+        System.out.println(JsonKit.toJson(Result.success(list)));
+    }
+
+    @Test
+    public void testUserList() {
+        int userId = 6;
+        int groupId = 9;
+        List<Record> list = userInfoService.findByParmas(Record.create().set("userId", userId).set("groupId",groupId));
         System.out.println(JsonKit.toJson(Result.success(list)));
     }
 }

@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import org.apache.commons.lang3.StringUtils;
@@ -63,12 +64,12 @@ import com.smallchill.core.toolbox.log.LogManager;
 public class BladeController implements ConstCurd, ConstCache {
     private static final Logger log = LoggerFactory.getLogger(BladeController.class);
 
-    @Resource
-    private HttpServletRequest request;
-    @Resource
-    private HttpServletResponse response;
-//	private HttpServletRequest request = null;
-//    private HttpServletResponse response = null;
+//    @Resource
+//    private HttpServletRequest request;
+//    @Resource
+//    private HttpServletResponse response;
+	private HttpServletRequest request = null;
+    private HttpServletResponse response = null;
 
 
     @ResponseBody
@@ -437,7 +438,7 @@ public class BladeController implements ConstCurd, ConstCache {
      * @param source sql配置文档
      * @return page
      */
-    protected JqGrid apiPaginate(String slaveName, String source, IQuery intercept) {
+    protected JqGrid apiPaginate(String slaveName, String source, IQuery intercept, ExcludeParams excludeParams) {
         Integer page = getParameterToInt("pageNum", 1);
         Integer rows = getParameterToInt("pageSize", 10);
         String sort = getParameter("sort", "");
@@ -447,16 +448,16 @@ public class BladeController implements ConstCurd, ConstCache {
         request.removeAttribute("pageSize");
         request.removeAttribute("sort");
         request.removeAttribute("order");
-        Map<String, String[]> queryString = request.getParameterMap();
 
-        Map<String, String> parmasMap = new HashMap<>();
+
+        Map<String, String[]> queryString = request.getParameterMap();
+        Record recordQuery = Record.create();
         for (Map.Entry<String, String[]> element : queryString.entrySet()) {
-            if (StringUtils.isNotBlank(element.getValue()[0])) {
-                parmasMap.put(element.getKey(), element.getValue()[0]);
+            if (StringUtils.isNotBlank(element.getValue()[0]) && !excludeParams.contains(element.getKey())) {
+                recordQuery.put(element.getKey(), element.getValue()[0]);
             }
         }
-
-        String where = JsonKit.toJson(parmasMap);
+        String where = JsonKit.toJson(recordQuery);
         return (JqGrid) GridManager.paginate(slaveName, page, rows, source, where, sort, order, intercept, this);
     }
 
@@ -466,7 +467,16 @@ public class BladeController implements ConstCurd, ConstCache {
      * @return
      */
     protected JqGrid apiPaginate(String source, IQuery intercept) {
-        return apiPaginate(null, source, intercept);
+        return apiPaginate(null, source, intercept,null);
+    }
+
+    /**
+     * @param source
+     * @param intercept
+     * @return
+     */
+    protected JqGrid apiPaginate(String source, IQuery intercept, ExcludeParams excludeParams) {
+        return apiPaginate(null, source, intercept,excludeParams);
     }
 
     /**
@@ -474,11 +484,19 @@ public class BladeController implements ConstCurd, ConstCache {
      * @return
      */
     protected JqGrid apiPaginate(String source) {
-        return apiPaginate(null, source, null);
+        return apiPaginate(null, source, null, null);
     }
 
     /**
-     * @param 数据源
+     * @param source
+     * @return
+     */
+    protected JqGrid apiPaginate(String source,ExcludeParams excludeParams) {
+        return apiPaginate(null, source, null, excludeParams);
+    }
+
+    /**
+     * @param source 数据源
      * @return
      */
     protected Object paginate(String source) {
@@ -486,8 +504,8 @@ public class BladeController implements ConstCurd, ConstCache {
     }
 
     /**
-     * @param 数据源
-     * @param 自定义拦截器
+     * @param source 数据源
+     * @param intercept 自定义拦截器
      * @return
      */
     protected Object paginate(String source, IQuery intercept) {
@@ -495,8 +513,8 @@ public class BladeController implements ConstCurd, ConstCache {
     }
 
     /**
-     * @param 数据库别名
-     * @param 数据源
+     * @param slaveName 数据库别名
+     * @param source 数据源
      * @return
      */
     protected Object paginate(String slaveName, String source) {
@@ -504,9 +522,9 @@ public class BladeController implements ConstCurd, ConstCache {
     }
 
     /**
-     * @param 数据库别名
-     * @param 数据源
-     * @param 自定义拦截器
+     * @param slaveName 数据库别名
+     * @param source 数据源
+     * @param intercept 自定义拦截器
      * @return
      */
     protected Object paginate(String slaveName, String source, IQuery intercept) {

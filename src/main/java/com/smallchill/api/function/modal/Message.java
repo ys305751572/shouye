@@ -20,31 +20,27 @@ public class Message extends BaseModel {
 
     @Column(name = "id")
     private Integer id;
-    @Column(name = "type")
-    private Integer type;
     @Column(name = "from_id")
     private Integer fromId;
-    @Column(name = "from_type")
-    private Integer fromType;
     @Column(name = "to_id")
     private Integer toId;
-    @Column(name = "to_type")
-    private Integer toType;
     @Column(name = "title")
     private String title;
     @Column(name = "content")
     private String content;
     @Column(name = "replaces")
-    private String replaces;
-
+    private String replaces = "";
     @Column(name = "action1")
-    private String action1;
+    private String action1 = "";
     @Column(name = "action2")
-    private String action2;
+    private String action2 = "";
     @Column(name = "action3")
-    private String action3;
+    private String action3 = "";
     @Column(name = "action4")
-    private String action4;
+    private String action4 = "";
+
+    @Column(name = "create_time")
+    private Long createTime;
 
     public void addMessageAction(MessageAction ma) {
         if(StringUtils.isBlank(action1)) {
@@ -61,6 +57,14 @@ public class Message extends BaseModel {
         }
     }
 
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
     private String combinationMa(MessageAction ma) {
         return ma.getActionName() + "|" + ma.getActionUrl();
     }
@@ -73,14 +77,6 @@ public class Message extends BaseModel {
         this.id = id;
     }
 
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
     public Integer getFromId() {
         return fromId;
     }
@@ -89,28 +85,12 @@ public class Message extends BaseModel {
         this.fromId = fromId;
     }
 
-    public Integer getFromType() {
-        return fromType;
-    }
-
-    public void setFromType(Integer fromType) {
-        this.fromType = fromType;
-    }
-
     public Integer getToId() {
         return toId;
     }
 
     public void setToId(Integer toId) {
         this.toId = toId;
-    }
-
-    public Integer getToType() {
-        return toType;
-    }
-
-    public void setToType(Integer toType) {
-        this.toType = toType;
     }
 
     public String getTitle() {

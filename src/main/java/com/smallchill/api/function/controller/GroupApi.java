@@ -3,8 +3,11 @@ package com.smallchill.api.function.controller;
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInBlankException;
+import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.api.common.model.ErrorType;
-import com.smallchill.api.function.meta.validate.GroupValidator;
+import com.smallchill.api.function.meta.intercept.GroupApiIntercept;
+import com.smallchill.api.function.meta.validate.GroupJoinValidator;
+import com.smallchill.api.function.meta.validate.GroupPageValidator;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
 import com.smallchill.core.toolbox.grid.JqGrid;
@@ -23,7 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/api/group")
 public class GroupApi extends BaseController {
 
-    private static String LIST_SOURCE = "Group.list";
+    private static String LIST_SOURCE = "Group.listPage";
 
     @Autowired
     private GroupApprovalService groupApprovalService;
@@ -35,10 +38,11 @@ public class GroupApi extends BaseController {
      */
     @RequestMapping(value = "/list")
     @ResponseBody
+    @Before(GroupPageValidator.class)
     public String list() {
         JqGrid page;
         try {
-            page = apiPaginate(LIST_SOURCE);
+            page = apiPaginate(LIST_SOURCE, new GroupApiIntercept(), ExcludeParams.create().set("userId_equal"));
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
@@ -53,7 +57,7 @@ public class GroupApi extends BaseController {
      */
     @RequestMapping(value = "/join")
     @ResponseBody
-    @Before(GroupValidator.class)
+    @Before(GroupJoinValidator.class)
     public String join(GroupApproval ga) {
         try {
             groupApprovalService.join(ga);

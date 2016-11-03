@@ -44,3 +44,24 @@ FROM tb_group tg
   LEFT JOIN (SELECT num, name FROM tfw_dict WHERE CODE = 911) tfd ON tg.audit_status = tfd.num
   LEFT JOIN tfw_user cUser ON tge.create_admin_id = cUser.ID
   LEFT JOIN tfw_user aUser ON tge.approval_admin_id = aUser.ID
+
+
+listPage
+========
+SELECT
+    g.id,
+    g.avater,
+    g.province,
+    g.city,
+    g.type,
+    g.province_city provinceCity,
+    g.member_count memberCount,
+    g.targat,
+    ga.user_id userId,
+    ga.status
+FROM
+    tb_group g
+LEFT JOIN
+    tb_group_approval ga
+ON
+    g.id = ga.group_id

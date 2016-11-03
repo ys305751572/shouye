@@ -5,6 +5,8 @@ import com.smallchill.api.function.modal.UserProfessional;
 import com.smallchill.api.function.service.UserDomainService;
 import com.smallchill.api.function.service.UserprofessionalService;
 import com.smallchill.core.base.service.BaseService;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.NetKit;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 
 /**
@@ -65,6 +68,13 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     @Override
     public UserInfo findByUserId(int userId) {
         return this.findFirstBy("where user_id = #{userId}", Record.create().set("userId", userId));
+    }
+
+    @Override
+    public List<Record> findByParmas(Record params) {
+        String sql = Blade.dao().getScript("UserInfo.apiList").getSql();
+        List<Record> userList = Db.init().selectList(sql, params);
+        return userList;
     }
 
     /**
