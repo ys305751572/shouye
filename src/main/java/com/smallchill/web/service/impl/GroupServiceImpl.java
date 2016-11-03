@@ -1,5 +1,7 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.LeomanKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
@@ -75,6 +77,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         gg.setArtificialPersonName(groupVo.getArtificialPersonName());
         gg.setArtificialPersonIdcard(groupVo.getArtificialPersonIdcard());
         gg.setArtificialPersonMobile(groupVo.getArtificialPersonMobile());
+        gg.setCreateAdminId(groupVo.getCreateAdminId());
         groupExtendService.save(gg);
     }
 
@@ -101,8 +104,8 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     /**
      * 保存组织基本信息
      *
-     * @param groupVo
-     * @return
+     * @param groupVo   Vo
+     * @return  int
      */
     private int saveGroupInfo(GroupVo groupVo) {
         Group group = new Group();
@@ -219,16 +222,21 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     /**
      * 修改审核状态(审核组织)
-     * @param groupId
-     * @param status
+     * @param groupId   组织ID
+     * @param status    状态
      */
     @Override
     public void audit(Integer groupId, Integer status) {
-        String set = "set audit_status = #{status}";
+        String set = "set audit_status = #{status}, update_time = #{updateTime} ";
         String where = " id = #{groupId}";
         Record record = Record.create();
         record.put("groupId", groupId);
         record.put("status", status);
+        record.put("updateTime", DateTimeKit.nowLong());
+        GroupExtend groupExtend = Blade.create(GroupExtend.class).findFirstBy("group_id = #{group_id}",Record.create().set("group_id", groupId));
+        Integer adminId = (Integer) ShiroKit.getUser().getId();
+        groupExtend.setApprovalAdminId(adminId);
+        groupExtendService.update(groupExtend);
         updateBy(set, where, record);
     }
 
@@ -246,12 +254,18 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         try{
             if(StringKit.isNotBlank(id)){
                 //给一个组织发送信息
-
+                System.out.println("----id----");
+                System.out.println(id);
+                System.out.println("----id----");
 
             }else {
                 //给查询结果的所有组织
                 List<Integer> ids = (List<Integer>) request.getSession().getAttribute("groupIds");
-
+                System.out.println("----ids----");
+                for(Integer _id : ids){
+                    System.out.println(_id);
+                }
+                System.out.println("----ids----");
             }
 
         }catch (RuntimeException e){
@@ -261,6 +275,47 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         return true;
     }
 
+    @Override
+    public void banned(Integer id, Integer bannedTime, String content) {
+        GroupExtend groupExtend = Blade.create(GroupExtend.class).findFirstBy("group_id = #{group_id}",Record.create().set("group_id", id));
+        Long time = 0L;
+        if(bannedTime!=null){
+            switch (bannedTime){
+                case 1:
+                    time = 60L*60L*24L*1000L;
+                    break;
+                case 2:
+                    time = 2L*60L*60L*24L*1000L;
+                    break;
+                case 3:
+                    time = 7L*60L*60L*24L*1000L;
+                    break;
+                case 4:
+                    time = 14L*60L*60L*24L*1000L;
+                    break;
+                case 5:
+                    time = 30L*60L*60L*24L*1000L;
+                    break;
+                case 6:
+                    time = 60L*60L*60L*24L*1000L;
+                    break;
+                case 7:
+                    time = -2L;
+                    break;
+            }
+            if(bannedTime != 7){
+                time = System.currentTimeMillis() + time;
+            }
+            System.out.println(time);
+            groupExtend.setFreezeTime(time);
+            groupExtend.setWhy1(content);
+            groupExtendService.update(groupExtend);
+        }else {
+            groupExtend.setFreezeTime(-1L);
+            groupExtend.setWhy1("");
+            groupExtendService.update(groupExtend);
+        }
+    }
 
 
 }

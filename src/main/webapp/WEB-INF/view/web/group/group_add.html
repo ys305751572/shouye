@@ -27,7 +27,7 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" > 组织名称 </label>
 			<div class="col-sm-3">
-				<input type="text" name="name" id="name" placeholder="" class="form-control" />
+				<input type="text" name="name" id="name" placeholder="" class="form-control" required/>
 			</div>
 
 			<label class="col-sm-2 control-label no-padding-right" >组织代码证号</label>
@@ -227,6 +227,12 @@
 				<textarea  id="content1" name="content1" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
 			</div>
 		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >仅会员可见</label>
+			<div class="col-sm-1">
+				<input type="checkbox" name="isOpen1" id="isOpen1" value="1" style="height:20px;width: 20px; margin-top: 7px;" checked="checked"/>
+			</div>
+		</div>
 		<input type="button" name="previous" class="previous action-button" value="上一步" />
 		<input type="button" name="next" class="next action-button" value="下一步" />
 	</fieldset>
@@ -250,6 +256,12 @@
 				<textarea  id="content2" name="content2" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
 			</div>
 		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >仅会员可见</label>
+			<div class="col-sm-1">
+				<input type="checkbox" name="isOpen2" id="isOpen2" style="height:20px;width: 20px; margin-top: 7px;" checked="checked"/>
+			</div>
+		</div>
 		<input type="button" name="previous" class="previous action-button" value="上一步" />
 		<input type="button" name="next" class="next action-button" value="下一步" />
 	</fieldset>
@@ -271,6 +283,12 @@
 			<label class="col-sm-2 control-label no-padding-right" >详情内容</label>
 			<div class="col-sm-8">
 				<textarea  id="content3" name="content3" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label no-padding-right" >仅会员可见</label>
+			<div class="col-sm-1">
+				<input type="checkbox" name="isOpen3" id="isOpen3" style="height:20px;width: 20px; margin-top: 7px;" checked="checked"/>
 			</div>
 		</div>
 		<input type="button" name="previous" class="previous action-button" value="上一步" />
@@ -368,8 +386,9 @@
 
 		});
 
-
+		var layerIndex = parent.layer.getFrameIndex(window.name); //获取窗口索引
 		$("#submit").on("click",function(){
+
 			editor1.sync();
 			editor2.sync();
 			editor3.sync();
@@ -391,17 +410,37 @@
 			var type = $('#type').val();
 			var province = $('#province').val();
 			var city = $('#city').val();
+
 			var title1 = $('#title1').val();
-			var isOpen1 = $('#isOpen1').val();
 			var title2 = $('#title2').val();
-			var isOpen2 = $('#isOpen2').val();
 			var title3 = $('#title3').val();
-			var isOpen3 = $('#isOpen3').val();
 
 			var content1 = $('#content1').val();
 			var content2 = $('#content2').val();
 			var content3 = $('#content3').val();
+
 			var targat = [];
+
+			var isOpen1 ;
+			var isOpen2 ;
+			var isOpen3 ;
+
+			if($('#isOpen1').is(':checked')){
+				isOpen1 = 1;
+			}else {
+				isOpen1 = 2;
+			}
+			if($('#isOpen2').is(':checked')){
+				isOpen2 = 1;
+			}else {
+				isOpen2 = 2;
+			}
+			if($('#isOpen3').is(':checked')){
+				isOpen3 = 1;
+			}else {
+				isOpen3 = 2;
+			}
+
 			$("#keyWork div").each(function () {
 				var value = $(this).find("input[name='targat']").val();
 				targat.push(value)
@@ -440,8 +479,8 @@
 					},
 					function (data) {
 						if (data.code === 0) {
-							parent.searchGrid();
-							layer_alert(data.message, "success");
+							parent.$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+							parent.layer.close(layerIndex);
 						}
 						else {
 							layer_post(data);

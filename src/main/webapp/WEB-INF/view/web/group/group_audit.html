@@ -18,6 +18,7 @@
     }
 
     function initGrid(){
+        var lastsel2;
         var grid_url = ctx+"/${code}/list";//查询列表接口
         var _colnames=[
             "序列",
@@ -33,6 +34,7 @@
             "状态改变时间",
             "操作"
         ];
+
         var _colmodel=[
             {name:"id",index:"id", width:80,hidden:true},
             {name:"avater",index:"avater", width:120},
@@ -43,8 +45,17 @@
             {name:"approvalName",index:"approvalName", width:120},
             {name:"auditStatus",index:"auditStatus", width:120},
             {name:"a_status",index:"a_status", width:120,hidden:true},
-            {name:"auditComment",index:"auditComment", width:120},
-            {name:"updateTime",index:"updateTime", width:120},
+            {name:"auditComment",index:"auditComment", width:120,editable: true,edittype:"text"},
+            {name:"updateTime",index:"updateTime", width:120,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
+                        return "";
+                    }else {
+                        return date_format(cellvalue)
+                    }
+
+                }
+            },
             {
                 width: 240,
                 formatter: function (cellvalue, options, rowObject) {
@@ -79,10 +90,32 @@
             forceFit : true,
             colNames:_colnames,
             colModel:_colmodel,
-            jsonReader:{id:"ID"},
+            jsonReader:{id:"id"},
             pager : pager_selector,
-            postData: {sort: "id", order: "asc"}
+            postData: {sort: "id", order: "asc"},
+            cellEdit : true,
+            cellsubmit: "clientArray",
+            beforeSubmitCell : function(rowid, cellname, value, iRow, iCol){
+                console.log(rowid);
+                console.log(cellname);
+                console.log(value);
+                console.log(iRow);
+                console.log(iCol);
+                $.post(
+                        "${basePath}/groupAudit/comment",
+                        {id:rowid,name:value},
+                        function(data){
+                            if(data.code===0){
+
+                            }
+                            else{
+                                layer_alert("数据加载失败", "error");
+                            }
+                        }, "json"
+                );
+            }
         });
+
 
     }
 

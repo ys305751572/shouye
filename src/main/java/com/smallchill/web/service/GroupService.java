@@ -88,6 +88,12 @@ public interface GroupService extends IService<Group> {
      */
     Boolean sendMessage(HttpServletRequest request, String id, Integer send, String sendTime, String title, String content);
 
-
+    /**
+     * 改变组织封禁状态
+     * @param id            组织ID
+     * @param bannedTime    封禁时间(状态值)
+     * @param content       原因
+     */
+    void banned(Integer id, Integer bannedTime ,String content);
 
 }

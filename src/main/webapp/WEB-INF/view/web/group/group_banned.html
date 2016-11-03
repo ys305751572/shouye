@@ -1,0 +1,83 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form class="form-horizontal" role="form">
+	<div class="space-4"></div>
+	<!-- #section:elements.form -->
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 封号时间 </label>
+		<div class="col-sm-8">
+			<select class="form-control" id="bannedTime">
+				<option value="1">一天</option>
+				<option value="2">三天</option>
+				<option value="3">七天</option>
+				<option value="4">十四天</option>
+				<option value="5">三十天</option>
+				<option value="6">六十天</option>
+				<option value="7">永久</option>
+			</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 封号原因 </label>
+
+		<div class="col-sm-8">
+			<textarea id="content" style="height:200px;resize: none;" name="content" placeholder="" class="form-control" ></textarea>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 封号限制 </label>
+		<div class="col-sm-8">
+			<textarea style="height: 120px;resize:none;" disabled="disabled" placeholder="" class="form-control" >
+1、用户不能通过任何途径检索、访问到组织资料
+2、隐藏组织日报、组织辖下的杂志、组织发布的文章、活动
+3、组织后台无法登陆
+4、干事无法打开APP的组织后台
+			</textarea>
+		</div>
+	</div>
+
+	<div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+		<div class="col-md-offset-1 col-md-10">
+			<button class="btn btn-info" type="button" id="btn_save">
+				<i class="ace-icon fa fa-check bigger-110"></i>
+				确认
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" id="btn_close">
+				<i class="ace-icon fa fa-close bigger-110"></i>
+				关闭
+			</button>
+		</div>
+	</div>
+
+	<script src="${basePath}/static/laydate/laydate.js"></script>
+	<script type="text/javascript">
+
+		var layerIndex = parent.layer.getFrameIndex(window.name);
+		$(function(){
+			$("#btn_close").bind("click",function(){
+				parent.layer.close(layerIndex);
+			});
+			var id = '${id}';
+			$("#btn_save").bind("click",function(){
+				var bannedTime = $("#bannedTime").val();
+				var content = $("#content").val();
+				$.post("${basePath}/group/setBanned",{id:id,bannedTime:bannedTime , content:content}, function(data){
+					if(data.code===0){
+						parent.$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+						parent.layer.close(layerIndex);
+					}
+					else{
+						layer_alert("操作错误", "error");
+					}
+				}, "json");
+
+			});
+		})
+
+	</script>
+
+	<div class="space-4"></div>
+</form>
+@}

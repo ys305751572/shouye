@@ -22,6 +22,7 @@ public class GroupVo {
     private String branchName;
     private String password;
     private Integer type;
+    private Integer createAdminId;
 
     private Integer province;
     private Integer city;
@@ -289,5 +290,13 @@ public class GroupVo {
 
     public void setTitle4(String title4) {
         this.title4 = title4;
+    }
+
+    public Integer getCreateAdminId() {
+        return createAdminId;
+    }
+
+    public void setCreateAdminId(Integer createAdminId) {
+        this.createAdminId = createAdminId;
     }
 }

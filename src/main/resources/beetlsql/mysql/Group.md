@@ -1,7 +1,7 @@
 list
 ===
 SELECT
-    tg.id AS ID,
+    tg.id AS id,
     tg.avater AS avater,
     tge.idcard AS idcard,
     tg.name AS gName,
@@ -19,7 +19,6 @@ SELECT
     tge.freeze_time AS status
 FROM (SELECT * FROM tb_group WHERE audit_status = '3') tg
     LEFT JOIN tb_group_extend tge ON tg.id = tge.group_id
-    LEFT JOIN tb_group_approval tga ON tg.id = tga.group_id
     LEFT JOIN (select num,name from tfw_dict where code=908) tfd ON tg.type = tfd.num
     LEFT JOIN tfw_user cUser ON tge.create_admin_id = cUser.ID
     LEFT JOIN tfw_user aUser ON tge.approval_admin_id = aUser.ID

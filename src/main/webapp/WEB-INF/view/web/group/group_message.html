@@ -69,9 +69,16 @@
 
 		var layerIndex = parent.layer.getFrameIndex(window.name);
 		var groupName = "${group.name}";
-		var groupId = "${group.ID}";
+		var groupId = "${group.id}";
+		var groupNum = "${groupNum}";
+
 		$(function(){
-			$("#name").val(groupName);
+			if(groupNum==0){
+				$("#name").val(groupName);
+			}else {
+				$("#name").val(groupNum+" 个");
+			}
+
 
 			$("#btn_close").bind("click",function(){
 				parent.layer.close(layerIndex);
@@ -84,9 +91,9 @@
 				var content = $("#content").val();
 				console.log(groupId);
 
-				$.post("${basePath}/group/audit_status",{groupId:groupId , send:send, sendTime:sendTime, title:title, content:content}, function(data){
+				$.post("${basePath}/group/send_message",{groupId:groupId , send:send, sendTime:sendTime, title:title, content:content}, function(data){
 					if(data.code===0){
-						searchGrid();
+
 					}
 					else{
 						layer_alert("审核错误", "error");

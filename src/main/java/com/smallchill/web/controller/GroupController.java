@@ -1,6 +1,7 @@
 package com.smallchill.web.controller;
 
 import com.smallchill.common.base.BaseController;
+import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
@@ -62,20 +63,20 @@ public class GroupController extends BaseController {
     @RequestMapping(KEY_LIST)
     public Object list(HttpServletRequest request) {
         JqGrid object = (JqGrid) paginate(LIST_SOURCE, new GroupIntercept());
-        List<CaseInsensitiveHashMap> groupList2 = object.getRows();
+        List<CaseInsensitiveHashMap> groupList = object.getRows();
 
         //查询结果所有ID
         List<Integer> groupIds = new ArrayList<>();
-        for (CaseInsensitiveHashMap map : groupList2) {
+        for (CaseInsensitiveHashMap map : groupList) {
             Integer id = (Integer) map.get("ID");
             groupIds.add(id);
         }
         request.getSession().setAttribute("groupIds",groupIds);
+        request.getSession().setAttribute("groupNum",groupList.size());
 
         //查询结果的所有会员数
 
         //查询结果的所有干事数
-
 
         return object;
     }
@@ -87,10 +88,21 @@ public class GroupController extends BaseController {
         return BASE_PATH + "group_add.html";
     }
 
-    //消息发送页面
+    //消息发送页面(单发)
     @RequestMapping("/message" + "/{id}")
     public String groupMessages(ModelMap mm,@PathVariable String id) {
         Group group = groupService.findById(id);
+        mm.put("group", group);
+        mm.put("groupNum", 0);
+        mm.put("code", CODE);
+        return BASE_PATH + "group_message.html";
+    }
+
+    //消息发送页面(群发)
+    @RequestMapping("/message")
+    public String _groupMessages(ModelMap mm,HttpServletRequest request) {
+        Group group = new Group();
+        mm.put("groupNum", request.getSession().getAttribute("groupNum"));
         mm.put("group", group);
         mm.put("code", CODE);
         return BASE_PATH + "group_message.html";
@@ -100,7 +112,6 @@ public class GroupController extends BaseController {
     @ResponseBody
     @RequestMapping("/send_message")
     public AjaxResult sendMessage(HttpServletRequest request,String groupId,Integer send,String sendTime,String title,String content) {
-
         boolean index = groupService.sendMessage(request,groupId,send,sendTime,title,content);
         if (index) {
             return success(SEND_SUCCESS_MSG);
@@ -109,7 +120,7 @@ public class GroupController extends BaseController {
         }
     }
 
-    //消息发送
+    //审核状态
     @ResponseBody
     @RequestMapping("/audit_status")
     public AjaxResult auditStatus(Integer id,Integer status) {
@@ -126,11 +137,33 @@ public class GroupController extends BaseController {
 
 
     //跳转该组织的会员页面(暂无)
-    @RequestMapping("/members")
-    public String groupMembers(ModelMap mm) {
+    @RequestMapping("/members"  + "/{id}")
+    public String groupMembers(ModelMap mm,@PathVariable String id) {
         mm.put("code", CODE);
         return null;
     }
+
+
+    //跳转改变组织状态页面
+    @RequestMapping("/banned")
+    public String banned(ModelMap mm,Integer id) {
+        mm.put("id", id);
+        return BASE_PATH +"group_banned.html";
+    }
+
+
+    //改变组织状态(封/解)
+    @ResponseBody
+    @RequestMapping(value = "/setBanned")
+    public AjaxResult setBanned(Integer id, Integer bannedTime ,String content){
+        try{
+            groupService.banned(id,bannedTime,content);
+        }catch (RuntimeException e){
+            return error(SAVE_FAIL_MSG);
+        }
+        return success(SAVE_SUCCESS_MSG);
+    }
+
 
     @ResponseBody
     @RequestMapping(KEY_SAVE)
@@ -180,6 +213,8 @@ public class GroupController extends BaseController {
             groupVo.setBranchName(branchName);
             groupVo.setPassword(password);
             groupVo.setType(type);
+            Integer adminId = (Integer) ShiroKit.getUser().getId();
+            groupVo.setCreateAdminId(adminId);
             groupVo.setProvince(province);
             groupVo.setCity(city);
             groupVo.setTitle1(title1);
@@ -201,6 +236,8 @@ public class GroupController extends BaseController {
                 String _targat = _t.toString().substring(0,_t.length()-1);
                 groupVo.setTarget(_targat);
             }
+
+
             groupService.saveGroup(groupVo);
         }catch (RuntimeException e){
             e.printStackTrace();

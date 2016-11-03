@@ -1,9 +1,13 @@
 package com.smallchill.web.controller;
 
 import com.smallchill.common.base.BaseController;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.web.meta.intercept.GroupIntercept;
+import com.smallchill.web.model.Group;
+import com.smallchill.web.model.GroupExtend;
 import com.smallchill.web.model.vo.GroupVo;
 import com.smallchill.web.service.GroupBankService;
 import com.smallchill.web.service.GroupExtendService;
@@ -15,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 组织管理
@@ -48,6 +54,16 @@ public class GroupAuditController extends BaseController {
     public Object list() {
         return paginate(LIST_SOURCE, new GroupIntercept());
     }
+
+    //消息发送
+    @ResponseBody
+    @RequestMapping("/comment")
+    public AjaxResult comment(Integer id,String name) {
+        Group group = groupService.findById(id);
+        group.setAuditComment(name);
+        return null;
+    }
+
 
 
 }

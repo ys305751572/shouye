@@ -76,14 +76,9 @@
     function _select(data, key) {
         var id = "#_searchfield #" + data;
         var option = id + " option:selected";
-        console.log("_select data :" + id);
-        console.log("_select key :" + option);
-        console.log($(id));
         $(id).change(function () {
             var val = $(option).val();
             var text = $(option).text();
-            console.log("_select val :" + val);
-            console.log("_select text :" + text);
             _tags(data, val, text, key , 1)
         });
     }
@@ -147,7 +142,6 @@
             var key = $(this).find("input").eq(1).val();
             myMap.set(key, value);
         });
-        console.log(myMap);
 
         var filter = "";
         if (typeof (_filter) != "undefined") {
@@ -161,7 +155,6 @@
 //        console.log(where);
 
         myMap.forEach(function (value, key) {
-            console.log(index);
             if (BladeTool.isNotEmpty(key) && BladeTool.isNotEmpty(value)) {
                 if (index == 1) {
                     where += (BladeTool.isEmpty(filter) ? "{" : ",") + "\"" + key + "\":\"" + value + "\"";
@@ -221,7 +214,6 @@
         if (type.indexOf("select_") >= 0) {
             var code = type.replace("select_", "");
             $.post("${basePath}/cache/getSelect", {code: code, num: num}, function (data) {
-                console.log(data.data);
                 if (data.code === 0) {
                     $("#_divinput" + num).html(data.data);
                 }
