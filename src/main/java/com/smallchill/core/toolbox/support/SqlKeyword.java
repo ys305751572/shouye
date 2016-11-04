@@ -64,7 +64,7 @@ public class SqlKeyword {
 						}
 					}
 					if (StrKit.isBlank(k)) {
-						k = LIKE;
+						k = EQUAL;
 					}
 					String filter = col + getKeyWord(k, m);
 					if (m.indexOf(OR) == -1) {

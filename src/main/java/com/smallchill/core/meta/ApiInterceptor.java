@@ -1,4 +1,4 @@
-package com.smallchill.core.intercept;
+package com.smallchill.core.meta;
 
 import com.smallchill.api.common.model.Result;
 import com.smallchill.core.interfaces.Interceptor;

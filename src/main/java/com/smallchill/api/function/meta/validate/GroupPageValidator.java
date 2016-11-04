@@ -11,6 +11,6 @@ import com.smallchill.core.intercept.ApiValidator;
 public class GroupPageValidator extends ApiValidator {
     @Override
     protected void doValidate(Invocation inv) {
-        validateRequired("userId_equal", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
+        validateRequired("userId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
     }
 }

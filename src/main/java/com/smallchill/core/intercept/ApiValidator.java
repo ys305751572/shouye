@@ -3,6 +3,7 @@ package com.smallchill.core.intercept;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.common.model.Result;
 import com.smallchill.core.aop.Invocation;
+import com.smallchill.core.meta.ApiInterceptor;
 import com.smallchill.core.toolbox.Func;
 import com.smallchill.core.toolbox.kit.DateKit;
 import com.smallchill.core.toolbox.kit.JsonKit;

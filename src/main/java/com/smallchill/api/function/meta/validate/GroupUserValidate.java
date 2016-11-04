@@ -13,6 +13,6 @@ public class GroupUserValidate extends ApiValidator{
     @Override
     protected void doValidate(Invocation inv) {
         validateRequired("userId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
-        validateRequired("groupId", ErrorType.ERROR_CODE_APP_USERINBLANK);
+        validateRequired("groupId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
     }
 }

@@ -63,4 +63,4 @@ FROM
 LEFT JOIN
     tb_group_approval ga
 ON
-    g.id = ga.group_id
+    (g.id = ga.group_id AND ga.user_id = #{userId})

@@ -12,6 +12,6 @@ public class GlobalUsersValidate extends ApiValidator{
 
     @Override
     protected void doValidate(Invocation inv) {
-        validateRequired("userId", ErrorType.ERROR_CODE_APP_USERINBLANK);
+        validateRequired("userId_notequal", ErrorType.ERROR_CODE_APP_USERINBLANK);
     }
 }

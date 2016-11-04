@@ -18,23 +18,23 @@ public interface ShoupageService {
 
     List<UserVo> friends(Integer userId);
 
-    int countNew(Integer userId);
+    int countNew(Integer userId, Long date);
 
     Map<String,List<UserVo>> listNew(Integer userId);
 
-    int countIntereste(Integer userId);
+    int countIntereste(Integer userId, Long date);
 
     Map<String,Object> listIntereste(Integer userId);
 
-    int countInterested(Integer userId);
+    int countInterested(Integer userId, Long date);
 
     List<UserVo> listInterested(Integer userId);
 
-    int countAcquaintances(Integer userId);
+    int countAcquaintances(Integer userId, Long date);
 
     List<UserVo> listAcquaintances(Integer userId);
 
-    int countGroup(Integer userId);
+    int countGroup(Integer userId, Long date);
 
     List<Groupvo> listGroup(Integer userId);
 }

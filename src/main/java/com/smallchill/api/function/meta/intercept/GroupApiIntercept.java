@@ -1,7 +1,8 @@
 package com.smallchill.api.function.meta.intercept;
 
+import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.core.aop.AopContext;
-import com.smallchill.core.meta.PageIntercept;
+import com.smallchill.core.meta.ApiQueryIntercept;
 import com.smallchill.core.toolbox.support.BladePage;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Map;
  * 组织API拦截器
  * Created by yesong on 2016/11/3 0003.
  */
-public class GroupApiIntercept extends PageIntercept {
+public class GroupApiIntercept extends ApiQueryIntercept {
 
     @Override
     public void queryAfter(AopContext ac) {
@@ -24,6 +25,7 @@ public class GroupApiIntercept extends PageIntercept {
             else {
                 record.put("isjoin", "已加入");
             }
+
             record.remove("status");
             record.remove("city");
             record.remove("province");
@@ -33,6 +35,6 @@ public class GroupApiIntercept extends PageIntercept {
 
     @Override
     public void queryBefore(AopContext ac) {
-        ac.setCondition(" and ( userId = #{userId_equal} or userId IS NULL)");
+        setParma("userId",ac);
     }
 }

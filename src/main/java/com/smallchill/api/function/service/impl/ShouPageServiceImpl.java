@@ -1,13 +1,16 @@
 package com.smallchill.api.function.service.impl;
 
 import com.smallchill.api.function.meta.other.Convert;
+import com.smallchill.api.function.modal.UserLastReadTime;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.ShoupageService;
+import com.smallchill.api.function.service.UserLastReadTimeService;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +25,9 @@ import java.util.Map;
 @Service
 public class ShouPageServiceImpl implements ShoupageService {
 
+    @Autowired
+    private UserLastReadTimeService userLastReadTimeService;
+
     private static String sql = "select \n" +
             " ui.user_id,ui.username,ui.avater,ui.province_city,ui.domain,ui.key_word,ui.organization,ui.professional,ua.validate_info,ua.introduce_user_id,ua.status,ua.from_user_id,ua.to_user_id\n" +
             "from \n" +
@@ -29,18 +35,25 @@ public class ShouPageServiceImpl implements ShoupageService {
             "join \n" +
             "  tb_user_info ui";
 
-    private static String sql_interest_user = "select ui.user_id,ui.username,ui.avater,ui.province_city,ui.domain,ui.key_word,ui.organization,ui.professional from tb_interest i join tb_user_info ui on i.to_id = ui.user_id where i.user_id = #{userId} " +
+    private String sql_interest_user = "select ui.user_id,ui.username,ui.avater,ui.province_city,ui.domain,ui.key_word,ui.organization,ui.professional from tb_interest i join tb_user_info ui on i.to_id = ui.user_id where i.user_id = #{userId} " +
             " and i.type = 0";
 
-    private static String sql_interested_user =
+    private String sql_interested_user =
             "select ui.user_id,ui.username,ui.avater,ui.province_city,ui.domain,ui.key_word,ui.organization,ui.professional from tb_interest i join tb_user_info ui on i.user_id = ui.user_id where i.to_id = #{userId}";
 
-    private static String sql_interest_group = "select * from tb_interest i join tb_group g on i.to_id = g.id where i.user_id = #{userId} and i.type = 1";
+    private String sql_interest_group = "select * from tb_interest i join tb_group g on i.to_id = g.id where i.user_id = #{userId} and i.type = 1";
 
-    private static String sql_my_group = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
+    private String sql_my_group = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
+
+    private String sql_new = "select count(*) from ";
 
     @Override
     public ShouPageVo index(Integer userId) {
+        UserLastReadTime userLastReadTime = userLastReadTimeService.findFirstBy("user_id", Record.create().set("userId", userId));
+        countNew(userId, userLastReadTime.getNewTime());
+        countIntereste(userId, userLastReadTime.getIntereste());
+        countInterested(userId, userLastReadTime.getInterested());
+        countGroup(userId, userLastReadTime.getGroup());
         return null;
     }
 
@@ -57,7 +70,7 @@ public class ShouPageServiceImpl implements ShoupageService {
     }
 
     @Override
-    public int countNew(Integer userId) {
+    public int countNew(Integer userId, Long date) {
         return 0;
     }
 
@@ -139,7 +152,7 @@ public class ShouPageServiceImpl implements ShoupageService {
     }
 
     @Override
-    public int countIntereste(Integer userId) {
+    public int countIntereste(Integer userId, Long date) {
         return 0;
     }
 
@@ -171,7 +184,7 @@ public class ShouPageServiceImpl implements ShoupageService {
     }
 
     @Override
-    public int countInterested(Integer userId) {
+    public int countInterested(Integer userId, Long date) {
         return 0;
     }
 
@@ -192,7 +205,7 @@ public class ShouPageServiceImpl implements ShoupageService {
     }
 
     @Override
-    public int countAcquaintances(Integer userId) {
+    public int countAcquaintances(Integer userId, Long date) {
         return 0;
     }
 
@@ -229,7 +242,7 @@ public class ShouPageServiceImpl implements ShoupageService {
     }
 
     @Override
-    public int countGroup(Integer userId) {
+    public int countGroup(Integer userId, Long date) {
         return 0;
     }
 

@@ -111,6 +111,9 @@ public class UserInfo extends BaseModel {
     @Column(name = "join_type")
     private Integer JoinType;
 
+    @Column(name = "per")
+    private Integer per;
+
     @Column(name = "create_time")
     private Long createTime;
 

@@ -64,12 +64,12 @@ import com.smallchill.core.toolbox.log.LogManager;
 public class BladeController implements ConstCurd, ConstCache {
     private static final Logger log = LoggerFactory.getLogger(BladeController.class);
 
-//    @Resource
-//    private HttpServletRequest request;
-//    @Resource
-//    private HttpServletResponse response;
-	private HttpServletRequest request = null;
-    private HttpServletResponse response = null;
+    @Resource
+    private HttpServletRequest request;
+    @Resource
+    private HttpServletResponse response;
+//	private HttpServletRequest request = null;
+//    private HttpServletResponse response = null;
 
 
     @ResponseBody
@@ -453,7 +453,7 @@ public class BladeController implements ConstCurd, ConstCache {
         Map<String, String[]> queryString = request.getParameterMap();
         Record recordQuery = Record.create();
         for (Map.Entry<String, String[]> element : queryString.entrySet()) {
-            if (StringUtils.isNotBlank(element.getValue()[0]) && !excludeParams.contains(element.getKey())) {
+            if (StringUtils.isNotBlank(element.getValue()[0]) && (excludeParams == null || !excludeParams.contains(element.getKey()))) {
                 recordQuery.put(element.getKey(), element.getValue()[0]);
             }
         }
