@@ -10,15 +10,7 @@
         initMenuBtn("btns","${code}");
     });
 
-    /**
-     *用于执行按钮加载事件结束后操作的ajax请求(否则会导致回调覆盖,也可以使用 async:false)
-     */
-    function doOther(){
-        initZtree();
-    }
-
     function initGrid(){
-        var lastsel2;
         var grid_url = ctx+"/${code}/list";//查询列表接口
         var _colnames=[
             "序列",
@@ -29,7 +21,7 @@
             "创建者",
             "审核者",
             "审核状态",
-            "审核状态1",
+            "审核状态",
             "备注",
             "状态改变时间",
             "操作"
@@ -42,9 +34,29 @@
             {name:"gName",index:"gName", width:120},
             {name:"targat",index:"targat", width:100},
             {name:"createName",index:"createName", width:120},
-            {name:"approvalName",index:"approvalName", width:120},
-            {name:"auditStatus",index:"auditStatus", width:120},
-            {name:"a_status",index:"a_status", width:120,hidden:true},
+            {name:"approvalName",index:"approvalName", width:120,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
+                        return "/";
+                    }else {
+                        return cellvalue;
+                    }
+                }
+            },
+            {name:"auditStatus",index:"auditStatus", width:120,hidden:true},
+            {name:"a_status",index:"a_status", width:120,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue=='1'){
+                        return "<p style='color: #b3b8b8'>待审核</p>";
+                    }else if(cellvalue=='2'){
+                        return "<p style='color: #97acaf'>重新审核</p>";
+                    }else if(cellvalue=='3'){
+                        return "<p style='color: #6fb3e0'>已通过</p>";
+                    }else{
+                        return "<p style='color: #ff4d4f'>否决</p>";
+                    }
+                }
+            },
             {name:"auditComment",index:"auditComment", width:120,editable: true,edittype:"text"},
             {name:"updateTime",index:"updateTime", width:120,
                 formatter: function(cellvalue, options, rowObject) {
@@ -85,7 +97,7 @@
 
         jQuery(grid_selector).jqGrid({
             url:grid_url,
-//            shrinkToFit:true,//适用于较少字段,响应式
+            shrinkToFit:true,//适用于较少字段,响应式
             autowidth : true,
             forceFit : true,
             colNames:_colnames,
@@ -96,14 +108,9 @@
             cellEdit : true,
             cellsubmit: "clientArray",
             beforeSubmitCell : function(rowid, cellname, value, iRow, iCol){
-                console.log(rowid);
-                console.log(cellname);
-                console.log(value);
-                console.log(iRow);
-                console.log(iCol);
                 $.post(
-                        "${basePath}/groupAudit/comment",
-                        {id:rowid,name:value},
+                        "${basePath}/groupAudit/updateNote",
+                        {id:rowid,content:value},
                         function(data){
                             if(data.code===0){
 
@@ -130,61 +137,11 @@
         }, "json");
     }
 
-    function initZtree(){
-        var setting = {
-            data: {
-                simpleData: {
-                    enable: true
-                }
-            },
-            callback: {
-                beforeClick: zTreeBeforeClick
-            }
-        };
-        $.post("${basePath}/cache/roleTreeList", function(data){
-            if(data.code===0){
-                $.fn.zTree.init($("#zTree"), setting, data.data);
-            }
-            else{
-                layer_alert("数据加载失败", "error");
-            }
-        }, "json");
-    }
-
-    function zTreeBeforeClick(treeId, treeNode, clickFlag) {
-        var id=treeNode.id;
-        if(id==""){
-            exwhere="";
-            searchGrid();
-            return;
-        }
-        else{
-            exwhere="{\"pId_equal\":\""+id+"\",\"or_id_equal\":\""+id+"\"}";
-            searchGrid();
-        }
-
-    }
 </script>
-
 
 <!-- 配置grid -->
 <div class="row">
-    <div class="col-sm-3">
-        <div class="widget-box widget-color-blue2">
-            <div class="widget-header">
-                <h4 class="widget-title lighter smaller">角色组织架构</h4>
-            </div>
-
-            <div class="widget-body">
-                <div class="widget-main padding-8">
-                    <ul id="zTree" class="ztree"></ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-xs-9 tb-grid">
+    <div class="col-xs-12 tb-grid">
         <!-- 配置查询 -->
         @ var _col1=[
         @			  {name:"审核状态",index:"a_status", type:"select_911"}

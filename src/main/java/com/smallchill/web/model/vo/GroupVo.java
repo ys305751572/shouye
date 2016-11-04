@@ -23,6 +23,7 @@ public class GroupVo {
     private String password;
     private Integer type;
     private Integer createAdminId;
+    private Integer auditStatus;
 
     private Integer province;
     private Integer city;
@@ -298,5 +299,13 @@ public class GroupVo {
 
     public void setCreateAdminId(Integer createAdminId) {
         this.createAdminId = createAdminId;
+    }
+
+    public Integer getAuditStatus() {
+        return auditStatus;
+    }
+
+    public void setAuditStatus(Integer auditStatus) {
+        this.auditStatus = auditStatus;
     }
 }

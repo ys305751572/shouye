@@ -96,4 +96,12 @@ public interface GroupService extends IService<Group> {
      */
     void banned(Integer id, Integer bannedTime ,String content);
 
+
+    /**
+     * 待审组织--行内修改备注
+     * @param id        组织ID
+     * @param content   修改内容
+     */
+    void updateNote(Integer id,String content);
+
 }

@@ -55,13 +55,18 @@ public class GroupAuditController extends BaseController {
         return paginate(LIST_SOURCE, new GroupIntercept());
     }
 
-    //消息发送
+    //单元格内 修改备注
     @ResponseBody
-    @RequestMapping("/comment")
-    public AjaxResult comment(Integer id,String name) {
-        Group group = groupService.findById(id);
-        group.setAuditComment(name);
-        return null;
+    @RequestMapping("/updateNote")
+    public AjaxResult updateNote(Integer id,String content) {
+        try{
+            groupService.updateNote(id,content);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error(UPDATE_FAIL_MSG);
+        }
+        return success(UPDATE_FAIL_MSG);
+
     }
 
 
