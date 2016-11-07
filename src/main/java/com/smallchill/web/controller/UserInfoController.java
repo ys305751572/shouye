@@ -24,7 +24,7 @@ public class UserInfoController extends BaseController {
 	private static String CODE = "userInfo";
 	private static String PERFIX = "tb_user_info";
 	private static String LIST_SOURCE = "UserInfo.list";
-	private static String BASE_PATH = "/platform/userInfo/";
+	private static String BASE_PATH = "/web/userInfo/";
 	
 	@Autowired
 	UserInfoService service;

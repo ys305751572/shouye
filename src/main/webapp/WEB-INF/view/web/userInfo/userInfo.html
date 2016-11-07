@@ -16,12 +16,85 @@
 	
 	function initGrid(){
 		var grid_url = ctx + "/${code}/list";
-		var _colnames = ["id"];
-		var _colmodel = [{name:"id", index:"id", width:100}];
+		var _colnames = [
+				"id",
+				"头像",
+				"账号ID",
+				"名字",
+				"性别",
+				"年龄",
+				"地区",
+				"毕业院校",
+				"事业状态",
+				"行业领域",
+				"职业",
+				"专业",
+				"擅长",
+				"资历",
+				"资源",
+				"单位名称",
+				"单位类型",
+				"产品服务",
+				"行业地位",
+				"资质",
+				"个人关键字",
+				"所属组织",
+				"会员类型",
+				"已加入组织数量",
+				"朋友数量",
+				"熟人数量",
+				"活动报名数",
+				"活动签名数",
+				"活动参与率",
+				"内容发布数",
+				"历史消费",
+				"电话",
+				"注册时间",
+				"上次登录",
+				"账号状态",
+				"操作"
+			];
+		var _colmodel = [
+			{name:"id",index:"id", width:80,hidden:true},
+			{name:"avater",index:"avater", width:120},
+			{name:"accountId", index:"accountId", width:120},
+			{name:"userName", index:"userName", width:120},
+			{name:"gender", index:"gender", width:120},
+			{name:"age", index:"age", width:120},
+			{name:"provinceCity", index:"provinceCity", width:120},
+			{name:"school", index:"school", width:120},
+			{name:"career", index:"career", width:120},
+			{name:"domain", index:"domain", width:120},
+			{name:"professional", index:"professional", width:120},
+			{name:"proficient", index:"proficient", width:120},
+			{name:"adept", index:"adept", width:120},
+			{name:"seniority", index:"seniority", width:120},
+			{name:"resources", index:"resources", width:120},
+			{name:"organization", index:"organization", width:120},
+			{name:"orgType", index:"orgType", width:120},
+			{name:"productType", index:"productType", width:120},
+			{name:"industryRanking", index:"industryRanking", width:120},
+			{name:"qualification", index:"qualification", width:120},
+			{name:"keyWord", index:"keyWord", width:120},
+			{name:"groupName", index:"groupName", width:120},
+			{name:"vipType", index:"vipType", width:120},
+			{name:"organizationNum", index:"organizationNum", width:120},
+			{name:"friendNum", index:"friendNum", width:120},
+			{name:"acquaintancesNum", index:"acquaintancesNum", width:120},
+			{name:"activityApplyNum", index:"activityApplyNum", width:120},
+			{name:"activitySignNum", index:"activitySignNum", width:120},
+			{name:"activityParticipate", index:"activityParticipate", width:120},
+			{name:"contentNum", index:"contentNum", width:120},
+			{formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
+			{name:"mobile", index:"mobile", width:120},
+			{name:"createTime", index:"createTime", width:120},
+			{name:"lastLoginTime", index:"lastLoginTime", width:120},
+			{name:"status", index:"status", width:120},
+			{formatter: function(cellvalue, options, rowObject) {return "操作"}}
+		];
 		
 		jQuery(grid_selector).jqGrid({
 			url : grid_url,
-		    shrinkToFit : true,
 			colNames : _colnames,
 			colModel : _colmodel, 
 			jsonReader : {id :"id"},
@@ -37,11 +110,54 @@
 		<div class="col-xs-12 tb-grid">
 			<!-- 配置 查询 -->
 			@ var _col=[
-			@	{name:"id", index:"id", type:"text"}
+			@	{name:"性别",index:"gender", type:"select_101"},
+			@	{name:"年龄",index:"age", type:"select_904"},
+			@	{name:"事业状态",index:"career", type:"select_905"},
+			@	{name:"行业",index:"domain", type:"select_906"},
+			@	{name:"领域",index:"domain", type:"select_906"},
+			@	{name:"组织类型",index:"domain", type:"select_908"},
+			@	{name:"产品服务",index:"domain", type:"select_906"},
+			@	{name:"组织性质",index:"domain", type:"select_906"}
 			@	];
-			@ include("/common/_function/_search_list.html",{"col":_col}){}
+			@ include("/common/_function/_search.html",{"col":_col}){}
 			<!-- 按钮 -->
 			<div class="welljq well-sm" id="btns"></div>
+			<div class="welljq well-sm" id="columns">
+				<input type="checkbox" value="avater" class="cbox" checked="checked"  />头像
+				<input type="checkbox" value="accountId" class="cbox" checked="checked"  />账号ID
+				<input type="checkbox" value="userName" class="cbox" checked="checked"  />名字
+				<input type="checkbox" value="gender" class="cbox" checked="checked"  />性别
+				<input type="checkbox" value="age" class="cbox" checked="checked"  />年龄
+				<input type="checkbox" value="provinceCity" class="cbox" checked="checked"  />省市
+				<input type="checkbox" value="school" class="cbox" checked="checked"  />毕业院校
+				<input type="checkbox" value="career" class="cbox" checked="checked"  />事业状态
+				<input type="checkbox" value="domain" class="cbox" checked="checked"  />行业领域
+				<input type="checkbox" value="professional" class="cbox" checked="checked"  />职业
+				<input type="checkbox" value="proficient" class="cbox" checked="checked"  />专业
+				<input type="checkbox" value="adept" class="cbox" checked="checked"  />擅长
+				<input type="checkbox" value="seniority" class="cbox" checked="checked" />资历
+				<input type="checkbox" value="resources" class="cbox" checked="checked" />资源
+				<input type="checkbox" value="organization" class="cbox" checked="checked" />单位名称
+				<input type="checkbox" value="orgType" class="cbox" checked="checked" />单位类型
+				<input type="checkbox" value="productType" class="cbox" checked="checked"  />产品服务
+				<input type="checkbox" value="industryRanking" class="cbox" checked="checked"  />行业地位
+				<input type="checkbox" value="qualification" class="cbox" checked="checked"  />资质
+				<input type="checkbox" value="keyWord" class="cbox" checked="checked"  />个人关键字
+				<input type="checkbox" value="groupName" class="cbox" checked="checked"  />所属组织
+				<input type="checkbox" value="vipType" class="cbox" checked="checked"  />会员类型
+				<input type="checkbox" value="organizationNum" class="cbox" checked="checked"  />已加入组织数量
+				<input type="checkbox" value="friendNum" class="cbox" checked="checked"  />朋友数量
+				<input type="checkbox" value="acquaintancesNum" class="cbox" checked="checked"  />熟人数量
+				<input type="checkbox" value="activityApplyNum" class="cbox" checked="checked"  />活动报名数
+				<input type="checkbox" value="activitySignNum" class="cbox" checked="checked"  />活动签到数
+				<input type="checkbox" value="activityParticipate" class="cbox" checked="checked"  />活动参与率
+				<input type="checkbox" value="contentNum" class="cbox" checked="checked"  />内容发布数
+				<input type="checkbox" value="mobile" class="cbox" checked="checked"  />电话
+				<input type="checkbox" value="createTime" class="cbox" checked="checked"  />注册时间
+				<input type="checkbox" value="lastLoginTime" class="cbox" checked="checked"  />最后登录时间
+				<input type="checkbox" value="status" class="cbox" checked="checked"  />账号状态
+
+			</div>
 			<!-- grid -->
 			<table id="grid-table"></table>
 			<!-- 分页-->
