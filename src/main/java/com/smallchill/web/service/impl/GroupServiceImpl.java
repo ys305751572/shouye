@@ -77,7 +77,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         gg.setArtificialPersonName(groupVo.getArtificialPersonName());
         gg.setArtificialPersonIdcard(groupVo.getArtificialPersonIdcard());
         gg.setArtificialPersonMobile(groupVo.getArtificialPersonMobile());
-        gg.setCreateAdminId(groupVo.getCreateAdminId());
+        gg.setCreateAdminId(groupVo.getCreateAdminId()); //创建者ID
         groupExtendService.save(gg);
     }
 
@@ -129,6 +129,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         group.setIsOpen3(groupVo.getIsOpen3());
 
         group.setCreateTime(DateTimeKit.nowLong());
+        group.setAuditStatus(1); //新增组织为待审核状态
         return this.saveRtId(group);
     }
 
@@ -317,5 +318,19 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         }
     }
 
+    /**
+     * 待审组织--行内修改备注
+     * @param id        组织ID
+     * @param content   修改内容
+     */
+    @Override
+    public void updateNote(Integer id, String content) {
+        String set = "set audit_comment = ${content}";
+        String where = " group_id = #{groupId}";
+        Record record = Record.create();
+        record.put("groupId", id);
+        record.put("content", content);
+        updateBy(set, where, record);
+    }
 
 }

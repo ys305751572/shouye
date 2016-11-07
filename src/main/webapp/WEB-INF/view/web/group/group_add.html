@@ -40,6 +40,7 @@
 			<label class="col-sm-2 control-label no-padding-right" > 组织代码证扫描件 </label>
 			<div class="col-sm-3">
 				<input type="text" name="" class="form-control"  value="" placeholder="" /> <!--codeImage-->
+
 			</div>
 
 			<label class="col-sm-2 control-label no-padding-right" > 营业执照注册号 </label>
@@ -134,12 +135,13 @@
 		<div class="form-group">
 			<h4 class="col-sm-2 control-label no-padding-right" > --账号资料-- </h4>
 		</div>
+		<!-- 表单 -->
+		@ var _table="tb_group";
+		@ var _col=[
+		@			  {name:"头像上传",index:"avater", type:"imgupload",newline:true,length:8,returnType:"id"}
+		@		   ];
+		@ include("/common/_curd/_add.html",{"col":_col,"table":_table}){}
 		<div class="form-group">
-			<label class="col-sm-2 control-label no-padding-right" >头像</label>
-			<div class="col-sm-3">
-				<input type="text" name="" value="" placeholder="" class="form-control" />	<!--avater-->
-			</div>
-
 			<label class="col-sm-2 control-label no-padding-right" >组织ID</label>
 			<div class="col-sm-3">
 				<input type="text" name="idcard" id="idcard" value="" placeholder="" class="form-control" />
@@ -176,7 +178,6 @@
 		</div>
 
 		<!--demo-->
-
 		<div id="phone">
 			<div class="form-group">
 				<label class="col-sm-2 control-label no-padding-right" >服务热线</label>
@@ -307,6 +308,7 @@
 <script charset="utf-8" src="${basePath}/static/kindeditor/kindeditor.js"></script>
 <script charset="utf-8" src="${basePath}/static/kindeditor/lang/zh_CN.js"></script>
 <script charset="utf-8" src="${basePath}/static/kindeditor/plugins/code/prettify.js"></script>
+<script charset="utf-8" src="${basePath}/static/kindeditor/plugins/image/image.js"></script>
 
 <script type="text/javascript">
 	function phoneAdd(){
@@ -363,26 +365,17 @@
 		var editor3;
 
 		KindEditor.ready(function(K) {
-			var options1 = {
+			var options = {
 				cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
+				uploadJson : '${ctxPath}/kindeditor/upload_json',
+				//uploadJson : '${ctxPath}/image/upload_blob',
+				fileManagerJson : '${ctxPath}/kindeditor/file_manager_json',
 				items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
 				filterMode : true
 			};
-			 editor1 = K.create('textarea[name="content1"]', options1);
-
-			var options2 = {
-				cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
-				items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
-				filterMode : true
-			};
-			 editor2 = K.create('textarea[name="content2"]', options2);
-
-			var options3 = {
-				cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
-				items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
-				filterMode : true
-			};
-			 editor3 = K.create('textarea[name="content3"]', options3);
+			 editor1 = K.create('textarea[name="content1"]', options);
+			 editor2 = K.create('textarea[name="content2"]', options);
+			 editor3 = K.create('textarea[name="content3"]', options);
 
 		});
 

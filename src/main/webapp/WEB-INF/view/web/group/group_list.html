@@ -10,13 +10,6 @@
         initMenuBtn("btns","${code}");
     });
 
-    /**
-     *用于执行按钮加载事件结束后操作的ajax请求(否则会导致回调覆盖,也可以使用 async:false)
-     */
-    function doOther(){
-        initZtree();
-    }
-
     function initGrid(){
         var grid_url = ctx+"/${code}/list";//查询列表接口
         var _colnames=[
@@ -176,61 +169,12 @@
         }
     }
 
-    function initZtree(){
-        var setting = {
-            data: {
-                simpleData: {
-                    enable: true
-                }
-            },
-            callback: {
-                beforeClick: zTreeBeforeClick
-            }
-        };
-        $.post("${basePath}/cache/roleTreeList", function(data){
-            if(data.code===0){
-                $.fn.zTree.init($("#zTree"), setting, data.data);
-            }
-            else{
-                layer_alert("数据加载失败", "error");
-            }
-        }, "json");
-    }
-
-    function zTreeBeforeClick(treeId, treeNode, clickFlag) {
-        var id=treeNode.id;
-        if(id==""){
-            exwhere="";
-            searchGrid();
-            return;
-        }
-        else{
-            exwhere="{\"pId_equal\":\""+id+"\",\"or_id_equal\":\""+id+"\"}";
-            searchGrid();
-        }
-
-    }
 </script>
 
 
 <!-- 配置grid -->
 <div class="row">
-    <div class="col-sm-3">
-        <div class="widget-box widget-color-blue2">
-            <div class="widget-header">
-                <h4 class="widget-title lighter smaller">角色组织架构</h4>
-            </div>
-
-            <div class="widget-body">
-                <div class="widget-main padding-8">
-                    <ul id="zTree" class="ztree"></ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-xs-9 tb-grid">
+    <div class="col-xs-12 tb-grid">
         <!-- 配置查询 -->
         @ var _col=[
         @			  {name:"组织类型",index:"type", type:"select_908"},
