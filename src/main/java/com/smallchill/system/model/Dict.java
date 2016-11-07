@@ -15,12 +15,18 @@
  */
 package com.smallchill.system.model;
 
+import org.beetl.sql.core.Tail;
+import org.beetl.sql.core.TailBean;
 import org.beetl.sql.core.annotatoin.AutoID;
 import org.beetl.sql.core.annotatoin.SeqID;
 import org.beetl.sql.core.annotatoin.Table;
 
 import com.smallchill.core.annotation.BindID;
 import com.smallchill.core.base.model.BaseModel;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "tfw_dict")
 @BindID(name = "id")
@@ -33,6 +39,8 @@ public class Dict extends BaseModel {
 	private Integer pid;
 	private String tips;
 	private Integer version;
+
+	private List<Dict> dicts = new ArrayList<>();
 
 	@AutoID
 	@SeqID(name = "SEQ_DICT")
@@ -92,4 +100,15 @@ public class Dict extends BaseModel {
 		this.version = version;
 	}
 
+	public List<Dict> getDicts() {
+		return dicts;
+	}
+
+	public void setDicts(List<Dict> dicts) {
+		this.dicts = dicts;
+	}
+
+	public void addDicts(Dict dict) {
+		this.dicts.add(dict);
+	}
 }

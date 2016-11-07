@@ -24,6 +24,9 @@ public class UserInfo extends BaseModel {
     @Column(name = "username")
     private String username = "";
 
+    @Column(name = "avater")
+    private String avater = "";
+
     @Column(name = "mobile")
     private String mobile = "";
 
@@ -51,9 +54,6 @@ public class UserInfo extends BaseModel {
     @Column(name = "school")
     private String school;
 
-    @Column(name = "career")
-    private String career;
-
     @Column(name = "domain")
     private String domain;
 
@@ -72,17 +72,20 @@ public class UserInfo extends BaseModel {
     @Column(name = "organization")
     private String organization;
 
+    @Column(name = "career")
+    private String career;
+
     /**
      * 专业
      */
     @Column(name = "zy")
-    private String zy;
+    private String zy = "";
 
     @Column(name = "sc")
-    private String sc;
+    private String sc = "";
 
     @Column(name = "zl")
-    private String zl;
+    private String zl = "";
 
     /**
      * 资源
@@ -91,31 +94,80 @@ public class UserInfo extends BaseModel {
     private String zy2;
 
     @Column(name = "org_is_open")
-    private Integer orgIsOpen;
+    private Integer orgIsOpen = 1;
 
     @Column(name = "key_word")
-    private String keyWord;
+    private String keyWord = "";
 
     @Column(name = "groups")
-    private String groups;
+    private String groups = "";
 
     @Column(name = "targat")
-    private String targat;
+    private String targat = "";
 
     @Column(name = "vip_end_time")
-    private Long vipEndTime;
+    private Long vipEndTime = -1L;
 
-    @Column(name = "vipType")
-    private Integer type;
+    @Column(name = "vip_type")
+    private Integer type = 1;
 
     @Column(name = "join_type")
-    private Integer JoinType;
+    private Integer JoinType = 1;
 
     @Column(name = "per")
-    private Integer per;
+    private Integer per = 0;
+
+    @Column(name = "desc")
+    private String desc = "";
+
+    @Column(name = "industry_ranking")
+    private String industryRanking = "";
+
+    @Column(name = "qualification")
+    private String qualification = "";
 
     @Column(name = "create_time")
     private Long createTime;
+
+    public String getIndustryRanking() {
+        return industryRanking;
+    }
+
+    public void setIndustryRanking(String industryRanking) {
+        this.industryRanking = industryRanking;
+    }
+
+    public String getQualification() {
+        return qualification;
+    }
+
+    public void setQualification(String qualification) {
+        this.qualification = qualification;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public Integer getPer() {
+        return per;
+    }
+
+    public void setPer(Integer per) {
+        this.per = per;
+    }
+
+    public String getAvater() {
+        return avater;
+    }
+
+    public void setAvater(String avater) {
+        this.avater = avater;
+    }
 
     public Integer getUserId() {
         return userId;

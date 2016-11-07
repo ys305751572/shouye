@@ -1,5 +1,6 @@
 package com.smallchill.web.service;
 
+import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserInfo;
@@ -12,8 +13,10 @@ import java.util.List;
  * 2016-10-18 09:47:31
  */
 public interface UserInfoService extends IService<UserInfo> {
-    UserInfo updateUserInfo(UserInfo userInfo, HttpServletRequest request);
+    UserInfo updateUserInfo(UserInfo userInfo, HttpServletRequest request) throws UserExitsException;
     UserInfo findByUserId(int userId);
 
     List<Record> findByParmas(Record params);
+
+    Record findUserInfoDetail(Integer userId);
 }

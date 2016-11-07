@@ -45,7 +45,8 @@ public class ShouPageServiceImpl implements ShoupageService {
 
     private String sql_my_group = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
 
-    private String sql_new = "select count(*) from ";
+    private String sql_new = "select count(*) AS count FROM tb_user_approval ua JOIN tb_user_last_read_time ul ON (ua.`from_user_id` = #{userId} OR ua.`to_user_id` = #{userId}) AND ul.`user_id` = 20 \n" +
+            "WHERE ul.`new_time`  < ua.`create_time` OR ua.`status` = 1";
 
     @Override
     public ShouPageVo index(Integer userId) {
@@ -71,7 +72,8 @@ public class ShouPageServiceImpl implements ShoupageService {
 
     @Override
     public int countNew(Integer userId, Long date) {
-        return 0;
+        Record record = Db.init().selectOne(sql_new, Record.create().set("userId", userId));
+        return record.get("count") == null ? 0 : Integer.parseInt(record.get("count").toString());
     }
 
     /**
@@ -153,6 +155,7 @@ public class ShouPageServiceImpl implements ShoupageService {
 
     @Override
     public int countIntereste(Integer userId, Long date) {
+
         return 0;
     }
 

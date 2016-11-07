@@ -1,5 +1,7 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.common.exception.UserExitsException;
+import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.modal.UserDomain;
 import com.smallchill.api.function.modal.UserProfessional;
 import com.smallchill.api.function.service.UserDomainService;
@@ -46,24 +48,35 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Transactional
     @Override
-    public UserInfo updateUserInfo(UserInfo userInfo, HttpServletRequest request) {
+    public UserInfo updateUserInfo(UserInfo userInfo, HttpServletRequest request) throws UserExitsException {
 
-        if (userInfo.getId() != null) {
+        String domain = userInfo.getDomain();
+        String pro = userInfo.getProfessional();
+        int per = per(userInfo);
+        userInfo.setPer(per);
+        domainAndProfessional(userInfo);
+        if (userInfo.getUserId() != null) {
             _update(userInfo);
         } else {
+            if (userLoginService.userIfExtis(userInfo.getMobile())) {
+                throw new UserExitsException();
+            }
             // 新建userlogin信息
             int userId = createUserLogin(userInfo, request);
             userInfo.setUserId(userId);
             _save(userInfo);
         }
+        userInfo.setDomain(domain);
+        userInfo.setProfessional(pro);
         processUserInfo(userInfo);
         return userInfo;
     }
 
     /**
      * 查询用户详细信息
-     * @param userId
-     * @return
+     *
+     * @param userId 用户ID
+     * @return 用户信息
      */
     @Override
     public UserInfo findByUserId(int userId) {
@@ -72,9 +85,14 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Override
     public List<Record> findByParmas(Record params) {
-        String sql = Blade.dao().getScript("UserInfo.apiList").getSql();
-        List<Record> userList = Db.init().selectList(sql, params);
-        return userList;
+        String sql = Blade.dao().getScript("UserInfo.listPage").getSql();
+        return Db.init().selectList(sql, params);
+    }
+
+    @Override
+    public Record findUserInfoDetail(Integer userId) {
+        String sql = Blade.dao().getScript("UserInfo.userInfoDetail").getSql();
+        return Db.init().selectOne(sql, Record.create().set("userId", userId));
     }
 
     /**
@@ -88,6 +106,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         userLogin.setLastLoginIp(ip);
         userLogin.setLastLoginTime(DateTimeKit.nowLong());
         userLogin.setUsername(userInfo.getMobile());
+        userLogin.setCreateTime(DateTimeKit.nowLong());
         return userLoginService.saveRtId(userLogin);
     }
 
@@ -100,23 +119,21 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     private void processUserInfo(UserInfo userInfo) {
         String domain = userInfo.getDomain();
         String professional = userInfo.getProfessional();
-        LOGGER.info("domain:" + domain + "==professional:" + professional);
 
         // 处理行业（领域）
         if (StringUtils.isNotBlank(domain)) {
-            // TODO 先删除该用户所有领域信息
-            userDomainService.deleteBy("user_id = #{userId}", Record.create().set("userId", userInfo.getId()));
+            // 先删除该用户所有领域信息
+            userDomainService.deleteBy("user_id = #{userId}", Record.create().set("userId", userInfo.getUserId()));
             String[] domains = domain.split("\\|");
             for (String c : domains) {
                 if (StringUtils.isNotBlank(c)) {
                     String[] ss = c.split(",");
-                    int userId = Integer.parseInt(ss[0]);
-                    int domainId = Integer.parseInt(ss[1]);
-                    int pid = Integer.parseInt(ss[2]);
-                    String name = ss[3];
+                    int domainId = Integer.parseInt(ss[0]);
+                    int pid = Integer.parseInt(ss[1]);
+                    String name = ss[2];
 
                     UserDomain ud = new UserDomain();
-                    ud.setUserId(userId);
+                    ud.setUserId(userInfo.getUserId());
                     ud.setDomainId(domainId);
                     ud.setPid(pid);
                     ud.setName(name);
@@ -125,21 +142,20 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             }
         }
 
-        // ---------------------- 处理专业-------------------------
+        // ---------------------- 处理专业 -------------------------
         if (StringUtils.isNotBlank(professional)) {
-            // TODO 先删除该用户所有专业信息
-            userprofessionalService.deleteBy("user_id = #{userId}", Record.create().set("userId", userInfo.getId()));
+            // 先删除该用户所有专业信息
+            userprofessionalService.deleteBy("user_id = #{userId}", Record.create().set("userId", userInfo.getUserId()));
             String[] professionals = professional.split("\\|");
             for (String c : professionals) {
                 if (StringUtils.isNotBlank(c)) {
                     String[] ss = c.split(",");
-                    int userId = Integer.parseInt(ss[0]);
-                    int proId = Integer.parseInt(ss[1]);
-                    int pid = Integer.parseInt(ss[2]);
-                    String name = ss[3];
+                    int proId = Integer.parseInt(ss[0]);
+                    int pid = Integer.parseInt(ss[1]);
+                    String name = ss[2];
 
                     UserProfessional up = new UserProfessional();
-                    up.setUserId(userId);
+                    up.setUserId(userInfo.getUserId());
                     up.setProId(proId);
                     up.setProName(name);
                     up.setPid(pid);
@@ -158,12 +174,169 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         this.save(userInfo);
     }
 
+    private void domainAndProfessional(UserInfo userInfo) {
+        String domain = userInfo.getDomain();
+        String domainName = null;
+        if (StringUtils.isNotBlank(domain)) {
+            String[] domains = domain.split("\\|");
+            StringBuffer buffer = new StringBuffer();
+            for (String c : domains) {
+                if (StringUtils.isNotBlank(c)) {
+                    String[] ss = c.split(",");
+                    String name = ss[2];
+                    buffer.append(name).append("/");
+                }
+            }
+            domainName = buffer.substring(0, buffer.length() - 1);
+        }
+
+        String professional = userInfo.getProfessional();
+        String professionalName = null;
+        // ---------------------- 处理专业-------------------------
+        if (StringUtils.isNotBlank(professional)) {
+            String[] professionals = professional.split("\\|");
+            StringBuffer professionalBuffer = new StringBuffer();
+            for (String c : professionals) {
+                if (StringUtils.isNotBlank(c)) {
+                    String[] ss = c.split(",");
+                    String name = ss[2];
+                    professionalBuffer.append(name).append("/");
+                }
+            }
+            professionalName = professionalBuffer.substring(0, professionalBuffer.length() - 1);
+        }
+        userInfo.setDomain(domainName);
+        userInfo.setProfessional(professionalName);
+        userInfo.setCreateTime(DateTimeKit.nowLong());
+    }
+
+    /**
+     * 计算用户资料完善百分比
+     *
+     * @return 用户资料完善百分比
+     */
+    private int per(UserInfo userinfo) {
+        int per = 0;
+        if (StringUtils.isNotBlank(userinfo.getUsername())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getAvater())) {
+            per += 5;
+        }
+        if (userinfo.getAgeIntervalId() != null) {
+            per += 5;
+        }
+        if (userinfo.getGender() != null) {
+            per += 5;
+        }
+        if (userinfo.getProvinceId() != null && userinfo.getCityId() != null) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getSchool())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getMobile())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getCareer())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getDomain())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getOrganization())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getProductService()) && userinfo.getProductType() != null) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getIndustryRanking())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getQualification())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getProfessional())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getZy()) && StringUtils.isNotBlank(userinfo.getSc())
+                && StringUtils.isNotBlank(userinfo.getZl()) && StringUtils.isNotBlank(userinfo.getZy2())) {
+            per += 5;
+        }
+        if (StringUtils.isNotBlank(userinfo.getKeyWord())) {
+            per += 10;
+        }
+        if (StringUtils.isNotBlank(userinfo.getDesc())) {
+            per += 10;
+        }
+        return per;
+    }
+
     /**
      * 编辑
      *
-     * @param userInfo 用户详细信息
+     * @param userinfo 用户详细信息
      */
-    private void _update(UserInfo userInfo) {
-        this.update(userInfo);
+    private void _update(UserInfo userinfo) {
+        UserInfo _info = this.findByUserId(userinfo.getUserId());
+        if (StringUtils.isNotBlank(userinfo.getUsername())) {
+            _info.setUsername(userinfo.getUsername());
+        }
+        if (userinfo.getAgeIntervalId() != null) {
+            _info.setAgeIntervalId(userinfo.getAgeIntervalId());
+            _info.setAge(userinfo.getAge());
+        }
+        if (userinfo.getGender() != null) {
+            _info.setGender(userinfo.getGender());
+        }
+        if (userinfo.getProvinceId() != null && userinfo.getCityId() != null) {
+            _info.setProvinceId(userinfo.getProvinceId());
+            _info.setCityId(userinfo.getCityId());
+            _info.setProvinceCity(userinfo.getProvinceCity());
+        }
+        if (StringUtils.isNotBlank(userinfo.getSchool())) {
+            _info.setSchool(userinfo.getSchool());
+        }
+        if (StringUtils.isNotBlank(userinfo.getMobile())) {
+
+        }
+        if (StringUtils.isNotBlank(userinfo.getCareer())) {
+            _info.setCareer(userinfo.getCareer());
+        }
+        if (StringUtils.isNotBlank(userinfo.getDomain())) {
+            _info.setDomain(userinfo.getDomain());
+        }
+        if (userinfo.getOrgType() != null && StringUtils.isNotBlank(userinfo.getOrganization())) {
+            _info.setOrgType(userinfo.getOrgType());
+            _info.setOrganization(userinfo.getOrganization());
+        }
+        if (StringUtils.isNotBlank(userinfo.getProductService()) && userinfo.getProductType() != null) {
+            _info.setProductType(userinfo.getProductType());
+            _info.setProductService(userinfo.getProductService());
+        }
+        if (StringUtils.isNotBlank(userinfo.getIndustryRanking())) {
+            _info.setIndustryRanking(userinfo.getIndustryRanking());
+        }
+        if (StringUtils.isNotBlank(userinfo.getQualification())) {
+            _info.setQualification(userinfo.getQualification());
+        }
+        if (StringUtils.isNotBlank(userinfo.getProfessional())) {
+            _info.setProfessional(userinfo.getProfessional());
+        }
+        if (StringUtils.isNotBlank(userinfo.getZy()) && StringUtils.isNotBlank(userinfo.getSc())
+                && StringUtils.isNotBlank(userinfo.getZl()) && StringUtils.isNotBlank(userinfo.getZy2())) {
+            _info.setZy(userinfo.getZy());
+            _info.setSc(userinfo.getSc());
+            _info.setZl(userinfo.getZl());
+            _info.setZy2(userinfo.getZy2());
+        }
+        if (StringUtils.isNotBlank(userinfo.getKeyWord())) {
+            _info.setKeyWord(userinfo.getKeyWord());
+        }
+        if (StringUtils.isNotBlank(userinfo.getDesc())) {
+            _info.setDesc(userinfo.getDesc());
+        }
+        _info.setPer(userinfo.getPer());
+        this.update(_info);
     }
 }

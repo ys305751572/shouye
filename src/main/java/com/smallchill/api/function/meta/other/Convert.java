@@ -3,6 +3,7 @@ package com.smallchill.api.function.meta.other;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.web.model.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,11 +66,21 @@ public class Convert {
         int[] index = new int[]{1,2,3};
         for (int _i : index){
             Object isOpen = record.get("is_open" + _i);
-            if(isOpen != null && Integer.parseInt(isOpen.toString()) == 1) {
-                Record record1 = Record.create();
-                list.add(record1.set("title",record.get("title" + _i)).set("content" ,record.get("content" + _i)));
-            }
+            Record record1 = Record.create();
+            list.add(record1.set("title",record.get("title" + _i)).set("content" ,(isOpen != null && Integer.parseInt(isOpen.toString()) == 1) ? record.get("content" + _i) : "加入组织成为会员才可查看该信息"));
         }
         return list;
+    }
+
+    /**
+     * 登录之后返回用户基本信息
+     * @param userInfo 用户基本信息
+     * @return record
+     */
+    public static Record userInfoToRecord(UserInfo userInfo) {
+        Record record = Record.create().set("username",userInfo.getUsername())
+                .set("userId",userInfo.getUserId()).set("avater",userInfo.getAvater())
+                .set("per",userInfo.getPer());
+        return record;
     }
 }

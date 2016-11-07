@@ -770,4 +770,6 @@ public class CollectionKit {
 	public static boolean isArray(Object obj){
 		return obj.getClass().isArray();
 	}
+
+
 }

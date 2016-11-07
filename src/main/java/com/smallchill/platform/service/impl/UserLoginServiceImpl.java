@@ -51,7 +51,7 @@ public class UserLoginServiceImpl extends BaseService<UserLogin> implements User
      */
     @Override
     public boolean userIfExtis(String mobile) {
-        return this.count("mobile = #{mobile}",Record.create().set("mobile",mobile)) > 0;
+        return this.count("login_username = #{mobile}",Record.create().set("mobile",mobile)) > 0;
     }
 
     /**
@@ -68,7 +68,7 @@ public class UserLoginServiceImpl extends BaseService<UserLogin> implements User
     }
 
     public UserInfo getUserInfo(int id) {
-        UserInfo userInfo = userInfoService.findById(id);
+        UserInfo userInfo = userInfoService.findByUserId(id);
         if(userInfo != null) {
             return userInfo;
         }
