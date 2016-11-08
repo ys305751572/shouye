@@ -5,8 +5,10 @@ import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.web.model.Aug;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserFriend;
+import com.smallchill.web.service.AugService;
 import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.UserFriendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     private String where2 = "from_user_id = #{fromUserId} and to_user_id = #{toUserId}";
     @Autowired
     private UserFriendService userFriendService;
+
+    @Autowired
+    private AugService augService;
 
     /**************************************************
      * 发送******************************************
@@ -91,8 +96,14 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     public void toGroup(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException,
             UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException {
         if (this.requestValidate(ua)) {
-
-            this.save(ua);
+            Aug aug = new Aug();
+            aug.setGroupId(ua.getGroupId());
+            aug.setFromUserId(ua.getFromUserId());
+            aug.setToUserId(ua.getToUserId());
+            aug.setStatus(0);
+            aug.setCreateTime(DateTimeKit.nowLong());
+            augService.save(aug);
+//              this.save(ua);
         }
     }
 
