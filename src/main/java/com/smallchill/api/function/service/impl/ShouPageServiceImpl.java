@@ -155,7 +155,6 @@ public class ShouPageServiceImpl implements ShoupageService {
 
     @Override
     public int countIntereste(Integer userId, Long date) {
-
         return 0;
     }
 

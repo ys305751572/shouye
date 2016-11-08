@@ -57,23 +57,34 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
     @Transactional
     @Override
     public void delFriend(UserFriend uf) {
-        String set = "status = 1";
-        String where = "user_id = #{userId} and friend_id = #{friendId}";
-        Record record = Record.create();
-        record.put("userId", uf.getUserId());
-        record.put("friendId", uf.getFriendId());
-        this.updateBy(set, where, record);
-
-        // 修改好友的好友信息状态
-        UserFriend _uf = this.getByUserIdAndFriendId(uf);
-        this.updateFriend(_uf, 1);
-
-        // 修改审核信息状态
+        this.clearFriend(uf);
         UserApproval ua = new UserApproval();
         ua.setFromUserId(uf.getUserId());
         ua.setToUserId(uf.getFriendId());
         userApprovalService.resetStatus(ua);
     }
+
+    @Override
+    public void blank(UserFriend uf) {
+        this.clearFriend(uf);
+    }
+
+
+    private void clearFriend(UserFriend uf) {
+        String where = "user_id = #{userId} and friend_id = #{friendId}";
+        Record record = Record.create();
+        record.put("userId", uf.getUserId());
+        record.put("friendId", uf.getFriendId());
+        this.deleteBy(where, record);
+
+        record.put("friendId", uf.getUserId());
+        record.put("userId", uf.getFriendId());
+        // 修改审核信息状态
+        this.deleteBy(where, record);
+
+    }
+
+
 
     @Override
     public UserFriend getByUserIdAndFriendId(UserFriend uf) {

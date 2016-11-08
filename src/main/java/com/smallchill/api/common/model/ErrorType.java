@@ -20,10 +20,13 @@ public enum ErrorType {
     ERROR_CODE_USERINBLANK("您已被该群加入黑名单,无法加入", 3003),
 
     ERROR_CODE_APP_USERHASJOIN("您已经跟该用户为好友关系", 4001),
-    ERROR_CODE_APP_USERHASAPPROVAL("您已跟该用户发送过申请,请不要重复申请", 4002),
+    ERROR_CODE_APP_USERHASAPPROVAL("尚有未处理的请求，无法重复提交", 4002),
     ERROR_CODE_APP_USERNOTFRIEND("您跟该用户尚未结识，无法申请加入熟人", 4004),
-    ERROR_CODE_APP_USERINBLANK("您已被该用户加入黑名单,无法加入", 4003);
-
+    ERROR_CODE_APP_USERINBLANK("您已被该用户加入黑名单,无法加入", 4003),
+    ERROR_CODE_APP_USERINMYBLANK("该用户在您的黑名单中，请先从黑名单中移除", 4004),
+    ERROR_CODE_APP_MYSELF("您不能向自己发送好友请求", 4005),
+    ERROR_CODE_APP_MYSELF2("您不能审核自己", 4006),
+    ERROR_CODE_APP_APPROVAL_FAIL("请求消息已失效", 4007);
 
     private String name;
     private int code;

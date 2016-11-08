@@ -1,9 +1,6 @@
 package test;
 
-import com.smallchill.api.common.exception.UserHasApprovalException;
-import com.smallchill.api.common.exception.UserHasFriendException;
-import com.smallchill.api.common.exception.UserInBlankException;
-import com.smallchill.api.common.exception.UsernotFriendException;
+import com.smallchill.api.common.exception.*;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.impl.BothUserHasApprovalException;
@@ -25,14 +22,12 @@ public class UserApprovalTest extends BaseJunit4Test{
     @Test
     public void testUseroneway() {
         UserApproval ua = new UserApproval();
-        ua.setFromUserId(6);
-        ua.setToUserId(5);
-        ua.setType(1);
+        ua.setFromUserId(20);
+        ua.setToUserId(21);
+        ua.setType(3);
         ua.setValidateInfo("申请加为好友");
         try {
             userApprovalService.toUserOneWay(ua);
-        } catch (UserInBlankException e) {
-            e.printStackTrace();
         } catch (UserHasApprovalException e) {
             e.printStackTrace();
         } catch (UsernotFriendException e) {
@@ -40,6 +35,10 @@ public class UserApprovalTest extends BaseJunit4Test{
         } catch (BothUserHasApprovalException e) {
             e.printStackTrace();
         } catch (UserHasFriendException e) {
+            e.printStackTrace();
+        } catch (UserInOthersBlankException e) {
+            e.printStackTrace();
+        } catch (UserInMyBlankException e) {
             e.printStackTrace();
         }
     }

@@ -2,7 +2,7 @@ package com.smallchill.api.function.controller;
 
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
-import com.smallchill.api.common.exception.UserInBlankException;
+import com.smallchill.api.common.exception.UserInOthersBlankException;
 import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.common.model.Result;
@@ -94,8 +94,11 @@ public class GroupApi extends BaseController {
             return fail(ErrorType.ERROR_CODE_USERHASAPPROVAL);
         } catch (UserHasJoinGroupException e) {
             return fail(ErrorType.ERROR_CODE_USERHASJOIN);
-        } catch (UserInBlankException e) {
+        } catch (UserInOthersBlankException e) {
             return fail(ErrorType.ERROR_CODE_USERINBLANK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail(ErrorType.ERROR_CODE_SERVER_EXCEPTION);
         }
         return success();
     }

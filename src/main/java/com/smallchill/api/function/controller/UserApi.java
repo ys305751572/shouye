@@ -7,11 +7,14 @@ import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.meta.validate.GlobalUsersValidate;
 import com.smallchill.api.function.meta.validate.GroupPageValidator;
 import com.smallchill.api.function.meta.validate.GroupUserValidate;
+import com.smallchill.api.function.meta.validate.UserBlankValidate;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
+import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,14 +27,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @RequestMapping(value = "/api/user")
 @Controller
-public class UserApi extends BaseController{
+public class UserApi extends BaseController {
 
     private static String LIST_SOURCE = "UserInfo.listPage";
 
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private UserApprovalService userApprovalService;
+
     /**
      * 全局用户列表
+     *
      * @return result
      */
     @RequestMapping(value = "/global/user/list")
@@ -50,6 +57,7 @@ public class UserApi extends BaseController{
 
     /**
      * 组织用户列表
+     *
      * @return result
      */
     @RequestMapping(value = "/group/list")
@@ -59,7 +67,7 @@ public class UserApi extends BaseController{
         JqGrid jqGrid;
         try {
             jqGrid = apiPaginate(LIST_SOURCE
-                    ,new UserApiIntercept().addRecord(Record.create().set("userId", this.getRequest().getParameter("userId"))),
+                    , new UserApiIntercept().addRecord(Record.create().set("userId", this.getRequest().getParameter("userId"))),
                     ExcludeParams.create().set("userId"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,6 +78,7 @@ public class UserApi extends BaseController{
 
     /**
      * 用户详情
+     *
      * @param userId 用户ID
      * @return result
      */
@@ -84,11 +93,12 @@ public class UserApi extends BaseController{
             e.printStackTrace();
             return fail();
         }
-        return success(record,"userInfo");
+        return success(record, "userInfo");
     }
 
     /**
      * 修改用户信息
+     *
      * @param userInfo 用户信息
      * @return result
      */
@@ -100,11 +110,41 @@ public class UserApi extends BaseController{
         UserInfo userInfo1;
         Record record = null;
         try {
-            userInfo1 = userInfoService.updateUserInfo(userInfo,null);
+            userInfo1 = userInfoService.updateUserInfo(userInfo, null);
             record = Convert.userInfoToRecord(userInfo1);
         } catch (UserExitsException e) {
             e.printStackTrace();
         }
-        return success(record,"userInfo");
+        return success(record, "userInfo");
+    }
+
+    /**
+     * 用户-拉黑用户
+     *
+     * @param fromUserId 当前用户ID
+     * @param toUserId   被拉入黑名单用户ID
+     * @return result
+     */
+    @RequestMapping(value = "/blank")
+    @ResponseBody
+    @Before(UserBlankValidate.class)
+    public String blank(UserApproval ua) {
+        userApprovalService.userApprovalBlank(ua);
+        return success();
+    }
+
+    /**
+     * 用户 - 移除黑名单
+     *
+     * @param fromUserId 当前用户ID
+     * @param toUserId   被拉入黑名单用户ID
+     * @return result
+     */
+    @RequestMapping(value = "/unblank")
+    @ResponseBody
+    @Before(UserBlankValidate.class)
+    public String unBlank(UserApproval ua) {
+        userApprovalService.userApprovalUnBlank(ua);
+        return success();
     }
 }

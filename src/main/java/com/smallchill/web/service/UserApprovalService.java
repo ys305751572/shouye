@@ -1,9 +1,6 @@
 package com.smallchill.web.service;
 
-import com.smallchill.api.common.exception.UserHasApprovalException;
-import com.smallchill.api.common.exception.UserHasFriendException;
-import com.smallchill.api.common.exception.UserInBlankException;
-import com.smallchill.api.common.exception.UsernotFriendException;
+import com.smallchill.api.common.exception.*;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserApproval;
@@ -27,14 +24,14 @@ public interface UserApprovalService extends IService<UserApproval>{
      * 4.附近的人结识
      * 5.熟人的熟人结识
      */
-    void toUserOneWay(UserApproval ua) throws UserInBlankException, UserHasApprovalException, UsernotFriendException, BothUserHasApprovalException, UserHasFriendException;
+    void toUserOneWay(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException, UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException;
 
     /**
      * 发送审核申请-双向；
      * 同时发送给接收用户和发送用户
      * 1.引荐
      */
-    void toUserTwoWay(UserApproval ua);
+    void toUserTwoWay(UserApproval ua) throws UserInOthersBlankException, UserHasFriendException, UsernotFriendException, BothUserHasApprovalException, UserHasApprovalException, UserInMyBlankException;
 
     /**
      * 发送审核申请给组织
@@ -42,7 +39,7 @@ public interface UserApprovalService extends IService<UserApproval>{
      * 2.通过活动临时群
      * 3.通过查看交集
      */
-    void toGroup(UserApproval ua) throws UserInBlankException, UserHasApprovalException, UsernotFriendException, BothUserHasApprovalException, UserHasFriendException;
+    void toGroup(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException, UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException;
 
     /**
      * 组织审核同意
@@ -92,6 +89,10 @@ public interface UserApprovalService extends IService<UserApproval>{
      */
     void userApprovalUnBlank(UserApproval ua);
 
+    /**
+     * 状态重置
+     * @param ua
+     */
     void resetStatus(UserApproval ua);
 
     /**
@@ -102,4 +103,22 @@ public interface UserApprovalService extends IService<UserApproval>{
      * @return 结果集
      */
     List<Record> exceuteBySource(String source, String where, Object modalOrMap);
+
+    /**
+     *
+     * @param ua
+     */
+    void setStatusDel(UserApproval ua);
+
+    /**
+     * 引荐申请审核 - 同意
+     * @param ua 审核信息
+     */
+    void auditAgreeByIntroduce(UserApproval ua) throws ApprovalFailException;
+
+    /**
+     * 引荐申请审核 - 拒绝
+     * @param ua 审核信息
+     */
+    void auditRefuseByIntroduce(UserApproval ua);
 }

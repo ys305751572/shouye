@@ -2,7 +2,7 @@ package com.smallchill.web.service;
 
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
-import com.smallchill.api.common.exception.UserInBlankException;
+import com.smallchill.api.common.exception.UserInOthersBlankException;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.web.model.GroupApproval;
 
@@ -12,5 +12,5 @@ import com.smallchill.web.model.GroupApproval;
  */
 public interface GroupApprovalService extends IService<GroupApproval> {
 
-    void join(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInBlankException;
+    void join(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException;
 }

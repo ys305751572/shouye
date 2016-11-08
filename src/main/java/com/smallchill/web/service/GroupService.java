@@ -1,5 +1,6 @@
 package com.smallchill.web.service;
 
+import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.web.model.Group;
@@ -35,7 +36,7 @@ public interface GroupService extends IService<Group> {
      * @param groupId 组织ID
      * @param userId  用户ID
      */
-    void approval(Integer groupId, Integer userId);
+    void approval(Integer groupId, Integer userId) throws UserHasJoinGroupException;
 
     /**
      * 申请审批-拒绝

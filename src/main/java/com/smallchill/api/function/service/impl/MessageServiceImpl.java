@@ -27,33 +27,35 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
 
     /**
      * 发送用户审核信息-同意
+     *
      * @param grouoId 组织ID
      * @param userId  用户ID
      */
     @Override
     public void sendMsgForUserAuditAgree(int grouoId, int userId) {
-        this.sendMsgForUserAudit(grouoId,userId,MSG_USER_AUDIT,MSG_USER_AUDIT_CONTENT_AGREE);
+        this.sendMsgForUserAudit(grouoId, userId, MSG_USER_AUDIT, MSG_USER_AUDIT_CONTENT_AGREE);
     }
 
     /**
      * 发送用户审核信息-拒绝
+     *
      * @param grouoId 组织ID
      * @param userId  用户ID
      */
     @Override
     public void sendMsgForUserAuditRefuse(int grouoId, int userId, String orderNo) {
         String msg = MSG_USER_AUDIT_CONTENT_NOT_FREE_REFUSE;
-        if(StringUtils.isNotBlank(orderNo)) {
+        if (StringUtils.isNotBlank(orderNo)) {
             msg = msg.replace("s", orderNo);
-        }
-        else {
+        } else {
             msg = MSG_USER_AUDIT_CONTENT_FREE_REFUSE;
         }
-        this.sendMsgForUserAudit(grouoId,userId,MSG_USER_AUDIT,msg);
+        this.sendMsgForUserAudit(grouoId, userId, MSG_USER_AUDIT, msg);
     }
 
     /**
      * 发送用户审核信息-拉黑
+     *
      * @param grouoId 组织ID
      * @param userId  用户ID
      */
@@ -61,21 +63,25 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
     public void sendMsgForUserAuditBlank(int grouoId, int userId, String orderNo) {
         sendMsgForUserAuditRefuse(grouoId, userId, orderNo);
     }
+
     /**
      * 发送用户审核信息-移除黑名单
+     *
      * @param groupId 组织ID
      * @param userId  用户ID
      */
     @Deprecated
     @Override
-    public void sendMsgForUserAuditUnBlank(int groupId, int userId) {}
+    public void sendMsgForUserAuditUnBlank(int groupId, int userId) {
+    }
 
     /**
      * 组织-用户审核
+     *
      * @param groupId 组织ID
-     * @param userId 用户ID
+     * @param userId  用户ID
      */
-    private void sendMsgForUserAudit(int groupId, int userId, String targat,String content) {
+    private void sendMsgForUserAudit(int groupId, int userId, String targat, String content) {
         Message msg = new Message();
         msg.setFromId(groupId);
         msg.setToId(userId);
@@ -88,6 +94,7 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
 
     /**
      * 向组织发送审核消息
+     *
      * @param groupId 组织ID
      */
     @Override
@@ -97,9 +104,10 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
 
     /**
      * 组织发送消息给单个用户
+     *
      * @param groupId 组织ID
-     * @param userId 用户id
-     * @param title 标题
+     * @param userId  用户id
+     * @param title   标题
      * @param content 内容
      */
     @Override
@@ -116,9 +124,10 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
 
     /**
      * 组织发送消息给多个用户
+     *
      * @param groupId 组织ID
      * @param userIds 用户ids
-     * @param title 标题
+     * @param title   标题
      * @param content 内容
      */
     @Override
@@ -137,8 +146,9 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
 
     /**
      * 后台向单个用户发送系统消息
-     * @param userId 用户ID
-     * @param title 标题
+     *
+     * @param userId  用户ID
+     * @param title   标题
      * @param content 内容
      */
     @Override
@@ -154,8 +164,9 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
 
     /**
      * 后台向多个用户发送系统消息
+     *
      * @param userIds 用户IDs
-     * @param title 标题
+     * @param title   标题
      * @param content 内容
      */
     @Override
@@ -173,6 +184,7 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
 
     /**
      * 查询用户消息
+     *
      * @param userId 用户ID
      * @return 消息集合
      */

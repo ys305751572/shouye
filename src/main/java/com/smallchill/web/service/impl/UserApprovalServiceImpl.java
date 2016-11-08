@@ -1,9 +1,6 @@
 package com.smallchill.web.service.impl;
 
-import com.smallchill.api.common.exception.UserHasApprovalException;
-import com.smallchill.api.common.exception.UserHasFriendException;
-import com.smallchill.api.common.exception.UserInBlankException;
-import com.smallchill.api.common.exception.UsernotFriendException;
+import com.smallchill.api.common.exception.*;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
@@ -27,6 +24,9 @@ import java.util.List;
 @Service
 public class UserApprovalServiceImpl extends BaseService<UserApproval> implements UserApprovalService {
 
+    private String where = "(from_user_id = #{fromUserId} and to_user_id = #{toUserId}) or (from_user_id = #{toUserId} and to_user_id = #{fromUserId})";
+
+    private String where2 = "from_user_id = #{fromUserId} and to_user_id = #{toUserId}";
     @Autowired
     private UserFriendService userFriendService;
 
@@ -43,8 +43,8 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * 5.熟人的熟人结识
      */
     @Override
-    public void toUserOneWay(UserApproval ua) throws UserInBlankException, UserHasApprovalException,
-            UsernotFriendException, BothUserHasApprovalException, UserHasFriendException {
+    public void toUserOneWay(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException,
+            UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException {
         if (this.requestValidate(ua)) {
             ua.setIntroduceUserId(0);
             ua.setGroupId(0);
@@ -60,23 +60,25 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      */
     @Transactional
     @Override
-    public void toUserTwoWay(UserApproval ua) {
+    public void toUserTwoWay(UserApproval ua) throws UserInOthersBlankException, UserHasFriendException,
+            UsernotFriendException, BothUserHasApprovalException, UserHasApprovalException, UserInMyBlankException {
 
-        ua.setGroupId(0);
-        ua.setStatus(0);
+        if (this.requestValidate(ua)) {
+            ua.setGroupId(0);
+            ua.setStatus(0);
 
-        UserApproval ua2 = new UserApproval();
-        ua2.setFromUserId(ua.getToUserId());
-        ua2.setToUserId(ua.getFromUserId());
-        ua2.setType(ua.getType());
-        ua2.setIntroduceUserId(ua.getIntroduceUserId());
-//        ua2.setGroupId(ua.getGroupId());
-        ua2.setValidateInfo(ua.getValidateInfo());
-        ua2.setStatus(0);
-        ua2.setGroupId(0);
-        ua2.setCreateTime(DateTimeKit.nowLong());
-        this.save(ua);
-        this.save(ua2);
+            UserApproval ua2 = new UserApproval();
+            ua2.setFromUserId(ua.getToUserId());
+            ua2.setToUserId(ua.getFromUserId());
+            ua2.setType(ua.getType());
+            ua2.setIntroduceUserId(ua.getIntroduceUserId());
+            ua2.setValidateInfo(ua.getValidateInfo());
+            ua2.setStatus(0);
+            ua2.setGroupId(0);
+            ua2.setCreateTime(DateTimeKit.nowLong());
+            this.save(ua);
+            this.save(ua2);
+        }
     }
 
     /**
@@ -86,16 +88,14 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * 3.通过查看交集
      */
     @Override
-    public void toGroup(UserApproval ua) throws UserInBlankException, UserHasApprovalException,
-            UsernotFriendException, BothUserHasApprovalException, UserHasFriendException {
+    public void toGroup(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException,
+            UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException {
         if (this.requestValidate(ua)) {
             this.save(ua);
         }
     }
 
     /** ************************************************审核*******************************************************/
-
-
     /**
      * 组织审核同意
      *
@@ -161,9 +161,26 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      *
      * @param ua 申请消息
      */
+    @Transactional
     @Override
     public void userApprovalBlank(UserApproval ua) {
-        this.approval(ua, 3);
+        Record record = Record.create().set("fromUserId", ua.getFromUserId()).set("toUserId", ua.getToUserId());
+        List<UserApproval> list = this.findBy(where, record);
+        if (list == null || list.size() == 0) return;
+        if (list.size() == 1) {
+            // 正常
+            UserApproval distUa = list.get(0);
+            distUa.setFromUserId(ua.getFromUserId());
+            distUa.setToUserId(ua.getToUserId());
+            distUa.setStatus(3);
+            this.update(distUa);
+            _blank(ua);
+        } else if (list.size() == 2) {
+            // 推荐情况
+            String set = "status = 3";
+            this.updateBy(set, where2, record);
+            this.deleteBy(where2, record.set("fromUserId", ua.getToUserId()).set("toUserId", ua.getFromUserId()));
+        }
     }
 
     /**
@@ -178,12 +195,77 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
 
     /**
      * 重置审核记录
+     *
+     * @param ua fromUserId and toUserId
+     */
+    @Override
+    public void setStatusDel(UserApproval ua) {
+        String set = "status = 4";
+        Record record = Record.create();
+        record.put("fromUserId", ua.getFromUserId());
+        record.put("toUserId", ua.getToUserId());
+        this.updateBy(set, where, record);
+    }
+
+    /**
+     * (引荐)审核
+     *
+     * @param ua 审核信息
+     */
+    @Transactional
+    @Override
+    public void auditAgreeByIntroduce(UserApproval ua) throws ApprovalFailException {
+        String set = "status = " + ua.getStatus();
+        Record record = Record.create().set("fromUserId", ua.getFromUserId()).set("toUserId", ua.getToUserId());
+        this.updateBy(set, where2, record);
+        UserApproval otherUa = this.findFirstBy(where2, Record.create().set("fromUserId", ua.getToUserId()).set("toUserId", ua.getFromUserId()));
+
+        if (otherUa == null) {
+            throw new ApprovalFailException();
+        }
+        if (otherUa.getStatus() == 1 && ua.getStatus() == 1) {
+            UserFriend uf = new UserFriend();
+            uf.setUserId(ua.getFromUserId());
+            uf.setFriendId(ua.getToUserId());
+            this.deleteBy(where2, record);
+            userFriendService.addFriend(uf);
+        }
+    }
+
+    /**
+     * 引荐申请审核 - 拒绝
+     *
+     * @param ua 审核信息
+     */
+    @Transactional
+    @Override
+    public void auditRefuseByIntroduce(UserApproval ua) {
+        Record record = Record.create().set("fromUserId", ua.getFromUserId()).set("toUserId", ua.getToUserId());
+        boolean flag = true;
+        // 删除请求信息
+        List<UserApproval> approvals = this.findBy(where, record);
+        for (UserApproval _ua : approvals) {
+            if (_ua.getStatus() == 3) {
+                flag = false;
+            }
+        }
+
+        if (flag) {
+            this.deleteBy(where, record);
+        } else {
+            this.deleteBy(where2, record.set("fromUserId", ua.getToUserId()).set("toUserId", ua.getToUserId()));
+        }
+    }
+
+
+    /**
+     * 重置审核记录
+     *
      * @param ua fromUserId and toUserId
      */
     @Override
     public void resetStatus(UserApproval ua) {
         String set = "status = 2";
-        String where = "(from_user_id = #{fromUserId} and to_user_id = #{toUserId}) or (from_user_id = #{toUserId} and to_user_id = #{fromUserId})";
         Record record = Record.create();
         record.put("fromUserId", ua.getFromUserId());
         record.put("toUserId", ua.getToUserId());
@@ -192,8 +274,9 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
 
     /**
      * 调用MD文件sql
-     * @param source mdw文件sql key
-     * @param where 查询条件
+     *
+     * @param source     mdw文件sql key
+     * @param where      查询条件
      * @param modalOrMap 条件内容
      * @return 结果集
      */
@@ -211,11 +294,10 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * @return 申请信息
      */
     private List<UserApproval> getsByFromUserIdAndToUserId(int fromUserId, int toUserId) {
-        String sql = "(from_user_id = #{fromUserId} OR to_user_id = #{fromUserId}) and (from_user_id = #{toUserId} OR to_user_id = #{toUserId})";
         Record record = Record.create();
         record.put("fromUserId", fromUserId);
         record.put("toUserId", toUserId);
-        return this.findBy(sql, record);
+        return this.findBy(where, record);
     }
 
     /**
@@ -226,11 +308,10 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * @return 申请信息
      */
     private UserApproval getByFromUserIdAndToUserId(int fromUserId, int toUserId) {
-        String sql = "from_user_id = #{fromUserId} and to_user_id = #{toUserId}";
         Record record = Record.create();
         record.put("fromUserId", fromUserId);
         record.put("toUserId", toUserId);
-        return this.findFirstBy(sql, record);
+        return this.findFirstBy(where2, record);
     }
 
     /**
@@ -238,13 +319,18 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      *
      * @param ua 申请信息
      */
+    @Transactional
     private void approval(UserApproval ua, Integer status) {
         UserApproval dist = this.getByFromUserIdAndToUserId(ua.getFromUserId(), ua.getToUserId());
-        if(dist != null) {
+        if (dist != null) {
+//            if(status == 3) {
+//                dist.setFromUserId(ua.getToUserId());
+//                dist.setToUserId(ua.getFromUserId());
+//            }
             dist.setStatus(status);
             this.update(dist);
             // 新增好友
-            if(status == 1) {
+            if (status == 1) {
                 UserFriend uf = new UserFriend();
                 uf.setStatus(0);
                 uf.setType(ua.getType());
@@ -254,17 +340,17 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
             }
 
             // 拉黑好友
-            if(status == 3) {
-                UserFriend uf = new UserFriend();
-                uf.setUserId(ua.getToUserId());
-                uf.setFriendId(ua.getFromUserId());
-                UserFriend _uf = userFriendService.getByUserIdAndFriendId(uf);
-                if (_uf != null) {
-                    _uf.setStatus(1);
-                    userFriendService.update(_uf);
-                }
+            if (status == 3) {
+                _blank(ua);
             }
         }
+    }
+
+    private void _blank(UserApproval ua) {
+        UserFriend uf = new UserFriend();
+        uf.setUserId(ua.getToUserId());
+        uf.setFriendId(ua.getFromUserId());
+        userFriendService.blank(uf);
     }
 
     /**
@@ -274,23 +360,30 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * @return result
      */
     private boolean requestValidate(UserApproval src) throws UsernotFriendException, UserHasApprovalException,
-            UserInBlankException, BothUserHasApprovalException, UserHasFriendException {
+            UserInOthersBlankException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException {
 
         List<UserApproval> list = this.getsByFromUserIdAndToUserId(src.getFromUserId(), src.getToUserId());
-        if (list == null || list.size() == 0) {
+        if ((list == null || list.size() == 0) && src.getType() < 2) {
             return true;
-        }
-        if (list.size() > 1) {
+        } else if (list.size() > 1) {
+            // 推荐
+            for (UserApproval ua : list) {
+                if (ua.getStatus() == 3 && (ua.getToUserId() == src.getFromUserId()))
+                    throw new UserInOthersBlankException();
+                if (ua.getStatus() == 3 && (ua.getFromUserId() == src.getFromUserId()))
+                    throw new UserInMyBlankException();
+            }
             throw new BothUserHasApprovalException();
-        }
-        if (list.size() == 1) {
+        } else if (list.size() == 1) {
             UserApproval dist = list.get(0);
             if (dist == null && src.getType() == 1) return true;
-            if (dist == null && src.getType() == 2) throw new UsernotFriendException();
+            if (dist == null && src.getType() >= 2) throw new UsernotFriendException();
             if (dist.getStatus() == 0) throw new UserHasApprovalException();
             if (dist.getStatus() == 1) throw new UserHasFriendException();
-            if (dist.getStatus() == 3) throw new UserInBlankException();
-
+            if (dist.getStatus() == 3 && (dist.getToUserId() == src.getFromUserId()))
+                throw new UserInOthersBlankException();
+            if (dist.getStatus() == 3 && (dist.getFromUserId() == src.getFromUserId()))
+                throw new UserInMyBlankException();
 
             UserApproval _dist = list.get(0);
             _dist.setValidateInfo(src.getValidateInfo());

@@ -2,13 +2,12 @@ package com.smallchill.web.service.impl;
 
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
-import com.smallchill.api.common.exception.UserInBlankException;
-import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.api.common.exception.UserInOthersBlankException;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.GroupApproval;
 import com.smallchill.web.service.GroupApprovalService;
 import com.smallchill.web.service.GroupService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
@@ -30,7 +29,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
      * @param ga 申请信息
      * @return 结果
      */
-    public boolean isApprival(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInBlankException {
+    public boolean isApprival(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException {
         String sql = "select status from tb_group_approval where group_id = #{groupId} and user_id = #{userId}";
         Record record = Record.create();
         record.put("groupId", ga.getGroupId());
@@ -48,15 +47,16 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             throw new UserHasJoinGroupException();
         }
         if (groupApproval.getStatus() == 3) {
-            throw new UserInBlankException();
+            throw new UserInOthersBlankException();
         }
         return false;
     }
 
     @Override
-    public void join(GroupApproval ga) throws UserInBlankException, UserHasApprovalException, UserHasJoinGroupException {
+    public void join(GroupApproval ga) throws UserInOthersBlankException, UserHasApprovalException, UserHasJoinGroupException {
         // 是否已经发送申请
         if (!isApprival(ga)) {
+            ga.setCreateTime(DateTimeKit.nowLong());
             save1(ga);
         }
     }

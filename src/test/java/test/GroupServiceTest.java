@@ -1,5 +1,6 @@
 package test;
 
+import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.web.model.GroupApproval;
 import com.smallchill.web.model.vo.GroupVo;
 import com.smallchill.web.service.GroupApprovalService;
@@ -75,16 +76,32 @@ public class GroupServiceTest extends BaseJunit4Test {
         System.out.println(groupExtendService.getCost(9));
     }
 
+    /**
+     * 组织用户审核 - 同意
+     */
     @Test
-    public void testIsApp() {
-//        GroupApproval ga = new GroupApproval();
-//        ga.setGroupId(9);
-//        ga.setUserId(5);
-//        System.out.println(groupApprovalService.isApprival(ga));
+    public void testApproval() {
+        int groupId = 19;
+        int userId = 22;
+        try {
+            groupService.approval(groupId, userId); // 同意
+        } catch (UserHasJoinGroupException e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * 组织用户审核 -- 拒绝
+     */
     @Test
-    public void testAudit() {
-        groupService.approval(9, 5);
+    public void testRefuse() {
+        int groupId = 9;
+        int userId = 21;
+        groupService.refuse(groupId, userId);
     }
+
+//    @Test
+//    public void testAudit() {
+//        groupService.approval(9, 5);
+//    }
 }

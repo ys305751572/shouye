@@ -1,5 +1,7 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.common.exception.UserHasJoinGroupException;
+import com.smallchill.api.function.service.MessageService;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.LeomanKit;
@@ -33,13 +35,12 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     private GroupBankService groupBankService;
     @Autowired
     private GroupExtendService groupExtendService;
-
     @Autowired
     private UserGroupService userGroupService;
-
     @Autowired
     private GroupApprovalService groupApprovalService;
-
+    @Autowired
+    private MessageService messageService;
 
     /**
      * 新建组织
@@ -104,8 +105,8 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     /**
      * 保存组织基本信息
      *
-     * @param groupVo   Vo
-     * @return  int
+     * @param groupVo Vo
+     * @return int
      */
     private int saveGroupInfo(GroupVo groupVo) {
         Group group = new Group();
@@ -151,7 +152,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      */
     @Transactional
     @Override
-    public void approval(Integer groupId, Integer userId) {
+    public void approval(Integer groupId, Integer userId) throws UserHasJoinGroupException {
         // 1.改变审核表中状态为1：批准
         // 2.tb_user_group表新增会员信息
         this.audit(groupId, userId, 1);
@@ -159,7 +160,25 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         ug.setGroupId(groupId);
         ug.setUserId(userId);
         ug.setCreateTime(DateTimeKit.nowLong());
-        userGroupService.save(ug);
+
+        if (!userInGroup(groupId, userId)) {
+            userGroupService.save(ug);
+            messageService.sendMsgForUserAuditAgree(groupId, userId);
+        } else {
+            throw new UserHasJoinGroupException();
+        }
+    }
+
+    /**
+     * 用户是否已经在组织记录中
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     * @return 是否已经在组织记录中
+     */
+    private boolean userInGroup(Integer groupId, Integer userId) {
+        List<UserGroup> list = userGroupService.findBy("group_id = #{groupId} and user_id = #{userId}", Record.create().set("groupId", groupId).set("userId", userId));
+        return (list != null && list.size() > 0);
     }
 
     /**
@@ -168,10 +187,12 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      * @param groupId 组织Id
      * @param userId  用户ID
      */
+    @Transactional
     @Override
     public void refuse(Integer groupId, Integer userId) {
         // 1.改变审核表中状态 为2：拒绝
         this.audit(groupId, userId, 2);
+        messageService.sendMsgForUserAuditRefuse(groupId, userId, null);
     }
 
     /**
@@ -213,7 +234,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      */
     @Override
     public void audit(Integer groupId, Integer userId, Integer status) {
-        String set = "set status = " + status;
+        String set = "set status = " + status + ",through_time = " + DateTimeKit.nowLong();
         String where = " group_id = #{groupId} and user_id = #{userId}";
         Record record = Record.create();
         record.put("groupId", groupId);
@@ -223,8 +244,9 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     /**
      * 修改审核状态(审核组织)
-     * @param groupId   组织ID
-     * @param status    状态
+     *
+     * @param groupId 组织ID
+     * @param status  状态
      */
     @Override
     public void audit(Integer groupId, Integer status) {
@@ -234,7 +256,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         record.put("groupId", groupId);
         record.put("status", status);
         record.put("updateTime", DateTimeKit.nowLong());
-        GroupExtend groupExtend = Blade.create(GroupExtend.class).findFirstBy("group_id = #{group_id}",Record.create().set("group_id", groupId));
+        GroupExtend groupExtend = Blade.create(GroupExtend.class).findFirstBy("group_id = #{group_id}", Record.create().set("group_id", groupId));
         Integer adminId = (Integer) ShiroKit.getUser().getId();
         groupExtend.setApprovalAdminId(adminId);
         groupExtendService.update(groupExtend);
@@ -251,25 +273,25 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      * @param content   内容
      */
 
-    public Boolean sendMessage(HttpServletRequest request,String id, Integer send, String sendTime, String title, String content) {
-        try{
-            if(StringKit.isNotBlank(id)){
+    public Boolean sendMessage(HttpServletRequest request, String id, Integer send, String sendTime, String title, String content) {
+        try {
+            if (StringKit.isNotBlank(id)) {
                 //给一个组织发送信息
                 System.out.println("----id----");
                 System.out.println(id);
                 System.out.println("----id----");
 
-            }else {
+            } else {
                 //给查询结果的所有组织
                 List<Integer> ids = (List<Integer>) request.getSession().getAttribute("groupIds");
                 System.out.println("----ids----");
-                for(Integer _id : ids){
+                for (Integer _id : ids) {
                     System.out.println(_id);
                 }
                 System.out.println("----ids----");
             }
 
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
         }
@@ -278,40 +300,40 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     @Override
     public void banned(Integer id, Integer bannedTime, String content) {
-        GroupExtend groupExtend = Blade.create(GroupExtend.class).findFirstBy("group_id = #{group_id}",Record.create().set("group_id", id));
+        GroupExtend groupExtend = Blade.create(GroupExtend.class).findFirstBy("group_id = #{group_id}", Record.create().set("group_id", id));
         Long time = 0L;
-        if(bannedTime!=null){
-            switch (bannedTime){
+        if (bannedTime != null) {
+            switch (bannedTime) {
                 case 1:
-                    time = 60L*60L*24L*1000L;
+                    time = 60L * 60L * 24L * 1000L;
                     break;
                 case 2:
-                    time = 2L*60L*60L*24L*1000L;
+                    time = 2L * 60L * 60L * 24L * 1000L;
                     break;
                 case 3:
-                    time = 7L*60L*60L*24L*1000L;
+                    time = 7L * 60L * 60L * 24L * 1000L;
                     break;
                 case 4:
-                    time = 14L*60L*60L*24L*1000L;
+                    time = 14L * 60L * 60L * 24L * 1000L;
                     break;
                 case 5:
-                    time = 30L*60L*60L*24L*1000L;
+                    time = 30L * 60L * 60L * 24L * 1000L;
                     break;
                 case 6:
-                    time = 60L*60L*60L*24L*1000L;
+                    time = 60L * 60L * 60L * 24L * 1000L;
                     break;
                 case 7:
                     time = -2L;
                     break;
             }
-            if(bannedTime != 7){
+            if (bannedTime != 7) {
                 time = System.currentTimeMillis() + time;
             }
             System.out.println(time);
             groupExtend.setFreezeTime(time);
             groupExtend.setWhy1(content);
             groupExtendService.update(groupExtend);
-        }else {
+        } else {
             groupExtend.setFreezeTime(-1L);
             groupExtend.setWhy1("");
             groupExtendService.update(groupExtend);
@@ -320,8 +342,9 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     /**
      * 待审组织--行内修改备注
-     * @param id        组织ID
-     * @param content   修改内容
+     *
+     * @param id      组织ID
+     * @param content 修改内容
      */
     @Override
     public void updateNote(Integer id, String content) {
