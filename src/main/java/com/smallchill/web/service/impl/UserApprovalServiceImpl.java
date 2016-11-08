@@ -91,6 +91,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     public void toGroup(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException,
             UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException {
         if (this.requestValidate(ua)) {
+
             this.save(ua);
         }
     }

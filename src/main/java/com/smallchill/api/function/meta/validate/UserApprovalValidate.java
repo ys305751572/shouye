@@ -17,7 +17,17 @@ public class UserApprovalValidate extends ApiValidator{
         validateRequired("toUserId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
         validateType("type", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
         validateTwoNotEqual("fromUserId", "toUserId", ErrorType.ERROR_CODE_APP_MYSELF);
+        validateGroupIdAndIntroduceUserId(ErrorType.ERROR_CODE_PARAM_EXCEPTION);
     }
+
+    private void validateGroupIdAndIntroduceUserId(ErrorType errorCodeParamException) {
+        String _groupId = request.getParameter("groupId");
+        String _introduceUserId = request.getParameter("introduceUserId");
+        if(StringUtils.isNotBlank(_groupId) && StringUtils.isNotBlank(_introduceUserId)) {
+            addError(errorCodeParamException);
+        }
+    }
+
 
     private void validateType(String type, ErrorType errorCodeParamException) {
         String type1 = request.getParameter(type);
