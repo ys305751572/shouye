@@ -332,12 +332,12 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
             System.out.println(time);
             groupExtend.setFreezeTime(time);
             groupExtend.setWhy1(content);
-            groupExtendService.update(groupExtend);
         } else {
             groupExtend.setFreezeTime(-1L);
             groupExtend.setWhy1("");
-            groupExtendService.update(groupExtend);
         }
+        groupExtendService.update(groupExtend);
+
     }
 
     /**

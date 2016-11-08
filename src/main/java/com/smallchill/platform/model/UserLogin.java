@@ -28,6 +28,8 @@ public class UserLogin extends BaseModel {
     private String password = "";
     @Column(name = "status")
     private Integer status = 0;
+    @Column(name = "content")
+    private String content = "";
     @Column(name = "unlock_time")
     private Long unlockTime = -1L;
     @Column(name = "last_login_ip")
@@ -109,5 +111,13 @@ public class UserLogin extends BaseModel {
 
     public boolean isFreeze() {
         return this.status == 2;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

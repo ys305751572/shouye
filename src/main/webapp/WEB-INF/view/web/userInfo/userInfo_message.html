@@ -1,0 +1,113 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form class="form-horizontal" role="form">
+	<div class="space-4"></div>
+	<!-- #section:elements.form -->
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 接受用户 </label>
+
+		<div class="col-sm-8">
+			<input type="text" name="name" id="name" placeholder="" class="form-control" disabled="disabled"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 发送方式 </label>
+		<div class="col-sm-8">
+			<label><input type="radio" name="send" class="rdo" checked value="0">消息通知</label>
+			<label><input type="radio" name="send" class="rdo" value="1">滚动公告</label>
+			<label><input type="radio" name="send" class="rdo" value="2">手机短信</label>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 定时发送 </label>
+		<div class="col-sm-8">
+			<input type="text" id="send_time" name="" class="form-control"  value="" placeholder=""  readonly/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 标题 </label>
+
+		<div class="col-sm-8">
+			<input type="text" name="title" id="title" placeholder="" class="form-control" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 内容 </label>
+
+		<div class="col-sm-8">
+			<textarea id="content" style="height:200px" name="content" placeholder="" class="form-control"></textarea>
+		</div>
+	</div>
+
+	<div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+		<div class="col-md-offset-1 col-md-10">
+			<button class="btn btn-info" type="button" id="btn_save">
+				<i class="ace-icon fa fa-check bigger-110"></i>
+				确认
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" id="btn_close">
+				<i class="ace-icon fa fa-close bigger-110"></i>
+				关闭
+			</button>
+		</div>
+	</div>
+
+	<script src="${basePath}/static/laydate/laydate.js"></script>
+	<script type="text/javascript">
+		laydate({
+			elem: '#send_time',
+			format: 'YYYY-MM-DD hh:mm:ss', // 分隔符可以任意定义，该例子表示只显示年月日
+			//festival: true, //显示节日
+			choose: function(datas){ //选择日期完毕的回调
+				/*   alert('得到：'+datas); */
+			}
+		});
+
+
+		var layerIndex = parent.layer.getFrameIndex(window.name);
+		var userName = "${userInfo.username}";
+		var userInfoId = "${userInfo.id}";
+		var userInfoNum = "${userInfoNum}";
+
+		$(function(){
+			if(userInfoNum==0){
+				$("#name").val(userName);
+			}else {
+				$("#name").val(userInfoNum+" 个");
+			}
+
+
+			$("#btn_close").bind("click",function(){
+				parent.layer.close(layerIndex);
+			});
+
+			$("#btn_save").bind("click",function(){
+				var send = $("input[name='send']:checked").val();
+				var sendTime = $("#send_time").val();
+				var title = $("#title").val();
+				var content = $("#content").val();
+
+				$.post("${basePath}/userInfo/send_message",{userInfoId:userInfoId , send:send, sendTime:sendTime, title:title, content:content}, function(data){
+					if(data.code===0){
+
+					}
+					else{
+						layer_alert(data.msg, "error");
+					}
+				}, "json");
+
+			});
+
+
+
+		})
+
+	</script>
+
+	<div class="space-4"></div>
+</form>
+@}

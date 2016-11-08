@@ -3,7 +3,6 @@ package com.smallchill.web.controller;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
-import com.smallchill.core.toolbox.file.BladeFile;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.web.meta.intercept.GroupIntercept;
@@ -69,12 +68,12 @@ public class GroupController extends BaseController {
         List<CaseInsensitiveHashMap> groupList = object.getRows();
 
         //查询结果所有ID
-        List<Integer> groupIds = new ArrayList<>();
+        List<Integer> ids = new ArrayList<>();
         for (CaseInsensitiveHashMap map : groupList) {
             Integer id = (Integer) map.get("ID");
-            groupIds.add(id);
+            ids.add(id);
         }
-        request.getSession().setAttribute("groupIds",groupIds);
+        request.getSession().setAttribute("groupIds",ids);
         request.getSession().setAttribute("groupNum",groupList.size());
 
         //查询结果的所有会员数
@@ -233,20 +232,22 @@ public class GroupController extends BaseController {
             if(StringUtils.isNotBlank(targat)){
                 String[] targats = JsonKit.parse(targat,String[].class);
                 StringBuffer _t = new StringBuffer();
+                String _targat = "";
                 for(String t : targats){
                     _t.append(t).append("|");
                 }
-                String _targat = _t.toString().substring(0,_t.length()-1);
+                if(StringUtils.isNotBlank(_t.toString())){
+                    _targat = _t.toString().substring(0,_t.length()-1);
+                }
                 groupVo.setTarget(_targat);
+
             }
-
-
             groupService.saveGroup(groupVo);
         }catch (RuntimeException e){
             e.printStackTrace();
             return error(SAVE_FAIL_MSG);
-
         }
-            return success(SAVE_SUCCESS_MSG);
+
+        return success(SAVE_SUCCESS_MSG);
     }
 }

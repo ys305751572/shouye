@@ -17,6 +17,7 @@ import com.smallchill.platform.service.UserLoginService;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
+import org.beetl.sql.core.kit.StringKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -339,4 +340,74 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         _info.setPer(userinfo.getPer());
         this.update(_info);
     }
+
+    /**
+     * 改变用户状态
+     * @param id            用户id
+     * @param bannedTime    时间
+     * @param content       原因
+     * @param status        状态
+     */
+    @Override
+    public void banned(Integer id, Integer bannedTime, String content, Integer status) {
+        UserLogin userLogin = userLoginService.findById(id);
+        Long time = 0L;
+        if(bannedTime!=null){
+            switch (bannedTime){
+                case 1:
+                    time = 60L*60L*24L*1000L;
+                    break;
+                case 2:
+                    time = 2L*60L*60L*24L*1000L;
+                    break;
+                case 3:
+                    time = 7L*60L*60L*24L*1000L;
+                    break;
+                case 4:
+                    time = 14L*60L*60L*24L*1000L;
+                    break;
+                case 5:
+                    time = 30L*60L*60L*24L*1000L;
+                    break;
+                case 6:
+                    time = 60L*60L*60L*24L*1000L;
+                    break;
+                case 7:
+                    time = -2L;
+                    break;
+            }
+            if(bannedTime != 7){
+                time = System.currentTimeMillis() + time;
+            }
+            System.out.println(time);
+            userLogin.setUnlockTime(time);
+            userLogin.setContent(content);
+        }else {
+            userLogin.setUnlockTime(-1L);
+            userLogin.setContent(" ");
+        }
+        userLogin.setStatus(status);
+        userLoginService.update(userLogin);
+
+    }
+
+    @Override
+    public void sendMessage(HttpServletRequest request, String id, Integer send, String sendTime, String title, String content) {
+        if(StringKit.isNotBlank(id)){
+            //给一个组织发送信息
+            System.out.println("----id----");
+            System.out.println(id);
+            System.out.println("----id----");
+
+        }else {
+            //给查询结果的所有组织
+            List<Integer> ids = (List<Integer>) request.getSession().getAttribute("userInfoIds");
+            System.out.println("----ids----");
+            for(Integer _id : ids){
+                System.out.println(_id);
+            }
+            System.out.println("----ids----");
+        }
+    }
+
 }

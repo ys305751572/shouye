@@ -2,6 +2,7 @@ list
 ===
 SELECT
   tui.id AS id,
+  tui.user_id AS userId,
   tui.avater AS avater,
   tul.login_username AS accountId,
   tui.username AS userName,

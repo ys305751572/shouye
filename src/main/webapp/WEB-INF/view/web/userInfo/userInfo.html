@@ -18,6 +18,7 @@
 		var grid_url = ctx + "/${code}/list";
 		var _colnames = [
 				"id",
+				"userId",
 				"头像",
 				"账号ID",
 				"名字",
@@ -56,6 +57,7 @@
 			];
 		var _colmodel = [
 			{name:"id",index:"id", width:80,hidden:true},
+			{name:"userId",index:"userId", width:80,hidden:true},
 			{name:"avater",index:"avater", width:120},
 			{name:"accountId", index:"accountId", width:120},
 			{name:"userName", index:"userName", width:120},
@@ -87,10 +89,61 @@
 			{name:"contentNum", index:"contentNum", width:120},
 			{formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
 			{name:"mobile", index:"mobile", width:120},
-			{name:"createTime", index:"createTime", width:120},
-			{name:"lastLoginTime", index:"lastLoginTime", width:120},
-			{name:"status", index:"status", width:120},
-			{formatter: function(cellvalue, options, rowObject) {return "操作"}}
+			{name:"createTime", index:"createTime", width:120,
+				formatter: function(cellvalue, options, rowObject) {
+					if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
+						return "";
+					}else {
+						return date_format(cellvalue)
+					}
+
+				}
+			},
+			{name:"lastLoginTime", index:"lastLoginTime", width:120,
+				formatter: function(cellvalue, options, rowObject) {
+					if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
+						return "";
+					}else {
+						return date_format(cellvalue)
+					}
+
+				}
+			},
+			{name:"status", index:"status", width:120,
+				formatter: function(cellvalue, options, rowObject) {
+					if(cellvalue==0 ){
+						return "<p style='color: black'>正常</p>"
+					}else if(cellvalue==1){
+						return "<p style='color: red'>封号</p>"
+					}else{
+						return "<p style='color: #b3b8b8'>冻结</p>"
+					}
+				}
+			},
+			{
+				width: 300,
+				formatter: function (cellvalue, options, rowObject) {
+					var id = rowObject.userId;
+					var status = rowObject.status;
+					var userName = rowObject.userName;
+
+					var departure = "<button title='封号' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + userName + "\',\'" + status + "\',\'" + 1 + "\')\">" +
+							"<i class='fa fa-circle-o'></i> 封号</button>";
+
+					var freeze = "<button title='冻结' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + userName + "\',\'" + status + "\',\'" + 2 + "\')\">" +
+							"<i class='fa fa-circle-o'></i> 冻结</button>";
+
+					var enterprise = "<button title='解封' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\',\'" + userName + "\',\'" + status + "\',\'" + 0 + "\')\">" +
+							"<i class='fa fa-circle'></i> 解封</button>";
+
+					if (status == "0") {
+						return departure + "&nbsp;" + freeze;
+					} else {
+						return enterprise;
+					}
+
+				}
+			}
 		];
 		
 		jQuery(grid_selector).jqGrid({
@@ -102,6 +155,66 @@
 			postData : {sort : "id", order : "desc"}
 		});
 	}
+
+	function date_format(data){
+		var d = new Date(data);    //根据时间戳生成的时间对象
+
+		var date = (d.getFullYear()) + "-" +
+				(d.getMonth() + 1) + "-" +
+				(d.getDate()) + " " +
+				(d.getHours()) + ":" +
+				(d.getMinutes()) + ":" +
+				(d.getSeconds());
+		return date;
+	}
+
+	function banned(id,name,status,index){
+		//封号
+		if(status == 0){
+			var title = "";
+			if(index == 1) {
+				title = "封号处理";
+			}else {
+				title = "冻结处理";
+			}
+			layer.open({
+				type: 2,
+				title: title,
+				area: ['800px', '550px'],
+				content: '${basePath}/userInfo/banned?id=' + id +'&status=' + index //iframe的url
+			});
+		}else {
+			var string = "";
+			if(status==1){
+				string = "确定解除【"+name+"】的封号状态？"
+			}else {
+				string = "确定解除【"+name+"】的冻结状态？"
+			}
+
+			//询问框
+			layer.confirm(string, {
+				btn: ['确定','取消'] //按钮
+			}, function(){
+				$.post(
+					"${basePath}/userInfo/setBanned",
+					{id:id,status:index},
+					function (data){
+						if(data.code===0){
+							$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+							layer.msg('成功', {
+								time: 1000 //1s后自动关闭
+							});
+						}else {
+							layer.msg('错误', {
+								time: 1000
+							});
+						}
+					}, "json"
+				);
+			});
+		}
+	}
+
 </script>
 
 
