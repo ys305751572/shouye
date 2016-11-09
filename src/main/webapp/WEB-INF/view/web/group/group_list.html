@@ -32,6 +32,7 @@
             "创建者",
             "审核者",
             "账号状态",
+            "账号状态",
             "操作"
         ];
         var _colmodel=[
@@ -43,7 +44,7 @@
             {name:"targat",index:"targat", width:100},
             {name:"memberCount",index:"memberCount", width:100},
             {name:"adminCount",index:"adminCount", width:100},
-            {name:"_cost",index:"cost", width:120,hidden:true},
+            {name:"costStaus",index:"costStaus", width:120,hidden:true},
             {name:"cost",index:"cost", width:120,
                 formatter: function(cellvalue, options, rowObject) {
                     if(cellvalue == 0){
@@ -70,6 +71,7 @@
             },
             {name:"createName",index:"createName", width:120},
             {name:"approvalName",index:"approvalName", width:120},
+            {name:"freezeStatus",index:"freezeStatus", width:120,hidden:true},
             {name:"status",index:"status", width:180,
                 formatter: function(cellvalue, options, rowObject) {
                     if(cellvalue=="-1"){
@@ -178,7 +180,8 @@
         <!-- 配置查询 -->
         @ var _col=[
         @			  {name:"组织类型",index:"type", type:"select_908"},
-        @			  {name:"所在部门",index:"DEPTID", type:"selectDept"}
+        @			  {name:"入会费",index:"costStaus", type:"select_917"},
+        @			  {name:"状态",index:"freezeStatus", type:"select_902"}
         @		   ];
         @ include("/common/_function/_search.html",{"col":_col}){}
         <!-- 按钮组 -->

@@ -40,6 +40,8 @@ public class GroupExtend extends BaseModel {
     private String artificialPersonIdcard;
     @Column(name = "artificial_person_mobile")
     private String artificialPersonMobile;
+    @Column(name = "freeze_status")
+    private Integer freezeStatus;
     @Column(name = "freeze_time")
     private Long freezeTime = -1L;
     @Column(name = "why1")
@@ -50,6 +52,8 @@ public class GroupExtend extends BaseModel {
     private Integer createAdminId;
     @Column(name = "cost")
     private Integer cost = 0;
+    @Column(name = "cost_status")
+    private Integer costStatus;
 
     public Integer getCost() {
         return cost;
@@ -179,5 +183,21 @@ public class GroupExtend extends BaseModel {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getCostStatus() {
+        return costStatus;
+    }
+
+    public void setCostStatus(Integer costStatus) {
+        this.costStatus = costStatus;
+    }
+
+    public Integer getFreezeStatus() {
+        return freezeStatus;
+    }
+
+    public void setFreezeStatus(Integer freezeStatus) {
+        this.freezeStatus = freezeStatus;
     }
 }

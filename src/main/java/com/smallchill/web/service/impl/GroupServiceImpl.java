@@ -302,25 +302,26 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     public void banned(Integer id, Integer bannedTime, String content) {
         GroupExtend groupExtend = Blade.create(GroupExtend.class).findFirstBy("group_id = #{group_id}", Record.create().set("group_id", id));
         Long time = 0L;
+        Long day = 86400000L;
         if (bannedTime != null) {
             switch (bannedTime) {
                 case 1:
-                    time = 60L * 60L * 24L * 1000L;
+                    time = day;
                     break;
                 case 2:
-                    time = 2L * 60L * 60L * 24L * 1000L;
+                    time = 2L * day;
                     break;
                 case 3:
-                    time = 7L * 60L * 60L * 24L * 1000L;
+                    time = 7L * day;
                     break;
                 case 4:
-                    time = 14L * 60L * 60L * 24L * 1000L;
+                    time = 14L * day;
                     break;
                 case 5:
-                    time = 30L * 60L * 60L * 24L * 1000L;
+                    time = 30L * day;
                     break;
                 case 6:
-                    time = 60L * 60L * 60L * 24L * 1000L;
+                    time = 60L * day;
                     break;
                 case 7:
                     time = -2L;
@@ -330,9 +331,11 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
                 time = System.currentTimeMillis() + time;
             }
             System.out.println(time);
+            groupExtend.setFreezeStatus(2);
             groupExtend.setFreezeTime(time);
             groupExtend.setWhy1(content);
         } else {
+            groupExtend.setFreezeStatus(1);
             groupExtend.setFreezeTime(-1L);
             groupExtend.setWhy1("");
         }

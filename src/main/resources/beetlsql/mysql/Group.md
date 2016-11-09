@@ -11,12 +11,13 @@ SELECT
     tg.member_count AS memberCount,
     tg.admin_count AS adminCount,
     tge.cost AS cost,
-    (CASE WHEN tge.cost = 0 THEN '免费' ELSE '收费' END) AS _cost,
+    tge.cost_status AS costStaus,
     tg.activity_count AS activityCount,
     tg.update_time AS updateTime,
     cUser.NAME AS createName,
     aUser.NAME AS approvalName,
-    tge.freeze_time AS status
+    tge.freeze_time AS status,
+    tge.freeze_status AS freezeStatus
 FROM (SELECT * FROM tb_group WHERE audit_status = '3') tg
     LEFT JOIN tb_group_extend tge ON tg.id = tge.group_id
     LEFT JOIN (select num,name from tfw_dict where code=908) tfd ON tg.type = tfd.num
@@ -44,6 +45,16 @@ FROM tb_group tg
   LEFT JOIN tfw_user cUser ON tge.create_admin_id = cUser.ID
   LEFT JOIN tfw_user aUser ON tge.approval_admin_id = aUser.ID
 
+load
+===
+SELECT
+  tgl.id AS id,
+  tgl.sort AS sort,
+  tg.name AS name,
+  tg.idcard AS idcard
+FROM tb_group_load tgl
+LEFT JOIN (SELECT a.id,a.name,b.idcard FROM tb_group a LEFT JOIN `tb_group_extend` b ON b.`group_id` = a.id) tg ON tgl.group_id = tg.id
+ORDER BY tgl.sort
 
 listPage
 ========

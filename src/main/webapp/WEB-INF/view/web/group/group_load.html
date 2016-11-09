@@ -1,0 +1,155 @@
+@layout("/common/_curd/_container.html"){
+<script type="text/javascript">
+	var ctx="${basePath}";
+	var grid_selector = "#grid-table";
+	var pager_selector = "#grid-pager";
+	var hidden = 1;
+	var layerIndex = parent.layer.getFrameIndex(window.name);
+	$(function(){
+		initGrid();
+		initMenuBtn("btns","${code}");
+		//下拉框
+		$('#groupExtend').selectpicker();
+
+		$("#btn_close").bind("click",function(){
+			parent.layer.close(layerIndex);
+		});
+		$("#btn_save").bind("click",function(){
+			var id = $("#sort").val();
+			var groupId = $("#idCard").val();
+			$.post("${basePath}/group/loadSave",{groupId:groupId,id:id}, function(data){
+				if(data.code===0){
+					parent.$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+					parent.layer.close(layerIndex);
+				}
+				else{
+					layer_alert(data.message, "error");
+				}
+			}, "json");
+
+		});
+
+	});
+
+	function initGrid(){
+		var grid_url = ctx+"/${code}/loadList";//查询列表接口
+		var _colnames=[
+			"序列",
+			"组织名称",
+			"组织ID",
+			"删除"
+		];
+		var _colmodel=[
+			{name:"id",index:"id", width:80,hidden:true},
+			{name:"name",index:"name", width:120},
+			{name:"idcard",index:"idcard", width:120},
+			{
+				width: 300,
+				formatter: function (cellvalue, options, rowObject) {
+					var id = rowObject.id;
+
+					var del = "<button title='移除' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"del(\'" + id + "\')\">" +
+							"<i class='fa fa-circle-o'></i> 移除</button>";
+
+					return del;
+
+				}
+			}
+		];
+
+		jQuery(grid_selector).jqGrid({
+			url:grid_url,
+            shrinkToFit:true,//适用于较少字段,响应式
+			autowidth : true,
+			forceFit : true,
+			colNames:_colnames,
+			colModel:_colmodel,
+			jsonReader:{id:"id"},
+			pager : pager_selector,
+			postData: {sort: "id", order: "asc"}
+		});
+
+	}
+
+	function del(id){
+		layer.confirm('确定移除该组织吗？', {
+			btn: ['确定','取消'] //按钮
+		}, function(){
+			$.post(
+					"${basePath}/group/loadDel",
+					{id:id},
+					function (data){
+						if(data.code===0){
+							$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+							layer.msg('成功', {
+								time: 1000 //1s后自动关闭
+							});
+						}else {
+							layer.msg('错误', {
+								time: 1000
+							});
+						}
+					}, "json"
+			);
+		});
+
+	}
+
+</script>
+
+
+<!-- 配置grid -->
+<div class="row">
+	<div class="col-xs-12 tb-grid" style="margin:10px 0 10px 0">
+		<label class="col-sm-2 control-label no-padding-right" > 选择排序 </label>
+		<div class="col-sm-5">
+			<select class="form-control" id="sort">
+				@for(x in day){
+				<option value="${x!}">${x!}</option>
+				@}
+			</select>
+		</div>
+	</div>
+
+	<div class="col-xs-12 tb-grid" style="margin:10px 0 10px 0">
+		<label class="col-sm-2 control-label no-padding-right" > 组织ID </label>
+		<div class="col-sm-5">
+			<select class="selectpicker show-tick form-control" data-live-search="true" id="idCard">
+				<option value=" "> </option>
+				@for(y in groupExtend){
+				<option value="${y.groupId!}">${y.idCard!}</option>
+				@}
+			</select>
+		</div>
+	</div>
+
+	<div class="col-xs-12 tb-grid">
+		<!-- grid -->
+		<table id="grid-table"></table>
+		<!-- 分页 -->
+		<div id="grid-pager"></div>
+	</div>
+</div>
+
+<div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+	<div class="col-md-offset-1 col-md-10">
+		<button class="btn btn-info" type="button" id="btn_save">
+			<i class="ace-icon fa fa-check bigger-110"></i>
+			确认
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" id="btn_close">
+			<i class="ace-icon fa fa-close bigger-110"></i>
+			关闭
+		</button>
+	</div>
+</div>
+
+
+<!-- 引入列表页所需js -->
+@include("/common/_listscript.html"){}
+<link rel="stylesheet" href="${basePath}/static/zTree/css/zTreeStyle/zTreeStyle.css" />
+<script src="${basePath}/static/zTree/js/jquery.ztree.core.js" type="text/javascript" ></script>
+<link rel="stylesheet" href="${basePath}/static/bootstrap-select-1.11.0/dist/css/bootstrap-select.min.css">
+<script src="${basePath}/static/bootstrap-select-1.11.0/dist/js/bootstrap-select.min.js"></script>
+@}

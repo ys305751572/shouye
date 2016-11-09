@@ -74,12 +74,27 @@
 			{name:"resources", index:"resources", width:120},
 			{name:"organization", index:"organization", width:120},
 			{name:"orgType", index:"orgType", width:120},
-			{name:"productType", index:"productType", width:120},
+			{name:"productType", index:"productType", width:120,
+				formatter: function (cellvalue, options, rowObject) {
+					if(cellvalue == 1 ){
+						return "服务";
+					}else{
+						return "产品";
+					}
+				}},
 			{name:"industryRanking", index:"industryRanking", width:120},
 			{name:"qualification", index:"qualification", width:120},
 			{name:"keyWord", index:"keyWord", width:120},
 			{name:"groupName", index:"groupName", width:120},
-			{name:"vipType", index:"vipType", width:120},
+			{name:"vipType", index:"vipType", width:120,
+				formatter: function (cellvalue, options, rowObject) {
+					if(cellvalue == 1 ){
+						return "会员";
+					}else{
+						return "干事";
+					}
+				}
+			},
 			{name:"organizationNum", index:"organizationNum", width:120},
 			{name:"friendNum", index:"friendNum", width:120},
 			{name:"acquaintancesNum", index:"acquaintancesNum", width:120},
@@ -141,7 +156,6 @@
 					} else {
 						return enterprise;
 					}
-
 				}
 			}
 		];
@@ -229,8 +243,8 @@
 			@	{name:"行业",index:"domain", type:"select_906"},
 			@	{name:"领域",index:"domain", type:"select_906"},
 			@	{name:"组织类型",index:"domain", type:"select_908"},
-			@	{name:"产品服务",index:"domain", type:"select_906"},
-			@	{name:"组织性质",index:"domain", type:"select_906"}
+			@	{name:"产品服务",index:"productType", type:"select_912"},
+			@	{name:"会员类型",index:"vipType", type:"select_914"}
 			@	];
 			@ include("/common/_function/_search.html",{"col":_col}){}
 			<!-- 按钮 -->

@@ -70,6 +70,17 @@ var exwhere;
         console.log(ids);
         console.log(rowData);
 
+        //加载(默认加载组织功能)
+        if (this.alias == "load") {
+            if (rows > 1) {
+                layer_alert('只能选择一条数据!', "warn");
+                return;
+            }
+            var url = this.url;
+            this.open(url + split + ids, ids);
+            return;
+        }
+
         //发送消息按钮
         if (this.alias == "message") {
             if (rows > 1) {

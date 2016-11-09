@@ -263,6 +263,17 @@
         else if (type == "text") {
             resetInput(num);
         }
+
+        else if (type == "selectDept") {
+            $.post("${basePath}/cache/getDeptSelect", {num: num}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key);
+            }, "json");
+        }
+
         $("#hides" + num).val(key);
         $("#searchthis" + num).html(value);
     }

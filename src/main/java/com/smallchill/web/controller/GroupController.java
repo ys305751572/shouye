@@ -2,14 +2,18 @@ package com.smallchill.web.controller;
 
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.web.meta.intercept.GroupIntercept;
 import com.smallchill.web.model.Group;
+import com.smallchill.web.model.GroupExtend;
+import com.smallchill.web.model.GroupLoad;
 import com.smallchill.web.model.vo.GroupVo;
 import com.smallchill.web.service.GroupBankService;
 import com.smallchill.web.service.GroupExtendService;
+import com.smallchill.web.service.GroupLoadService;
 import com.smallchill.web.service.GroupService;
 import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.json.JSONException;
@@ -48,6 +52,8 @@ public class GroupController extends BaseController {
     GroupBankService groupBankService;
     @Autowired
     GroupExtendService groupExtendService;
+    @Autowired
+    GroupLoadService groupLoadService;
 
     @RequestMapping("/")
     public String index(ModelMap mm) {
@@ -82,7 +88,6 @@ public class GroupController extends BaseController {
 
         return object;
     }
-
 
     @RequestMapping(KEY_ADD)
     public String add(ModelMap mm) throws JSONException {
@@ -166,6 +171,67 @@ public class GroupController extends BaseController {
         return success(SAVE_SUCCESS_MSG);
     }
 
+    //跳转默认加载组织
+    @RequestMapping(value = "/load")
+    public String load(ModelMap mm) {
+        mm.put("code", CODE);
+        List<Integer> day = new ArrayList<>();
+        for(int i=1;i<=30;i++){
+            day.add(i);
+        }
+        mm.put("day", day);
+        List<GroupExtend> groupExtends = groupExtendService.findAll();
+        mm.put("groupExtend", groupExtends);
+        return BASE_PATH +"group_load.html";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/loadList")
+    public Object loadList() {
+        Object object = paginate("Group.load");
+        return object;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/loadSave")
+    public AjaxResult loadSave(Integer groupId,Integer id){
+        try{
+            GroupLoad _groupLoad = groupLoadService.findFirstBy("group_id = #{groupId}", Record.create().set("groupId", groupId));
+            if(_groupLoad != null){
+                return error("组织已加载,请先移除");
+            }
+            GroupLoad groupLoad = groupLoadService.findById(id);
+            if(groupLoad !=null){
+                groupLoad.setGroupId(groupId);
+                groupLoadService.update(groupLoad);
+            }else {
+                groupLoad = new GroupLoad();
+                groupLoad.setId(id);
+                groupLoad.setGroupId(groupId);
+                groupLoadService.save(groupLoad);
+            }
+
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error("设置错误");
+        }
+        return success("设置成功");
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/loadDel")
+    public AjaxResult loadDel(Integer id){
+        try{
+            if(id==null){
+                return error(DEL_SUCCESS_MSG);
+            }
+            groupLoadService.delete(id);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error(DEL_SUCCESS_MSG);
+        }
+        return success("DEL_FAIL_MSG");
+    }
 
     @ResponseBody
     @RequestMapping(KEY_SAVE)
