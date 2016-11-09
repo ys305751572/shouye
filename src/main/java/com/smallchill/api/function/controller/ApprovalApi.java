@@ -25,6 +25,12 @@ public class ApprovalApi extends BaseController {
     @Autowired
     private UserApprovalService userApprovalService;
 
+    /**
+     * 发送请求信息
+     *
+     * @param ua 请求信息
+     * @return result
+     */
     @RequestMapping(value = "/introduce")
     @ResponseBody
     @Before(UserApprovalValidate.class)
@@ -84,21 +90,21 @@ public class ApprovalApi extends BaseController {
 
     /**
      * (引荐)审核
+     *
      * @return result
      */
     @RequestMapping(value = "/audit/introduce")
     @ResponseBody
     public String auditByIntroduce(UserApproval ua) {
 
-        if(ua.getStatus() == 1) {
+        if (ua.getStatus() == 1) {
             // 同意
             try {
                 userApprovalService.auditAgreeByIntroduce(ua);
             } catch (ApprovalFailException e) {
                 return fail(ErrorType.ERROR_CODE_APP_APPROVAL_FAIL);
             }
-        }
-        else {
+        } else {
             // 拒绝
             userApprovalService.auditRefuseByIntroduce(ua);
         }

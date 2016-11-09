@@ -35,8 +35,6 @@ import java.util.List;
 @Service
 public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserInfoService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserInfoServiceImpl.class);
-
     @Autowired
     private UserDomainService userDomainService;
 

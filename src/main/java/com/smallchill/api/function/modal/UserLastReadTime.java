@@ -22,19 +22,19 @@ public class UserLastReadTime extends BaseModel {
     private Integer userId;
 
     @Column(name = "new_time")
-    private Long newTime;
+    private Long newTime = 0L;
 
     @Column(name = "intereste")
-    private Long intereste;
+    private Long intereste = 0L;
 
     @Column(name = "interested")
-    private Long interested;
+    private Long interested = 0L;
 
     @Column(name = "acquaintances")
-    private Long acquaintances;
+    private Long acquaintances = 0L;
 
     @Column(name = "group")
-    private Long group;
+    private Long group = 0L;
 
     public Long getGroup() {
         return group;

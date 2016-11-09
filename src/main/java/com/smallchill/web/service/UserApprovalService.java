@@ -43,27 +43,27 @@ public interface UserApprovalService extends IService<UserApproval>{
 
     /**
      * 组织审核同意
-     * @param ua
+     * @param augId
      */
-    void groupApprovalAgree(UserApproval ua);
+    void groupApprovalAgree(Integer augId);
 
     /**
      * 组织审核拒绝
-     * @param ua
+     * @param augId
      */
-    void groupApprovalRefuse(UserApproval ua);
+    void groupApprovalRefuse(Integer augId);
 
     /**
      * 组织审核拉黑
-     * @param ua
+     * @param augId
      */
-    void groupApprovalBlank(UserApproval ua);
+    void groupApprovalBlank(Integer augId);
 
     /**
      * 组织审核移除黑名单
-     * @param ua
+     * @param augId
      */
-    void groupApprovalUnBlank(UserApproval ua);
+    void groupApprovalUnBlank(Integer augId);
 
     /**
      * 用户审核同意

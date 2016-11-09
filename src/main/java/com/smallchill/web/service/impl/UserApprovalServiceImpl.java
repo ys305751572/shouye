@@ -95,7 +95,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     @Override
     public void toGroup(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException,
             UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException {
-        if (this.requestValidate(ua)) {
+        if (this.requestValidate(ua) && this.groupRequestValidate(ua)) {
             Aug aug = new Aug();
             aug.setGroupId(ua.getGroupId());
             aug.setFromUserId(ua.getFromUserId());
@@ -103,52 +103,111 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
             aug.setStatus(0);
             aug.setCreateTime(DateTimeKit.nowLong());
             augService.save(aug);
-//              this.save(ua);
         }
+    }
+
+    /**
+     * 验证通过组织介绍请求是否合法
+     *
+     * @param ua 请求
+     * @return boolean
+     */
+    private boolean groupRequestValidate(UserApproval ua) throws BothUserHasApprovalException, UserInOthersBlankException {
+        Aug aug = findAugByGroupIdAndFidAndTid(ua.getGroupId(), ua.getFromUserId(), ua.getToUserId());
+        if (aug == null) { return true;}
+        if (aug.getStatus() == 0 || aug.getStatus() == 1) throw new BothUserHasApprovalException();
+        if (aug.getStatus() == 3) throw new UserInOthersBlankException();
+        if (aug.getStatus() == 2) {
+            this.updateAug(aug);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 查询审核信息
+     * @param groupId 组织ID
+     * @param fromUserId 请求发送者Id
+     * @param toUserId 请求介绍人ID
+     * @return 审核信息
+     */
+    private Aug findAugByGroupIdAndFidAndTid(Integer groupId, Integer fromUserId, Integer toUserId) {
+        String where = "group_id = #{groupId} and from_user_id = #{fromUserId} and to_user_id = #{toUserId}";
+        return augService.findFirstBy(where, Record.create().set("groupId", groupId).set("fromUserId", fromUserId).set("toUserId", toUserId));
+    }
+
+    private void updateAug(Aug aug) {
+        aug.setStatus(0);
+        augService.update(aug);
     }
 
     /** ************************************************审核*******************************************************/
     /**
      * 组织审核同意
      *
-     * @param ua 申请消息
+     * @param augId 申请消息Id
      */
+    @Transactional
     @Override
-    public void groupApprovalAgree(UserApproval ua) {
-        this.approval(ua, 1);
+    public void groupApprovalAgree(Integer augId) {
+        Aug aug = this.updateAugStatusById(augId, 1);
+        UserApproval ua = this.findFirstBy(where, Record.create().set("fromUserId", aug.getFromUserId()).set("toUserId", aug.getToUserId()));
+        if (ua == null) {
+            UserApproval newUa = new UserApproval();
+            newUa.setStatus(0);
+            newUa.setFromUserId(aug.getFromUserId());
+            newUa.setToUserId(aug.getToUserId());
+            newUa.setGroupId(aug.getGroupId());
+            newUa.setType(1);
+            newUa.setIntroduceUserId(0);
+            newUa.setCreateTime(DateTimeKit.nowLong());
+            this.save(newUa);
+        }
     }
 
     /**
      * 组织审核忽略（拒绝）
      *
-     * @param ua 申请消息
+     * @param augId 申请消息Id
      */
     @Override
-    public void groupApprovalRefuse(UserApproval ua) {
-        this.approval(ua, 2);
+    public void groupApprovalRefuse(Integer augId) {
+        this.updateAugStatusById(augId, 2);
     }
 
     /**
      * 组织审核拉黑
      *
-     * @param ua 申请消息
+     * @param augId 申请消息Id
      */
     @Override
-    public void groupApprovalBlank(UserApproval ua) {
-        this.approval(ua, 3);
+    public void groupApprovalBlank(Integer augId) {
+        this.updateAugStatusById(augId, 3);
     }
 
     /**
      * 组织审核移除黑名单
      *
-     * @param ua 申请消息
+     * @param augId 申请消息Id
      */
     @Override
-    public void groupApprovalUnBlank(UserApproval ua) {
-        this.approval(ua, 4);
+    public void groupApprovalUnBlank(Integer augId) {
+        this.updateAugStatusById(augId, 4);
     }
 
     /**
+     * 修改审核状态
+     * @param augId 审核信息ID
+     * @param status 状态
+     */
+    private Aug updateAugStatusById(Integer augId, Integer status) {
+        Aug aug =augService.findById(augId);
+        aug.setStatus(status);
+        augService.update(aug);
+        return aug;
+    }
+
+    /************************************************************************************************
      * 用户审核同意
      *
      * @param ua 申请消息
