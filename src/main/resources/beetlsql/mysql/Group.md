@@ -49,12 +49,10 @@ load
 ===
 SELECT
   tgl.id AS id,
-  tgl.sort AS sort,
   tg.name AS name,
   tg.idcard AS idcard
 FROM tb_group_load tgl
 LEFT JOIN (SELECT a.id,a.name,b.idcard FROM tb_group a LEFT JOIN `tb_group_extend` b ON b.`group_id` = a.id) tg ON tgl.group_id = tg.id
-ORDER BY tgl.sort
 
 listPage
 ========
