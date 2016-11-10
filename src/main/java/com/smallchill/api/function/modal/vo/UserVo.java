@@ -1,10 +1,12 @@
 package com.smallchill.api.function.modal.vo;
 
+import java.io.Serializable;
+
 /**
  * 用户vo
  * Created by yesong on 2016/11/1 0001.
  */
-public class UserVo {
+public class UserVo implements Serializable{
 
     private Integer id;
     private String username;

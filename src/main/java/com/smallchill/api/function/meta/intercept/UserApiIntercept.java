@@ -47,7 +47,7 @@ public class UserApiIntercept extends ApiQueryIntercept {
                 record.put("keyWord",keyWord);
             }
 
-            record.put("domain", Convert.convertDomain(record.get("domain").toString()));
+            record.put("domain", record.get("domain"));
             record.remove("province");
             record.remove("city");
             record.remove("groupId");

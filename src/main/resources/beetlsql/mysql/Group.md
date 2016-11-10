@@ -58,6 +58,7 @@ listPage
 ========
 SELECT
     g.id,
+    g.name,
     g.avater,
     g.province,
     g.city,

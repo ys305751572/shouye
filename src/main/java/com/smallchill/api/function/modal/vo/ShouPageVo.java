@@ -1,5 +1,7 @@
 package com.smallchill.api.function.modal.vo;
 
+import com.smallchill.core.base.model.BaseModel;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -7,7 +9,7 @@ import java.util.List;
  * 手页-首页
  * Created by yesong on 2016/11/1 0001.
  */
-public class ShouPageVo implements Serializable{
+public class ShouPageVo extends BaseModel {
 
     private Integer newCount = 0;
 

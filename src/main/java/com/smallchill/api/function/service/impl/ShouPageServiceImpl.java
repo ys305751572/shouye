@@ -7,9 +7,13 @@ import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.ShoupageService;
 import com.smallchill.api.function.service.UserLastReadTimeService;
+import com.smallchill.core.constant.ConstCache;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.core.toolbox.kit.JsonKit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +27,7 @@ import java.util.Map;
  * Created by yesong on 2016/11/1 0001.
  */
 @Service
-public class ShouPageServiceImpl implements ShoupageService {
+public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     @Autowired
     private UserLastReadTimeService userLastReadTimeService;
@@ -33,54 +37,57 @@ public class ShouPageServiceImpl implements ShoupageService {
     private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.status,ua.from_user_id,ua.to_user_id " +
             "from tb_user_approval ua join tb_user_info ui";
 
-    private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest i " + "join tb_user_info ui on i.to_id = ui.user_id where i.user_id = #{userId} " +
-            " and i.type = 0";
+    private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id where i.user_id = #{userId}";
 
-    private String SQL_INTERESTED_USER = "select "+ USER_BASE_INFO_SQL +" from tb_interest i join tb_user_info ui on i.user_id = ui.user_id where i.to_id = #{userId}";
+    private String SQL_INTEREST_GROUP = "select * from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
 
-    private String sql_interest_group = "select * from tb_interest i join tb_group g on i.to_id = g.id where i.user_id = #{userId} and i.type = 1";
+    private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id where i.to_user_id = #{userId}";
 
-    private String sql_my_group = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
+    private String SQL_MY_GROUP = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
 
 
-    private String NEW_USER_COUNT_SQL = "SELECT COUNT(*) FROM tb_user_approval ua WHERE (ua.`from_user_id` = #{userId} OR ua.`to_user_id` = #{userId}) " +
+    private String NEW_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_user_approval ua WHERE (ua.`from_user_id` = #{userId} OR ua.`to_user_id` = #{userId}) " +
             "AND (ua.`status` = 1 OR ua.`create_time` > #{lastTime})";
 
     // 感兴趣的用户
-    private String INTEREST_USER_COUNT_SQL = "SELECT COUNT(*) FROM tb_interest_user iu WHERE iu.create_time > #{lastTime} AND iu.user_id = #{userId}";
+    private String INTEREST_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_interest_user iu WHERE iu.create_time > #{lastTime} AND iu.user_id = #{userId}";
     // 感兴趣的组织
-    private String INTEREST_GROUP_COUNT_SQL = "SELECT COUNT(*) FROM tb_interest_group iu WHERE iu.create_time > #{lastTime} AND iu.user_id = #{userId}";
+    private String INTEREST_GROUP_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_interest_group iu WHERE iu.create_time > #{lastTime} AND iu.user_id = #{userId}";
 
     // 被谁感兴趣
-    private String INTERESTD_USER_COUNT_SQL = "SELECT COUNT(*) FROM tb_interest_user iu WHERE iu.create_time > #{lastTime} AND iu.to_user_id = #{userId}";
+    private String INTERESTD_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_interest_user iu WHERE iu.create_time > #{lastTime} AND iu.to_user_id = #{userId}";
 
     // 我的熟人
-    private String ACQUAINTANCES_COUNT_SQL = "SELECT COUNT(*) FROM tb_user_approval ua WHERE (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId}) AND (ua.create_time > #{lastTime})";
+    private String ACQUAINTANCES_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_user_approval ua WHERE (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId}) AND (ua.create_time > #{lastTime} AND ua.type = 2)";
 
     // 我的组织
-    private String MYGROUP_COUNT_SQL = "SELECT COUNT(*) FROM tb_group_approval ga WHERE ga.user_id = #{userId} AND ga.create_time > #{lastTime}";
+    private String MYGROUP_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_group_approval ga WHERE ga.user_id = #{userId} AND ga.create_time > #{lastTime}";
 
     /**
      * 手页录首页
+     *
      * @param userId 当前用户ID
      * @return 首页录vo
      */
     @Override
     public ShouPageVo index(Integer userId) {
 
-        UserLastReadTime userLastReadTime = userLastReadTimeService.findFirstBy("user_id", Record.create().set("userId", userId));
+        UserLastReadTime userLastReadTime = lastReadTimeByUserId(userId);
 
-        if(userLastReadTime == null) {
+        if (userLastReadTime == null) {
             userLastReadTime = new UserLastReadTime();
         }
         List<UserVo> voList = friends(userId);
         ShouPageVo shouPageVo = new ShouPageVo();
+
         shouPageVo.setNewCount(countNew(userId, userLastReadTime.getNewTime()));
         shouPageVo.setAcquaintancesCount(countAcquaintances(userId, userLastReadTime.getAcquaintances()));
         shouPageVo.setInterestCount(countIntereste(userId, userLastReadTime.getIntereste()));
         shouPageVo.setInterestedCount(countInterested(userId, userLastReadTime.getInterested()));
         shouPageVo.setGroupCount(countGroup(userId, userLastReadTime.getGroup()));
         shouPageVo.setList(voList == null || voList.size() == 0 ? new ArrayList<UserVo>() : voList);
+
+        System.out.println(JsonKit.toJson(shouPageVo));
         return shouPageVo;
     }
 
@@ -99,8 +106,46 @@ public class ShouPageServiceImpl implements ShoupageService {
     @Override
     public int countNew(Integer userId, Long date) {
         Record _r = Record.create().set("userId", userId).set("lastTime", date);
-        Record record = Db.init().selectOne(NEW_USER_COUNT_SQL,_r);
+        Record record = Db.init().selectOne(NEW_USER_COUNT_SQL, _r);
         return record.get("count") == null ? 0 : Integer.parseInt(record.get("count").toString());
+    }
+
+    /**
+     * 查询用户最后读取时间
+     *
+     * @param userId 用户ID
+     * @return 最后读取信息
+     */
+    public UserLastReadTime lastReadTimeByUserId(Integer userId) {
+        UserLastReadTime ult = userLastReadTimeService.findFirstBy("user_id", Record.create().set("userId", userId));
+        if (ult == null) {
+            return new UserLastReadTime();
+        }
+        UserLastReadTime newUlt = new UserLastReadTime();
+        newUlt.setAcquaintances(ult.getAcquaintances() == null ? 0 : ult.getAcquaintances());
+        newUlt.setUserId(userId);
+        newUlt.setGroup(ult.getGroup() == null ? 0 : ult.getGroup());
+        newUlt.setIntereste(ult.getIntereste() == null ? 0 : ult.getIntereste());
+        newUlt.setInterested(ult.getInterested() == null ? 0 : ult.getInterested());
+        newUlt.setId(ult.getId());
+        newUlt.setNewTime(ult.getNewTime() == null ? 0 : ult.getNewTime());
+        return newUlt;
+    }
+
+    /**
+     * 更新用户最后读取时间
+     *
+     * @param urt 最后读取信息
+     */
+    public void updateUserLastReadTime(Integer userId, UserLastReadTime urt) {
+        urt.setUserId(userId);
+        if (urt.getId() == null) {
+            // insert
+            userLastReadTimeService.save(urt);
+        } else {
+            // update
+            userLastReadTimeService.update(urt);
+        }
     }
 
     /**
@@ -116,6 +161,13 @@ public class ShouPageServiceImpl implements ShoupageService {
      */
     @Override
     public Map<String, List<UserVo>> listNew(Integer userId) {
+
+        UserLastReadTime ult = lastReadTimeByUserId(userId);
+        ult.setNewTime(DateTimeKit.nowLong());
+        this.updateUserLastReadTime(userId, ult);
+
+
+
         Map<String, List<UserVo>> resultMap = new HashMap<>();
         resultMap.put("list0", new ArrayList<UserVo>()); // 自荐
         resultMap.put("list1", new ArrayList<UserVo>()); // 引荐
@@ -182,8 +234,9 @@ public class ShouPageServiceImpl implements ShoupageService {
 
     /**
      * 我感兴趣的组织和用户
+     *
      * @param userId 用户ID
-     * @param date 最后读取时间
+     * @param date   最后读取时间
      * @return 数量
      */
     @Override
@@ -204,8 +257,13 @@ public class ShouPageServiceImpl implements ShoupageService {
      */
     @Override
     public Map<String, Object> listIntereste(Integer userId) {
+
+        UserLastReadTime ult = lastReadTimeByUserId(userId);
+        ult.setIntereste(DateTimeKit.nowLong());
+        this.updateUserLastReadTime(userId, ult);
+
         Record record = Record.create().set("userId", userId);
-        List<Record> groupList = Db.init().selectList(sql_interest_group, record);
+        List<Record> groupList = Db.init().selectList(SQL_INTEREST_GROUP, record);
         List<Record> userList = Db.init().selectList(SQL_INTEREST_USER, record);
 
         List<Groupvo> groupvos = new ArrayList<>();
@@ -238,6 +296,10 @@ public class ShouPageServiceImpl implements ShoupageService {
      */
     @Override
     public List<UserVo> listInterested(Integer userId) {
+        UserLastReadTime ult = lastReadTimeByUserId(userId);
+        ult.setInterested(DateTimeKit.nowLong());
+        this.updateUserLastReadTime(userId, ult);
+
         List<Record> list = Db.init().selectList(SQL_INTERESTED_USER, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         for (Record record : list) {
@@ -255,6 +317,11 @@ public class ShouPageServiceImpl implements ShoupageService {
 
     @Override
     public List<UserVo> listAcquaintances(Integer userId) {
+
+        UserLastReadTime ult = lastReadTimeByUserId(userId);
+        ult.setAcquaintances(DateTimeKit.nowLong());
+        this.updateUserLastReadTime(userId, ult);
+
         String sql2 = sql + " on (ui.`user_id` = ua.`from_user_id` OR ui.`user_id` = ua.`to_user_id` ) ";
         String where = "ui.`user_id` != #{userId} and ua.type = 2 and ( ua.status = 0 or ua.status = 1)";
         List<Record> list = Db.init().selectList(sql2, where, Record.create().set("userId", userId));
@@ -300,8 +367,33 @@ public class ShouPageServiceImpl implements ShoupageService {
      */
     @Override
     public List<Groupvo> listGroup(Integer userId) {
-        List<Record> list = Db.init().selectList(sql_my_group, Record.create().set("userId", userId));
+        UserLastReadTime ult = lastReadTimeByUserId(userId);
+        ult.setGroup(DateTimeKit.nowLong());
+        this.updateUserLastReadTime(userId, ult);
+
+        String sql = "SELECT\n" +
+                "    g.id,\n" +
+                "    g.name,\n" +
+                "    g.avater,\n" +
+                "    g.province,\n" +
+                "    g.city,\n" +
+                "    g.type,\n" +
+                "    g.province_city provinceCity,\n" +
+                "    g.member_count memberCount,\n" +
+                "    g.targat,\n" +
+                "    ga.user_id userId,\n" +
+                "    ga.status\n" +
+                "FROM\n" +
+                "    tb_group g\n" +
+                "RIGHT JOIN\n" +
+                "    tb_group_approval ga\n" +
+                "ON\n" +
+                "    (g.id = ga.group_id)" +
+                " WHERE ga.user_id = #{userId}";
+
+        List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));
         List<Groupvo> groupvos = new ArrayList<>();
+
         for (Record record : list) {
             groupvos.add(Convert.recordToGroupVo(record));
         }
