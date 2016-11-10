@@ -1,5 +1,8 @@
 package com.smallchill.web.controller;
 
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.UserInfoService;
@@ -67,7 +70,7 @@ public class UserInfoController extends BaseController {
 
 	@ResponseBody
 	@RequestMapping(KEY_LIST)
-	public Object list(HttpServletRequest request) {
+	public Object list() {
 		JqGrid grid = (JqGrid)paginate(LIST_SOURCE);
 		List<CaseInsensitiveHashMap> list = grid.getRows();
 
@@ -77,8 +80,8 @@ public class UserInfoController extends BaseController {
 			Integer id = (Integer) map.get("ID");
 			ids.add(id);
 		}
-		request.getSession().setAttribute("userInfoIds",ids);
-		request.getSession().setAttribute("userInfoNum",list.size());
+		getRequest().getSession().setAttribute("userInfoIds",ids);
+		getRequest().getSession().setAttribute("userInfoNum",list.size());
 
 		return grid;
 	}
@@ -174,4 +177,14 @@ public class UserInfoController extends BaseController {
 
 	}
 
+
+	//内容发送页面
+	@RequestMapping(value = "/content")
+	public String _userContent(ModelMap mm,HttpServletRequest request) {
+		UserInfo userInfo = new UserInfo();
+		mm.put("userInfoNum", request.getSession().getAttribute("userInfoNum"));
+		mm.put("userInfo", userInfo);
+		mm.put("code", CODE);
+		return BASE_PATH + "userInfo_content.html";
+	}
 }

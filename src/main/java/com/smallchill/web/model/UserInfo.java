@@ -99,6 +99,9 @@ public class UserInfo extends BaseModel {
     @Column(name = "key_word")
     private String keyWord = "";
 
+    @Column(name = "group_status")
+    private Integer groupStatus;
+
     @Column(name = "groups")
     private String groups = "";
 
@@ -415,5 +418,13 @@ public class UserInfo extends BaseModel {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getGroupStatus() {
+        return groupStatus;
+    }
+
+    public void setGroupStatus(Integer groupStatus) {
+        this.groupStatus = groupStatus;
     }
 }

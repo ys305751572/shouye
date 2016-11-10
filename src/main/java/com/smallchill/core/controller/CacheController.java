@@ -18,6 +18,9 @@ package com.smallchill.core.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.smallchill.system.model.Dict;
+import com.smallchill.system.service.DictService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,6 +41,9 @@ import com.smallchill.core.toolbox.kit.StrKit;
 @Controller
 @RequestMapping("/cache")
 public class CacheController extends BladeController {
+
+	@Autowired
+	DictService dictService;
 
 	public void index() {
 
@@ -134,12 +140,6 @@ public class CacheController extends BladeController {
 
 	/**
 	 * TODO 根据字典编号获取下拉框
-	 *
-	 * @param code
-	 *            编号
-	 * @param num
-	 *            分组
-	 * @return String
 	 */
 	@ResponseBody
 	@RequestMapping("/getSelect")
@@ -359,4 +359,78 @@ public class CacheController extends BladeController {
 
 		return json(menu);
 	}
+
+
+	/**
+	 * option的value  设置为ID
+	 * @return
+     */
+	@ResponseBody
+	@RequestMapping("/getSelectId")
+	public AjaxResult getSelectId() {
+		final String code = getParameter("code");
+		final String num = getParameter("num");
+		List<Map<String, Object>> dict = CacheKit.get(DICT_CACHE, "dict_common_" + code,
+				new ILoader() {
+					public Object load() {
+						return Db.init().selectList("select id as ID,pId as PID,name as TEXT from  TFW_DICT where code=#{code} and num>0", Record.create().set("code", code));
+					}
+				});
+		StringBuilder sb = new StringBuilder();
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
+				+ num + "\">");
+		sb.append("<option value></option>");
+		for (Map<String, Object> dic : dict) {
+			sb.append("<option value=\"" + dic.get("ID") + "\">" + dic.get("TEXT") + "</option>");
+		}
+		sb.append("</select>");
+		return json(sb.toString());
+	}
+
+
+	/**
+	 * 字典父子关联 父类select
+	 * @return
+     */
+	@ResponseBody
+	@RequestMapping("/getSelect1")
+	public AjaxResult getSelect1() {
+		final String code = getParameter("code");
+		final String num = getParameter("num");
+		Dict _dict = dictService.findFirstBy("code = #{code} AND pid= '0' ", Record.create().set("code", code));
+		List<Dict> _dictlist = dictService.findBy("pid = #{pid} ", Record.create().set("pid", _dict.getId()));
+		StringBuilder sb = new StringBuilder();
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
+				+ num + "\">");
+		sb.append("<option value></option>");
+		for(Dict d : _dictlist){
+			sb.append("<option value=\"" + d.getId() + "\">" + d.getName() + "</option>");
+		}
+		sb.append("</select>");
+		return json(sb.toString());
+	}
+
+	/**
+	 * 字典父子关联 子类select
+	 * @return
+     */
+	@ResponseBody
+	@RequestMapping("/getSelect2")
+	public AjaxResult getSelect2() {
+		final String id = getParameter("id");
+		final String num = getParameter("num");
+		List<Dict> _dictlist = dictService.findBy("pid = #{pid} ", Record.create().set("pid", id));
+		StringBuilder sb = new StringBuilder();
+		sb.append("<div id=\"child\">");
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
+				+ num + "\">");
+		sb.append("<option value></option>");
+		sb.append("</div>");
+		for(Dict d : _dictlist){
+			sb.append("<option value=\"" + d.getId() + "\">" + d.getName() + "</option>");
+		}
+		sb.append("</select>");
+		return json(sb.toString());
+	}
+
 }
