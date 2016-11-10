@@ -23,7 +23,9 @@ SELECT
   tui.industry_ranking AS industryRanking,
   tui.qualification AS qualification,
   tui.key_word AS keyWord,
-  GROUP_CONCAT(tug.name) AS groupName,
+  GROUP_CONCAT(tug._name) AS groupName,
+  tug._type AS groupType,
+  tui.group_status AS groupStatus,
   tui.vip_type AS vipType,
   tus.organization_num AS organizationNum,
   tus.friend_num AS friendNum,
@@ -35,11 +37,17 @@ SELECT
   tui.mobile AS mobile,
   tul.create_time AS createTime,
   tul.last_login_time AS lastLoginTime,
-  tul.status AS status
+  tul.status AS status,
+  GROUP_CONCAT(tup.pro_id) AS proId,
+  GROUP_CONCAT(tuc.career_id) AS careerId,
+  GROUP_CONCAT(tud.domain_id) AS domainId
 FROM tb_user_info tui
   LEFT JOIN tb_userinfo_statistical tus ON tui.id = tus.user_id
-  LEFT JOIN (SELECT a.user_id AS user_id, b.id AS id, b.name AS NAME FROM tb_user_group a LEFT JOIN tb_group b ON a.group_id = b.id) tug ON tui.id = tug.user_id
+  LEFT JOIN (SELECT a.user_id AS user_id, b.id AS id, b.name AS _name,b.type AS _type FROM tb_user_group a LEFT JOIN tb_group b ON a.group_id = b.id) tug ON tui.id = tug.user_id
   LEFT JOIN tb_user_login tul ON tui.user_id = tul.id
+  LEFT JOIN tb_userinfo_career tuc ON tui.id = tuc.user_id
+  LEFT JOIN tb_userinfo_domain tud ON tui.id = tud.user_id
+  LEFT JOIN tb_userinfo_professional tup ON tui.id = tup.user_id
 GROUP BY tui.id
 
 listPage

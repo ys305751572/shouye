@@ -196,26 +196,16 @@ public class GroupController extends BaseController {
     @RequestMapping(value = "/loadSave")
     public AjaxResult loadSave(Integer groupId,Integer id){
         try{
-            GroupLoad _groupLoad = groupLoadService.findFirstBy("group_id = #{groupId}", Record.create().set("groupId", groupId));
-            if(_groupLoad != null){
-                return error("组织已加载,请先移除");
+            Integer index = groupLoadService.loadSave(groupId,id);
+            if(index==2){
+                return error("该组织已存在");
+            }else{
+                return success("设置成功");
             }
-            GroupLoad groupLoad = groupLoadService.findById(id);
-            if(groupLoad !=null){
-                groupLoad.setGroupId(groupId);
-                groupLoadService.update(groupLoad);
-            }else {
-                groupLoad = new GroupLoad();
-                groupLoad.setId(id);
-                groupLoad.setGroupId(groupId);
-                groupLoadService.save(groupLoad);
-            }
-
         }catch (RuntimeException e){
             e.printStackTrace();
             return error("设置错误");
         }
-        return success("设置成功");
     }
 
     @ResponseBody
@@ -225,12 +215,12 @@ public class GroupController extends BaseController {
             if(id==null){
                 return error(DEL_SUCCESS_MSG);
             }
-            groupLoadService.delete(id);
+            groupLoadService.deleteBy("id = #{id}", Record.create().set("id", id));
         }catch (RuntimeException e){
             e.printStackTrace();
             return error(DEL_SUCCESS_MSG);
         }
-        return success("DEL_FAIL_MSG");
+        return success(DEL_FAIL_MSG);
     }
 
     @ResponseBody

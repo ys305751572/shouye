@@ -81,6 +81,13 @@ var exwhere;
             return;
         }
 
+        //发送内容按钮
+        if (this.alias == "content") {
+            var url = this.url;
+            this.open(url + split + ids, ids);
+            return;
+        }
+
         //发送消息按钮
         if (this.alias == "message") {
             if (rows > 1) {

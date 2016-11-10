@@ -26,7 +26,6 @@
             <button class="btn btn-sx btn-white" id="gotoSearch" style="margin:10px 10px 0 0;">添加</button>
         </div>
     </div>
-
 </div>
 
 <div class="welljq well-sm " style="height: auto">
@@ -73,13 +72,41 @@
     });
 
     //下拉框
-    function select(data, key) {
+    function select(data, key ,num) {
         var id = "#searchfield #" + data;
         var option = id + " option:selected";
         $(id).change(function () {
             var val = $(option).val();
             var text = $(option).text();
-            tags(data, val, text, key , 1)
+            console.log("-------------------");
+            console.log("data:");
+            console.log(data);
+            console.log("val:");
+            console.log(val);
+            console.log("text:");
+            console.log(text);
+            console.log("key:");
+            console.log(key);
+            console.log("-------------------");
+
+            tags(data, val, text, key , 1);
+            if(num!=null){
+                $("#child").remove();
+                if(val!=""){
+                    console.log(2);
+                    $.post("${basePath}/cache/getSelect2", {id: val, num: num}, function (data) {
+                        if (data.code === 0) {
+                            $("#divinput" + num).parent().append(data.data);
+                        }
+                        var id = $(data.data).prop("id");
+                        select(id, key);
+                    }, "json");
+                }else{
+                    tags(id, val, "", key , 1);
+                }
+            }
+
+
         });
     }
 
@@ -114,6 +141,7 @@
                 $(this).remove();
             }
         });
+
         if (text == '' || text == null) {
             html = '';
         }
@@ -177,8 +205,8 @@
         else {
             where = BladeTool.format(exwhere);
         }
-//        console.log("---where3---");
-//        console.log(where);
+        console.log("---where3---");
+        console.log(where);
 
         var chk = 1;
 
@@ -214,6 +242,24 @@
         if (type.indexOf("select_") >= 0) {
             var code = type.replace("select_", "");
             $.post("${basePath}/cache/getSelect", {code: code, num: num}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key);
+            }, "json");
+        }else if (type.indexOf("select1_") >= 0) {
+            var code1 = type.replace("select1_", "");
+            $.post("${basePath}/cache/getSelect1", {code: code1, num: num}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key,num);
+            }, "json");
+        }else if (type.indexOf("selectId_") >= 0) {
+            var code2 = type.replace("selectId_", "");
+            $.post("${basePath}/cache/getSelectId", {code: code2, num: num}, function (data) {
                 if (data.code === 0) {
                     $("#divinput" + num).html(data.data);
                 }
