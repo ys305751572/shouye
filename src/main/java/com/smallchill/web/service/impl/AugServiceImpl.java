@@ -75,6 +75,7 @@ public class AugServiceImpl extends BaseService<Aug> implements AugService {
         Map<String, Object> map = new HashMap<>();
         map.put("domainId", 104);
         map.put("orderBy" , "id desc");
+//        List list =      Db.init().paginate(statement + orderBy, Map.class, map, page, rows);
         BladePage page = Db.init().paginate(sql, Map.class, map, 1, 10);
         return null;
     }
