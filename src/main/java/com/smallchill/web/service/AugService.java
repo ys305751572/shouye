@@ -1,6 +1,7 @@
 package com.smallchill.web.service;
 
 import com.smallchill.core.base.service.IService;
+import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.web.model.Aug;
 
 /**
@@ -9,4 +10,5 @@ import com.smallchill.web.model.Aug;
  */
 public interface AugService extends IService<Aug>{
 
+    public JqGrid testList();
 }

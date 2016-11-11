@@ -4,6 +4,7 @@ import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.ShoupageService;
 import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.web.service.AugService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,9 @@ public class ShoupageServciceTest extends BaseJunit4Test{
 
     @Autowired
     private ShoupageService shoupageService;
+
+    @Autowired
+    private AugService augService;
 
     @Test
     public void myGroups() {
@@ -47,5 +51,10 @@ public class ShoupageServciceTest extends BaseJunit4Test{
     public void myNew() {
         Map<String,List<UserVo>> list = shoupageService.listNew(20);
         System.out.println(JsonKit.toJson(list));
+    }
+
+    @Test
+    public void testList() {
+        augService.testList();
     }
 }
