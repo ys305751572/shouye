@@ -1,10 +1,12 @@
 package com.smallchill.api.function.modal.vo;
 
+import java.io.Serializable;
+
 /**
  * api group vo
  * Created by yesong on 2016/10/26 0026.
  */
-public class Groupvo {
+public class Groupvo implements Serializable{
 
     private Integer id;
     private String name;

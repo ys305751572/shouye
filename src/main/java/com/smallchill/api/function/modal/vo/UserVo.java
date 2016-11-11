@@ -20,8 +20,11 @@ public class UserVo implements Serializable{
     private String status; // 用户与好友的状态
     private String actionName1; // 事件1
     private String actionUrl; // 事件1url
+    private String params1; // 参数1
+
     private String actionName2; // 事件2
     private String actionUrl2; // 事件2url
+    private String params2; // 参数2
     private String per; // 用户信息完整度
 
     private UserVo() {
@@ -55,6 +58,21 @@ public class UserVo implements Serializable{
         this.actionUrl2 = actionUrl2;
     }
 
+    public String getParams1() {
+        return params1;
+    }
+
+    public void setParams1(String params1) {
+        this.params1 = params1;
+    }
+
+    public String getParams2() {
+        return params2;
+    }
+
+    public void setParams2(String params2) {
+        this.params2 = params2;
+    }
 
     public String getPer() {
         return per;

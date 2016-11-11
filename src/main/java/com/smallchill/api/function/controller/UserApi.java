@@ -4,14 +4,16 @@ import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.api.function.meta.intercept.UserApiIntercept;
 import com.smallchill.api.function.meta.other.Convert;
-import com.smallchill.api.function.meta.validate.GlobalUsersValidate;
-import com.smallchill.api.function.meta.validate.GroupPageValidator;
-import com.smallchill.api.function.meta.validate.GroupUserValidate;
-import com.smallchill.api.function.meta.validate.UserBlankValidate;
+import com.smallchill.api.function.meta.validate.*;
+import com.smallchill.api.function.modal.GroupInterest;
+import com.smallchill.api.function.modal.UserInterest;
+import com.smallchill.api.function.service.GroupInterestService;
+import com.smallchill.api.function.service.UserInterestService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.UserApprovalService;
@@ -35,7 +37,10 @@ public class UserApi extends BaseController {
     private UserInfoService userInfoService;
     @Autowired
     private UserApprovalService userApprovalService;
-
+    @Autowired
+    private UserInterestService userInterestService;
+    @Autowired
+    private GroupInterestService groupInterestService;
     /**
      * 全局用户列表
      *
@@ -145,6 +150,100 @@ public class UserApi extends BaseController {
     @Before(UserBlankValidate.class)
     public String unBlank(UserApproval ua) {
         userApprovalService.userApprovalUnBlank(ua);
+        return success();
+    }
+
+    /**
+     * 用户-感兴趣
+     * @param ui
+     * @return result
+     */
+    @RequestMapping(value = "/interest")
+    @ResponseBody
+    @Before(UserInterestValidate.class)
+    public String userInterest(UserInterest ui) {
+        String where = "user_id = #{userId} and to_user_id = #{toUserId}";
+        Record record = Record.create().set("userId", ui.getUserId()).set("toUserId", ui.getToUserId());
+        UserInterest userInterest = userInterestService.findFirstBy(where, record);
+        if (userInterest != null) {
+            userInterestService.updateBy("status = 0", where, record);
+        }
+        else {
+            userInterest = new UserInterest();
+            userInterest.setStatus(0);
+            userInterest.setUserId(ui.getUserId());
+            userInterest.setToUserId(ui.getToUserId());
+            userInterest.setCreateTime(DateTimeKit.nowLong());
+            userInterestService.save(userInterest);
+        }
+        return success();
+    }
+
+    /**
+     * 用户-取消感兴趣
+     * @param ui
+     * @return
+     */
+    @RequestMapping(value = "/uninterest")
+    @ResponseBody
+    @Before(UserInterestValidate.class)
+    public String userUnInterest(UserInterest ui) {
+
+        String where = "user_id = #{userId} and to_user_id = #{toUserId}";
+        Record record = Record.create().set("userId", ui.getUserId()).set("toUserId", ui.getToUserId());
+        try {
+            userInterestService.updateBy("status = 1", where, record);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success();
+    }
+
+    /**
+     * 组织-感兴趣
+     * @param gi
+     * @return
+     */
+    @RequestMapping(value = "/group/interest")
+    @ResponseBody
+    @Before(GroupJoinValidator.class)
+    public String groupInterest(GroupInterest gi) {
+        String where = "user_id = #{userId} and group_id = #{groupId}";
+        Record record = Record.create().set("userId", gi.getUserId()).set("groupId", gi.getGroupId());
+
+        GroupInterest groupInterest = groupInterestService.findFirstBy(where, record);
+        if (groupInterest != null) {
+            groupInterestService.updateBy("status = 0", where, record);
+        }
+        else {
+            groupInterest = new GroupInterest();
+            groupInterest.setStatus(0);
+            groupInterest.setUserId(gi.getUserId());
+            groupInterest.setGroupId(gi.getGroupId());
+            groupInterest.setCreateTime(DateTimeKit.nowLong());
+            groupInterestService.save(groupInterest);
+        }
+        return success();
+    }
+
+    /**
+     * 组织-取消感兴趣
+     * @param gi gi
+     * @return result
+     */
+    @RequestMapping(value = "/group/uninterest")
+    @ResponseBody
+    @Before(GroupJoinValidator.class)
+    public String groupUnInterest(GroupInterest gi) {
+        String where = "user_id = #{userId} and group_id = #{groupId}";
+        Record record = Record.create().set("userId", gi.getUserId()).set("groupId", gi.getGroupId());
+        try {
+            groupInterestService.updateBy("status = 1", where, record);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
         return success();
     }
 }

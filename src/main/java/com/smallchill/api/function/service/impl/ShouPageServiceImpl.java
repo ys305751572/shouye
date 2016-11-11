@@ -39,27 +39,25 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id where i.user_id = #{userId}";
 
-    private String SQL_INTEREST_GROUP = "select * from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
+    private String GROUP_BASE_INFO_SQL = " g.id,g.name,g.avater,g.province,g.city,g.type,g.province_city provinceCity,g.member_count memberCount,g.targat ";
 
-    private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id where i.to_user_id = #{userId}";
+    private String SQL_INTEREST_GROUP = "select "+ GROUP_BASE_INFO_SQL +" from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
+
+        private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ua.status uastatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
+            + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` where i.to_user_id = #{userId} OR ua.`status` != 3";
 
     private String SQL_MY_GROUP = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
 
-
     private String NEW_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_user_approval ua WHERE (ua.`from_user_id` = #{userId} OR ua.`to_user_id` = #{userId}) " +
             "AND (ua.`status` = 1 OR ua.`create_time` > #{lastTime})";
-
     // 感兴趣的用户
     private String INTEREST_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_interest_user iu WHERE iu.create_time > #{lastTime} AND iu.user_id = #{userId}";
     // 感兴趣的组织
     private String INTEREST_GROUP_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_interest_group iu WHERE iu.create_time > #{lastTime} AND iu.user_id = #{userId}";
-
     // 被谁感兴趣
     private String INTERESTD_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_interest_user iu WHERE iu.create_time > #{lastTime} AND iu.to_user_id = #{userId}";
-
     // 我的熟人
     private String ACQUAINTANCES_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_user_approval ua WHERE (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId}) AND (ua.create_time > #{lastTime} AND ua.type = 2)";
-
     // 我的组织
     private String MYGROUP_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_group_approval ga WHERE ga.user_id = #{userId} AND ga.create_time > #{lastTime}";
 
@@ -173,10 +171,12 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         resultMap.put("list1", new ArrayList<UserVo>()); // 引荐
         resultMap.put("list2", new ArrayList<UserVo>()); // 推荐
 
+        // 查询引荐和推荐
         List<Record> list0 = listNew0(userId);
+        // 查询自荐
         List<Record> list1 = listNew1(userId);
-        listAdd2Map(list0, resultMap, false);
-        listAdd2Map(list1, resultMap, true);
+        listAdd2Map(list0, resultMap,userId, false);
+        listAdd2Map(list1, resultMap,userId, true);
         return resultMap;
     }
 
@@ -206,7 +206,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      * @param list      用户集合
      * @param resultMap 新结识最后返回数据
      */
-    private void listAdd2Map(List<Record> list, Map<String, List<UserVo>> resultMap, boolean isIntroduce) {
+    private void listAdd2Map(List<Record> list, Map<String, List<UserVo>> resultMap, Integer userId, boolean isIntroduce) {
         List<UserVo> voList = new ArrayList<>();
         List<UserVo> voList2 = null;
         if (isIntroduce) voList2 = new ArrayList<>();
@@ -214,6 +214,8 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         for (Record record : list) {
             vo = Convert.recordToVo(record);
             vo.setValidateInfo(record.get("validate_info").toString());
+            setUserVoStatus(vo, record, userId);
+
             if (!isIntroduce) {
                 voList.add(vo);
             } else {
@@ -229,6 +231,49 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         } else {
             resultMap.put("list1", voList);
             resultMap.put("list2", voList2);
+        }
+    }
+
+    /**
+     * 设置当前用户与
+     * @param vo 好友信息
+     */
+    private void setUserVoStatus(UserVo vo, Record record, Integer userId) {
+
+        String info;
+        int status  = Integer.parseInt(record.get("status").toString());
+        if (status == 1) {
+            info = "已批准";
+            vo.setStatus(info);
+        }
+        else if (status == 2) {
+            info = "已忽略";
+            vo.setStatus(info);
+        }
+        else if (status == 0) {
+            int fromUserId = Integer.parseInt(record.get("from_user_id").toString());
+            int toUserId = Integer.parseInt(record.get("to_user_id").toString());
+            if (userId == fromUserId) {
+                info = "等待对方确认";
+                vo.setStatus(info);
+            }
+            else if (userId == toUserId) {
+                info = "";
+                String action1Name = "忽略";
+                String action1Url = "approval/audit";
+                String params1 = "status=2";
+                vo.setActionName1(action1Name);
+                vo.setActionUrl(action1Url);
+                vo.setParams1(params1);
+
+                String action2Name = "结识";
+                String action2Url = "approval/audit";
+                String params2 = "status1";
+                vo.setActionUrl2(action2Url);
+                vo.setActionName2(action2Name);
+                vo.setParams2(params2);
+                vo.setStatus(info);
+            }
         }
     }
 
@@ -303,7 +348,21 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         List<Record> list = Db.init().selectList(SQL_INTERESTED_USER, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         for (Record record : list) {
-            voList.add(Convert.recordToVo(record));
+            UserVo vo = Convert.recordToVo(record);
+            Object unstatusObj = record.get("uatatus");
+            if (unstatusObj == null || !unstatusObj.toString().equals("1")) {
+                // 未结识
+                String action1name = "忽略";
+                String action1url = "";
+
+                String action2name = "结识";
+                String action2url = "";
+            }
+            else {
+                // 已结识
+                vo.setStatus("已结识");
+            }
+            voList.add(vo);
         }
         return voList;
     }
@@ -399,4 +458,6 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         }
         return groupvos;
     }
+
+    
 }
