@@ -1,6 +1,7 @@
 package com.smallchill.api.function.meta.other;
 
 import com.smallchill.api.function.modal.Button;
+import com.smallchill.api.function.modal.UserInterest;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserApproval;
 
@@ -15,11 +16,21 @@ public class ButtonRegister {
 
     private List<Button> list = new ArrayList<>();
 
-    private ButtonRegister() {
+    private UserApproval ua;
+    private UserInterest ui;
+
+    private Integer currentUserId;
+    private Integer toUserId;
+
+    private ButtonRegister(Integer currentUserId, Integer toUserId, UserApproval ua, UserInterest ui) {
+        this.currentUserId = currentUserId;
+        this.toUserId = toUserId;
+        this.ua = ua;
+        this.ui = ui;
     }
 
-    public static ButtonRegister create() {
-        return new ButtonRegister();
+    public static ButtonRegister create(Integer currentUserId, Integer toUserId, UserApproval ua, UserInterest ui) {
+        return new ButtonRegister(currentUserId, toUserId, ua, ui);
     }
 
     /**
@@ -33,20 +44,23 @@ public class ButtonRegister {
         return this;
     }
 
+    public ButtonRegister getBtnOfUserinfo() {
+
+        return this;
+    }
+
     /**
      * 添加申请结识
      *
-     * @param fromUserId 请求发起人
-     * @param toUserId   请求接收人
      * @return ButtonRegister
      */
-    public ButtonRegister applyFriend(Integer fromUserId, Integer toUserId, UserApproval ua) {
-
+    public ButtonRegister applyFriend() {
+        if (ua != null && (ua.getStatus() == 2 || ua.getStatus() == 4)) return this;
 
         Button button = new Button();
         button.setName("申请结识");
         button.setUrl("approval/introduce");
-        button.setParams(Record.create().set("fromUserId", fromUserId).set("toUserId", toUserId).set("type", 1));
+        button.setParams(Record.create().set("fromUserId", currentUserId).set("toUserId", toUserId).set("type", 1));
         this.list.add(button);
         return this;
     }
@@ -54,15 +68,14 @@ public class ButtonRegister {
     /**
      * 申请熟人
      *
-     * @param fromUserId 请求发起人
-     * @param toUserId   请求接收人
      * @return ButtonRegister
      */
-    public ButtonRegister applyAcquaintances(Integer fromUserId, Integer toUserId) {
+    public ButtonRegister applyAcquaintances() {
+        if (ua != null && (ua.getStatus() == 2 || ua.getStatus() == 4) && ua.getType() == 1) return this;
         Button button = new Button();
         button.setName("结为熟人");
         button.setUrl("approval/introduce");
-        button.setParams(Record.create().set("fromUserId", fromUserId).set("toUserId", toUserId).set("type", 2));
+        button.setParams(Record.create().set("fromUserId", currentUserId).set("toUserId", toUserId).set("type", 2));
         this.list.add(button);
         return this;
     }
@@ -70,11 +83,10 @@ public class ButtonRegister {
     /**
      * 感兴趣按钮事件
      *
-     * @param currentUserId 当前用户ID
-     * @param toUserId      感兴趣用户ID
      * @return ButtonRegister
      */
-    public ButtonRegister insterest(Integer currentUserId, Integer toUserId) {
+    public ButtonRegister insterest() {
+        if (ui != null && ui.getStatus() == 1) return this;
         Button button = new Button();
         button.setName("感兴趣");
         button.setUrl("user/interest");
@@ -86,11 +98,9 @@ public class ButtonRegister {
     /**
      * 查看交集
      *
-     * @param currentUserId 当前用户ID
-     * @param toUserId      目标用户
      * @return ButtonRegister
      */
-    public ButtonRegister intersection(Integer currentUserId, Integer toUserId) {
+    public ButtonRegister intersection() {
         Button button = new Button();
         button.setName("查看交集");
         button.setUrl("user/introduce");
@@ -102,11 +112,9 @@ public class ButtonRegister {
     /**
      * 查看对方熟人
      *
-     * @param currentUserId 当前用户ID
-     * @param toUserId      目标用户ID
      * @return ButtonRegister
      */
-    public ButtonRegister queryUserAcquaintances(Integer currentUserId, Integer toUserId) {
+    public ButtonRegister queryUserAcquaintances() {
         Button button = new Button();
         button.setName("查看对方熟人");
         button.setUrl("user/introduce");
@@ -118,11 +126,11 @@ public class ButtonRegister {
     /**
      * 推荐朋友
      *
-     * @param currentUserId 当前用户ID
-     * @param toUserId      目标用户ID
      * @return result
      */
-    public ButtonRegister recommendFriend(Integer currentUserId, Integer toUserId) {
+    public ButtonRegister recommendFriend() {
+        if (ua != null && ua.getStatus() == 1 && (ua.getType() == 1 || ua.getType() == 2)) return this;
+
         Button button = new Button();
         button.setName("推荐朋友");
         button.setUrl("user/intersection");
@@ -133,5 +141,37 @@ public class ButtonRegister {
 
     public List<Button> getList() {
         return this.list;
+    }
+
+    public UserApproval getUa() {
+        return ua;
+    }
+
+    public void setUa(UserApproval ua) {
+        this.ua = ua;
+    }
+
+    public UserInterest getUi() {
+        return ui;
+    }
+
+    public void setUi(UserInterest ui) {
+        this.ui = ui;
+    }
+
+    public Integer getCurrentUserId() {
+        return currentUserId;
+    }
+
+    public void setCurrentUserId(Integer currentUserId) {
+        this.currentUserId = currentUserId;
+    }
+
+    public Integer getToUserId() {
+        return toUserId;
+    }
+
+    public void setToUserId(Integer toUserId) {
+        this.toUserId = toUserId;
     }
 }
