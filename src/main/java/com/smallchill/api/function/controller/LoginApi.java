@@ -42,9 +42,9 @@ public class LoginApi extends BaseController {
         /**
          * 验证码是否正确
          */
-//        if (!vcodeService.validate(mobile, code)) {
-//            return toJson(Result.fail());
-//        }
+        if (!vcodeService.validate(mobile, code)) {
+            return toJson(Result.fail(ErrorType.ERROR_CODE_VALIDATECODE_FAIL));
+        }
 
         UserLogin userLogin;
         Record record;

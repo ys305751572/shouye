@@ -28,6 +28,7 @@ public class RegisterApi extends BaseController {
     @Autowired
     private UserInfoService userInfoService;
 
+    @Autowired
     private UserLoginService userLoginService;
 
     /**

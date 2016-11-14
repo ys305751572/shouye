@@ -19,9 +19,9 @@ public class VcodeServiceImpl implements VcodeService {
 
     @Override
     public Boolean sendKX(String code, String... mobiles) {
-        Boolean flag = KXUitl.sendKX(code, mobiles);
+//        Boolean flag = KXUitl.sendKX(code, mobiles);
         putCache(code, mobiles);
-        return flag;
+        return true;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class VcodeServiceImpl implements VcodeService {
 
     public void putCache(String value, String... keys) {
         for (String key : keys) {
-            QuickCacheKit.initSms().put(key, LeomanKit.generateCode());
+            QuickCacheKit.initSms().put(key, value);
         }
     }
 
@@ -48,8 +48,9 @@ public class VcodeServiceImpl implements VcodeService {
     }
 
     public String get(String key) {
+        String code = "";
         try {
-            return (String) QuickCacheKit.initSms().get(key, new Callable() {
+            code = (String) QuickCacheKit.initSms().get(key, new Callable() {
                 @Override
                 public Object call() throws Exception {
                     return "" + Boolean.FALSE;
@@ -58,6 +59,6 @@ public class VcodeServiceImpl implements VcodeService {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        return null;
+        return code;
     }
 }

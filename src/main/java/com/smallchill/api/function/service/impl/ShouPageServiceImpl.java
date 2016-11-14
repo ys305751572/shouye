@@ -43,7 +43,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String SQL_INTEREST_GROUP = "select "+ GROUP_BASE_INFO_SQL +" from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
 
-        private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ua.status uastatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
+        private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status uastatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
             + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` where i.to_user_id = #{userId} OR ua.`status` != 3";
 
     private String SQL_MY_GROUP = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
@@ -268,7 +268,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
                 String action2Name = "结识";
                 String action2Url = "approval/audit";
-                String params2 = "status1";
+                String params2 = "status=1";
                 vo.setActionUrl2(action2Url);
                 vo.setActionName2(action2Name);
                 vo.setParams2(params2);
@@ -455,6 +455,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
         for (Record record : list) {
             groupvos.add(Convert.recordToGroupVo(record));
+
         }
         return groupvos;
     }

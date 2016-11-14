@@ -6,6 +6,8 @@ import com.smallchill.api.common.exception.LockException;
 import com.smallchill.api.common.model.Null;
 import com.smallchill.api.common.model.ReqLimit;
 import com.smallchill.core.constant.ConstCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,6 +20,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class QuickCacheKit implements ConstCache{
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(QuickCacheKit.class);
+
     private static Map<String,LoadingCache> cacheMap = new ConcurrentHashMap<>();
     private static final String SMS_CACHE = "sms_cache";
     private static final String LOCLIP_CACHE = "loclip_cache";
@@ -29,10 +33,9 @@ public class QuickCacheKit implements ConstCache{
         LoadingCache cache = cacheMap.get(cacheName);
         if(cache == null) {
             synchronized (QuickCacheKit.class) {
-                System.out.println("=====================创建缓存==================");
                 cache = CacheBuilder.newBuilder()
                         .concurrencyLevel(4)
-                        .expireAfterWrite(duration, TimeUnit.SECONDS)
+                        .expireAfterWrite(duration, TimeUnit.MINUTES)
                         .removalListener(removalListener)
                         .maximumSize(100)
                         .recordStats()
@@ -52,7 +55,7 @@ public class QuickCacheKit implements ConstCache{
         return init(SMS_CACHE, SMS_TIMEOUT, new RemovalListener() {
             @Override
             public void onRemoval(RemovalNotification removalNotification) {
-                System.out.println(DateKit.getTime() + "=======================删除=====================");
+                LOGGER.info("=======================删除=====================");
             }
         });
     }
@@ -61,9 +64,7 @@ public class QuickCacheKit implements ConstCache{
         return init(LOCLIP_CACHE, LOCKIP_TIMEOUT, new RemovalListener() {
             @Override
             public void onRemoval(RemovalNotification rn) {
-                System.out.println("===============解除限制===============");
                 String ip = (String) rn.getKey();
-                System.out.println("key:" + ip);
                 ReqLimit reqLimit = CacheKit.get(DEFAULT_CACHE,ip);
                 if(reqLimit != null){
                     reqLimit.clearCount();

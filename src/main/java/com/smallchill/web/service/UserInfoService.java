@@ -41,5 +41,11 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     void sendMessage(HttpServletRequest request, String id, Integer send, String sendTime, String title, String content);
 
-
+    /**
+     * 查询当前用户与目标用户的关系
+     * @param userId 当前用户
+     * @param distUserId 目标用户
+     * @return 关系状态
+     */
+    Integer getUserRelation(Integer userId, Integer distUserId);
 }

@@ -25,6 +25,7 @@ public class ConfigApi extends BaseController{
     /**
      * @param code 数据字段code
      * code 对应关系
+     *             101 : 性别
      *             904 : 年龄段
      *             905 : 事业状态
      *             906 : 行业领域

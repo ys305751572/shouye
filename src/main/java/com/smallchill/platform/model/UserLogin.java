@@ -106,11 +106,11 @@ public class UserLogin extends BaseModel {
     }
 
     public boolean isLock(){
-        return this.status == 1;
+        return this.status == 2;
     }
 
     public boolean isFreeze() {
-        return this.status == 2;
+        return this.status == 3;
     }
 
     public String getContent() {

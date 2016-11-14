@@ -20,10 +20,10 @@ public class GroupApiIntercept extends ApiQueryIntercept {
         List<Map> list = bladePage.getRows();
         for (Map record : list) {
             if(record.get("status") == null || Integer.parseInt(record.get("status").toString()) != 1) {
-                record.put("isjoin", "未加入");
+                record.put("isjoin", 0);
             }
             else {
-                record.put("isjoin", "已加入");
+                record.put("isjoin", 1);
             }
 
             record.remove("status");

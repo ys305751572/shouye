@@ -8,6 +8,8 @@ public enum ErrorType {
 
     ERROR_CODE_SERVER_EXCEPTION("服务器繁忙，请稍后再试", 1001),
     ERROR_CODE_PARAM_EXCEPTION("参数不正确", 1002),
+    ERROR_CODE_AVATER_EXCEPTION("请选择要上传的文件",1003),
+    ERROR_CODE_TYPE_EXCEPTION("请选择要上传的文件",1003),
 
     ERROR_CODE_USERNOTFOUND("该用户不存在", 2001),
     ERROR_CODE_VALIDATECODE_FAIL("验证码错误", 2002),

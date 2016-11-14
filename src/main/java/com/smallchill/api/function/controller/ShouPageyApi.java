@@ -127,7 +127,7 @@ public class ShouPageyApi extends BaseController implements ConstCache {
     }
 
     /**
-     * 我的熟人
+     * 我的组织
      * @param userId 用户ID
      * @return result
      */

@@ -14,7 +14,9 @@ import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.NetKit;
 import com.smallchill.platform.model.UserLogin;
 import com.smallchill.platform.service.UserLoginService;
+import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
+import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.kit.StringKit;
@@ -44,6 +46,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     @Autowired
     private UserprofessionalService userprofessionalService;
 
+    @Autowired
+    private UserApprovalService userApprovalService;
 
     @Transactional
     @Override
@@ -91,8 +95,11 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     @Override
     public Record findUserInfoDetail(Integer userId) {
         String sql = Blade.dao().getScript("UserInfo.userInfoDetail").getSql();
-        return Db.init().selectOne(sql, Record.create().set("userId", userId));
+        Record record = Db.init().selectOne(sql, Record.create().set("userId", userId));
+        Object toUserId = record.get("userId");
+        return record;
     }
+
 
     /**
      * 创建用户
@@ -341,18 +348,19 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     /**
      * 改变用户状态
-     * @param id            用户id
-     * @param bannedTime    时间
-     * @param content       原因
-     * @param status        状态
+     *
+     * @param id         用户id
+     * @param bannedTime 时间
+     * @param content    原因
+     * @param status     状态
      */
     @Override
     public void banned(Integer id, Integer bannedTime, String content, Integer status) {
         UserLogin userLogin = userLoginService.findById(id);
         Long time = 0L;
         Long day = 86400000L;
-        if(bannedTime!=null){
-            switch (bannedTime){
+        if (bannedTime != null) {
+            switch (bannedTime) {
                 case 1:
                     time = day;
                     break;
@@ -375,13 +383,13 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
                     time = -2L;
                     break;
             }
-            if(bannedTime != 7){
+            if (bannedTime != 7) {
                 time = System.currentTimeMillis() + time;
             }
             System.out.println(time);
             userLogin.setUnlockTime(time);
             userLogin.setContent(content);
-        }else {
+        } else {
             userLogin.setUnlockTime(-1L);
             userLogin.setContent(" ");
         }
@@ -392,21 +400,33 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Override
     public void sendMessage(HttpServletRequest request, String id, Integer send, String sendTime, String title, String content) {
-        if(StringKit.isNotBlank(id)){
+        if (StringKit.isNotBlank(id)) {
             //给一个组织发送信息
             System.out.println("----id----");
             System.out.println(id);
             System.out.println("----id----");
 
-        }else {
+        } else {
             //给查询结果的所有组织
             List<Integer> ids = (List<Integer>) request.getSession().getAttribute("userInfoIds");
             System.out.println("----ids----");
-            for(Integer _id : ids){
+            for (Integer _id : ids) {
                 System.out.println(_id);
             }
             System.out.println("----ids----");
         }
     }
 
+    /**
+     * @param userId     当前用户
+     * @param distUserId 目标用户
+     * @return 关系状态 0:未结识 1:朋友 2:熟人 3:等待对方审核 4:等待自己审核
+     */
+    @Override
+    public Integer getUserRelation(Integer userId, Integer distUserId) {
+        String sql = "(from_user_id = #{fromUserId} and to_user_id = #{toUserId}) or (from_user_id = #{toUserId} and to_user_id = #{fromUserId})";
+        UserApproval ua = userApprovalService.findFirstBy(sql, Record.create().set("fromUserId", userId).set("toUserId", distUserId));
+
+        return 0;
+    }
 }
