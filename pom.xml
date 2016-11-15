@@ -204,13 +204,13 @@
 			<version>4.2.8.Final</version>
 		</dependency>
 
-		<!-- guava -->
 		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>18.0</version>
 		</dependency>
+
 
 		<!-- jdom -->
 		<dependency>
@@ -233,6 +233,18 @@
 			<version>0.4.8</version>
 		</dependency>
 
+		<!-- 七牛 -->
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.qiniu</groupId>
+			<artifactId>qiniu-java-sdk</artifactId>
+			<version>[7.0.0, 7.0.99]</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
