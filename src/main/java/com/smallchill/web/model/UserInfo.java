@@ -60,6 +60,9 @@ public class UserInfo extends BaseModel {
     @Column(name = "professional")
     private String professional;
 
+    @Column(name = "professional_level")
+    private String professionalLevel;
+
     @Column(name = "product_type")
     private Integer productType;
 
@@ -131,6 +134,14 @@ public class UserInfo extends BaseModel {
 
     @Column(name = "create_time")
     private Long createTime;
+
+    public String getProfessionalLevel() {
+        return professionalLevel;
+    }
+
+    public void setProfessionalLevel(String professionalLevel) {
+        this.professionalLevel = professionalLevel;
+    }
 
     public String getIndustryRanking() {
         return industryRanking;
