@@ -34,7 +34,7 @@ public class UserInfo extends BaseModel {
     private Integer gender = 1;
 
     @Column(name = "age")
-    private Integer age = 0;
+    private String age = "";
 
     @Column(name = "birthday")
     private Long birthday = 0L;
@@ -276,11 +276,11 @@ public class UserInfo extends BaseModel {
         this.gender = gender;
     }
 
-    public Integer getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(String age) {
         this.age = age;
     }
 

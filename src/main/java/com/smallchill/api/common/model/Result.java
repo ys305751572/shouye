@@ -83,7 +83,6 @@ public class Result {
         if (data instanceof List) {
             result.data.put("list", data);
         } else if (data instanceof Map) {
-            System.out.println("name.length == 0:" + name.length);
             String key;
             if(name.length == 0 || StringUtils.isBlank(name[0])) {
                 key = "object";

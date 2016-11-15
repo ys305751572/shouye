@@ -17,14 +17,7 @@ public class UserVo implements Serializable{
     private String professional;
     private String validateInfo;
     private String info; // 新结识左上角提示
-    private String status; // 用户与好友的状态
-    private String actionName1; // 事件1
-    private String actionUrl; // 事件1url
-    private String params1; // 参数1
-
-    private String actionName2; // 事件2
-    private String actionUrl2; // 事件2url
-    private String params2; // 参数2
+    private Integer status; // 用户与好友的状态
     private String per; // 用户信息完整度
 
     private UserVo() {
@@ -41,7 +34,7 @@ public class UserVo implements Serializable{
     }
 
     public UserVo(Integer id, String username, String city, String domain, String keyWord, String organization, String professional,String validateInfo,
-                  String info, String status, String actionName1, String actionUrl, String actionName2, String actionUrl2) {
+                  String info, Integer status) {
         this.id = id;
         this.username = username;
         this.city = city;
@@ -52,26 +45,14 @@ public class UserVo implements Serializable{
         this.validateInfo = validateInfo;
         this.info = info;
         this.status = status;
-        this.actionName1 = actionName1;
-        this.actionUrl = actionUrl;
-        this.actionName2 = actionName2;
-        this.actionUrl2 = actionUrl2;
     }
 
-    public String getParams1() {
-        return params1;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setParams1(String params1) {
-        this.params1 = params1;
-    }
-
-    public String getParams2() {
-        return params2;
-    }
-
-    public void setParams2(String params2) {
-        this.params2 = params2;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getPer() {
@@ -96,46 +77,6 @@ public class UserVo implements Serializable{
 
     public void setInfo(String info) {
         this.info = info;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getActionName1() {
-        return actionName1;
-    }
-
-    public void setActionName1(String actionName1) {
-        this.actionName1 = actionName1;
-    }
-
-    public String getActionUrl() {
-        return actionUrl;
-    }
-
-    public void setActionUrl(String actionUrl) {
-        this.actionUrl = actionUrl;
-    }
-
-    public String getActionName2() {
-        return actionName2;
-    }
-
-    public void setActionName2(String actionName2) {
-        this.actionName2 = actionName2;
-    }
-
-    public String getActionUrl2() {
-        return actionUrl2;
-    }
-
-    public void setActionUrl2(String actionUrl2) {
-        this.actionUrl2 = actionUrl2;
     }
 
     public Integer getId() {

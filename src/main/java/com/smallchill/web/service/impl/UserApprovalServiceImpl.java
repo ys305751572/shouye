@@ -328,6 +328,17 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
         }
     }
 
+    @Override
+    public UserApproval getUserByFromUserIdAndToUserIdApprovalOfTowWay(Integer userId, Integer distUserId) {
+
+        return null;
+    }
+
+    @Override
+    public UserApproval getUserByFromUserIdAndToUserIdApprovalOfOneWay(Integer userId, Integer distUserId) {
+        return getByFromUserIdAndToUserId(userId, distUserId);
+    }
+
 
     /**
      * 重置审核记录

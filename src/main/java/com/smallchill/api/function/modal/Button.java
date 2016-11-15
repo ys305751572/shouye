@@ -1,16 +1,15 @@
 package com.smallchill.api.function.modal;
 
-import java.util.Map;
+import java.io.Serializable;
 
 /**
  * 操作按钮
  * Created by yesong on 2016/11/14 0014.
  */
-public class Button {
+public class Button implements Serializable{
 
     private String name;
-    private String url;
-    private Map<String,Object> params;
+    private Integer type;
 
     public String getName() {
         return name;
@@ -20,19 +19,16 @@ public class Button {
         this.name = name;
     }
 
-    public String getUrl() {
-        return url;
+    public Integer getType() {
+        return type;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setType(Integer type) {
+        this.type = type;
     }
 
-    public Map<String, Object> getParams() {
-        return params;
-    }
-
-    public void setParams(Map<String, Object> params) {
-        this.params = params;
+    @Override
+    public String toString() {
+        return "name:" + name + "--type:" + type;
     }
 }

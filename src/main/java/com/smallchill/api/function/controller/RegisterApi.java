@@ -69,6 +69,8 @@ public class RegisterApi extends BaseController {
         } catch (UserExitsException e) {
             e.printStackTrace();
             return fail(ErrorType.ERROR_CODE_USERHASEXTIS);
+        } catch (Exception e) {
+            return fail();
         }
         return success(record,"userInfo");
     }

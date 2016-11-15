@@ -78,7 +78,7 @@ LEFT JOIN tb_user_approval ua ON ((ui.user_id = ua.from_user_id OR ui.user_id = 
 @if(!isEmpty(groupId)){
     RIGHT JOIN tb_user_group ug ON  (ug.user_id = ui.user_id)
 @}
-LEFT JOIN tb_interest i ON (i.to_id = ui.user_id AND i.type = 0 AND i.status = 0) 
+LEFT JOIN tb_interest_user i ON (i.to_user_id = ui.user_id AND i.status = 0) 
 
 userInfoDetail
 ==============

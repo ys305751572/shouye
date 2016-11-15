@@ -1,6 +1,7 @@
 package com.smallchill.api.function.controller;
 
 import com.smallchill.api.common.model.Result;
+import com.smallchill.api.function.meta.consts.ConstShouPage;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.modal.vo.UserVo;
@@ -27,7 +28,7 @@ import java.util.Map;
  */
 @RequestMapping(value = "/api/shou")
 @Controller
-public class ShouPageyApi extends BaseController implements ConstCache {
+public class ShouPageyApi extends BaseController implements ConstCache, ConstShouPage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShouPageyApi.class);
 
@@ -43,11 +44,10 @@ public class ShouPageyApi extends BaseController implements ConstCache {
     @ResponseBody
     public String index(Integer userId) {
         final Integer userid = userId;
-        ShouPageVo vo = CacheKit.get(DIY_CACHE, "shoupage_" + userId, new ILoader() {
+        ShouPageVo vo = CacheKit.get(DIY_CACHE, INDEX + userId, new ILoader() {
             @Override
             public Object load() {
-                ShouPageVo vo = shoupageService.index(userid);
-                return vo;
+                return shoupageService.index(userid);
             }
         });
         return success(vo, "shoupage");
@@ -63,7 +63,7 @@ public class ShouPageyApi extends BaseController implements ConstCache {
     public String newFriend(Integer userId) {
         final Integer userid = userId;
         Map<String, List<UserVo>> resultMap;
-        resultMap = CacheKit.get(DIY_CACHE, "shoupage_new_" + userId, new ILoader() {
+        resultMap = CacheKit.get(DIY_CACHE, SHOUPAGE_NEW + userId, new ILoader() {
             @Override
             public Object load() {
                 return shoupageService.listNew(userid);
@@ -81,7 +81,7 @@ public class ShouPageyApi extends BaseController implements ConstCache {
     @ResponseBody
     public String intereste(Integer userId) {
         final Integer userid = userId;
-        Map<String, Object> resultMap = CacheKit.get(DIY_CACHE, "shoupage_intereste_" + userId, new ILoader() {
+        Map<String, Object> resultMap = CacheKit.get(DIY_CACHE, SHOUPAGE_INTERESTE + userId, new ILoader() {
             @Override
             public Object load() {
                 return shoupageService.listIntereste(userid);
@@ -99,7 +99,7 @@ public class ShouPageyApi extends BaseController implements ConstCache {
     @ResponseBody
     public String interested(Integer userId) {
         final Integer userid = userId;
-        List<UserVo> list = CacheKit.get(DIY_CACHE, "shoupage_interested_" + userid, new ILoader() {
+        List<UserVo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_INTERESTED + userid, new ILoader() {
             @Override
             public Object load() {
                 return shoupageService.listInterested(userid);
@@ -110,6 +110,7 @@ public class ShouPageyApi extends BaseController implements ConstCache {
 
     /**
      * 我的熟人
+     *
      * @param userId 用户ID
      * @return result
      */
@@ -117,7 +118,7 @@ public class ShouPageyApi extends BaseController implements ConstCache {
     @ResponseBody
     public String acquaintances(Integer userId) {
         final Integer userid = userId;
-        List<UserVo> list = CacheKit.get(DIY_CACHE, "shoupage_acquaintances_" + userId, new ILoader() {
+        List<UserVo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_ACQUAINTANCES + userId, new ILoader() {
             @Override
             public Object load() {
                 return shoupageService.listAcquaintances(userid);
@@ -128,6 +129,7 @@ public class ShouPageyApi extends BaseController implements ConstCache {
 
     /**
      * 我的组织
+     *
      * @param userId 用户ID
      * @return result
      */
@@ -135,7 +137,7 @@ public class ShouPageyApi extends BaseController implements ConstCache {
     @ResponseBody
     public String groups(Integer userId) {
         final Integer userid = userId;
-        List<Groupvo> list = CacheKit.get(DIY_CACHE, "shoupage_acquaintances_" + userId, new ILoader() {
+        List<Groupvo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_PAGE + userId, new ILoader() {
             @Override
             public Object load() {
                 return shoupageService.listGroup(userid);

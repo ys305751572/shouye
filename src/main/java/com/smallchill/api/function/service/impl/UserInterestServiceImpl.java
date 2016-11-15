@@ -2,6 +2,7 @@ package com.smallchill.api.function.service.impl;
 
 import com.smallchill.api.function.modal.UserInterest;
 import com.smallchill.api.function.service.UserInterestService;
+import com.smallchill.core.toolbox.Record;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 
@@ -13,4 +14,17 @@ import com.smallchill.core.base.service.BaseService;
 @Service
 public class UserInterestServiceImpl extends BaseService<UserInterest> implements UserInterestService {
 
+    private String where = "user_id = #{userId} and to_user_id = #{toUserId} and status = 0";
+
+    /**
+     * 根据当前用户与目标用户查询感兴趣状态
+     *
+     * @param userId   用户ID
+     * @param toUserId 目标用户ID
+     * @return ui
+     */
+    @Override
+    public UserInterest getByUserId(Integer userId, Integer toUserId) {
+        return this.findFirstBy(where, Record.create().set("userId", userId).set("toUserId", toUserId));
+    }
 }

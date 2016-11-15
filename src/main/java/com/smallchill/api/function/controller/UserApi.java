@@ -11,8 +11,11 @@ import com.smallchill.api.function.service.GroupInterestService;
 import com.smallchill.api.function.service.UserInterestService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
+import com.smallchill.core.constant.ConstCache;
+import com.smallchill.core.interfaces.ILoader;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
@@ -29,9 +32,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @RequestMapping(value = "/api/user")
 @Controller
-public class UserApi extends BaseController {
+public class UserApi extends BaseController implements ConstCache {
 
     private static String LIST_SOURCE = "UserInfo.listPage";
+    private String CACHE_KEY = "user_";
 
     @Autowired
     private UserInfoService userInfoService;
@@ -82,7 +86,33 @@ public class UserApi extends BaseController {
     }
 
     /**
-     * 用户详情
+     * 查询用户详情
+     * @param userId
+     * @param toUserId
+     * @return
+     */
+    @RequestMapping(value = "/userInfo")
+    @ResponseBody
+    public String userInfo(Integer userId, Integer toUserId) {
+        Record record;
+        final int userid = userId;
+        final int toUserid = toUserId;
+        try {
+            record = CacheKit.get(DIY_CACHE, CACHE_KEY + userId + "_" + toUserId, new ILoader() {
+                @Override
+                public Object load() {
+                    return userInfoService.findUserInfoDetail(userid, toUserid);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success(record, "userInfo");
+    }
+
+    /**
+     * 个人详情
      *
      * @param userId 用户ID
      * @return result

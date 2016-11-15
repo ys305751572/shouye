@@ -61,6 +61,13 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     // 我的组织
     private String MYGROUP_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_group_approval ga WHERE ga.user_id = #{userId} AND ga.create_time > #{lastTime}";
 
+    private int NOT_FRINED = 2000; // 未结识
+    private int FRIEND = 2001; // 已结识
+    private int NOT_PROCESS_FROM_USER_ID = 2002; // 显示忽略 结识按钮
+    private int NOT_PROCESS_TO_USER_ID = 2003;
+    private int PASS = 2004;
+
+
     /**
      * 手页录首页
      *
@@ -240,41 +247,25 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      */
     private void setUserVoStatus(UserVo vo, Record record, Integer userId) {
 
-        String info;
         int status  = Integer.parseInt(record.get("status").toString());
+        int type = 0;
         if (status == 1) {
-            info = "已批准";
-            vo.setStatus(info);
+            type = FRIEND;
         }
         else if (status == 2) {
-            info = "已忽略";
-            vo.setStatus(info);
+            type = PASS;
         }
         else if (status == 0) {
             int fromUserId = Integer.parseInt(record.get("from_user_id").toString());
             int toUserId = Integer.parseInt(record.get("to_user_id").toString());
             if (userId == fromUserId) {
-                info = "等待对方确认";
-                vo.setStatus(info);
+                type = NOT_PROCESS_TO_USER_ID;
             }
             else if (userId == toUserId) {
-                info = "";
-                String action1Name = "忽略";
-                String action1Url = "approval/audit";
-                String params1 = "status=2";
-                vo.setActionName1(action1Name);
-                vo.setActionUrl(action1Url);
-                vo.setParams1(params1);
-
-                String action2Name = "结识";
-                String action2Url = "approval/audit";
-                String params2 = "status=1";
-                vo.setActionUrl2(action2Url);
-                vo.setActionName2(action2Name);
-                vo.setParams2(params2);
-                vo.setStatus(info);
+                type = NOT_PROCESS_FROM_USER_ID;
             }
         }
+        vo.setStatus(type);
     }
 
     /**
@@ -345,6 +336,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         ult.setInterested(DateTimeKit.nowLong());
         this.updateUserLastReadTime(userId, ult);
 
+        int type;
         List<Record> list = Db.init().selectList(SQL_INTERESTED_USER, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         for (Record record : list) {
@@ -352,16 +344,13 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             Object unstatusObj = record.get("uatatus");
             if (unstatusObj == null || !unstatusObj.toString().equals("1")) {
                 // 未结识
-                String action1name = "忽略";
-                String action1url = "";
-
-                String action2name = "结识";
-                String action2url = "";
+                type = NOT_PROCESS_FROM_USER_ID;
             }
             else {
                 // 已结识
-                vo.setStatus("已结识");
+                type = FRIEND;
             }
+            vo.setStatus(type);
             voList.add(vo);
         }
         return voList;
@@ -386,6 +375,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         List<Record> list = Db.init().selectList(sql2, where, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         UserVo vo;
+        int type = 0;
         for (Record record : list) {
             vo = Convert.recordToVo(record);
             Integer fromUserId = Integer.parseInt(record.get("from_user_id").toString());
@@ -394,18 +384,17 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             if (status != null && status == 0) {
                 if (fromUserId == userId) {
                     // 等待对方审核
-                    vo.setStatus("等待对方审核");
+                    type = NOT_PROCESS_TO_USER_ID;
                 } else if (toUserId == userId) {
-                    // 等待自己审核
-                    vo.setStatus("-1");
-                    vo.setActionName1("忽略");
-                    vo.setActionUrl("/api");
-                    vo.setActionName2("同意");
-                    vo.setActionUrl2("/api");
+                    // 等待己方审核
+                    type = NOT_PROCESS_FROM_USER_ID;
                 }
-            } else {
-                vo.setStatus("");
+            } else if (status != null && status == 1) {
+                type = FRIEND;
+            } else if (status != null && (status == 2 || status == 4)) {
+                type = PASS;
             }
+            vo.setStatus(type);
             voList.add(vo);
         }
         return voList;
@@ -455,10 +444,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
         for (Record record : list) {
             groupvos.add(Convert.recordToGroupVo(record));
-
         }
         return groupvos;
     }
-
-    
 }

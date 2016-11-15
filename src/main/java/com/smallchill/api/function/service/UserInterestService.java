@@ -9,4 +9,10 @@ import com.smallchill.core.base.service.IService;
  */
 public interface UserInterestService extends IService<UserInterest>{
 
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    UserInterest getByUserId(Integer userId, Integer toUserId);
 }

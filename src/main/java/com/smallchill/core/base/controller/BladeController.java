@@ -449,7 +449,10 @@ public class BladeController implements ConstCurd, ConstCache {
         request.removeAttribute("sort");
         request.removeAttribute("order");
 
-
+        if(excludeParams == null) {
+            excludeParams = ExcludeParams.create();
+        }
+        excludeParams = excludeParams.set("pageNum").set("pageSize");
         Map<String, String[]> queryString = request.getParameterMap();
         Record recordQuery = Record.create();
         for (Map.Entry<String, String[]> element : queryString.entrySet()) {

@@ -1,10 +1,14 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.api.common.exception.UserExitsException;
+import com.smallchill.api.function.meta.other.ButtonRegister;
 import com.smallchill.api.function.meta.other.Convert;
+import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.UserDomain;
+import com.smallchill.api.function.modal.UserInterest;
 import com.smallchill.api.function.modal.UserProfessional;
 import com.smallchill.api.function.service.UserDomainService;
+import com.smallchill.api.function.service.UserInterestService;
 import com.smallchill.api.function.service.UserprofessionalService;
 import com.smallchill.core.base.service.BaseService;
 import com.smallchill.core.plugins.dao.Blade;
@@ -48,6 +52,9 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Autowired
     private UserApprovalService userApprovalService;
+
+    @Autowired
+    private UserInterestService userInterestService;
 
     @Transactional
     @Override
@@ -95,8 +102,21 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     @Override
     public Record findUserInfoDetail(Integer userId) {
         String sql = Blade.dao().getScript("UserInfo.userInfoDetail").getSql();
+        return Db.init().selectOne(sql, Record.create().set("userId", userId));
+    }
+
+    @Override
+    public Record findUserInfoDetail(Integer userId, Integer toUserId) {
+        String sql = Blade.dao().getScript("UserInfo.userInfoDetail").getSql();
         Record record = Db.init().selectOne(sql, Record.create().set("userId", userId));
-        Object toUserId = record.get("userId");
+
+        UserApproval ua = userApprovalService.getUserByFromUserIdAndToUserIdApprovalOfOneWay(userId, toUserId);
+        UserInterest ui = userInterestService.getByUserId(userId, toUserId);
+        List<Button> list = ButtonRegister.create(userId, toUserId, ua, ui).addBtns();
+        for (Button btn : list) {
+            System.out.println(btn.toString());
+        }
+        record.set("btnList", list);
         return record;
     }
 
@@ -415,18 +435,5 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             }
             System.out.println("----ids----");
         }
-    }
-
-    /**
-     * @param userId     当前用户
-     * @param distUserId 目标用户
-     * @return 关系状态 0:未结识 1:朋友 2:熟人 3:等待对方审核 4:等待自己审核
-     */
-    @Override
-    public Integer getUserRelation(Integer userId, Integer distUserId) {
-        String sql = "(from_user_id = #{fromUserId} and to_user_id = #{toUserId}) or (from_user_id = #{toUserId} and to_user_id = #{fromUserId})";
-        UserApproval ua = userApprovalService.findFirstBy(sql, Record.create().set("fromUserId", userId).set("toUserId", distUserId));
-
-        return 0;
     }
 }

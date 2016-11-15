@@ -121,4 +121,8 @@ public interface UserApprovalService extends IService<UserApproval>{
      * @param ua 审核信息
      */
     void auditRefuseByIntroduce(UserApproval ua);
+
+    UserApproval getUserByFromUserIdAndToUserIdApprovalOfTowWay(Integer userId, Integer distUserId);
+
+    UserApproval getUserByFromUserIdAndToUserIdApprovalOfOneWay(Integer userId, Integer distUserId);
 }

@@ -2,6 +2,7 @@ package com.smallchill.api.function.meta.other;
 
 import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.UserInterest;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserApproval;
 
@@ -22,6 +23,13 @@ public class ButtonRegister {
     private Integer currentUserId;
     private Integer toUserId;
 
+    private int applyFriend_type = 1001;         // 申请好友
+    private int applyAcquaintances_type = 1002;  // 申请熟人
+    private int insterest_type = 1003;           // 感兴趣
+    private int intersection_type = 1004;             // 查看交集
+    private int queryUserAcquaintances_type = 1005;   // 查看对方熟人
+    private int recommendFriend_type = 1006;          // 推荐朋友
+
     private ButtonRegister(Integer currentUserId, Integer toUserId, UserApproval ua, UserInterest ui) {
         this.currentUserId = currentUserId;
         this.toUserId = toUserId;
@@ -34,18 +42,28 @@ public class ButtonRegister {
     }
 
     /**
+     * 加入用户详情
+     *
+     * @return button list
+     */
+    public List<Button> addBtns() {
+        applyFriend();
+        applyAcquaintances();
+        insterest();
+        intersection();
+        queryUserAcquaintances();
+        recommendFriend();
+        return getList();
+    }
+
+    /**
      * 新增自定义按钮Button
      *
      * @param button 按钮
-     * @return
+     * @return ButtonRegister
      */
     public ButtonRegister addButton(Button button) {
         this.list.add(button);
-        return this;
-    }
-
-    public ButtonRegister getBtnOfUserinfo() {
-
         return this;
     }
 
@@ -55,13 +73,12 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister applyFriend() {
-        if (ua != null && (ua.getStatus() == 2 || ua.getStatus() == 4)) return this;
-
-        Button button = new Button();
-        button.setName("申请结识");
-        button.setUrl("approval/introduce");
-        button.setParams(Record.create().set("fromUserId", currentUserId).set("toUserId", toUserId).set("type", 1));
-        this.list.add(button);
+        if (isStranger() && isInSameGroup()) {
+            Button button = new Button();
+            button.setName("申请结识");
+            button.setType(applyFriend_type);
+            this.list.add(button);
+        }
         return this;
     }
 
@@ -71,12 +88,12 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister applyAcquaintances() {
-        if (ua != null && (ua.getStatus() == 2 || ua.getStatus() == 4) && ua.getType() == 1) return this;
-        Button button = new Button();
-        button.setName("结为熟人");
-        button.setUrl("approval/introduce");
-        button.setParams(Record.create().set("fromUserId", currentUserId).set("toUserId", toUserId).set("type", 2));
-        this.list.add(button);
+        if (isFriend()) {
+            Button button = new Button();
+            button.setName("结为熟人");
+            button.setType(applyAcquaintances_type);
+            this.list.add(button);
+        }
         return this;
     }
 
@@ -86,12 +103,12 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister insterest() {
-        if (ui != null && ui.getStatus() == 1) return this;
-        Button button = new Button();
-        button.setName("感兴趣");
-        button.setUrl("user/interest");
-        button.setParams(Record.create().set("userId", currentUserId).set("toUserId", toUserId));
-        this.list.add(button);
+        if (isStranger() && !isInterest()) {
+            Button button = new Button();
+            button.setName("感兴趣");
+            button.setType(insterest_type);
+            this.list.add(button);
+        }
         return this;
     }
 
@@ -101,11 +118,12 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister intersection() {
-        Button button = new Button();
-        button.setName("查看交集");
-        button.setUrl("user/introduce");
-        button.setParams(Record.create().set("userId", currentUserId).set("toUserId", toUserId));
-        this.list.add(button);
+        if (isStranger()) {
+            Button button = new Button();
+            button.setName("查看交集");
+            button.setType(intersection_type);
+            this.list.add(button);
+        }
         return this;
     }
 
@@ -115,11 +133,12 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister queryUserAcquaintances() {
-        Button button = new Button();
-        button.setName("查看对方熟人");
-        button.setUrl("user/introduce");
-        button.setParams(Record.create().set("userId", currentUserId).set("toUserId", toUserId));
-        this.list.add(button);
+        if (isAcquaintances()) {
+            Button button = new Button();
+            button.setName("查看对方熟人");
+            button.setType(queryUserAcquaintances_type);
+            this.list.add(button);
+        }
         return this;
     }
 
@@ -129,14 +148,63 @@ public class ButtonRegister {
      * @return result
      */
     public ButtonRegister recommendFriend() {
-        if (ua != null && ua.getStatus() == 1 && (ua.getType() == 1 || ua.getType() == 2)) return this;
 
-        Button button = new Button();
-        button.setName("推荐朋友");
-        button.setUrl("user/intersection");
-        button.setParams(Record.create().set("introduceUserId", currentUserId).set("toUserId", toUserId));
-        this.list.add(button);
+        if (isFriend() || isAcquaintances()) {
+            Button button = new Button();
+            button.setName("推荐朋友");
+            button.setType(recommendFriend_type);
+            this.list.add(button);
+        }
         return this;
+    }
+
+    /**
+     * 判断两个用户是否在同一个组织
+     *
+     * @return boolean
+     */
+    public boolean isInSameGroup() {
+        String sql = "SELECT COUNT(*) AS counts FROM tb_user_group ug WHERE ug.group_id IN (SELECT ug2.group_id FROM tb_user_group ug2 WHERE ug2.user_id = #{toUserId}) AND ug.user_id = #{userId}";
+        Record record = Record.create().set("userId", currentUserId).set("toUserId", toUserId);
+        Record resultMap = Db.init().selectOne(sql, record);
+        int counts = resultMap.get("counts") == null ? 0 : Integer.parseInt(resultMap.get("counts").toString());
+        return counts > 0;
+    }
+
+    /**
+     * 是否陌生人
+     *
+     * @return boolean
+     */
+    public boolean isStranger() {
+        return ua == null || ua.getStatus() == 2 || ua.getStatus() == 4;
+    }
+
+    /**
+     * 是否是朋友
+     *
+     * @return boolean
+     */
+    public boolean isFriend() {
+        return ua != null && ua.getStatus() == 1 && ua.getType() == 1;
+    }
+
+    /**
+     * 是否熟人
+     *
+     * @return boolean
+     */
+    public boolean isAcquaintances() {
+        return ua != null && ua.getStatus() == 1 && ua.getType() == 2;
+    }
+
+    /**
+     * 是否已经感兴趣
+     *
+     * @return boolean
+     */
+    public boolean isInterest() {
+        return ui != null && ui.getStatus() == 0;
     }
 
     public List<Button> getList() {
