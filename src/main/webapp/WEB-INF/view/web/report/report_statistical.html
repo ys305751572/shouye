@@ -2,8 +2,8 @@
 
 <script type="text/javascript">
     var ctx="${basePath}";
-    var grid_selector = "#grid-table";
-    var pager_selector = "#grid-pager";
+    var grid_selector1 = "#grid-table-statistical";
+    var pager_selector1 = "#grid-pager-statistical";
     var hidden = 1;
     $(function(){
         initGrid();
@@ -11,7 +11,7 @@
     });
 
     function initGrid(){
-        var grid_url = ctx+"/${code}/list";//查询列表接口
+        var grid_url = ctx+"/group/list";//查询列表接口
         var _colnames=[
             "序列",
             "头像",
@@ -109,7 +109,7 @@
 
         ];
 
-        jQuery(grid_selector).jqGrid({
+        jQuery(grid_selector1).jqGrid({
             url:grid_url,
 //            shrinkToFit:true,//适用于较少字段,响应式
             autowidth : true,
@@ -117,7 +117,7 @@
             colNames:_colnames,
             colModel:_colmodel,
             jsonReader:{id:"id"},
-            pager : pager_selector,
+            pager : pager_selector1,
             postData: {sort: "id", order: "asc"}
         });
 
@@ -202,9 +202,9 @@
             <input type="checkbox" value="status" class="cbox" checked="checked" disabled="disabled"/>账号状态
         </div>
         <!-- grid -->
-        <table id="grid-table"></table>
+        <table id="grid-table-statistical"></table>
         <!-- 分页 -->
-        <div id="grid-pager"></div>
+        <div id="grid-pager-statistical"></div>
     </div>
 </div>
 

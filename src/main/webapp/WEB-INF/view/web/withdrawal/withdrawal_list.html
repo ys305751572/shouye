@@ -1,0 +1,116 @@
+@layout("/common/_curd/_container.html"){
+
+<script type="text/javascript">
+    var ctx="${basePath}";
+    var grid_selector = "#grid-table";
+    var pager_selector = "#grid-pager";
+    var hidden = 1;
+    $(function(){
+        initGrid();
+        initMenuBtn("btns","${code}");
+    });
+
+    function initGrid(){
+        var grid_url = ctx+"/${code}/list";//查询列表接口
+        var _colnames=[
+            "序列",
+            "订单编号",
+            "组织名称",
+            "提现金额",
+            "交易手续费",
+            "扣费后金额",
+            "转账银行",
+            "日期",
+            "订单状态"
+        ];
+        var _colmodel=[
+            {name:"id",index:"id", width:80,hidden:true},
+            {name:"orderNo",index:"orderNo", width:120},
+            {name:"g_name",index:"t_type", width:220},
+            {name:"amount",index:"amount", width:120},
+            {name:"poundage",index:"poundage", width:120},
+            {
+                formatter: function(cellvalue, options, rowObject) {
+                    var amount = rowObject.amount;
+                    var poundage = rowObject.poundage;
+                    return amount-poundage;
+                }
+            },
+            {name:"bank",index:"bank", width:100},
+            {name:"createTime",index:"createTime", width:140,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
+                        return "";
+                    }else {
+                        return date_format(cellvalue)
+                    }
+
+                }
+            },
+            {name:"w_type",index:"w_type", width:120,
+                formatter: function(cellvalue, options, rowObject) {
+                    //1:交易成功 2:处理中 3:提现失败
+                    if(cellvalue==1){
+                        return "交易成功";
+                    }else if(cellvalue==2){
+                        return "处理中";
+                    }else {
+                        return "提现失败";
+                    }
+                }
+            }
+        ];
+
+        jQuery(grid_selector).jqGrid({
+            url:grid_url,
+            shrinkToFit:true,//适用于较少字段,响应式
+            autowidth : true,
+            forceFit : true,
+            colNames:_colnames,
+            colModel:_colmodel,
+            jsonReader:{id:"id"},
+            pager : pager_selector,
+            postData: {sort: "id", order: "asc"}
+        });
+
+    }
+
+    function date_format(data){
+        var d = new Date(data);    //根据时间戳生成的时间对象
+
+        var date = (d.getFullYear()) + "-" +
+                (d.getMonth() + 1) + "-" +
+                (d.getDate()) + " " +
+                (d.getHours()) + ":" +
+                (d.getMinutes()) + ":" +
+                (d.getSeconds());
+        return date;
+    }
+
+</script>
+
+
+<!-- 配置grid -->
+<div class="row">
+    <div class="col-xs-12 tb-grid">
+        <!-- 配置查询 -->
+        @ var _col=[
+        @			  {name:"组织类型",index:"type", type:"select_908"},
+        @			  {name:"入会费",index:"costStaus", type:"select_917"},
+        @			  {name:"状态",index:"freezeStatus", type:"select_902"}
+        @		   ];
+        @ include("/common/_function/_search.html",{"col":_col}){}
+        <!-- 按钮组 -->
+        <div class="welljq well-sm" id="btns"></div>
+        <!-- grid -->
+        <table id="grid-table"></table>
+        <!-- 分页 -->
+        <div id="grid-pager"></div>
+    </div>
+</div>
+
+<!-- 引入列表页所需js -->
+@include("/common/_listscript.html"){}
+<link rel="stylesheet" href="${basePath}/static/zTree/css/zTreeStyle/zTreeStyle.css" />
+<script src="${basePath}/static/zTree/js/jquery.ztree.core.js" type="text/javascript" ></script>
+@}

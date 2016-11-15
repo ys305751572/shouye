@@ -1,0 +1,162 @@
+@layout("/common/_curd/_container.html"){
+
+<script type="text/javascript">
+    var ctx="${basePath}";
+    var grid_selector = "#grid-table";
+    var pager_selector = "#grid-pager";
+    var hidden = 1;
+    $(function(){
+        initGrid();
+        initMenuBtn("btns","${code}");
+    });
+
+    function initGrid(){
+        var grid_url = ctx+"/${code}/list";//查询列表接口
+        var _colnames=[
+            "序列",
+            "订单编号",
+            "交易类型",
+            "数量",
+            "交易金额",
+            "资金流向",
+            "消费者",
+            "支付平台",
+            "手机号码",
+            "日期",
+            "订单状态"
+        ];
+        var _colmodel=[
+            {name:"id",index:"id", width:80,hidden:true},
+            {name:"orderNo",index:"orderNo", width:120},
+            {name:"t_type",index:"t_type", width:220,
+                formatter: function(cellvalue, options, rowObject) {
+                    //1:会员费 2:报名费 3:熟人上限 4:感兴趣上限(对人)
+                    if(cellvalue==1) {
+                        return "会员费";
+                    }else if(cellvalue==2) {
+                        return "报名费";
+                    }else if(cellvalue==2) {
+                        return "熟人上限";
+                    }else {
+                        return "感兴趣上限(对人)";
+                    }
+                }
+            },
+            {name:"num",index:"num", width:100},
+            {name:"amount",index:"amount", width:120},
+            {name:"flow",index:"flow", width:100,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue==1){
+                        return "收入";
+                    }else {
+                        return "支出";
+                    }
+
+                }
+            },
+            {name:"userName",index:"userName", width:100},
+            {name:"platform",index:"platform", width:100,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue==1){
+                        return "微信";
+                    }else {
+                        return "支付宝";
+                    }
+
+                }
+            },
+            {name:"mobile",index:"mobile", width:120},
+            {name:"createTime",index:"createTime", width:140,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
+                        return "";
+                    }else {
+                        return date_format(cellvalue)
+                    }
+
+                }
+            },
+            {name:"t_status",index:"t_status", width:120,
+                formatter: function(cellvalue, options, rowObject) {
+                    //状态 1:交易成功 2:审核中 3:进行中 4:扣款失败 5:退款成功 6:等待退款 7:退款失败
+                    switch(cellvalue){
+                        case 1:
+                            return "交易成功";
+                            break;
+                        case 2:
+                            return "审核中";
+                            break;
+                        case 3:
+                            return "进行中";
+                            break;
+                        case 4:
+                            return "扣款失败";
+                            break;
+                        case 5:
+                            return "退款成功";
+                            break;
+                        case 6:
+                            return "等待退款";
+                            break;
+                        case 7:
+                            return "退款失败";
+                            break;
+                    }
+                }
+            }
+
+        ];
+
+        jQuery(grid_selector).jqGrid({
+            url:grid_url,
+            shrinkToFit:true,//适用于较少字段,响应式
+            autowidth : true,
+            forceFit : true,
+            colNames:_colnames,
+            colModel:_colmodel,
+            jsonReader:{id:"id"},
+            pager : pager_selector,
+            postData: {sort: "id", order: "asc"}
+        });
+
+    }
+
+    function date_format(data){
+        var d = new Date(data);    //根据时间戳生成的时间对象
+
+        var date = (d.getFullYear()) + "-" +
+                (d.getMonth() + 1) + "-" +
+                (d.getDate()) + " " +
+                (d.getHours()) + ":" +
+                (d.getMinutes()) + ":" +
+                (d.getSeconds());
+        return date;
+    }
+
+</script>
+
+
+<!-- 配置grid -->
+<div class="row">
+    <div class="col-xs-12 tb-grid">
+        <!-- 配置查询 -->
+        @ var _col=[
+        @			  {name:"组织类型",index:"type", type:"select_908"},
+        @			  {name:"入会费",index:"costStaus", type:"select_917"},
+        @			  {name:"状态",index:"freezeStatus", type:"select_902"}
+        @		   ];
+        @ include("/common/_function/_search.html",{"col":_col}){}
+        <!-- 按钮组 -->
+        <div class="welljq well-sm" id="btns"></div>
+        <!-- grid -->
+        <table id="grid-table"></table>
+        <!-- 分页 -->
+        <div id="grid-pager"></div>
+    </div>
+</div>
+
+<!-- 引入列表页所需js -->
+@include("/common/_listscript.html"){}
+<link rel="stylesheet" href="${basePath}/static/zTree/css/zTreeStyle/zTreeStyle.css" />
+<script src="${basePath}/static/zTree/js/jquery.ztree.core.js" type="text/javascript" ></script>
+@}

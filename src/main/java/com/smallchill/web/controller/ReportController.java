@@ -70,5 +70,17 @@ public class ReportController extends BaseController {
     }
 
 
+    //举报对象 子列
+    @ResponseBody
+    @RequestMapping(value = "/report_object")
+    public Object reportObject(Integer reportId) {
+        Object grid = paginate(LIST_SOURCE);
+        return grid;
+    }
+
+
+
+
+
 
 }

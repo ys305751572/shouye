@@ -11,7 +11,7 @@
     });
 
     function initGrid(){
-        var grid_url = ctx+"/reprot/operation_list";//查询列表接口
+        var grid_url = ctx+"/report/operation_list";//查询列表接口
         var _colnames=[
             "序列",
             "事件ID",
@@ -25,9 +25,9 @@
             "操作"
         ];
         var _colmodel=[
-            {name:"id",index:"id", width:80,hidden:true},
-            {name:"rno",index:"rno", width:120},
-            {name:"type",index:"type", width:220,
+            {name:"id",index:"id", width:60,hidden:true},
+            {name:"rno",index:"rno", width:60},
+            {name:"type",index:"type", width:60,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
                         return "用户";
@@ -39,14 +39,14 @@
                         return "内容(非活动)";
                     }else if(cellvalue==5){
                         return "日报";
-                    }else if(cellvalue==5){
+                    }else if(cellvalue==6){
                         return "杂志";
                     }
                 }
             },
             {name:"userName",index:"userName", width:120,hidden:true},
             {name:"groupName",index:"groupName", width:120,hidden:true},
-            {name:"objectId",index:"objectId", width:120,
+            {name:"objectId",index:"objectId", width:60,
                 formatter: function (cellvalue, options, rowObject) {
                     var type = rowObject.type;
                     if(type==1){
@@ -61,8 +61,8 @@
                         return "";
                     }
                 }},
-            {name:"reasons",index:"reasons", width:150},
-            {name:"num",index:"num", width:100},
+            {name:"reasons",index:"reasons", width:100},
+            {name:"num",index:"num", width:60},
             {name:"reportTime",index:"reportTime", width:100,
                 formatter: function(cellvalue, options, rowObject) {
                     if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
@@ -77,23 +77,26 @@
                 formatter: function (cellvalue, options, rowObject) {
                     var id = rowObject.id;
                     var type = rowObject.type;
-                    var departure = "<button title='封号' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + 1 + "\')\">" +
+                    var departure = "<button title='封号' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\')\">" +
                             "<i class='fa fa-circle-o'></i> 封号</button>";
 
-                    var ignore = "<button title='忽略' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + 1 + "\')\">" +
+                    var ignore = "<button title='忽略' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\')\">" +
                             "<i class='fa fa-circle-o'></i> 忽略</button>";
 
-                    var freeze = "<button title='冻结' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + userName + "\',\'" + status + "\',\'" + 3 + "\')\">" +
+                    var freeze = "<button title='冻结' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\')\">" +
                             "<i class='fa fa-circle-o'></i> 冻结</button>";
 
-                    var pause = "<button title='暂停' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + userName + "\',\'" + status + "\',\'" + 3 + "\')\">" +
+                    var pause = "<button title='暂停' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\')\">" +
                             "<i class='fa fa-circle-o'></i> 暂停</button>";
 
-                    var closure = "<button title='停刊' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + userName + "\',\'" + status + "\',\'" + 3 + "\')\">" +
+                    var closure = "<button title='停刊' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\')\">" +
                             "<i class='fa fa-circle-o'></i> 停刊</button>";
 
-                    var del = "<button title='删除' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + userName + "\',\'" + status + "\',\'" + 3 + "\')\">" +
+                    var del = "<button title='删除' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\')\">" +
                             "<i class='fa fa-circle-o'></i> 删除</button>";
+
+                    var message = "<button title='发送消息' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\')\">" +
+                            "<i class='fa fa-circle-o'></i> 发送消息</button>";
 
                     if (type == "1") {
                         return ignore+ "&nbsp;" +freeze+ "&nbsp;" +departure;
@@ -116,17 +119,56 @@
 
         jQuery(grid_selector).jqGrid({
             url:grid_url,
-//            shrinkToFit:true,//适用于较少字段,响应式
+            shrinkToFit:true,//适用于较少字段,响应式
             autowidth : true,
             forceFit : true,
             colNames:_colnames,
             colModel:_colmodel,
             jsonReader:{id:"id"},
             pager : pager_selector,
-            postData: {sort: "id", order: "asc"}
+            postData: {sort: "id", order: "asc"},
+            subGrid: true,  // (1)开启子表格支持
+            subGridRowExpanded: function(subgrid_id, row_id) {  //(2)子表格容器的id和需要展开子表格的行id，将传入此事件函数
+                var subgrid_table_id;
+                subgrid_table_id = subgrid_id + "_t";   //(3)根据subgrid_id定义对应的子表格的table的id
+                var subgrid_pager_id;
+                subgrid_pager_id = subgrid_id + "_pgr"; //(4)根据subgrid_id定义对应的子表格的pager的id
+                // (5)动态添加子报表的table和pager
+                $("#" + subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table><div id='"+subgrid_pager_id+"' class='scroll'></div>");
+                // (6)创建jqGrid对象
+                $("#" + subgrid_table_id).jqGrid({
+                    url: ctx+"/report/report_object?reportId="+row_id,
+                    datatype: "json",
+                    colNames: ['1','2','3','4','5','6','7','8','9','10'],
+                    colModel: [
+                        {formatter: function (cellvalue, options, rowObject) {return ""}},
+                        {formatter: function (cellvalue, options, rowObject) {return ""}},
+                        {name:"internalNo",index:"internalNo",width:130},
+                        {formatter: function (cellvalue, options, rowObject) {return ""}},
+                        {formatter: function (cellvalue, options, rowObject) {return ""}},
+                        {formatter: function (cellvalue, options, rowObject) {return ""}},
+                        {formatter: function (cellvalue, options, rowObject) {return ""}},
+                        {formatter: function (cellvalue, options, rowObject) {return ""}},
+                        {formatter: function (cellvalue, options, rowObject) {return ""}},
+                        {formatter: function (cellvalue, options, rowObject) {return ""}}
+                    ],
+                    jsonReader: {   // (8)针对子表格的jsonReader设置
+                        root:"gridModel",
+                        records: "record",
+                        repeatitems : false
+                    },
+                    prmNames: {search: "search"},
+                    pager: subgrid_pager_id,
+                        viewrecords: true,
+                        height: "100%",
+                        rowNum: 5
+                });
+            }
         });
 
     }
+
+
 
     function date_format(data){
         var d = new Date(data);    //根据时间戳生成的时间对象
@@ -184,9 +226,9 @@
     <div class="col-xs-12 tb-grid">
         <!-- 配置查询 -->
         @ var _col=[
-        @			  {name:"组织类型",index:"type", type:"select_908"}
+        @			  {name:"类型",index:"type", type:"select_918"}
         @		   ];
-        @ include("/common/_function/_search.html",{"col":_col}){}
+        @ include("/common/_function/_search_double_page.html",{"_col":_col}){}
         <!-- 按钮组 -->
         <div class="welljq well-sm" id="btns"></div>
         <!-- grid -->
