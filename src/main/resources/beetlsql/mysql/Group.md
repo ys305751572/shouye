@@ -52,14 +52,14 @@ SELECT
   tg.name AS name,
   tg.idcard AS idcard
 FROM tb_group_load tgl
-LEFT JOIN (SELECT a.id,a.name,b.idcard FROM tb_group a LEFT JOIN `tb_group_extend` b ON b.`group_id` = a.id) tg ON tgl.group_id = tg.id
+LEFT JOIN (SELECT a.id,a.name,b.idcard FROM tb_group a LEFT JOIN tb_group_extend b ON b.group_id = a.id) tg ON tgl.group_id = tg.id
 
 listPage
 ========
 SELECT
     g.id,
     g.name,
-    g.avater,
+    IFNULL(g.avater,"") avater,
     g.province,
     g.city,
     g.type,

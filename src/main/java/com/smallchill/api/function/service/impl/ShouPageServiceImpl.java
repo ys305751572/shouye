@@ -14,6 +14,9 @@ import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.web.service.GroupService;
+import com.smallchill.web.service.UserInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,12 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     @Autowired
     private UserLastReadTimeService userLastReadTimeService;
 
+    @Autowired
+    private UserInfoService userInfoService;
+
+    @Autowired
+    private GroupService groupService;
+
     private String USER_BASE_INFO_SQL = " ui.user_id,ui.username,ui.avater,ui.province_city,ui.domain,ui.key_word,ui.organization,ui.professional ";
 
     private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.status,ua.from_user_id,ua.to_user_id " +
@@ -41,9 +50,9 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String GROUP_BASE_INFO_SQL = " g.id,g.name,g.avater,g.province,g.city,g.type,g.province_city provinceCity,g.member_count memberCount,g.targat ";
 
-    private String SQL_INTEREST_GROUP = "select "+ GROUP_BASE_INFO_SQL +" from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
+    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + " from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
 
-        private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status uastatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
+    private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status uastatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
             + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` where i.to_user_id = #{userId} OR ua.`status` != 3";
 
     private String SQL_MY_GROUP = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
@@ -172,18 +181,15 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         this.updateUserLastReadTime(userId, ult);
 
 
-
         Map<String, List<UserVo>> resultMap = new HashMap<>();
         resultMap.put("list0", new ArrayList<UserVo>()); // 自荐
         resultMap.put("list1", new ArrayList<UserVo>()); // 引荐
         resultMap.put("list2", new ArrayList<UserVo>()); // 推荐
 
-        // 查询引荐和推荐
+        // 查询当前用户所有申请请求
         List<Record> list0 = listNew0(userId);
-        // 查询自荐
-        List<Record> list1 = listNew1(userId);
-        listAdd2Map(list0, resultMap,userId, false);
-        listAdd2Map(list1, resultMap,userId, true);
+        listAdd2Map(list0, resultMap, userId);
+
         return resultMap;
     }
 
@@ -199,69 +205,65 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     }
 
     /**
-     * 查询自荐
-     *
-     * @param userId 用户ID
-     * @return 用户集
-     */
-    private List<Record> listNew1(Integer userId) {
-        String where = " on ui.user_id = ua.to_user_id where ua.from_user_id = #{userId}";
-        return Db.init().selectList(sql + where, Record.create().set("userId", userId));
-    }
-
-    /**
      * @param list      用户集合
      * @param resultMap 新结识最后返回数据
      */
-    private void listAdd2Map(List<Record> list, Map<String, List<UserVo>> resultMap, Integer userId, boolean isIntroduce) {
-        List<UserVo> voList = new ArrayList<>();
-        List<UserVo> voList2 = null;
-        if (isIntroduce) voList2 = new ArrayList<>();
+    private void listAdd2Map(List<Record> list, Map<String, List<UserVo>> resultMap, Integer userId) {
+        List<UserVo> voList0 = new ArrayList<>(); // 引荐
+        List<UserVo> voList1 = new ArrayList<>(); // 自荐
+        List<UserVo> voList2 = new ArrayList<>(); // 推荐
         UserVo vo;
         for (Record record : list) {
             vo = Convert.recordToVo(record);
-            vo.setValidateInfo(record.get("validate_info").toString());
             setUserVoStatus(vo, record, userId);
-
-            if (!isIntroduce) {
-                voList.add(vo);
+            Integer introduceUserId = record.get("introduce_user_id") == null ? 0 : Integer.parseInt(record.get("introduce_user_id").toString());
+            Integer groupId = record.get("group_id") == null ? 0 : Integer.parseInt(record.get("group_id").toString());
+            if (introduceUserId == 0 && groupId == 0) {
+                // 自荐
+                String validateInfo = record.get("username") == null ? "" : record.get("username").toString() + ":" + record.get("validate_info");
+                vo.setValidateInfo(validateInfo);
+                vo.setInfo("");
+                voList1.add(vo);
+            } else if (introduceUserId != 0 && groupId == 0) {
+                // 推荐
+                voList2.add(vo);
+                String username = userInfoService.findUsernameByUserId(introduceUserId);
+                String validateInfo = username == null ? "" : username + ":" + record.get("validate_info");
+                vo.setValidateInfo(validateInfo);
+                vo.setInfo("来自您的朋友" + username);
             } else {
-                if (Integer.parseInt(record.get("introduce_user_id").toString()) == 0) {
-                    voList.add(vo);
-                } else {
-                    voList2.add(vo);
-                }
+                // 引荐
+                String validateInfo = record.get("username") == null ? "" : record.get("username").toString() + ":" + record.get("validate_info");
+                vo.setValidateInfo(validateInfo);
+                String name = groupService.findNameById(groupId);
+                vo.setInfo("已通过" + name + "审核");
+                voList0.add(vo);
             }
         }
-        if (!isIntroduce) {
-            resultMap.put("list0", voList);
-        } else {
-            resultMap.put("list1", voList);
-            resultMap.put("list2", voList2);
-        }
+        resultMap.put("list0", voList0);
+        resultMap.put("list1", voList1);
+        resultMap.put("list2", voList2);
     }
 
     /**
      * 设置当前用户与
+     *
      * @param vo 好友信息
      */
     private void setUserVoStatus(UserVo vo, Record record, Integer userId) {
 
-        int status  = Integer.parseInt(record.get("status").toString());
+        int status = Integer.parseInt(record.get("status").toString());
         int type = 0;
         if (status == 1) {
             type = FRIEND;
-        }
-        else if (status == 2) {
+        } else if (status == 2) {
             type = PASS;
-        }
-        else if (status == 0) {
+        } else if (status == 0) {
             int fromUserId = Integer.parseInt(record.get("from_user_id").toString());
             int toUserId = Integer.parseInt(record.get("to_user_id").toString());
             if (userId == fromUserId) {
                 type = NOT_PROCESS_TO_USER_ID;
-            }
-            else if (userId == toUserId) {
+            } else if (userId == toUserId) {
                 type = NOT_PROCESS_FROM_USER_ID;
             }
         }
@@ -345,8 +347,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             if (unstatusObj == null || !unstatusObj.toString().equals("1")) {
                 // 未结识
                 type = NOT_PROCESS_FROM_USER_ID;
-            }
-            else {
+            } else {
                 // 已结识
                 type = FRIEND;
             }

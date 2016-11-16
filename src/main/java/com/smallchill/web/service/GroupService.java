@@ -105,4 +105,10 @@ public interface GroupService extends IService<Group> {
      */
     void updateNote(Integer id,String content);
 
+    /**
+     * 根据ID查询组织名称
+     * @param id 组织ID
+     * @return 组织名称
+     */
+    String findNameById(Integer id);
 }

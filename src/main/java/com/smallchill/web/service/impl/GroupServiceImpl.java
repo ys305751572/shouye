@@ -359,4 +359,11 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         updateBy(set, where, record);
     }
 
+    @Override
+    public String findNameById(Integer id) {
+        String sql = "select name from tb_group where id = #{id}";
+        Group group = this.findFirst(sql, Record.create().set("id", id));
+        if (group == null) return "";
+        return group.getName();
+    }
 }

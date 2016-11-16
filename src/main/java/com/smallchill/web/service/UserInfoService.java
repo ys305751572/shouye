@@ -21,6 +21,8 @@ public interface UserInfoService extends IService<UserInfo> {
     Record findUserInfoDetail(Integer userId);
 
     Record findUserInfoDetail(Integer userId, Integer toUserId);
+
+    String findUsernameByUserId(Integer userId);
     /**
      * 改变用户状态
      * @param id            用户id

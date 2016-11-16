@@ -120,6 +120,18 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         return record;
     }
 
+    /**
+     * 根据ID查询用户名
+     * @param userId 用户ID
+     * @return 用户名
+     */
+    @Override
+    public String findUsernameByUserId(Integer userId) {
+        String sql = "select username from user_info where user_id = #{userId}";
+        UserInfo userInfo = this.findFirst(sql, Record.create().set("userId", userId));
+        return userInfo.getUsername();
+    }
+
 
     /**
      * 创建用户
