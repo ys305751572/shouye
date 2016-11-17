@@ -4,7 +4,10 @@ import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.core.aop.AopContext;
 import com.smallchill.core.meta.ApiQueryIntercept;
 import com.smallchill.core.toolbox.support.BladePage;
+import com.smallchill.web.model.UserInfo;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,13 +22,11 @@ public class GroupApiIntercept extends ApiQueryIntercept {
         BladePage bladePage = (BladePage) ac.getObject();
         List<Map> list = bladePage.getRows();
         for (Map record : list) {
-            if(record.get("status") == null || Integer.parseInt(record.get("status").toString()) != 1) {
+            if (record.get("status") == null || Integer.parseInt(record.get("status").toString()) != 1) {
                 record.put("isjoin", 0);
-            }
-            else {
+            } else {
                 record.put("isjoin", 1);
             }
-
             record.remove("status");
             record.remove("city");
             record.remove("province");
@@ -35,6 +36,7 @@ public class GroupApiIntercept extends ApiQueryIntercept {
 
     @Override
     public void queryBefore(AopContext ac) {
-        setParma("userId",ac);
+        setParma("userId", ac);
+
     }
 }

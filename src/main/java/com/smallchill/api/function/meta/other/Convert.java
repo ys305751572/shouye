@@ -1,5 +1,6 @@
 package com.smallchill.api.function.meta.other;
 
+import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.toolbox.Record;
@@ -56,7 +57,13 @@ public class Convert {
             Record record1 = Record.create();
             list.add(record1.set("title",record.get("title" + _i)).set("content" ,(isOpen != null && Integer.parseInt(isOpen.toString()) == 1) ? record.get("content" + _i) : "加入组织成为会员才可查看该信息"));
         }
+        list.add(Record.create().set("title","最近活动").set("content","敬请期待"));
+        list.add(Record.create().set("title","机构日报").set("content","敬请期待"));
         return list;
+    }
+
+    public static List<Button> groupDetailBtnList() {
+        return null;
     }
 
     /**

@@ -2,9 +2,9 @@ package com.smallchill.web.model;
 
 import com.smallchill.core.annotation.BindID;
 import com.smallchill.core.base.model.BaseModel;
+import org.beetl.sql.core.annotatoin.Table;
 
 import javax.persistence.Column;
-import javax.persistence.Table;
 
 /**
  *
@@ -21,6 +21,9 @@ public class Report extends BaseModel {
     @Column(name = "rno")
     private String rno = "";
 
+    @Column(name = "type_id")
+    private Integer typeId;
+
     //类型 1:用户 2:组织 3:内容(活动) 4:内容(非活动) 5:日报 6:杂志
     @Column(name = "type")
     private Integer type;
@@ -30,6 +33,9 @@ public class Report extends BaseModel {
 
     @Column(name = "object_name")
     private String objectName = "";
+
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(name = "status")
     private Integer status;
@@ -46,6 +52,21 @@ public class Report extends BaseModel {
     @Column(name = "update_time")
     private Long updateTime;
 
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public Integer getId() {
         return id;

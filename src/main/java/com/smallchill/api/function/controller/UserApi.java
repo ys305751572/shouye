@@ -108,7 +108,7 @@ public class UserApi extends BaseController implements ConstCache {
             e.printStackTrace();
             return fail();
         }
-        return success(record, "userInfo");
+        return success(record, "userInfoDetail");
     }
 
     /**

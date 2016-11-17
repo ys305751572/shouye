@@ -122,6 +122,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     /**
      * 根据ID查询用户名
+     *
      * @param userId 用户ID
      * @return 用户名
      */
