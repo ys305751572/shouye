@@ -5,6 +5,12 @@
     <title>ECharts</title>
     <!-- 引入 echarts.js -->
     <script src="${basePath}/static/echarts/build/dist/echarts.min.js"></script>
+    <script src="${basePath}/static/laydate/laydate.js"></script>
+    <script src="${basePath}/static/jquery/jquery-2.1.4.min.js"></script>
+    <script src="${basePath}/static/jquery-res/js/jquery.easing.min.js"></script>
+    <script src="${basePath}/static/jquery-res/js/zzsc.js"></script>
+    <link rel="stylesheet" media="screen" href="${basePath}/static/jquery-res/css/zzsc.css" />
+    <link rel="stylesheet" media="screen" href="${basePath}/static/validate/common.css" />
 </head>
 <body>
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
@@ -13,88 +19,124 @@
     <div>增值服务</div>
     <div>手续费</div>
 </div>
-<div style="width: 1355px;height:80px;">
-    <div>
-        <select>
-            <option>日统计</option>
-            <option>1</option>
-            <option>2</option>
-        </select>
-    </div>
-    <div>
-        <select>
-            <option>月统计</option>
-            <option>1</option>
-            <option>2</option>
-        </select>
+<div class="form-group" >
+    <div class="form-group" style="width: 1355px;height:80px;">
+        <label class="col-sm-2 control-label no-padding-right" > 日统计 </label>
+        <div class="col-sm-3">
+            <select name="day" id="day" class="form-control" >
+                <option value=""></option>
+                <option value="1">最近7天</option>
+                <option value="2">最近14天</option>
+                <option value="3">最近30天</option>
+            </select>
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" >月统计</label>
+        <div class="col-sm-3">
+            <select name="month" id="month" class="form-control" >
+                <option value=""></option>
+                <option value="1">今年</option>
+                <option value="2">去年</option>
+            </select>
+        </div>
     </div>
 </div>
 <div id="main" style="width: 1355px;height:555px;"></div>
+
 <script type="text/javascript">
+
+    $(function(){
+
+        $("#day").change(function(){
+            var val = $(this).val();
+            console.log(val);
+
+        });
+
+        $("#month").change(function(){
+            var val = $(this).val();
+            console.log(val);
+
+        });
+
+    });
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
 
-    // 指定图表的配置项和数据
-    option = {
-        tooltip: {
-            trigger: 'axis'
-        },
-        toolbox: {
-            feature: {
-                dataView: {show: true, readOnly: false},
-                magicType: {show: true, type: ['line', 'bar']},
-                restore: {show: true},
-                saveAsImage: {show: true}
-            }
-        },
-        legend: {
-            data:['累积量','增长率']
-        },
-        xAxis: [
-            {
-                type: 'category',
-                data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
-            }
-        ],
-        yAxis: [
-            {
-                type: 'value',
-                name: '水量',
-                min: 0,
-                max: 250,
-                interval: 50,
-                axisLabel: {
-                    formatter: '{value} ml'
-                }
-            },
-            {
-                type: 'value',
-                name: '温度',
-                min: 0,
-                max: 25,
-                interval: 5,
-                axisLabel: {
-                    formatter: '{value} °C'
-                }
-            }
-        ],
-        series: [
-            {
-                name:'累积量',
-                type:'bar',
-                data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
-            },
-            {
-                name:'增长率',
-                type:'line',
-                yAxisIndex: 1,
-                data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
-            }
-        ]
-    };
+    $.post("${ctxPath}/trading/weekRecord").done(function (data) {
+        console.log(data)
+        var a =[],val=[];
+        var myJson = eval("(" + data + ")");
+        console.log(myJson)
+        for(var x in myJson){
+            console.log(myJson[x].key);
+        }
 
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
+
+        myJson.forEach(function (value, key) {
+            a.put(key);
+            val.put(value)
+        });
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            toolbox: {
+                feature: {
+                    dataView: {show: true, readOnly: false},
+                    magicType: {show: true, type: ['line', 'bar']},
+                    restore: {show: true},
+                    saveAsImage: {show: true}
+                }
+            },
+            legend: {
+                data:['累积量','增长率']
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '水量',
+                    min: 0,
+                    max: 250,
+                    interval: 50,
+                    axisLabel: {
+                        formatter: '{value} ml'
+                    }
+                },
+                {
+                    type: 'value',
+                    name: '温度',
+                    min: 0,
+                    max: 25,
+                    interval: 5,
+                    axisLabel: {
+                        formatter: '{value} °C'
+                    }
+                }
+            ],
+            series: [
+                {
+                    name:'累积量',
+                    type:'bar',
+                    data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                },
+                {
+                    name:'增长率',
+                    type:'line',
+                    yAxisIndex: 1,
+                    data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+                }
+            ]
+        });
+    });
+
 </script>
 </body>
 </html>

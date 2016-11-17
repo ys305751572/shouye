@@ -1,12 +1,27 @@
 package com.smallchill.web.controller;
 
 import com.smallchill.common.base.BaseController;
+import com.smallchill.common.pay.util.TimeUtil;
+import com.smallchill.core.interfaces.ILoader;
+import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.support.BladePage;
+import com.smallchill.web.meta.intercept.GroupIntercept;
+import com.smallchill.web.model.GroupExtend;
+import com.smallchill.web.model.Trading;
 import com.smallchill.web.service.TradingService;
+import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 交易流水-交易
@@ -41,6 +56,20 @@ public class TradingController extends BaseController {
         mm.put("code", CODE);
         return BASE_PATH + "trend_chart.html";
     }
+
+    @RequestMapping(value = "/weekRecord")
+    @ResponseBody
+    public Map<String, Double> weekRecord(){
+        try{
+
+            return tradingService.week();
+
+        }catch (RuntimeException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 
 

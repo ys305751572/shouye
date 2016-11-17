@@ -15,3 +15,13 @@ SELECT
   tt.status AS t_status
 FROM tb_trading tt
   LEFT JOIN tb_user_info tui ON tt.user_id = tui.id
+
+record
+===
+SELECT
+  id AS id,
+  date_time AS dataTime,
+  create_time AS createTime,
+  SUM(amount) AS amount
+FROM tb_trading
+GROUP BY date_time

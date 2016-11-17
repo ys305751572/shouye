@@ -49,7 +49,9 @@ public class Trading extends BaseModel{
     @Column(name = "status")
     private Integer status;
 
-    //状态 1:交易成功 2:审核中 3:进行中 4:扣款失败 5:退款成功 6:等待退款 7:退款失败
+    @Column(name = "date_time")
+    private String dateTime;
+
     @Column(name = "create_time")
     private Long createTime;
 
@@ -131,5 +133,13 @@ public class Trading extends BaseModel{
 
     public void setNum(Integer num) {
         this.num = num;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
     }
 }
