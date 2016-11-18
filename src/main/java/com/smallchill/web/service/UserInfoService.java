@@ -1,6 +1,7 @@
 package com.smallchill.web.service;
 
 import com.smallchill.api.common.exception.UserExitsException;
+import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserInfo;
@@ -47,4 +48,12 @@ public interface UserInfoService extends IService<UserInfo> {
      * @param content  内容
      */
     void sendMessage(HttpServletRequest request, String id, Integer send, String sendTime, String title, String content);
+
+    /**
+     * 根据关键字查询用户列表
+     * @param userId
+     * @param keyWord
+     * @return
+     */
+    List<UserVo> findByKeyWord(Integer userId, String keyWord);
 }

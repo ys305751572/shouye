@@ -1,6 +1,7 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
+import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.service.MessageService;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.shiro.ShiroKit;
@@ -365,5 +366,10 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         Group group = this.findFirst(sql, Record.create().set("id", id));
         if (group == null) return "";
         return group.getName();
+    }
+
+    @Override
+    public List<Groupvo> findByKeyWord(Integer userId, String keyword) {
+        return null;
     }
 }
