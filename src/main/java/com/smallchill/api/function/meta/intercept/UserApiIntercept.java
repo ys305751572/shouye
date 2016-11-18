@@ -27,26 +27,28 @@ public class UserApiIntercept extends ApiQueryIntercept {
         BladePage bladePage = (BladePage) ac.getObject();
         List<Map> list = bladePage.getRows();
         Integer userId = Integer.parseInt(getRecord().get("userId").toString());
+
         for (Map record : list) {
+            record.put("status", 1);
             Object statusObj = record.get("status");
-            if(statusObj != null && (Integer.parseInt(statusObj.toString()) == 0)) {
+            if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 0)) {
                 int fromUserId = (int) record.get("from_user_id");
-                if(fromUserId == userId) {
-                    record.put("isjoin","已申请");
+                if (fromUserId == userId) {
+                    record.put("status", 4);
                 }
-                else {
-                    record.put("isjoin", "");
-                }
-            }
-            else {
-                record.put("isjoin", "");
-            }
-            String keyWord = record.get("keyWord").toString();
-            if(StringUtils.isNotBlank(keyWord)) {
-                keyWord = keyWord.replaceAll("\\|","\\/");
-                record.put("keyWord",keyWord);
+            } else if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 1)) {
+                record.put("status", 2);
             }
 
+            Object istatus = record.get("istatus");
+            if (istatus != null && Integer.parseInt(istatus.toString()) == 0) {
+                record.put("status", 3);
+            }
+            String keyWord = record.get("keyWord").toString();
+            if (StringUtils.isNotBlank(keyWord)) {
+                keyWord = keyWord.replaceAll("\\|", "\\/");
+                record.put("keyWord", keyWord);
+            }
             record.put("domain", record.get("domain"));
             record.remove("province");
             record.remove("city");

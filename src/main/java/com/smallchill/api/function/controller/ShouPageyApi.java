@@ -69,7 +69,7 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
                 return shoupageService.listNew(userid);
             }
         });
-        return success(resultMap);
+        return success(resultMap, "newFriend");
     }
 
     /**
@@ -87,7 +87,7 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
                 return shoupageService.listIntereste(userid);
             }
         });
-        return success(resultMap);
+        return success(resultMap,"intereste");
     }
 
     /**

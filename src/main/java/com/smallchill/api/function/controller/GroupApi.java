@@ -63,38 +63,32 @@ public class GroupApi extends BaseController {
     @RequestMapping(value = "/list")
     @ResponseBody
     @Before(GroupPageValidator.class)
-    public String list() {
+    public String list(Integer method, Integer userId) {
         JqGrid page;
-        try {
-            page = apiPaginate("Group.listPage",
-                    new GroupApiIntercept().addRecord(Record.create().set("userId", this.getRequest().getParameter("userId"))),
-                    ExcludeParams.create().set("userId"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return fail();
+        if (method == 1) {
+            // 全部
+            try {
+                page = apiPaginate("Group.listPage",
+                        new GroupApiIntercept().addRecord(Record.create().set("userId", this.getRequest().getParameter("userId"))),
+                        ExcludeParams.create().set("userId").set("method"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return fail();
+            }
         }
-        return success(page);
-    }
+        else {
+            // 猜你喜欢
+            try {
+                UserInfo userInfo = userInfoService.findFirstBy("user_id = #{userId}", Record.create().set("userId", userId));
+                page = apiPaginate("Group.listPage",
+                        new GroupApiIntercept2().addRecord(Record.create().set("userId", userId).set("userInfo", userInfo)),
+                        ExcludeParams.create().set("userId").set("method"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return fail();
+            }
+        }
 
-    /**
-     * 猜您喜欢
-     * 返回组织列表
-     *
-     * @return result
-     */
-    @RequestMapping(value = "/like")
-    @ResponseBody
-    public String like(Integer userId) {
-        JqGrid page;
-        try {
-            UserInfo userInfo = userInfoService.findFirstBy("user_id = #{userId}", Record.create().set("userId", userId));
-            page = apiPaginate("Group.likeListPage",
-                    new GroupApiIntercept2().addRecord(Record.create().set("userId", userId).set("userInfo", userInfo)),
-                    ExcludeParams.create().set("userId"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return fail();
-        }
         return success(page);
     }
 
