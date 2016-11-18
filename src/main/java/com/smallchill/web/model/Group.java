@@ -74,6 +74,35 @@ public class Group extends BaseModel {
     @Column(name = "is_open3")
     private Integer isOpen3;
 
+    //权限类型: 1:公开组织 2:隐藏组织
+    @Column(name = "permissions_type")
+    private Integer permissionsType;
+    //能否申请加入: 1:开放 2:关闭
+    @Column(name = "is_join")
+    private Integer isJoin;
+    //性别限制
+    @Column(name = "sex_limit")
+    private Integer sexLimit;
+    //行业限制
+    @Column(name = "industry_limit")
+    private Integer industryLimit;
+    //领域限制
+    @Column(name = "domain_limit")
+    private Integer domainLimit;
+    //省限制
+    @Column(name = "province_limit")
+    private Integer provinceLimit;
+    //市限制
+    @Column(name = "city_limit")
+    private Integer cityLimit;
+    //职业限制
+    @Column(name = "professional_limit")
+    private Integer professionalLimit;
+    //专业限制
+    @Column(name = "zy_limit")
+    private Integer zyLimit;
+
+
     public Integer getIsOpen1() {
         return isOpen1;
     }
@@ -268,4 +297,77 @@ public class Group extends BaseModel {
     public void setThroughTime(Long throughTime) {
         this.throughTime = throughTime;
     }
+
+    public Integer getPermissionsType() {
+        return permissionsType;
+    }
+
+    public void setPermissionsType(Integer permissionsType) {
+        this.permissionsType = permissionsType;
+    }
+
+    public Integer getIsJoin() {
+        return isJoin;
+    }
+
+    public void setIsJoin(Integer isJoin) {
+        this.isJoin = isJoin;
+    }
+
+    public Integer getSexLimit() {
+        return sexLimit;
+    }
+
+    public void setSexLimit(Integer sexLimit) {
+        this.sexLimit = sexLimit;
+    }
+
+    public Integer getIndustryLimit() {
+        return industryLimit;
+    }
+
+    public void setIndustryLimit(Integer industryLimit) {
+        this.industryLimit = industryLimit;
+    }
+
+    public Integer getDomainLimit() {
+        return domainLimit;
+    }
+
+    public void setDomainLimit(Integer domainLimit) {
+        this.domainLimit = domainLimit;
+    }
+
+    public Integer getProvinceLimit() {
+        return provinceLimit;
+    }
+
+    public void setProvinceLimit(Integer provinceLimit) {
+        this.provinceLimit = provinceLimit;
+    }
+
+    public Integer getCityLimit() {
+        return cityLimit;
+    }
+
+    public void setCityLimit(Integer cityLimit) {
+        this.cityLimit = cityLimit;
+    }
+
+    public Integer getProfessionalLimit() {
+        return professionalLimit;
+    }
+
+    public void setProfessionalLimit(Integer professionalLimit) {
+        this.professionalLimit = professionalLimit;
+    }
+
+    public Integer getZyLimit() {
+        return zyLimit;
+    }
+
+    public void setZyLimit(Integer zyLimit) {
+        this.zyLimit = zyLimit;
+    }
+
 }

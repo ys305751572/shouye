@@ -1,6 +1,8 @@
 package com.smallchill.web.controller;
 
 import com.smallchill.common.base.BaseController;
+import com.smallchill.common.vo.User;
+import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
@@ -29,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -71,6 +74,7 @@ public class GroupController extends BaseController {
     @RequestMapping(KEY_LIST)
     public Object list(HttpServletRequest request) {
         JqGrid object = (JqGrid) paginate(LIST_SOURCE, new GroupIntercept());
+
         List<CaseInsensitiveHashMap> groupList = object.getRows();
 
         //查询结果所有ID
@@ -298,6 +302,20 @@ public class GroupController extends BaseController {
                 groupVo.setTarget(_targat);
 
             }
+            //新增一个组织管理员
+            User user = new User();
+            String pwd = groupVo.getPassword();
+            String salt = ShiroKit.getRandomSalt(5);
+            String pwdMd5 = ShiroKit.md5(pwd, salt);
+            user.setPassword(pwdMd5);
+            user.setSalt(salt);
+            user.setAccount(groupVo.getArtificialPersonMobile());
+            //设置角色为组织管理员
+            user.setDeptid(1);
+            //设置管理员为已审核
+            user.setStatus(1);
+            user.setCreatetime(new Date());
+            Blade.create(User.class).save(user);
             groupService.saveGroup(groupVo);
         }catch (RuntimeException e){
             e.printStackTrace();

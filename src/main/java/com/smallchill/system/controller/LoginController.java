@@ -20,6 +20,11 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.web.model.Group;
+import com.smallchill.web.model.GroupExtend;
+import com.smallchill.web.service.GroupExtendService;
+import com.smallchill.web.service.GroupService;
 import org.apache.shiro.authc.DisabledAccountException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -28,6 +33,7 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,6 +55,11 @@ import com.smallchill.system.meta.intercept.LoginValidator;
 
 @Controller
 public class LoginController extends BaseController implements Const{
+
+	@Autowired
+	GroupService groupService;
+	@Autowired
+	GroupExtendService groupExtendService;
 
 	private static Logger log = LoggerFactory.getLogger(LoginController.class);
 
@@ -101,6 +112,15 @@ public class LoginController extends BaseController implements Const{
 		return error("未知错误,请联系管理员");
 	}
 	doLog(ShiroKit.getSession(), "登录");
+
+	//根据账号查询组织
+	GroupExtend groupExtend = groupExtendService.findFirstBy("artificial_person_mobile = #{account}", Record.create().set("account", account));
+	if(groupExtend!=null && groupExtend.getGroupId()!=null){
+		Group group = groupService.findById(groupExtend.getGroupId());
+		if(group!=null){
+			ShiroKit.getSession().setAttribute("groupAdmin",group);
+		}
+	}
 	return success("登录成功");
 	}
 

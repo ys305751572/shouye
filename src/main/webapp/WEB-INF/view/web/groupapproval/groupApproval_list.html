@@ -1,0 +1,262 @@
+@layout("/common/_curd/_container.html"){
+
+<script type="text/javascript">
+    var ctx="${basePath}";
+    var grid_selector = "#grid-table";
+    var pager_selector = "#grid-pager";
+    var hidden = 1;
+    $(function(){
+        initGrid();
+        initMenuBtn("btns","${code}");
+    });
+
+    function initGrid(){
+        var grid_url = ctx+"/${code}/list";//查询列表接口
+        var _colnames=[
+            "序列",
+            "名字",
+            "性别",
+            "年龄",
+            "地区",
+            "毕业院校",
+            "事业状态",
+            "行业领域",
+            "职业",
+            "专业",
+            "擅长",
+            "资历",
+            "资源",
+            "组织名称",
+            "组织类型",
+            "产品服务",
+            "行业地位",
+            "资质",
+            "个人关键字",
+//            "发布",
+            "加入方式",
+            "验证信息",
+            "状态",
+            "申请时间",
+            "操作"
+        ];
+        var _colmodel=[
+            {name:"id",index:"id", width:80,hidden:true},
+            {name:"userName",index:"userName", width:120},
+            {name:"gender",index:"gender", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    if(cellvalue==1){
+                        return "男";
+                    }else {
+                        return "女";
+                    }
+                }
+            },
+            {name:"age",index:"age", width:100},
+            {name:"provinceCity",index:"provinceCity", width:100},
+            {name:"school",index:"school", width:200},
+            {name:"career",index:"career", width:200},
+            {name:"domain",index:"domain", width:200},
+            {name:"professional",index:"professional", width:200},
+            {name:"zy",index:"zy", width:140},
+            {name:"sc",index:"sc", width:120},
+            {name:"zl",index:"zl", width:120},
+            {name:"zy2",index:"zy2", width:120},
+            {name:"groupName",index:"groupName", width:120},
+            {name:"groupType",index:"groupType", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    if(cellvalue==1){
+                        return "行业协会";
+                    }else if(cellvalue==2){
+                        return "校友会";
+                    }else if(cellvalue==3){
+                        return "兴趣组织";
+                    }else if(cellvalue==4){
+                        return "公益机构";
+                    }else if(cellvalue==5){
+                        return "文化沙龙";
+                    }
+                }
+            },
+            {name:"productType",index:"productType", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    if(cellvalue==1){
+                        return "产品";
+                    }else {
+                        return "服务";
+                    }
+
+                }
+            },
+            {name:"industryRanking",index:"industryRanking", width:120},
+            {name:"qualification",index:"qualification", width:220},
+            {name:"keyWord",index:"keyWord", width:120},
+            {name:"approvalType",index:"approvalType", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    if(cellvalue==1){
+                        return "主动申请";
+                    }else {
+                        return "组织邀请";
+                    }
+                }
+            },
+            {name:"validateInfo",index:"validateInfo", width:220},
+            {name:"approvalStatus",index:"approvalStatus", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    if(cellvalue==1){
+                        return "未处理";
+                    }else if(cellvalue==2){
+                        //主动申请
+                        return "批准";
+                    }else if(cellvalue==3){
+                        return "拒绝";
+                    }else if(cellvalue==4){
+                        return "拉黑";
+                    }else if(cellvalue==5){
+                        //邀请加入
+                        return "同意加入";
+                    }
+                }
+            },
+            {name:"createTime",index:"createTime", width:150},
+            {
+                width: 300,
+                formatter: function (cellvalue, options, rowObject) {
+                    var id = rowObject.id;
+                    var status = rowObject.approvalStatus;
+
+                    var approval = "<button title='批准' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"updateStatus(\'" + id + "\',\'" + 2 + "\')\">" +
+                            "<i class='fa fa-circle-o'></i> 批准</button>";
+
+                    var refused = "<button title='拒绝' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"updateStatus(\'" + id + "\',\'" + 3 + "\')\">" +
+                            "<i class='fa fa-circle-o'></i> 拒绝</button>";
+
+                    var shielding = "<button title='拉黑' class='btn btn-primary btn-circle edit' onclick=\"updateStatus(\'" + id + "\',\'" + 4 + "\')\">" +
+                            "<i class='fa fa-circle'></i> 拉黑</button>";
+
+                    var removeShielding = "<button title='移除拉黑' class='btn btn-primary btn-circle edit' onclick=\"updateStatus(\'" + id + "\',\'" + 1 + "\')\">" +
+                            "<i class='fa fa-circle'></i> 移除拉黑</button>";
+
+                    if (status == "1") {
+                        return  approval + "&nbsp;" + refused + "&nbsp;" + shielding ;
+                    } else if(status == "4"){
+                        return removeShielding;
+                    }else {
+                        return "/";
+                    }
+
+                }
+            }
+
+        ];
+
+        jQuery(grid_selector).jqGrid({
+            url:grid_url,
+//            shrinkToFit:true,//适用于较少字段,响应式
+            autowidth : true,
+            forceFit : true,
+            colNames:_colnames,
+            colModel:_colmodel,
+            jsonReader:{id:"id"},
+            pager : pager_selector,
+            postData: {sort: "id", order: "asc"}
+        });
+
+    }
+
+    function date_format(data){
+        var d = new Date(data);    //根据时间戳生成的时间对象
+
+        var date = (d.getFullYear()) + "-" +
+                (d.getMonth() + 1) + "-" +
+                (d.getDate()) + " " +
+                (d.getHours()) + ":" +
+                (d.getMinutes()) + ":" +
+                (d.getSeconds());
+        return date;
+    }
+
+    function updateStatus(id,status){
+        var str = "";
+        if(status==1){
+            str = "确定将该用户移除黑名单吗?";
+        }else if(status==2){
+            str = "确定批准该用户的申请吗?"
+        }else if(status==3){
+            str = "确定拒绝该用户的申请吗?"
+        }else if(status==4){
+            str = "确定拉黑该用户吗?"
+        }
+
+        //询问框
+        layer.confirm(str, {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.post(
+                    "${basePath}/${code}/updateStatus",
+                    {id:id,status:status},
+                    function (data){
+                        if(data.code===0){
+                            $jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+                            layer.msg('成功', {
+                                time: 1000 //1s后自动关闭
+                            });
+                        }else {
+                            layer.msg('错误', {
+                                time: 1000
+                            });
+                        }
+                    }, "json"
+            );
+        });
+    }
+
+</script>
+
+
+<!-- 配置grid -->
+<div class="row">
+    <div class="col-xs-12 tb-grid">
+        <!-- 配置查询 -->
+        @ var _col=[
+        @			  {name:"加入方式",index:"approvalType", type:"select_925"},
+        @			  {name:"审核状态",index:"approvalStatus", type:"select_924"}
+        @		   ];
+        @ include("/common/_function/_search.html",{"col":_col}){}
+        <!-- 按钮组 -->
+        <div class="welljq well-sm" id="btns"></div>
+        <div class="welljq well-sm" id="columns">
+            <input type="checkbox" value="userName" class="cbox" checked="checked" disabled="disabled"/>名字
+            <input type="checkbox" value="gender" class="cbox" checked="checked"/>性别
+            <input type="checkbox" value="age" class="cbox" checked="checked"/>年龄
+            <input type="checkbox" value="provinceCity" class="cbox" checked="checked"/>地区
+            <input type="checkbox" value="school" class="cbox" checked="checked"/>毕业院校
+            <input type="checkbox" value="career" class="cbox" checked="checked"/>事业状态
+            <input type="checkbox" value="domain" class="cbox" checked="checked"/>行业领域
+            <input type="checkbox" value="professional" class="cbox" checked="checked"/>职业
+            <input type="checkbox" value="zy" class="cbox" checked="checked"/>专业
+            <input type="checkbox" value="sc" class="cbox" checked="checked"/>擅长
+            <input type="checkbox" value="zl" class="cbox" checked="checked"/>资历
+            <input type="checkbox" value="zy2" class="cbox" checked="checked"/>资源
+            <input type="checkbox" value="groupName" class="cbox" checked="checked"/>组织名称
+            <input type="checkbox" value="groupType" class="cbox" checked="checked"/>组织类型
+            <input type="checkbox" value="productType" class="cbox" checked="checked"/>产品服务
+            <input type="checkbox" value="industryRanking" class="cbox" checked="checked"/>行业地位
+            <input type="checkbox" value="qualification" class="cbox" checked="checked"/>资质
+            <input type="checkbox" value="keyWord" class="cbox" checked="checked"/>个人关键字
+            <input type="checkbox" value="approvalType" class="cbox" checked="checked"/>加入方式
+            <input type="checkbox" value="validateInfo" class="cbox" checked="checked"/>验证信息
+            <input type="checkbox" value="approvalStatus" class="cbox" checked="checked"/>状态
+            <input type="checkbox" value="createTime" class="cbox" checked="checked"/>申请时间
+        </div>
+        <!-- grid -->
+        <table id="grid-table"></table>
+        <!-- 分页 -->
+        <div id="grid-pager"></div>
+    </div>
+</div>
+
+<!-- 引入列表页所需js -->
+@include("/common/_listscript.html"){}
+<link rel="stylesheet" href="${basePath}/static/zTree/css/zTreeStyle/zTreeStyle.css" />
+<script src="${basePath}/static/zTree/js/jquery.ztree.core.js" type="text/javascript" ></script>
+@}

@@ -64,7 +64,7 @@ var exwhere;
     tmsp_btn.prototype.itemClick = function () {
         var ids = getGridXls().join(",");
         var rows = getGridXls().length;
-        var rowData=getRowData();
+        var rowData = getRowData();
         var split = "/";
         console.log(this.alias);
         console.log(ids);
@@ -72,12 +72,13 @@ var exwhere;
 
         //加载(默认加载组织功能)
         if (this.alias == "load") {
-            if (rows > 1) {
-                layer_alert('只能选择一条数据!', "warn");
-                return;
-            }
-            var url = this.url;
-            this.open(url + split + ids, ids);
+            this.open(this.url);
+            return;
+        }
+
+        //权限设置
+        if (this.alias == "permissions") {
+            this.open(this.url);
             return;
         }
 

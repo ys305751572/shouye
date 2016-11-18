@@ -1,0 +1,176 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form class="form-horizontal" role="form">
+    <div class="space-4"></div>
+    <!-- #section:elements.form -->
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 是否公开组织 </label>
+        <div class="col-sm-8">
+            <label><input type="radio" name="permissionsType" class="rdo" checked value="0">公开组织</label>
+            <label><input type="radio" name="permissionsType" class="rdo" value="1">隐藏组织</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 是否开放申请 </label>
+        <div class="col-sm-8">
+            <label><input type="radio" name="isJoin" class="rdo" checked value="0">开放组织</label>
+            <label><input type="radio" name="isJoin" class="rdo" value="1">关闭组织</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 会员费用 </label>
+        <div class="col-sm-8">
+            <input type="text" name="cost" id="cost" placeholder="" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 会员期限 </label>
+        <div class="col-sm-8">
+            <label><input type="radio" name="costType" class="rdo" checked value="1">年费</label>
+            <label><input type="radio" name="costType" class="rdo" value="2">永久</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 性别限制 </label>
+        <div class="col-sm-8">
+            <select class="form-control" id="sex_limit" name="sex_limit" >
+                <option value="0">不限</option>
+                <option value="1">男</option>
+                <option value="2">女</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" >行业限制</label>
+        <div class="col-sm-3">
+            <select name="industry_limit" id="industry_limit" class="form-control">
+                <option value="0">不限</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" >领域限制</label>
+        <div class="col-sm-3">
+            <select name="domain_limit" id="domain_limit" class="form-control">
+                <option value="0">不限</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" >所在省</label>
+        <div class="col-sm-3">
+            <select name="province_limit" id="province_limit" class="form-control">
+                <option value="0">不限</option>
+                <option value="1">省</option>
+            </select>
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" >所在市</label>
+        <div class="col-sm-3">
+            <select name="city_limit" id="city_limit" class="form-control">
+                <option value="0">不限</option>
+                <option value="1">市</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" >职业限制</label>
+        <div class="col-sm-3">
+            <select name="professional_limit" id="professional_limit" class="form-control">
+                <option value="0">不限</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" >专业限制</label>
+        <div class="col-sm-3">
+            <select name="zy_limit" id="zy_limit" class="form-control">
+                <option value="0">不限</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+        <div class="col-md-offset-1 col-md-10">
+            <button class="btn btn-info" type="button" id="btn_save">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                确认
+            </button>
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn" type="button" id="btn_close">
+                <i class="ace-icon fa fa-close bigger-110"></i>
+                关闭
+            </button>
+        </div>
+    </div>
+
+    <script src="${basePath}/static/laydate/laydate.js"></script>
+    <script type="text/javascript">
+
+        var layerIndex = parent.layer.getFrameIndex(window.name);
+        $(function(){
+
+            $("#btn_close").bind("click",function(){
+                parent.layer.close(layerIndex);
+            });
+
+            $("#btn_save").bind("click",function(){
+                //是否公开组织
+                var permissionsType = $("input[name='permissionsType']:checked").val();
+                //是否开放申请
+                var isJoin = $("input[name='isJoin']:checked").val();
+                //会员费用类型
+                var costType = $("input[name='costType']:checked").val();
+                //会员费用
+                var cost = $("#cost").val();
+
+                var sexLimit = $("#sex_limit").val();
+                var industryLimit = $("#industry_limit").val();
+                var domainLimit = $("#domain_limit").val();
+                var provinceLimit = $("#province_limit").val();
+                var cityLimit = $("#city_limit").val();
+                var professionalLimit = $("#professional_limit").val();
+                var zyLimit = $("#zy_limit").val();
+
+                $.post(
+                        "${basePath}/${code}/permission_setting",
+                        {
+                            permissionsType:permissionsType ,
+                            isJoin:isJoin,
+                            costType:costType,
+                            cost:cost,
+                            sexLimit:sexLimit,
+                            industryLimit:industryLimit,
+                            domainLimit:domainLimit,
+                            provinceLimit:provinceLimit,
+                            cityLimit:cityLimit,
+                            professionalLimit:professionalLimit,
+                            zyLimit:zyLimit
+                        },
+                        function(data){
+                            if(data.code===0){
+                                parent.$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+                                parent.layer.close(layerIndex);
+                            }
+                            else{
+                                layer_alert("设置失败", "error");
+                            }
+                        },
+                        "json"
+                );
+
+            });
+
+        })
+
+    </script>
+
+    <div class="space-4"></div>
+</form>
+@}

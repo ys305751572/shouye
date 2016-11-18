@@ -54,6 +54,9 @@ public class GroupExtend extends BaseModel {
     private Integer cost = 0;
     @Column(name = "cost_status")
     private Integer costStatus;
+    //1:年费 2:永久
+    @Column(name = "cost_type")
+    private Integer costType;
 
     public Integer getCost() {
         return cost;
@@ -199,5 +202,13 @@ public class GroupExtend extends BaseModel {
 
     public void setFreezeStatus(Integer freezeStatus) {
         this.freezeStatus = freezeStatus;
+    }
+
+    public Integer getCostType() {
+        return costType;
+    }
+
+    public void setCostType(Integer costType) {
+        this.costType = costType;
     }
 }
