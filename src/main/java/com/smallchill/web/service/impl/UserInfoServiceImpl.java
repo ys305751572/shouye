@@ -7,6 +7,7 @@ import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.UserDomain;
 import com.smallchill.api.function.modal.UserInterest;
 import com.smallchill.api.function.modal.UserProfessional;
+import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.UserDomainService;
 import com.smallchill.api.function.service.UserInterestService;
 import com.smallchill.api.function.service.UserprofessionalService;
@@ -451,5 +452,10 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             }
             System.out.println("----ids----");
         }
+    }
+
+    @Override
+    public List<UserVo> findByKeyWord(Integer userId, String keyWord) {
+        return null;
     }
 }

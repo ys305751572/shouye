@@ -2,9 +2,12 @@ package com.smallchill.api.function.meta.other;
 
 import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.vo.Groupvo;
+import com.smallchill.api.function.modal.vo.SearchResult;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserInfo;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.CaseInsensitiveMap;
+import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,14 +54,14 @@ public class Convert {
      */
     public static List<Record> recordToGroupDetail(Record record) {
         List<Record> list = new ArrayList<>();
-        int[] index = new int[]{1,2,3};
-        for (int _i : index){
+        int[] index = new int[]{1, 2, 3};
+        for (int _i : index) {
             Object isOpen = record.get("is_open" + _i);
             Record record1 = Record.create();
-            list.add(record1.set("title",record.get("title" + _i)).set("content" ,(isOpen != null && Integer.parseInt(isOpen.toString()) == 1) ? record.get("content" + _i) : "加入组织成为会员才可查看该信息"));
+            list.add(record1.set("title", record.get("title" + _i)).set("content", (isOpen != null && Integer.parseInt(isOpen.toString()) == 1) ? record.get("content" + _i) : "加入组织成为会员才可查看该信息"));
         }
-        list.add(Record.create().set("title","最近活动").set("content","敬请期待"));
-        list.add(Record.create().set("title","机构日报").set("content","敬请期待"));
+        list.add(Record.create().set("title", "最近活动").set("content", "敬请期待"));
+        list.add(Record.create().set("title", "机构日报").set("content", "敬请期待"));
         return list;
     }
 
@@ -68,13 +71,33 @@ public class Convert {
 
     /**
      * 登录之后返回用户基本信息
+     *
      * @param userInfo 用户基本信息
      * @return record
      */
     public static Record userInfoToRecord(UserInfo userInfo) {
-        Record record = Record.create().set("username",userInfo.getUsername())
-                .set("userId",userInfo.getUserId()).set("avater",userInfo.getAvater())
-                .set("per",userInfo.getPer());
+        Record record = Record.create().set("username", userInfo.getUsername())
+                .set("userId", userInfo.getUserId()).set("avater", userInfo.getAvater())
+                .set("per", userInfo.getPer());
         return record;
+    }
+
+    /**
+     * 关键字搜索
+     * 用户传换为searchresult
+     *
+     * @param groupList 组织列表
+     */
+    public static void recordToSearchResult(List<CaseInsensitiveHashMap> groupList) {
+        if (groupList != null && groupList.size() > 0) {
+            for (CaseInsensitiveHashMap map : groupList) {
+                Object status = map.get("status");
+                if (status == null) {
+                    map.put("status", 1);
+                } else {
+                    map.put("status", 2);
+                }
+            }
+        }
     }
 }
