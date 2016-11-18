@@ -56,7 +56,7 @@ public class UserApiIntercept extends ApiQueryIntercept {
 
             record.remove("from_user_id");
             record.remove("to_user_id");
-            record.remove("status");
+            record.remove("istatus");
         }
     }
 }
