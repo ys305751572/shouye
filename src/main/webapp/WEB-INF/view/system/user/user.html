@@ -18,21 +18,9 @@
 
 	function initGrid(){
 		var grid_url = ctx+"/${code}/list";//查询列表接口
-		var _colnames=[ "序列","账户", "姓名","姓名","姓名","姓名","姓名","姓名","姓名","姓名","姓名","姓名","姓名","姓名","姓名","性别","角色ID","角色","部门", "邮箱","电话","创建时间","状态"];
+		var _colnames=[ "序列","账户", "姓名","性别","角色ID","角色","部门", "邮箱","电话","创建时间","状态"];
 		var _colmodel=[   {name:"ID",index:"ID", width:80,hidden:true},
 						  {name:"ACCOUNT",index:"ACCOUNT", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-			              {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
-						  {name:"NAME",index:"NAME", width:80},
 						  {name:"NAME",index:"NAME", width:80},
 						  {name:"SEXNAME",index:"SEX", width:50},
 						  {name:"ROLEID",index:"ROLEID", width:50,hidden:true},
@@ -44,7 +32,7 @@
 						  {name:"STATUSNAME",index:"STATUS", width:50,disable : false}
 						];
 
-		list = list.append(_colmodel);
+//		list = list.append(_colmodel);
 
 		jQuery(grid_selector).jqGrid({
 			url:grid_url,
@@ -105,7 +93,7 @@
 			@		  	{name:"电话",index:"PHONE",type:"text"},
 			@			{name:"状态",index:"STATUS",type:"select_901"}
 			@		   ];
-			@ include("/common/_function/_search_list.html",{"col":_col}){}
+			@ include("/common/_function/_search.html",{"col":_col}){}
 			<!-- 按钮组 -->
 			<div class="welljq well-sm" id="btns"></div>
 			<div class="welljq well-sm" id="columns">
