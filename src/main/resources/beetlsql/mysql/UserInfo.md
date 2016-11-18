@@ -76,7 +76,10 @@ select
 from tb_user_info ui
 LEFT JOIN tb_user_approval ua ON ((ui.user_id = ua.from_user_id OR ui.user_id = ua.to_user_id) AND (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId})) 
 @if(!isEmpty(groupId)){
-    RIGHT JOIN tb_user_group ug ON  (ug.user_id = ui.user_id)
+    RIGHT JOIN tb_user_group ug ON  (ug.user_id = ui.user_id and ug.group_id = #{groupId})
+@}
+@if(!isEmpty(history)) {
+    RIGHT JOIN tb_group_user_record gur ON (ui.user_id = gur.to_user_id and gur.group_id = #{groupId} and gur.user_id = #{userId})
 @}
 LEFT JOIN tb_interest_user i ON (i.to_user_id = ui.user_id AND i.status = 0)
 

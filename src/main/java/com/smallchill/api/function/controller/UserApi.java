@@ -45,6 +45,7 @@ public class UserApi extends BaseController implements ConstCache {
     private UserInterestService userInterestService;
     @Autowired
     private GroupInterestService groupInterestService;
+
     /**
      * 全局用户列表
      *
@@ -76,8 +77,10 @@ public class UserApi extends BaseController implements ConstCache {
         JqGrid jqGrid;
         try {
             jqGrid = apiPaginate(LIST_SOURCE
-                    , new UserApiIntercept().addRecord(Record.create().set("userId", this.getRequest().getParameter("userId"))),
-                    ExcludeParams.create().set("userId"));
+                    , new UserApiIntercept().addRecord(Record.create().set("userId", this.getRequest().getParameter("userId"))
+                    .set("groupId", this.getRequest().getParameter("groupId"))
+                    .set("history", this.getRequest().getParameter("history"))),
+                    ExcludeParams.create().set("userId").set("groupId").set("history"));
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
@@ -87,21 +90,23 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 查询用户详情
+     *
      * @param userId
      * @param toUserId
      * @return
      */
     @RequestMapping(value = "/userInfo")
     @ResponseBody
-    public String userInfo(Integer userId, Integer toUserId) {
+    public String userInfo(Integer userId, Integer toUserId, Integer groupId) {
         Record record;
         final int userid = userId;
         final int toUserid = toUserId;
+        final int groupid = groupId;
         try {
             record = CacheKit.get(DIY_CACHE, CACHE_KEY + userId + "_" + toUserId, new ILoader() {
                 @Override
                 public Object load() {
-                    return userInfoService.findUserInfoDetail(userid, toUserid);
+                    return userInfoService.findUserInfoDetail(userid, toUserid, groupid);
                 }
             });
         } catch (Exception e) {
@@ -185,6 +190,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 用户-感兴趣
+     *
      * @param ui
      * @return result
      */
@@ -197,8 +203,7 @@ public class UserApi extends BaseController implements ConstCache {
         UserInterest userInterest = userInterestService.findFirstBy(where, record);
         if (userInterest != null) {
             userInterestService.updateBy("status = 0", where, record);
-        }
-        else {
+        } else {
             userInterest = new UserInterest();
             userInterest.setStatus(0);
             userInterest.setUserId(ui.getUserId());
@@ -211,6 +216,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 用户-取消感兴趣
+     *
      * @param ui
      * @return
      */
@@ -232,6 +238,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 组织-感兴趣
+     *
      * @param gi
      * @return
      */
@@ -245,8 +252,7 @@ public class UserApi extends BaseController implements ConstCache {
         GroupInterest groupInterest = groupInterestService.findFirstBy(where, record);
         if (groupInterest != null) {
             groupInterestService.updateBy("status = 0", where, record);
-        }
-        else {
+        } else {
             groupInterest = new GroupInterest();
             groupInterest.setStatus(0);
             groupInterest.setUserId(gi.getUserId());
@@ -259,6 +265,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 组织-取消感兴趣
+     *
      * @param gi gi
      * @return result
      */

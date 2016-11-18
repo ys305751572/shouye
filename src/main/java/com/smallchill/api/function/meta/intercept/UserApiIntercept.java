@@ -20,6 +20,8 @@ public class UserApiIntercept extends ApiQueryIntercept {
     @Override
     public void queryBefore(AopContext ac) {
         setParma("userId", ac);
+        setParma("groupId", ac);
+        setParma("history", ac);
     }
 
     @Override

@@ -3,11 +3,9 @@ package com.smallchill.web.service.impl;
 import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.function.meta.other.ButtonRegister;
 import com.smallchill.api.function.meta.other.Convert;
-import com.smallchill.api.function.modal.Button;
-import com.smallchill.api.function.modal.UserDomain;
-import com.smallchill.api.function.modal.UserInterest;
-import com.smallchill.api.function.modal.UserProfessional;
+import com.smallchill.api.function.modal.*;
 import com.smallchill.api.function.modal.vo.UserVo;
+import com.smallchill.api.function.service.GroupUserRecordService;
 import com.smallchill.api.function.service.UserDomainService;
 import com.smallchill.api.function.service.UserInterestService;
 import com.smallchill.api.function.service.UserprofessionalService;
@@ -56,6 +54,9 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Autowired
     private UserInterestService userInterestService;
+
+    @Autowired
+    private GroupUserRecordService groupUserRecordService;
 
     @Transactional
     @Override
@@ -107,7 +108,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     }
 
     @Override
-    public Record findUserInfoDetail(Integer userId, Integer toUserId) {
+    public Record findUserInfoDetail(Integer userId, Integer toUserId, Integer groupId) {
         String sql = Blade.dao().getScript("UserInfo.userInfoDetail").getSql();
         Record record = Db.init().selectOne(sql, Record.create().set("userId", userId));
 
@@ -118,7 +119,24 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             System.out.println(btn.toString());
         }
         record.set("btnList", list);
+
+        saveGroupUserRecord(userId, toUserId, groupId);
         return record;
+    }
+
+    /**
+     * 保存组织用户查询历史记录
+     *
+     * @param toUserId 被查询用户ID
+     * @param groupId  组织ID
+     */
+    private void saveGroupUserRecord(Integer userId, Integer toUserId, Integer groupId) {
+        GroupUserRecord gur = new GroupUserRecord();
+        gur.setGroupId(groupId);
+        gur.setUserId(userId);
+        gur.setToUserId(toUserId);
+        gur.setCreateTime(DateTimeKit.nowLong());
+        groupUserRecordService.save(gur);
     }
 
     /**

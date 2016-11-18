@@ -22,7 +22,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     Record findUserInfoDetail(Integer userId);
 
-    Record findUserInfoDetail(Integer userId, Integer toUserId);
+    Record findUserInfoDetail(Integer userId, Integer toUserId,Integer groupId);
 
     String findUsernameByUserId(Integer userId);
 

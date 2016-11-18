@@ -75,8 +75,7 @@ public class GroupApi extends BaseController {
                 e.printStackTrace();
                 return fail();
             }
-        }
-        else {
+        } else {
             // 猜你喜欢
             try {
                 UserInfo userInfo = userInfoService.findFirstBy("user_id = #{userId}", Record.create().set("userId", userId));
