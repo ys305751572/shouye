@@ -26,27 +26,27 @@
         var _colmodel=[
             {name:"id",index:"id", width:80,hidden:true},
             {name:"orderNo",index:"orderNo", width:120},
-            {name:"g_name",index:"t_type", width:220},
-            {name:"amount",index:"amount", width:120},
-            {name:"poundage",index:"poundage", width:120},
+            {name:"g_name",index:"g_name", width:220},
+            {name:"amount",index:"amount", width:120,
+                formatter: function(cellvalue, options, rowObject) {
+                    return cellvalue+"￥";
+                }
+            },
+            {name:"poundage",index:"poundage", width:120,
+                formatter: function(cellvalue, options, rowObject) {
+                    return cellvalue+"￥";
+                }
+            },
             {
                 formatter: function(cellvalue, options, rowObject) {
                     var amount = rowObject.amount;
                     var poundage = rowObject.poundage;
-                    return amount-poundage;
+                    var result = amount-poundage;
+                    return result+"￥";
                 }
             },
             {name:"bank",index:"bank", width:100},
-            {name:"createTime",index:"createTime", width:140,
-                formatter: function(cellvalue, options, rowObject) {
-                    if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
-                        return "";
-                    }else {
-                        return date_format(cellvalue)
-                    }
-
-                }
-            },
+            {name:"createTime",index:"createTime", width:140},
             {name:"w_type",index:"w_type", width:120,
                 formatter: function(cellvalue, options, rowObject) {
                     //1:交易成功 2:处理中 3:提现失败
@@ -95,13 +95,14 @@
     <div class="col-xs-12 tb-grid">
         <!-- 配置查询 -->
         @ var _col=[
-        @			  {name:"组织类型",index:"type", type:"select_908"},
-        @			  {name:"入会费",index:"costStaus", type:"select_917"},
-        @			  {name:"状态",index:"freezeStatus", type:"select_902"}
+        @			  {name:"订单编号",index:"orderNo_like", type:"text"},
+        @			  {name:"组织名称",index:"g_name_like", type:"text"},
+        @			  {name:"提现状态",index:"w_type", type:"select_923"},
+        @			  {name:"起始日期",index:"createTime_dategt", type:"date"},
+        @			  {name:"结束日期",index:"createTime_datelt", type:"date"}
         @		   ];
         @ include("/common/_function/_search.html",{"col":_col}){}
         <!-- 按钮组 -->
-        <div class="welljq well-sm" id="btns"></div>
         <!-- grid -->
         <table id="grid-table"></table>
         <!-- 分页 -->

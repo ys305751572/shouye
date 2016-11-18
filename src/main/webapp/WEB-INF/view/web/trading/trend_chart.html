@@ -63,10 +63,12 @@
     var myChart = echarts.init(document.getElementById('main'));
 
     $.post("${ctxPath}/trading/weekRecord").done(function (data) {
-        console.log(data)
+        console.log(data);
+        var list = JSON.parse(data);
+        console.log(list);
         var a =[],val=[];
         var myJson = eval("(" + data + ")");
-        console.log(myJson)
+        console.log(myJson);
         for(var x in myJson){
             console.log(myJson[x].key);
         }

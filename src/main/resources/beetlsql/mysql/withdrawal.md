@@ -7,7 +7,7 @@ SELECT
   tw.amount AS amount,
   tw.poundage AS poundage,
   tw.bank AS bank,
-  tw.create_time AS createTime,
+  DATE_FORMAT(FROM_UNIXTIME(tw.create_time/1000),'%Y-%m-%d') AS createTime,
   tw.type AS w_type
 FROM tb_withdrawal tw
   LEFT JOIN tb_group tg ON tw.group_id = tg.id

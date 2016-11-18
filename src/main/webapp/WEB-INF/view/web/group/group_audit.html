@@ -2,8 +2,8 @@
 
 <script type="text/javascript">
     var ctx="${basePath}";
-    var grid_selector = "#grid-table1";
-    var pager_selector = "#grid-pager1";
+    var grid_selector = "#grid-table";
+    var pager_selector = "#grid-pager";
     var hidden = 1;
     $(function(){
         initGrid();
@@ -126,6 +126,19 @@
 
     }
 
+    function date_format(data){
+        var d = new Date(data);    //根据时间戳生成的时间对象
+
+        var date = (d.getFullYear()) + "-" +
+                (d.getMonth() + 1) + "-" +
+                (d.getDate()) + " " +
+                (d.getHours()) + ":" +
+                (d.getMinutes()) + ":" +
+                (d.getSeconds());
+        return date;
+    }
+
+
     function audit(id,status){
         $.post("${basePath}/group/audit_status",{id:id , status:status}, function(data){
             if(data.code===0){
@@ -146,7 +159,7 @@
         @ var _col1=[
         @			  {name:"审核状态",index:"a_status", type:"select_911"}
         @		   ];
-        @ include("/common/_function/_search_double_page.html",{"_col":_col1}){}
+        @ include("/common/_function/_search.html",{"col":_col1}){}
         <div class="welljq well-sm" id="columns">
             <input type="checkbox" value="avater" class="cbox" checked="checked" disabled="disabled"/>头像
             <input type="checkbox" value="idcard" class="cbox" checked="checked"/>组织ID
@@ -159,9 +172,9 @@
             <input type="checkbox" value="updateTime" class="cbox" checked="checked"/>状态改变时间
         </div>
         <!-- grid -->
-        <table id="grid-table1"></table>
+        <table id="grid-table"></table>
         <!-- 分页 -->
-        <div id="grid-pager1"></div>
+        <div id="grid-pager"></div>
     </div>
 </div>
 

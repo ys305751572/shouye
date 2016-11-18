@@ -35,7 +35,7 @@
                         return "会员费";
                     }else if(cellvalue==2) {
                         return "报名费";
-                    }else if(cellvalue==2) {
+                    }else if(cellvalue==3) {
                         return "熟人上限";
                     }else {
                         return "感兴趣上限(对人)";
@@ -43,7 +43,16 @@
                 }
             },
             {name:"num",index:"num", width:100},
-            {name:"amount",index:"amount", width:120},
+            {name:"amount",index:"amount", width:120,
+                formatter: function(cellvalue, options, rowObject) {
+                    var flow = rowObject.flow;
+                    if(flow==1){
+                        return "+"+cellvalue+"￥";
+                    }else {
+                        return "-"+cellvalue+"￥";
+                    }
+                }
+            },
             {name:"flow",index:"flow", width:100,
                 formatter: function(cellvalue, options, rowObject) {
                     if(cellvalue==1){
@@ -65,16 +74,7 @@
                 }
             },
             {name:"mobile",index:"mobile", width:120},
-            {name:"createTime",index:"createTime", width:140,
-                formatter: function(cellvalue, options, rowObject) {
-                    if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
-                        return "";
-                    }else {
-                        return date_format(cellvalue);
-                    }
-
-                }
-            },
+            {name:"createTime",index:"createTime", width:140},
             {name:"t_status",index:"t_status", width:120,
                 formatter: function(cellvalue, options, rowObject) {
                     //状态 1:交易成功 2:审核中 3:进行中 4:扣款失败 5:退款成功 6:等待退款 7:退款失败
@@ -134,19 +134,21 @@
 
 </script>
 
-
 <!-- 配置grid -->
 <div class="row">
     <div class="col-xs-12 tb-grid">
         <!-- 配置查询 -->
         @ var _col=[
-        @			  {name:"交易类型",index:"type", type:"select_908"},
-        @			  {name:"入会费",index:"costStaus", type:"select_917"},
-        @			  {name:"状态",index:"freezeStatus", type:"select_902"}
+        @			  {name:"手机号码",index:"mobile_like", type:"text"},
+        @			  {name:"订单编号",index:"orderNo_like", type:"text"},
+        @			  {name:"交易类型",index:"t_type", type:"select_919"},
+        @			  {name:"资金流向",index:"flow", type:"select_920"},
+        @			  {name:"支付平台",index:"platform", type:"select_921"},
+        @			  {name:"交易状态",index:"t_status", type:"select_922"},
+        @			  {name:"起始日期",index:"createTime_dategt", type:"date"},
+        @			  {name:"结束日期",index:"createTime_datelt", type:"date"}
         @		   ];
         @ include("/common/_function/_search.html",{"col":_col}){}
-        <!-- 按钮组 -->
-        <div class="welljq well-sm" id="btns"></div>
         <!-- grid -->
         <table id="grid-table"></table>
         <!-- 分页 -->

@@ -55,13 +55,13 @@ public class GroupController extends BaseController {
     @Autowired
     GroupLoadService groupLoadService;
 
-    @RequestMapping("/")
-    public String index(ModelMap mm) {
-        mm.put("code", CODE);
-        return BASE_PATH + "group.html";
-    }
+//    @RequestMapping("/")
+//    public String index(ModelMap mm) {
+//        mm.put("code", CODE);
+//        return BASE_PATH + "group.html";
+//    }
 
-    @RequestMapping(value = "/group_index")
+    @RequestMapping(value = "/")
     public String groupIndex(ModelMap mm) {
         mm.put("code", CODE);
         return BASE_PATH + "group_list.html";

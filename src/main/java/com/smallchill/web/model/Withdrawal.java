@@ -2,9 +2,9 @@ package com.smallchill.web.model;
 
 import com.smallchill.core.annotation.BindID;
 import com.smallchill.core.base.model.BaseModel;
+import org.beetl.sql.core.annotatoin.Table;
 
 import javax.persistence.Column;
-import javax.persistence.Table;
 
 /**
  * 交易流水-提现

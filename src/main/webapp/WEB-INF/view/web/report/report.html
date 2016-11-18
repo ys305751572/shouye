@@ -1,0 +1,49 @@
+
+@layout("/common/_curd/_container.html"){
+<head>
+
+</head>
+<body>
+<ul id="myTab" class="nav nav-tabs">
+    <li class="active">
+        <a href="#report_statistical" data-toggle="tab" onclick="showPage('report_statistical','${basePath}/report/statistical')">
+            事件统计
+        </a>
+    </li>
+    <li>
+        <a href="#report_operation" data-toggle="tab" onclick="showPage('report_operation','${basePath}/report/operation')">
+            操作处理
+        </a>
+    </li>
+    <li>
+        <a href="#report_record" data-toggle="tab" onclick="showPage('report_record','${basePath}/report/record')">
+            处理记录
+        </a>
+    </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+    <div class="tab-pane fade in active" id="report_statistical">
+
+    </div>
+    <div class="tab-pane fade" id="report_operation">
+
+    </div>
+    <div class="tab-pane fade" id="report_record">
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        showPage('report_statistical','${basePath}/report/statistical');
+    });
+
+    function showPage(tabId, url){
+        $('#myTab a[href="#'+tabId+'"]').tab('show'); // 显示点击的tab页面
+        $('#'+tabId).load(url); // ajax加载页面
+    }
+</script>
+
+</body>
+
+@}
