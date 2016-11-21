@@ -7,23 +7,23 @@
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 是否公开组织 </label>
         <div class="col-sm-8">
-            <label><input type="radio" name="permissionsType" class="rdo" checked value="0">公开组织</label>
-            <label><input type="radio" name="permissionsType" class="rdo" value="1">隐藏组织</label>
+            <label><input type="radio" name="permissionsType" class="rdo" checked value="1">公开组织</label>
+            <label><input type="radio" name="permissionsType" class="rdo" value="2">隐藏组织</label>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 是否开放申请 </label>
         <div class="col-sm-8">
-            <label><input type="radio" name="isJoin" class="rdo" checked value="0">开放组织</label>
-            <label><input type="radio" name="isJoin" class="rdo" value="1">关闭组织</label>
+            <label><input type="radio" name="isJoin" class="rdo" checked value="1">开放组织</label>
+            <label><input type="radio" name="isJoin" class="rdo" value="2">关闭组织</label>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 会员费用 </label>
         <div class="col-sm-8">
-            <input type="text" name="cost" id="cost" placeholder="" class="form-control" />
+            <input type="text" name="cost" id="cost" placeholder="" class="form-control" value="0"/>
         </div>
     </div>
     <div class="form-group">
@@ -115,6 +115,48 @@
 
         var layerIndex = parent.layer.getFrameIndex(window.name);
         $(function(){
+
+            var permissions_type = "${group.permissionsType}";
+            var is_join = "${group.isJoin}";
+            var sex_limit = "${group.sexLimit}";
+            var industry_limit = "${group.industryLimit}";
+            var domain_limit = "${group.domainLimit}";
+            var province_limit = "${group.provinceLimit}";
+            var city_limit = "${group.cityLimit}";
+            var professional_limit = "${group.professionalLimit}";
+            var zy_limit = "${group.zyLimit}";
+
+            var cost_type = "${groupExtend.costType}";
+            var _cost = "${groupExtend.cost}";
+
+            if(permissions_type == 1){
+                $("input[name='permissionsType']:eq(0)").attr("checked",'checked');
+            }else if(permissions_type == 2){
+                $("input[name='permissionsType']:eq(1)").attr("checked",'checked');
+            }
+
+            if(is_join == 1){
+                $("input[name='isJoin']:eq(0)").attr("checked",'checked');
+            }else if(is_join == 2){
+                $("input[name='isJoin']:eq(1)").attr("checked",'checked');
+            }
+
+            if(cost_type == 1){
+                $("input[name='costType']:eq(0)").attr("checked",'checked');
+            }else if(cost_type == 2){
+                $("input[name='costType']:eq(1)").attr("checked",'checked');
+            }
+
+            $("#cost").val(_cost);
+            $("#sex_limit").val(sex_limit);
+            $("#industry_limit").val(industry_limit);
+            $("#domain_limit").val(domain_limit);
+            $("#province_limit").val(province_limit);
+            $("#city_limit").val(city_limit);
+            $("#professional_limit").val(professional_limit);
+            $("#zy_limit").val(zy_limit);
+
+
 
             $("#btn_close").bind("click",function(){
                 parent.layer.close(layerIndex);

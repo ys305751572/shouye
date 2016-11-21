@@ -70,6 +70,7 @@ var exwhere;
         console.log(ids);
         console.log(rowData);
 
+
         //加载(默认加载组织功能)
         if (this.alias == "load") {
             this.open(this.url);
@@ -78,6 +79,12 @@ var exwhere;
 
         //权限设置
         if (this.alias == "permissions") {
+            this.open(this.url);
+            return;
+        }
+
+        //委任干事
+        if (this.alias == "appointed") {
             this.open(this.url);
             return;
         }

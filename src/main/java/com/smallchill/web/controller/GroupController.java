@@ -3,6 +3,7 @@ package com.smallchill.web.controller;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.common.vo.User;
 import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
@@ -74,9 +75,7 @@ public class GroupController extends BaseController {
     @RequestMapping(KEY_LIST)
     public Object list(HttpServletRequest request) {
         JqGrid object = (JqGrid) paginate(LIST_SOURCE, new GroupIntercept());
-
         List<CaseInsensitiveHashMap> groupList = object.getRows();
-
         //查询结果所有ID
         List<Integer> ids = new ArrayList<>();
         for (CaseInsensitiveHashMap map : groupList) {
@@ -310,7 +309,7 @@ public class GroupController extends BaseController {
             user.setPassword(pwdMd5);
             user.setSalt(salt);
             user.setAccount(groupVo.getArtificialPersonMobile());
-            //设置角色为组织管理员
+            //设置角色为组织管理员(暂时为设置组织管理员)
             user.setDeptid(1);
             //设置管理员为已审核
             user.setStatus(1);

@@ -3,14 +3,22 @@ package com.smallchill.web.service.impl;
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInOthersBlankException;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.core.toolbox.support.BladePage;
+import com.smallchill.web.model.Group;
 import com.smallchill.web.model.GroupApproval;
-import com.smallchill.web.service.GroupApprovalService;
-import com.smallchill.web.service.GroupService;
+import com.smallchill.web.model.GroupExtend;
+import com.smallchill.web.model.UserInfo;
+import com.smallchill.web.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 组织审核
@@ -22,6 +30,14 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private UserInfoService userInfoService;
+    @Autowired
+    private GroupApprovalService groupApprovalService;
+    @Autowired
+    private GroupExtendService groupExtendService;
+    @Autowired
+    private UserGroupService userGroupService;
 
     /**
      * 是否已经申请
@@ -59,6 +75,76 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             ga.setCreateTime(DateTimeKit.nowLong());
             save1(ga);
         }
+    }
+
+    @Override
+    public BladePage cadresList(Integer groupId) {
+        String sql = "SELECT \n" +
+                "  tui.user_id AS userId,\n" +
+                "  tui.username AS userName,\n" +
+                "  tui.vip_type AS vipType,\n" +
+                "  tui.mobile AS mobile\n" +
+                "FROM\n" +
+                "  tb_user_group tug \n" +
+                "  LEFT JOIN tb_user_info tui \n" +
+                "    ON tug.user_id = tui.user_id \n" +
+                "WHERE 1=1 \n" +
+                "AND tui.vip_type = 2 \n" +
+                "AND tug.group_id = #{groupId} \n" +
+                "ORDER BY userId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+        BladePage page = Db.init().paginate(sql, Map.class, map, 1, 5);
+        return page;
+    }
+
+    @Override
+    @Transactional
+    public void appointedSave(Integer userId, Integer status) {
+        UserInfo userInfo = userInfoService.findByUserId(userId);
+        userInfo.setType(status);
+        userInfoService.update(userInfo);
+    }
+
+    @Override
+    @Transactional
+    public void updateStatus(Integer id, Integer status) {
+        GroupApproval groupApproval = groupApprovalService.findById(id);
+        groupApproval.setStatus(status);
+        groupApprovalService.update(groupApproval);
+    }
+
+    @Override
+    @Transactional
+    public void permissionSetting(Group group,Integer permissionsType, Integer isJoin, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer zyLimit) {
+        GroupExtend groupExtend = null;
+        if(group.getId()!=null){
+            groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId", group.getId()));
+        }
+
+        if(groupExtend!=null){
+            groupExtend.setCostType(costType);
+            groupExtend.setCost(cost);
+            if(cost == null || cost == 0){
+                //免费
+                groupExtend.setCostStatus(1);
+            }else {
+                //收费
+                groupExtend.setCostStatus(2);
+            }
+            groupExtendService.update(groupExtend);
+        }
+
+        group.setPermissionsType(permissionsType);
+        group.setIsJoin(isJoin);
+        group.setSexLimit(sexLimit);
+        group.setIndustryLimit(industryLimit);
+        group.setDomainLimit(domainLimit);
+        group.setProvinceLimit(provinceLimit);
+        group.setCityLimit(cityLimit);
+        group.setProfessionalLimit(professionalLimit);
+        group.setZyLimit(zyLimit);
+        groupService.update(group);
     }
 
     /**

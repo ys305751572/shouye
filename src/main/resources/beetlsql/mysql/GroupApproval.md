@@ -1,7 +1,8 @@
 list
 ===
 SELECT
-  tga.id,
+  tga.id AS id,
+  tga.group_id AS groupId,
   tui.username AS userName,
   tui.gender AS gender,
   tui.age AS age,
