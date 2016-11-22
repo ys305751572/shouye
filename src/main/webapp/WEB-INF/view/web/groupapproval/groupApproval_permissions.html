@@ -181,30 +181,30 @@
                 var zyLimit = $("#zy_limit").val();
 
                 $.post(
-                        "${basePath}/${code}/permission_setting",
-                        {
-                            permissionsType:permissionsType ,
-                            isJoin:isJoin,
-                            costType:costType,
-                            cost:cost,
-                            sexLimit:sexLimit,
-                            industryLimit:industryLimit,
-                            domainLimit:domainLimit,
-                            provinceLimit:provinceLimit,
-                            cityLimit:cityLimit,
-                            professionalLimit:professionalLimit,
-                            zyLimit:zyLimit
-                        },
-                        function(data){
-                            if(data.code===0){
-                                parent.$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
-                                parent.layer.close(layerIndex);
-                            }
-                            else{
-                                layer_alert("设置失败", "error");
-                            }
-                        },
-                        "json"
+                    "${basePath}/${code}/permission_setting",
+                    {
+                        permissionsType:permissionsType ,
+                        isJoin:isJoin,
+                        costType:costType,
+                        cost:cost,
+                        sexLimit:sexLimit,
+                        industryLimit:industryLimit,
+                        domainLimit:domainLimit,
+                        provinceLimit:provinceLimit,
+                        cityLimit:cityLimit,
+                        professionalLimit:professionalLimit,
+                        zyLimit:zyLimit
+                    },
+                    function(data){
+                        if(data.code===0){
+                            parent.$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+                            parent.layer.close(layerIndex);
+                        }
+                        else{
+                            layer_alert("设置失败", "error");
+                        }
+                    },
+                    "json"
                 );
 
             });

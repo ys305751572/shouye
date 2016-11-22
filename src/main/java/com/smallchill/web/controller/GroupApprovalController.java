@@ -5,11 +5,9 @@ import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
-import com.smallchill.core.toolbox.support.BladePage;
-import com.smallchill.web.meta.intercept.GroupApprovalIntercept;
+import com.smallchill.web.meta.intercept.GroupAdminIntercept;
 import com.smallchill.web.model.*;
 import com.smallchill.web.service.*;
-import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -50,7 +48,7 @@ public class GroupApprovalController extends BaseController {
     @ResponseBody
     @RequestMapping(KEY_LIST)
     public Object loadList() {
-        Object object = paginate(LIST_SOURCE,new GroupApprovalIntercept());
+        Object object = paginate(LIST_SOURCE,new GroupAdminIntercept());
         return object;
     }
 

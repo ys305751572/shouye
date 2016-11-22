@@ -1,0 +1,158 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form class="form-horizontal" role="form">
+	<div class="space-4"></div>
+	<!-- #section:elements.form -->
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 新增标记 </label>
+
+		<div class="col-sm-3">
+			<input type="text" placeholder="" class="form-control" />
+			<input type="button" id="add" class="button" style="margin-top: 3px" onclick="grouping(this)" value="添加">
+		</div>
+	</div>
+
+	<div class="form-group" >
+		<label class="col-sm-2 control-label no-padding-right">标记字段</label>
+		<div class="col-sm-3" id="group" >
+
+		</div>
+	</div>
+
+	<div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+		<div class="col-md-offset-1 col-md-10">
+			<button class="btn btn-info" type="button" id="btn_save">
+				<i class="ace-icon fa fa-check bigger-110"></i>
+				确定设置
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" id="btn_close">
+				<i class="ace-icon fa fa-close bigger-110"></i>
+				关闭
+			</button>
+		</div>
+	</div>
+
+	<script src="${basePath}/static/validate/jquery-html5Validate.js"></script>
+	<script src="${basePath}/static/laydate/laydate.js"></script>
+	<script src="${basePath}/static/jquery/jquery-2.1.4.min.js"></script>
+	<script src="${basePath}/static/jquery-res/js/jquery.easing.min.js"></script>
+	<script src="${basePath}/static/jquery-res/js/zzsc.js"></script>
+	<script type="text/javascript">
+		var layerIndex = parent.layer.getFrameIndex(window.name);
+		$(function () {
+			var a = '${tagList}';
+			var b = JSON.parse(a);
+			console.log(b);
+			for(var i=0;i< b.length;i++){
+				var html = "";
+				html += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + b[i].tag;
+				html += "	<span class='o_close' data-percent='' onclick='doDelete(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+				html += "	<input type='hidden' name='Tag.tag' value='" + b[i].tag + "'> 	";
+				html += "	<input type='hidden' name='Tag.id' value='" + b[i].id + "'> 	";
+				html += "</div>   ";
+				$("#group").append(html);
+			}
+
+		});
+		
+		function grouping(data){
+			var val = $(data).parent().find("input").eq(0).val();
+			var index = false;
+			var i=0;
+			if(val==""){
+				layer_alert("不能为空","error");
+				return;
+			}
+			$("#group div").each(function(){
+				i++;
+				var value = $(this).find("input[name='Tag.tag']").val();
+				if(value==val){
+					index=true;
+				}
+			});
+			if(i==10){
+				layer_alert("最多只能有十个标签","error");
+				return;
+			}
+			if(index){
+				layer_alert("已有相同标签","error");
+				return;
+			}
+
+			var html = "";
+			html += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + val;
+			html += "	<span class='o_close' data-percent='' onclick='doDelete(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+			html += "	<input type='hidden' name='Tag.tag' value='" + val + "'> 	";
+			html += "	<input type='hidden' name='Tag.id' value=''> 	";
+			html += "</div>   ";
+			$(data).parent().find("input").eq(0).val("");
+			$("#group").append(html);
+
+		}
+
+		function doDelete(btn) {
+			var id = $(btn).parent().find("input[name='Tag.id']").val();
+			if(id!=""){
+				$.post("${basePath}/${code}/tag_del", { id: id }, function (data) {
+					console.log("code=====");
+					console.log(data.code);
+					console.log("data=====");
+					console.log(data);
+					if (data.code === 0) {
+						$(btn).parent().remove();
+						layer_alert(data.message, "success");
+					}
+					else {
+						layer_post(data);
+					}
+				}, "json");
+			}else{
+				$(btn).parent().remove();
+			}
+		}
+
+		$("#btn_close").bind("click",function(){
+			parent.location.reload();
+			parent.layer.close(layerIndex);
+		});
+
+		$("#btn_save").on("click",function(){
+			var vals = [];
+			$("#group div").each(function(){
+				var value = $(this).find("input[name='Tag.tag']").val();
+				var key = $(this).find("input[name='Tag.id']").val();
+				if(key==""){
+					vals.push(value);
+				}
+			});
+
+			if(vals == ""){
+				return;
+			}
+			console.log("start---");
+
+			$.ajax({
+				"url": "${basePath}/${code}/tag_save",
+				"data": {
+					vals : JSON.stringify(vals)
+				},
+				"dataType": "json",
+				"type": "POST",
+				success : function(data){
+					if (data.code === 0) {
+						layer_alert(data.message, "success");
+						parent.location.reload();
+					}else {
+						layer_post(data);
+					}
+				}
+			});
+
+			console.log("end---");
+		});
+	</script>
+
+	<div class="space-4"></div>
+</form>
+@}

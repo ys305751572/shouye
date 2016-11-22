@@ -70,6 +70,17 @@ var exwhere;
         console.log(ids);
         console.log(rowData);
 
+        //组织会员分组
+        if (this.alias == "classification" ) {
+            this.open(this.url);
+            return;
+        }
+
+        //组织会员标记
+        if (this.alias == "tag" ) {
+            this.open(this.url);
+            return;
+        }
 
         //加载(默认加载组织功能)
         if (this.alias == "load") {
