@@ -22,7 +22,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     Record findUserInfoDetail(Integer userId);
 
-    Record findUserInfoDetail(Integer userId, Integer toUserId,Integer groupId);
+    UserVo findUserInfoDetail(Integer userId, Integer toUserId, Integer groupId);
 
     String findUsernameByUserId(Integer userId);
 
@@ -51,9 +51,58 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 根据关键字查询用户列表
+     *
      * @param userId
      * @param keyWord
      * @return
      */
     List<UserVo> findByKeyWord(Integer userId, String keyWord);
+
+    /**
+     * 创建用户好友分组
+     *
+     * @param userId  用户ID
+     * @param name    分组名字
+     * @param userIds 加入分组用户ID
+     */
+    void createGrouping(Integer userId, String name, String userIds);
+
+    /**
+     * 加入分组用户
+     *
+     * @param userId  用户ID
+     * @param userIds 加入分组用户ID
+     */
+    void joinToGrouping(Integer userId, String userIds, Integer groupingId);
+
+    /**
+     * 删除用户分组
+     *
+     * @param userId     用户ID
+     * @param groupingId 分组ID
+     */
+    void deleteGrouping(Integer userId, Integer groupingId);
+
+    /**
+     * 查看默认分组（熟人，校友，同组织）
+     *
+     * @param usereId 用户ID
+     * @return result
+     */
+    List<Record> findDefaultGrouping(Integer usereId);
+
+    /**
+     * 查询用户自定义分组
+     *
+     * @param userId 用户ID
+     * @return records
+     */
+    List<Record> findCustomGrouping(Integer userId);
+
+    /**
+     * 查询分组首页
+     * @param userId 用户ID
+     * @return records
+     */
+    List<Record> findIndexGrouping(Integer userId);
 }

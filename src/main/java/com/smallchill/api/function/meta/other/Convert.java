@@ -20,15 +20,19 @@ public class Convert {
 
 
     public static UserVo recordToVo(Record record) {
-        Integer id = Integer.parseInt(record.get("user_id").toString());
+        Integer id = Integer.parseInt(record.get("userId").toString());
         String username = (String) record.get("username");
-        String city = (String) record.get("province_city");
+        String city = (String) record.get("proviceCity");
         String domain = (String) record.get("domain");
-        String keyWord = (String) record.get("key_word");
+        String keyWord = (String) record.get("keyWord");
         keyWord = keyWord.replaceAll("\\|", "\\/");
         String professional = (String) record.get("professional");
         String organization = (String) record.get("organization");
-        return new UserVo(id, username, city, domain, keyWord, organization, professional);
+        Integer per = record.getInt("per");
+        UserVo userVo = new UserVo(id, username, city, domain, keyWord, organization, professional,"");
+        userVo.setPer(per);
+        userVo.setAvater(record.getStr("avater"));
+        return userVo;
     }
 
 
@@ -75,11 +79,9 @@ public class Convert {
      * @param userInfo 用户基本信息
      * @return record
      */
-    public static Record userInfoToRecord(UserInfo userInfo) {
-        Record record = Record.create().set("username", userInfo.getUsername())
-                .set("userId", userInfo.getUserId()).set("avater", userInfo.getAvater())
-                .set("per", userInfo.getPer());
-        return record;
+    public static UserVo userInfoToRecord(UserInfo userInfo) {
+        return new UserVo(userInfo.getUserId(), userInfo.getUsername(), userInfo.getProvinceCity(),
+                userInfo.getDomain(), userInfo.getKeyWord(), userInfo.getOrganization(), userInfo.getProfessional(), userInfo.getAvater());
     }
 
     /**

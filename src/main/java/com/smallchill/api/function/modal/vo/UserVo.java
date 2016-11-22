@@ -1,16 +1,22 @@
 package com.smallchill.api.function.modal.vo;
 
+import com.smallchill.api.common.model.BaseVo;
+import com.smallchill.api.function.modal.Button;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 用户vo
  * Created by yesong on 2016/11/1 0001.
  */
-public class UserVo implements Serializable{
+public class UserVo extends BaseVo implements Serializable {
 
-    private Integer id;
+    private Integer userId;
     private String username;
-    private String city;
+    private String mobile;
+    private String avater;
+    private String provinceCity;
     private String domain;
     private String keyWord;
     private String organization;
@@ -18,26 +24,90 @@ public class UserVo implements Serializable{
     private String validateInfo;
     private String info; // 新结识左上角提示
     private Integer status; // 用户与好友的状态
-    private String per; // 用户信息完整度
+    private Integer per; // 用户信息完整度
+    private String carrer; // 事业状态
+    private String school; // 学校
+    private String desc;  // 个人介绍
 
-    private UserVo() {
+    private List<Button> btnList;
+    private List<String> sameKeyList;
+
+    public List<String> getSameKeyList() {
+        return sameKeyList;
     }
 
-    public UserVo(Integer id, String username, String city, String domain, String keyWord, String organization, String professional) {
-        this.id = id;
+    public void setSameKeyList(List<String> sameKeyList) {
+        this.sameKeyList = sameKeyList;
+    }
+
+    public Integer getPer() {
+        return per;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public List<Button> getBtnList() {
+        return btnList;
+    }
+
+    public void setBtnList(List<Button> btnList) {
+        this.btnList = btnList;
+    }
+
+    public String getAvater() {
+        return avater;
+    }
+
+    public void setAvater(String avater) {
+        this.avater = avater;
+    }
+
+    public String getCarrer() {
+        return carrer;
+    }
+
+    public void setCarrer(String carrer) {
+        this.carrer = carrer;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public UserVo(Integer userId, String username, String provinceCity, String domain, String keyWord, String organization, String professional, String avater) {
+        this.userId = userId;
         this.username = username;
-        this.city = city;
+        this.provinceCity = provinceCity;
         this.domain = domain;
         this.keyWord = keyWord;
         this.organization = organization;
         this.professional = professional;
+        this.avater = avater;
     }
 
-    public UserVo(Integer id, String username, String city, String domain, String keyWord, String organization, String professional,String validateInfo,
+    public UserVo(Integer userId, String username, String provinceCity, String domain, String keyWord, String organization, String professional, String validateInfo,
                   String info, Integer status) {
-        this.id = id;
+        this.userId = userId;
         this.username = username;
-        this.city = city;
+        this.provinceCity = provinceCity;
         this.domain = domain;
         this.keyWord = keyWord;
         this.organization = organization;
@@ -55,11 +125,7 @@ public class UserVo implements Serializable{
         this.status = status;
     }
 
-    public String getPer() {
-        return per;
-    }
-
-    public void setPer(String per) {
+    public void setPer(Integer per) {
         this.per = per;
     }
 
@@ -79,12 +145,12 @@ public class UserVo implements Serializable{
         this.info = info;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -95,12 +161,12 @@ public class UserVo implements Serializable{
         this.username = username;
     }
 
-    public String getCity() {
-        return city;
+    public String getProvinceCity() {
+        return provinceCity;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setProvinceCity(String provinceCity) {
+        this.provinceCity = provinceCity;
     }
 
     public String getDomain() {

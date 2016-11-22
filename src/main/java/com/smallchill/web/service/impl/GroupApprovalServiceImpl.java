@@ -116,19 +116,19 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Override
     @Transactional
-    public void permissionSetting(Group group,Integer permissionsType, Integer isJoin, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer zyLimit) {
+    public void permissionSetting(Group group, Integer permissionsType, Integer isJoin, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer zyLimit) {
         GroupExtend groupExtend = null;
-        if(group.getId()!=null){
-            groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId", group.getId()));
+        if (group.getId() != null) {
+            groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}", Record.create().set("groupId", group.getId()));
         }
 
-        if(groupExtend!=null){
+        if (groupExtend != null) {
             groupExtend.setCostType(costType);
             groupExtend.setCost(cost);
-            if(cost == null || cost == 0){
+            if (cost == null || cost == 0) {
                 //免费
                 groupExtend.setCostStatus(1);
-            }else {
+            } else {
                 //收费
                 groupExtend.setCostStatus(2);
             }

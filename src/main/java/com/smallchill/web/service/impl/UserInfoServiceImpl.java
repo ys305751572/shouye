@@ -5,10 +5,7 @@ import com.smallchill.api.function.meta.other.ButtonRegister;
 import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.modal.*;
 import com.smallchill.api.function.modal.vo.UserVo;
-import com.smallchill.api.function.service.GroupUserRecordService;
-import com.smallchill.api.function.service.UserDomainService;
-import com.smallchill.api.function.service.UserInterestService;
-import com.smallchill.api.function.service.UserprofessionalService;
+import com.smallchill.api.function.service.*;
 import com.smallchill.core.base.service.BaseService;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
@@ -30,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -57,6 +55,11 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Autowired
     private GroupUserRecordService groupUserRecordService;
+
+    @Autowired
+    private UserFriendGroupingService userFriendGroupingService;
+    @Autowired
+    private UfgmService ufgmService;
 
     @Transactional
     @Override
@@ -108,20 +111,22 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     }
 
     @Override
-    public Record findUserInfoDetail(Integer userId, Integer toUserId, Integer groupId) {
+    public UserVo findUserInfoDetail(Integer userId, Integer toUserId, Integer groupId) {
         String sql = Blade.dao().getScript("UserInfo.userInfoDetail").getSql();
-        Record record = Db.init().selectOne(sql, Record.create().set("userId", userId));
+        Record record = Db.init().selectOne(sql, Record.create().set("userId", toUserId));
 
+        UserVo vo = Convert.recordToVo(record);
         UserApproval ua = userApprovalService.getUserByFromUserIdAndToUserIdApprovalOfOneWay(userId, toUserId);
         UserInterest ui = userInterestService.getByUserId(userId, toUserId);
         List<Button> list = ButtonRegister.create(userId, toUserId, ua, ui).addBtns();
-        for (Button btn : list) {
-            System.out.println(btn.toString());
-        }
-        record.set("btnList", list);
+        List<String> sameKeyList = new ArrayList<>();
+        vo.setBtnList(list);
+        vo.setSameKeyList(sameKeyList);
 
-        saveGroupUserRecord(userId, toUserId, groupId);
-        return record;
+        if (groupId != null) {
+            saveGroupUserRecord(userId, toUserId, groupId);
+        }
+        return vo;
     }
 
     /**
@@ -475,5 +480,89 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     @Override
     public List<UserVo> findByKeyWord(Integer userId, String keyWord) {
         return null;
+    }
+
+    @Transactional
+    @Override
+    public void createGrouping(Integer userId, String name, String userIds) {
+        UserFriendGrouping ufg = new UserFriendGrouping();
+        ufg.setUserId(userId);
+        ufg.setName(name);
+        Integer newId = userFriendGroupingService.saveRtId(ufg);
+
+        if (StringUtils.isNotBlank(userIds)) {
+            joinToGrouping(userId, userIds, newId);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void joinToGrouping(Integer userId, String userIds, Integer groupingId) {
+        if (StringUtils.isNotBlank(userIds)) {
+            String[] ids = userIds.split(",");
+            Ufgm ufgm;
+            for (String id : ids) {
+                if (StringUtils.isNotBlank(id)) {
+                    ufgm = new Ufgm();
+                    ufgm.setUfgId(groupingId);
+                    ufgm.setFriendId(Integer.parseInt(id));
+                    ufgmService.save(ufgm);
+                }
+            }
+        }
+    }
+
+    /**
+     * 删除用户分组
+     *
+     * @param userId     用户ID
+     * @param groupingId 分组ID
+     */
+    @Transactional
+    @Override
+    public void deleteGrouping(Integer userId, Integer groupingId) {
+        ufgmService.deleteBy("ufg_id = #{ufgId}", Record.create().set("ufgId", groupingId));
+        userFriendGroupingService.delete(groupingId);
+    }
+
+    /**
+     * 查询默认分组信息
+     *
+     * @param usereId 用户ID
+     * @return record
+     */
+    @Override
+    public List<Record> findDefaultGrouping(Integer usereId) {
+        String sql =
+                "SELECT COUNT(*) AS counts,'熟人' AS `name` FROM tb_user_friend uf WHERE uf.`user_id` = #{userId} AND uf.`label` LIKE CONCAT('%', '熟人','%')\n" +
+                        "UNION ALL\n" +
+                        "SELECT COUNT(*) AS counts,'校友' AS `name` FROM tb_user_friend uf WHERE uf.`user_id` = #{userId} AND uf.`label` LIKE CONCAT('%', '校友','%')\n" +
+                        "UNION ALL\n" +
+                        "SELECT COUNT(*) AS counts, '同组织' AS `name` FROM tb_user_friend uf WHERE uf.`user_id` = #{userId} AND uf.`label` LIKE CONCAT('%', '同组织','%')";
+        List<Record> records = Db.init().selectList(sql, Record.create().set("userId", usereId));
+        return records;
+    }
+
+    @Override
+    public List<Record> findCustomGrouping(Integer userId) {
+        String sql = "SELECT COUNT(ufgm.`ufg_id`) AS counts, ufg.`name` " +
+                " FROM tb_user_friend_grouping_member ufgm JOIN tb_user_friend_grouping ufg ON ufgm.`ufg_id` = ufg.`id` " +
+                "WHERE ufg.`user_id` = #{userId} GROUP BY ufgm.`ufg_id`";
+        List<Record> records = Db.init().selectList(sql, Record.create().set("userId", userId));
+        return records;
+    }
+
+    /**
+     * 查询分组首页
+     *
+     * @param userId 用户ID
+     * @return records
+     */
+    @Override
+    public List<Record> findIndexGrouping(Integer userId) {
+        List<Record> defaultRecords = findDefaultGrouping(userId);
+        List<Record> customRecods = findCustomGrouping(userId);
+        defaultRecords.addAll(customRecods);
+        return defaultRecords;
     }
 }

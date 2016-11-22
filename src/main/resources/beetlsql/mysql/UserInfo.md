@@ -81,6 +81,9 @@ LEFT JOIN tb_user_approval ua ON ((ui.user_id = ua.from_user_id OR ui.user_id = 
 @if(!isEmpty(history)) {
     RIGHT JOIN tb_group_user_record gur ON (ui.user_id = gur.to_user_id and gur.group_id = #{groupId} and gur.user_id = #{userId})
 @}
+@if(!isEmpty(domain)) {
+    RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain})
+@}
 LEFT JOIN tb_interest_user i ON (i.to_user_id = ui.user_id AND i.status = 0)
 GROUP BY userId
 

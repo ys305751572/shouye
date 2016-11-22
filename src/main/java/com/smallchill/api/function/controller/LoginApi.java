@@ -6,6 +6,7 @@ import com.smallchill.api.common.exception.UserNotFoundException;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.common.model.Result;
 import com.smallchill.api.function.meta.other.Convert;
+import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.system.service.VcodeService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.toolbox.Record;
@@ -47,12 +48,11 @@ public class LoginApi extends BaseController {
         }
 
         UserLogin userLogin;
-        Record record;
+        UserVo userVo;
         try {
             userLogin = userLoginService.loginCheck(mobile);
             UserInfo userInfo = userLoginService.afterLoginQuery(userLogin, this.getRequest());
-
-            record = Convert.userInfoToRecord(userInfo);
+            userVo = Convert.userInfoToRecord(userInfo);
         } catch (UserNotFoundException e) {
             return toJson(Result.fail(ErrorType.ERROR_CODE_USERNOTFOUND));
         } catch (UserFreezeException e) {
@@ -60,6 +60,6 @@ public class LoginApi extends BaseController {
         } catch (UserLockException e) {
             return toJson(Result.fail(ErrorType.ERROR_CODE_USERHASLOCK));
         }
-        return success(record,"userInfo");
+        return success(userVo);
     }
 }

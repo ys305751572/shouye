@@ -24,11 +24,23 @@ public class UserFriend extends BaseModel {
     @Column(name = "friend_id")
     private Integer friendId;
 
+    // 好友标签
+    @Column(name = "label")
+    private String label;
+
     @Column(name = "type")
     private Integer type = 0;
 
     @Column(name = "status")
     private Integer status = 0;
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
     public Integer getStatus() {
         return status;

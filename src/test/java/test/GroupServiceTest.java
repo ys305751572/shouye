@@ -81,8 +81,8 @@ public class GroupServiceTest extends BaseJunit4Test {
      */
     @Test
     public void testApproval() {
-        int groupId = 19;
-        int userId = 22;
+        int groupId = 20;
+        int userId = 24;
         try {
             groupService.approval(groupId, userId); // 同意
         } catch (UserHasJoinGroupException e) {

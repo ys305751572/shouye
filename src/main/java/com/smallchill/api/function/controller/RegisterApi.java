@@ -3,6 +3,7 @@ package com.smallchill.api.function.controller;
 import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.function.meta.other.Convert;
+import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.system.service.VcodeService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.toolbox.Record;
@@ -62,16 +63,16 @@ public class RegisterApi extends BaseController {
     @ResponseBody
     public String uploadUserinfo(UserInfo userInfo) {
         UserInfo _userInfo;
-        Record record;
+        UserVo userVo;
         try {
             _userInfo = userInfoService.updateUserInfo(userInfo, this.getRequest());
-            record = Convert.userInfoToRecord(_userInfo);
+            userVo = Convert.userInfoToRecord(_userInfo);
         } catch (UserExitsException e) {
             e.printStackTrace();
             return fail(ErrorType.ERROR_CODE_USERHASEXTIS);
         } catch (Exception e) {
             return fail();
         }
-        return success(record,"userInfo");
+        return success(userVo);
     }
 }

@@ -5,12 +5,9 @@ import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
-import com.smallchill.web.model.Aug;
-import com.smallchill.web.model.UserApproval;
-import com.smallchill.web.model.UserFriend;
-import com.smallchill.web.service.AugService;
-import com.smallchill.web.service.UserApprovalService;
-import com.smallchill.web.service.UserFriendService;
+import com.smallchill.web.model.*;
+import com.smallchill.web.service.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
@@ -31,6 +28,12 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     private String where2 = "from_user_id = #{fromUserId} and to_user_id = #{toUserId}";
     @Autowired
     private UserFriendService userFriendService;
+
+    @Autowired
+    private UserInfoService userInfoService;
+
+    @Autowired
+    private UserGroupService userGroupService;
 
     @Autowired
     private AugService augService;
@@ -114,7 +117,9 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      */
     private boolean groupRequestValidate(UserApproval ua) throws BothUserHasApprovalException, UserInOthersBlankException {
         Aug aug = findAugByGroupIdAndFidAndTid(ua.getGroupId(), ua.getFromUserId(), ua.getToUserId());
-        if (aug == null) { return true;}
+        if (aug == null) {
+            return true;
+        }
         if (aug.getStatus() == 0 || aug.getStatus() == 1) throw new BothUserHasApprovalException();
         if (aug.getStatus() == 3) throw new UserInOthersBlankException();
         if (aug.getStatus() == 2) {
@@ -126,9 +131,10 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
 
     /**
      * 查询审核信息
-     * @param groupId 组织ID
+     *
+     * @param groupId    组织ID
      * @param fromUserId 请求发送者Id
-     * @param toUserId 请求介绍人ID
+     * @param toUserId   请求介绍人ID
      * @return 审核信息
      */
     private Aug findAugByGroupIdAndFidAndTid(Integer groupId, Integer fromUserId, Integer toUserId) {
@@ -197,11 +203,12 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
 
     /**
      * 修改审核状态
-     * @param augId 审核信息ID
+     *
+     * @param augId  审核信息ID
      * @param status 状态
      */
     private Aug updateAugStatusById(Integer augId, Integer status) {
-        Aug aug =augService.findById(augId);
+        Aug aug = augService.findById(augId);
         aug.setStatus(status);
         augService.update(aug);
         return aug;
@@ -215,6 +222,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     @Override
     public void userApprovalAgree(UserApproval ua) {
         this.approval(ua, 1);
+
     }
 
     /**
@@ -405,10 +413,6 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     private void approval(UserApproval ua, Integer status) {
         UserApproval dist = this.getByFromUserIdAndToUserId(ua.getFromUserId(), ua.getToUserId());
         if (dist != null) {
-//            if(status == 3) {
-//                dist.setFromUserId(ua.getToUserId());
-//                dist.setToUserId(ua.getFromUserId());
-//            }
             dist.setStatus(status);
             this.update(dist);
             // 新增好友
@@ -418,14 +422,42 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
                 uf.setType(ua.getType());
                 uf.setUserId(ua.getToUserId());
                 uf.setFriendId(ua.getFromUserId());
+
+                if (ua.getType() == 1) {
+                    // 判断是否校友,同乡，同组织
+                    UserInfo fromUser = userInfoService.findByUserId(ua.getFromUserId());
+                    UserInfo toUser = userInfoService.findByUserId(ua.getToUserId());
+                    if (isSameGroup(dist.getFromUserId(), dist.getToUserId())) {
+                        uf.setLabel(uf.getLabel() == null ? "同组织" : uf.getLabel() + "|同组织");
+                    }
+                    if (StringUtils.isNotBlank(fromUser.getSchool()) && StringUtils.isNotBlank(toUser.getSchool()) && fromUser.getSchool().equals(toUser.getSchool())) {
+                        uf.setLabel(uf.getLabel() == null ? "校友" : uf.getLabel() + "|校友");
+                    }
+                } else {
+                    // 新增熟人标签
+                    uf.setLabel(uf.getLabel() == null ? "熟人" : uf.getLabel() + "|熟人");
+                }
                 userFriendService.addFriend(uf);
             }
-
             // 拉黑好友
             if (status == 3) {
                 _blank(ua);
             }
         }
+    }
+
+    /**
+     * 判断两个用户是否在同一组织
+     *
+     * @param fromUserId 用户1
+     * @param toUserId   用户2
+     * @return result
+     */
+    private boolean isSameGroup(Integer fromUserId, Integer toUserId) {
+        String sql = "SELECT COUNT(*) as counts FROM tb_user_group ug1 WHERE ug1.`user_id` = #{fromUserId} AND ug1.`group_id` IN" +
+                " (SELECT group_id FROM tb_user_group ug2 WHERE ug2.`user_id` = #{toUserId})";
+        Record record = Db.init().selectOne(sql, Record.create().set("fromUserId", fromUserId).set("toUserId", toUserId));
+        return record.getInt("counts") > 0;
     }
 
     private void _blank(UserApproval ua) {

@@ -1,5 +1,6 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserGroup;
 import com.smallchill.web.service.UserGroupService;
@@ -14,4 +15,7 @@ import com.smallchill.core.base.service.BaseService;
  */
 @Service
 public class UserGroupServiceImpl extends BaseService<UserGroup> implements UserGroupService {
+
+    private String DELETEBYUSERIDANDGROUPID_WHERE = "group_id = #{groupId} and userId = #{userId}";
+
 }

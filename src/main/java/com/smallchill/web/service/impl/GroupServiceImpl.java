@@ -154,9 +154,9 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     @Transactional
     @Override
     public void approval(Integer groupId, Integer userId) throws UserHasJoinGroupException {
-        // 1.改变审核表中状态为1：批准
+        // 1.改变审核表中状态为2：批准
         // 2.tb_user_group表新增会员信息
-        this.audit(groupId, userId, 1);
+        this.audit(groupId, userId, 2);
         UserGroup ug = new UserGroup();
         ug.setGroupId(groupId);
         ug.setUserId(userId);
@@ -191,8 +191,8 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     @Transactional
     @Override
     public void refuse(Integer groupId, Integer userId) {
-        // 1.改变审核表中状态 为2：拒绝
-        this.audit(groupId, userId, 2);
+        // 1.改变审核表中状态 为 3：拒绝
+        this.audit(groupId, userId, 3);
         messageService.sendMsgForUserAuditRefuse(groupId, userId, null);
     }
 
@@ -205,8 +205,8 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      */
     @Override
     public void blank(Integer groupId, Integer userId) {
-        // 1.改变审核表中状态 为3：拉黑
-        this.audit(groupId, userId, 3);
+        // 1.改变审核表中状态 为4：拉黑
+        this.audit(groupId, userId, 4);
     }
 
     /**
@@ -371,5 +371,22 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     @Override
     public List<Groupvo> findByKeyWord(Integer userId, String keyword) {
         return null;
+    }
+
+    /**
+     * 退出组织
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     */
+    @Transactional
+    @Override
+    public void out(Integer groupId, Integer userId) {
+        // 1.删除tb_user_group相关信息
+        // 2.删除tb_group_approval相关信息
+        String where = "group_id = #{groupId} and user_id = #{userId}";
+        Record record = Record.create().set("groupId", groupId).set("userId", userId);
+        userGroupService.deleteBy(where, record);
+        groupApprovalService.deleteBy(where, record);
     }
 }

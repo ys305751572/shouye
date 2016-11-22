@@ -128,4 +128,12 @@ public interface GroupService extends IService<Group> {
      * @return 组织列表
      */
     List<Groupvo> findByKeyWord(Integer userId, String keyword);
+
+    /**
+     * 退出组织
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     */
+    void out(Integer groupId, Integer userId);
 }

@@ -6,8 +6,12 @@ import com.smallchill.api.function.meta.intercept.UserApiIntercept;
 import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.meta.validate.*;
 import com.smallchill.api.function.modal.GroupInterest;
+import com.smallchill.api.function.modal.UserFriendGrouping;
 import com.smallchill.api.function.modal.UserInterest;
+import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.GroupInterestService;
+import com.smallchill.api.function.service.UfgmService;
+import com.smallchill.api.function.service.UserFriendGroupingService;
 import com.smallchill.api.function.service.UserInterestService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
@@ -17,14 +21,18 @@ import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.system.meta.intercept.UserValidator;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * 用户API
@@ -45,6 +53,7 @@ public class UserApi extends BaseController implements ConstCache {
     private UserInterestService userInterestService;
     @Autowired
     private GroupInterestService groupInterestService;
+
 
     /**
      * 全局用户列表
@@ -78,9 +87,10 @@ public class UserApi extends BaseController implements ConstCache {
         try {
             jqGrid = apiPaginate(LIST_SOURCE
                     , new UserApiIntercept().addRecord(Record.create().set("userId", this.getRequest().getParameter("userId"))
-                    .set("groupId", this.getRequest().getParameter("groupId"))
-                    .set("history", this.getRequest().getParameter("history"))),
-                    ExcludeParams.create().set("userId").set("groupId").set("history"));
+                            .set("groupId", this.getRequest().getParameter("groupId"))
+                            .set("history", this.getRequest().getParameter("history"))
+                            .set("domain", this.getRequest().getParameter("domain"))),
+                    ExcludeParams.create().set("userId").set("groupId").set("history").set("domain"));
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
@@ -98,12 +108,12 @@ public class UserApi extends BaseController implements ConstCache {
     @RequestMapping(value = "/userInfo")
     @ResponseBody
     public String userInfo(Integer userId, Integer toUserId, Integer groupId) {
-        Record record;
-        final int userid = userId;
-        final int toUserid = toUserId;
-        final int groupid = groupId;
+        UserVo vo;
+        final Integer userid = userId;
+        final Integer toUserid = toUserId;
+        final Integer groupid = groupId;
         try {
-            record = CacheKit.get(DIY_CACHE, CACHE_KEY + userId + "_" + toUserId, new ILoader() {
+            vo = CacheKit.get(DIY_CACHE, CACHE_KEY + userId + "_" + toUserId, new ILoader() {
                 @Override
                 public Object load() {
                     return userInfoService.findUserInfoDetail(userid, toUserid, groupid);
@@ -113,7 +123,8 @@ public class UserApi extends BaseController implements ConstCache {
             e.printStackTrace();
             return fail();
         }
-        return success(record, "userInfoDetail");
+
+        return success(vo);
     }
 
     /**
@@ -148,14 +159,14 @@ public class UserApi extends BaseController implements ConstCache {
     public String update(UserInfo userInfo) {
 
         UserInfo userInfo1;
-        Record record = null;
+        UserVo userVo = null;
         try {
             userInfo1 = userInfoService.updateUserInfo(userInfo, null);
-            record = Convert.userInfoToRecord(userInfo1);
+            userVo = Convert.userInfoToRecord(userInfo1);
         } catch (UserExitsException e) {
             e.printStackTrace();
         }
-        return success(record, "userInfo");
+        return success(userVo);
     }
 
     /**
@@ -277,6 +288,76 @@ public class UserApi extends BaseController implements ConstCache {
         Record record = Record.create().set("userId", gi.getUserId()).set("groupId", gi.getGroupId());
         try {
             groupInterestService.updateBy("status = 1", where, record);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success();
+    }
+
+    /**
+     * 分组首页
+     *
+     * @param userId 用户ID
+     * @return result
+     */
+    @PostMapping(value = "/grouping/index")
+    @ResponseBody
+    @Before(GroupPageValidator.class)
+    public String grouping(Integer userId) {
+        List<Record> record;
+        try {
+            record = userInfoService.findIndexGrouping(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success(record);
+    }
+
+    /**
+     * 用户新增分组
+     *
+     * @param userId  用户ID
+     * @param userIds 加入分组用户ID，id之间用“，”分割
+     * @return
+     */
+    @PostMapping(value = "/grouping/create")
+    @ResponseBody
+    @Before(GroupPageValidator.class)
+    public String createGrouping(Integer userId, String name, String userIds) {
+        userInfoService.createGrouping(userId, name, userIds);
+        return success();
+    }
+
+    /**
+     * 加入分组用户
+     *
+     * @param userId  用户ID
+     * @param userIds 加入分组用户ID，id之间用“，”分割
+     * @return result
+     */
+    @PostMapping(value = "/grouping/join")
+    @ResponseBody
+    @Before(GroupPageValidator.class)
+    public String joinUserToGrouping(Integer userId, String userIds, Integer groupingId) {
+        userInfoService.joinToGrouping(userId, userIds, groupingId);
+        return success();
+    }
+
+    /**
+     * 删除分组
+     *
+     * @param userId     当前用户ID
+     * @param groupingId 分组ID
+     * @return result
+     */
+    @PostMapping(value = "/grouping/delete")
+    @ResponseBody
+    @Before(GroupingValidate.class)
+    public String deleteGrouping(Integer userId, Integer groupingId) {
+        try {
+            userInfoService.deleteGrouping(userId, groupingId);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();

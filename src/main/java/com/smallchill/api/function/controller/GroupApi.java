@@ -13,6 +13,7 @@ import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.meta.other.GroupBtnRegister;
 import com.smallchill.api.function.meta.validate.GroupJoinValidator;
 import com.smallchill.api.function.meta.validate.GroupPageValidator;
+import com.smallchill.api.function.meta.validate.GroupUserValidate;
 import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.SearchResult;
@@ -30,12 +31,14 @@ import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.GroupApprovalService;
 import com.smallchill.web.service.GroupService;
 import com.smallchill.web.service.UserInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -101,7 +104,7 @@ public class GroupApi extends BaseController {
     @ResponseBody
     @Before(GroupJoinValidator.class)
     public String detail(Integer groupId, Integer userId) {
-        String sql = "SELECT title1,content1,is_open1,title2,content2,is_open2,title3,content3,is_open3,ga.`status`,ig.`status` AS istatus FROM tb_group g " +
+        String sql = "SELECT telphone, title1,content1,is_open1,title2,content2,is_open2,title3,content3,is_open3,ga.`status`,ig.`status` AS istatus FROM tb_group g " +
                 "LEFT JOIN tb_group_approval ga ON g.`id` = ga.`group_id` AND ga.`user_id` = #{userId} LEFT JOIN tb_interest_group ig ON g.`id` = ig.`group_id` " +
                 "AND ig.`user_id`= #{userId} WHERE g.id = #{groupId} ";
         Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId).set("userId", userId));
@@ -109,7 +112,23 @@ public class GroupApi extends BaseController {
         Integer status = record.get("status") == null ? null : (Integer) record.get("status");
         Integer istatus = record.get("istatus") == null ? null : (Integer) record.get("istatus");
         List<Button> btnList = GroupBtnRegister.create().registerBtns(status, istatus);
-        return success(Record.create().set("tagList", list).set("btnList", btnList));
+
+        String telphone = record.getStr("telphone");
+        List<String> telList = new ArrayList<>();
+        if (status == null || status == 1 || status == 3 || status == 4) {
+            telphone = "";
+        }
+        else {
+            if (StringUtils.isNotBlank(telphone)) {
+                String[] tels = telphone.split("\\|");
+                for (String tel : tels) {
+                    if (StringUtils.isNotBlank(tel)) {
+                        telList.add(tel);
+                    }
+                }
+            }
+        }
+        return success(Record.create().set("tagList", list).set("btnList", btnList).set("telphoneList", telList), "group");
     }
 
     /**
@@ -230,5 +249,19 @@ public class GroupApi extends BaseController {
         JqGrid jqGrid = new JqGrid(page2.getRows(), page2.getTotal(), page2.getPage(), page2.getRecords());
         Convert.recordToSearchResult(jqGrid.getRows());
         return success(jqGrid);
+    }
+
+    /**
+     * 退出组织
+     * @param groupId 组织ID
+     * @param userId 用户ID
+     * @return result
+     */
+    @PostMapping(value = "/out")
+    @Before(GroupUserValidate.class)
+    @ResponseBody
+    public String out(Integer groupId, Integer userId) {
+        groupService.out(groupId, userId);
+        return success();
     }
 }

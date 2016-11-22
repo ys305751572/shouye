@@ -40,7 +40,7 @@ public class Group extends BaseModel {
     @Column(name = "admin_count")
     private Integer adminCount = 0;
     @Column(name = "status")
-    private Integer status = 0;
+    private Integer status = 1;
 
     //组织审核状态 0:待审核 1:申请重审 2:审核通过 3:否决
     @Column(name = "audit_status")

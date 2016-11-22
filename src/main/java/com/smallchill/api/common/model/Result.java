@@ -103,9 +103,13 @@ public class Result {
             pagemap.put("currentPage", jqGrid.getPage());
             result.data.put("page", pagemap);
             result.data.put("list", list);
-        } else {
+        } else if (data instanceof BaseVo) {
+            String objName = data.getClass().getSimpleName().toLowerCase();
+            result.data.put(objName, data);
+        }
+        else {
             String key = "object";
-            if(StringUtils.isNotBlank(name[0])) {
+            if(name != null && StringUtils.isNotBlank(name[0])) {
                 key = name[0];
             }
             result.data.put(key, data);

@@ -10,4 +10,5 @@ import com.smallchill.web.model.UserGroup;
  * 2016-10-28 11:08:59
  */
 public interface UserGroupService extends IService<UserGroup> {
+
 }
