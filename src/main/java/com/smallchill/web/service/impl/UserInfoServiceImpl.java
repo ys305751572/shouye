@@ -320,8 +320,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         if (StringUtils.isNotBlank(userinfo.getProfessionalLevel())) {
             per += 5;
         }
-        if (StringUtils.isNotBlank(userinfo.getZy()) && StringUtils.isNotBlank(userinfo.getSc())
-                && StringUtils.isNotBlank(userinfo.getZl()) && StringUtils.isNotBlank(userinfo.getZy2())) {
+        if (StringUtils.isNotBlank(userinfo.getZy()) || StringUtils.isNotBlank(userinfo.getSc())
+                || StringUtils.isNotBlank(userinfo.getZl()) || StringUtils.isNotBlank(userinfo.getZy2())) {
             per += 5;
         }
         if (StringUtils.isNotBlank(userinfo.getKeyWord())) {

@@ -22,6 +22,7 @@ public class UserApiIntercept extends ApiQueryIntercept {
         setParma("userId", ac);
         setParma("groupId", ac);
         setParma("history", ac);
+        ac.setCondition(" and userId IS NOT NULL");
     }
 
     @Override

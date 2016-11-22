@@ -64,7 +64,7 @@ SELECT
     g.city,
     g.type,
     g.province_city provinceCity,
-    g.member_count memberCount,
+    (select count(*) from tb_user_group ug where ug.group_id = g.id) memberCount,
     g.targat,
     ga.user_id userId,
     ga.status
