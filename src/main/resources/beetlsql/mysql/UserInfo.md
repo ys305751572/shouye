@@ -53,7 +53,7 @@ GROUP BY tui.id
 listPage
 ====
 select 
-    ui.user_id userId,
+    ui.user_id AS userId,
     ui.username,
     ui.avater,
     ui.province_id province,
@@ -82,6 +82,7 @@ LEFT JOIN tb_user_approval ua ON ((ui.user_id = ua.from_user_id OR ui.user_id = 
     RIGHT JOIN tb_group_user_record gur ON (ui.user_id = gur.to_user_id and gur.group_id = #{groupId} and gur.user_id = #{userId})
 @}
 LEFT JOIN tb_interest_user i ON (i.to_user_id = ui.user_id AND i.status = 0)
+GROUP BY userId
 
 userInfoDetail
 ==============

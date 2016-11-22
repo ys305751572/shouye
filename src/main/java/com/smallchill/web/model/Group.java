@@ -101,7 +101,17 @@ public class Group extends BaseModel {
     //专业限制
     @Column(name = "zy_limit")
     private Integer zyLimit;
+    // 组织服务电话
+    @Column(name = "telphone")
+    private String telphone;
 
+    public String getTelphone() {
+        return telphone;
+    }
+
+    public void setTelphone(String telphone) {
+        this.telphone = telphone;
+    }
 
     public Integer getIsOpen1() {
         return isOpen1;
