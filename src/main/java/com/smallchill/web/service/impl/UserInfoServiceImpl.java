@@ -6,19 +6,24 @@ import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.modal.*;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.*;
+import com.smallchill.common.task.TimeWorkManager;
 import com.smallchill.core.base.service.BaseService;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.NetKit;
 import com.smallchill.platform.model.UserLogin;
 import com.smallchill.platform.service.UserLoginService;
+import com.smallchill.web.meta.task.SendTimeWork;
+import com.smallchill.web.meta.task.TestTimeWork;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
+import org.beetl.ext.fn.ParseInt;
 import org.beetl.sql.core.kit.StringKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +32,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -60,6 +67,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     private UserFriendGroupingService userFriendGroupingService;
     @Autowired
     private UfgmService ufgmService;
+    @Autowired
+    private MessageService messageService;
 
     @Transactional
     @Override
@@ -459,8 +468,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     }
 
     @Override
-    public void sendMessage(HttpServletRequest request, String id, Integer send, String sendTime, String title, String content) {
-        if (StringKit.isNotBlank(id)) {
+    public void sendMessage(Integer id,Integer sendNum ,Long sendData ,String title, String content) {
+        if (id!=null) {
             //给一个组织发送信息
             System.out.println("----id----");
             System.out.println(id);
@@ -468,7 +477,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
         } else {
             //给查询结果的所有组织
-            List<Integer> ids = (List<Integer>) request.getSession().getAttribute("userInfoIds");
+            List<Integer> ids = (List<Integer>) ShiroKit.getSession().getAttribute("userInfoIds");
             System.out.println("----ids----");
             for (Integer _id : ids) {
                 System.out.println(_id);

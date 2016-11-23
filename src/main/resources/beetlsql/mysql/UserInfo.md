@@ -8,6 +8,7 @@ SELECT
   tui.username AS userName,
   tui.gender AS gender,
   tui.age AS age,
+  tfd.num AS ageId,
   tui.province_city AS provinceCity,
   tui.school AS school,
   tui.career AS career,
@@ -48,6 +49,7 @@ FROM tb_user_info tui
   LEFT JOIN tb_userinfo_career tuc ON tui.id = tuc.user_id
   LEFT JOIN tb_userinfo_domain tud ON tui.id = tud.user_id
   LEFT JOIN tb_userinfo_professional tup ON tui.id = tup.user_id
+  LEFT JOIN (SELECT id,num,NAME FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id = tfd.id
 GROUP BY tui.id
 
 listPage

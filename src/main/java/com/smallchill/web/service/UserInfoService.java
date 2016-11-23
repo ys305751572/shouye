@@ -38,16 +38,15 @@ public interface UserInfoService extends IService<UserInfo> {
 
 
     /**
-     * 发送消息
+     * 组织给用户发送消息
      *
-     * @param request  request
      * @param id       用户ID
-     * @param send     发送类型
-     * @param sendTime 定时发送
+     * @param sendNum  发送次数
+     * @param sendData 发送日期
      * @param title    标题
      * @param content  内容
      */
-    void sendMessage(HttpServletRequest request, String id, Integer send, String sendTime, String title, String content);
+    void sendMessage(Integer id,Integer sendNum ,Long sendData ,String title, String content);
 
     /**
      * 根据关键字查询用户列表
