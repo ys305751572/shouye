@@ -25,7 +25,7 @@ public class GroupBtnRegister {
      * @return btnlist
      */
     public List<Button> registerBtns(Integer status, Integer istatus) {
-        if (status == null || status == 2 || status == 4) {
+        if (status == null || status == 3) {
             addJoin();
         }
         if (istatus == null || istatus == 1) {

@@ -68,7 +68,7 @@ public class GroupApi extends BaseController {
     @Before(GroupPageValidator.class)
     public String list(Integer method, Integer userId) {
         JqGrid page;
-        if (method == 1) {
+        if (method == null || method == 1) {
             // 全部
             try {
                 page = apiPaginate("Group.listPage",
@@ -117,8 +117,7 @@ public class GroupApi extends BaseController {
         List<String> telList = new ArrayList<>();
         if (status == null || status == 1 || status == 3 || status == 4) {
             telphone = "";
-        }
-        else {
+        } else {
             if (StringUtils.isNotBlank(telphone)) {
                 String[] tels = telphone.split("\\|");
                 for (String tel : tels) {
@@ -253,8 +252,9 @@ public class GroupApi extends BaseController {
 
     /**
      * 退出组织
+     *
      * @param groupId 组织ID
-     * @param userId 用户ID
+     * @param userId  用户ID
      * @return result
      */
     @PostMapping(value = "/out")
@@ -263,5 +263,17 @@ public class GroupApi extends BaseController {
     public String out(Integer groupId, Integer userId) {
         groupService.out(groupId, userId);
         return success();
+    }
+
+    /**
+     * 热门关键字
+     *
+     * @return result
+     */
+    @PostMapping(value = "/hotword")
+    @ResponseBody
+    public String hotWord() {
+        List<Record> list = Db.init().selectList("SELECT id,name FROM tb_hot_keyword limit 0,10");
+        return success(list);
     }
 }

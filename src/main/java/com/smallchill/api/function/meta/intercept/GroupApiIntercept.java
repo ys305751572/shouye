@@ -22,7 +22,9 @@ public class GroupApiIntercept extends ApiQueryIntercept {
         BladePage bladePage = (BladePage) ac.getObject();
         List<Map> list = bladePage.getRows();
         for (Map record : list) {
-            if (record.get("status") == null || Integer.parseInt(record.get("status").toString()) != 1) {
+            if (record.get("status") == null || Integer.parseInt(record.get("status").toString()) == 1
+                    || Integer.parseInt(record.get("status").toString()) == 3
+                    || Integer.parseInt(record.get("status").toString()) == 4) {
                 record.put("isjoin", 0);
             } else {
                 record.put("isjoin", 1);

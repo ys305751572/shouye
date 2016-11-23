@@ -24,13 +24,23 @@ public class GroupApproval extends BaseModel {
     @Column(name = "group_id")
     private Integer groupId;
     @Column(name = "status")
-    private Integer status = 0;
+    private Integer status = 1;
     @Column(name = "paied")
     private Integer paied = 1;
+    @Column(name = "match_type")
+    private String matchType;
     @Column(name = "validate_info")
     private String validateInfo;
     @Column(name = "create_time")
     private Long createTime = DateTimeKit.nowLong();
+
+    public String getMatchType() {
+        return matchType;
+    }
+
+    public void setMatchType(String matchType) {
+        this.matchType = matchType;
+    }
 
     public Integer getStatus() {
         return status;

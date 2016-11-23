@@ -7,6 +7,7 @@ import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserInfo;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.CaseInsensitiveMap;
+import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 
 import java.util.ArrayList;
@@ -29,9 +30,12 @@ public class Convert {
         String professional = (String) record.get("professional");
         String organization = (String) record.get("organization");
         Integer per = record.getInt("per");
-        UserVo userVo = new UserVo(id, username, city, domain, keyWord, organization, professional,"");
+        UserVo userVo = new UserVo(id, username, city, domain, keyWord, organization, professional, "");
         userVo.setPer(per);
+        userVo.setDesc(record.getStr("desc"));
         userVo.setAvater(record.getStr("avater"));
+        userVo.setCarrer(record.getStr("career"));
+        userVo.setSchool(record.getStr("school"));
         return userVo;
     }
 
@@ -101,5 +105,24 @@ public class Convert {
                 }
             }
         }
+    }
+
+    /**
+     * 好友关键字 字符串转换为列表
+     *
+     * @param label 关键字
+     * @return list
+     */
+    public static List<String> labelToSameKeyList(String label) {
+        List<String> list = new ArrayList<>();
+        if (StringUtils.isBlank(label)) return list;
+
+        String[] labels = label.split("\\|");
+        for (String l : labels) {
+            if (StringUtils.isNotBlank(l)) {
+                list.add(l);
+            }
+        }
+        return list;
     }
 }

@@ -1,7 +1,7 @@
 list
 ===
 select 
-    ui.user_id,ui.username,ui.avater,ui.province_city,ui.domain,ui.key_word,ui.organization,ui.professional 
+    ui.user_id userId,ui.username,ui.avater,ui.province_city provinceCity,ui.domain,ui.key_word keyWord,ui.organization,ui.professional,uf.label
 from 
     tb_user_friend uf 
 left join 

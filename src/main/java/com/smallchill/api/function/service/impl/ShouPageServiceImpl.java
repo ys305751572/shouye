@@ -8,10 +8,12 @@ import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.ShoupageService;
 import com.smallchill.api.function.service.UserLastReadTimeService;
 import com.smallchill.core.constant.ConstCache;
+import com.smallchill.core.modules.support.Conver;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.kit.DateKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.web.service.GroupService;
@@ -20,10 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 手页录api
@@ -41,14 +40,14 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     @Autowired
     private GroupService groupService;
 
-    private String USER_BASE_INFO_SQL = " ui.user_id,ui.username,ui.avater,ui.province_city,ui.domain,ui.key_word,ui.organization,ui.professional ";
+    private String USER_BASE_INFO_SQL = " ui.user_id userId,ui.username,IFNULL(ui.avater,'') as avater ,ui.province_city provinceCity,ui.domain,ui.key_word keyWord,ui.organization,ui.professional,ui.per ";
 
     private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.status,ua.from_user_id,ua.to_user_id " +
             "from tb_user_approval ua join tb_user_info ui";
 
     private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id where i.user_id = #{userId}";
 
-    private String GROUP_BASE_INFO_SQL = " g.id,g.name,g.avater,g.province,g.city,g.type,g.province_city provinceCity,g.member_count memberCount,g.targat ";
+    private String GROUP_BASE_INFO_SQL = " g.id,g.name,IFNULL(g.avater,'') as avater,g.province,g.city,g.type,g.province_city provinceCity,g.member_count memberCount,g.targat ";
 
     private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + " from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
 
@@ -112,7 +111,9 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         List<Record> friends = Db.init().selectList(sql, where, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         for (Record record : friends) {
-            voList.add(Convert.recordToVo(record));
+            UserVo userVo = Convert.recordToVo(record);
+            userVo.setSameKeyList(Convert.labelToSameKeyList(record.getStr("label")));
+            voList.add(userVo);
         }
         return voList;
     }
@@ -346,10 +347,10 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             Object unstatusObj = record.get("uatatus");
             if (unstatusObj == null || !unstatusObj.toString().equals("1")) {
                 // 未结识
-                type = NOT_PROCESS_FROM_USER_ID;
+                type = 2;
             } else {
                 // 已结识
-                type = FRIEND;
+                type = 1;
             }
             vo.setStatus(type);
             voList.add(vo);
@@ -431,6 +432,8 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
                 "    g.member_count memberCount,\n" +
                 "    g.targat,\n" +
                 "    ga.user_id userId,\n" +
+                "    ga.validate_info info,\n" +
+                "    ga.through_time,\n" +
                 "    ga.status\n" +
                 "FROM\n" +
                 "    tb_group g\n" +
@@ -442,10 +445,32 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
         List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));
         List<Groupvo> groupvos = new ArrayList<>();
-
         for (Record record : list) {
-            groupvos.add(Convert.recordToGroupVo(record));
+            Groupvo groupvo = Convert.recordToGroupVo(record);
+            groupvo.setType(record.getInt("type"));
+            groupvo.setInfo(record.getStr("name") + ":" + record.getStr("info"));
+            groupvo.setRemainingTime(remainingTime(record.getLong("through_time")));
+            int status = record.getInt("status");
+            if (status == 1) {
+                groupvo.setStatus(0);
+            }
+            else {
+                groupvo.setStatus(1);
+            }
+            groupvos.add(groupvo);
         }
         return groupvos;
+    }
+
+    public String remainingTime(long throughTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(throughTime);
+        calendar.add(Calendar.YEAR, 1);
+        long nextTime = calendar.getTimeInMillis();
+        long currentTime = DateTimeKit.nowLong();
+        long m = DateKit.getMinSub(currentTime, nextTime);
+        long days = m / 24;
+        long m2 = m % 24;
+        return days < 30 ? days + "天" + m2 + "分" : "";
     }
 }

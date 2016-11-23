@@ -172,8 +172,6 @@ public class UserApi extends BaseController implements ConstCache {
     /**
      * 用户-拉黑用户
      *
-     * @param fromUserId 当前用户ID
-     * @param toUserId   被拉入黑名单用户ID
      * @return result
      */
     @RequestMapping(value = "/blank")
@@ -187,8 +185,6 @@ public class UserApi extends BaseController implements ConstCache {
     /**
      * 用户 - 移除黑名单
      *
-     * @param fromUserId 当前用户ID
-     * @param toUserId   被拉入黑名单用户ID
      * @return result
      */
     @RequestMapping(value = "/unblank")
@@ -202,25 +198,18 @@ public class UserApi extends BaseController implements ConstCache {
     /**
      * 用户-感兴趣
      *
-     * @param ui
+     * @param userId
      * @return result
      */
     @RequestMapping(value = "/interest")
     @ResponseBody
     @Before(UserInterestValidate.class)
-    public String userInterest(UserInterest ui) {
-        String where = "user_id = #{userId} and to_user_id = #{toUserId}";
-        Record record = Record.create().set("userId", ui.getUserId()).set("toUserId", ui.getToUserId());
-        UserInterest userInterest = userInterestService.findFirstBy(where, record);
-        if (userInterest != null) {
-            userInterestService.updateBy("status = 0", where, record);
-        } else {
-            userInterest = new UserInterest();
-            userInterest.setStatus(0);
-            userInterest.setUserId(ui.getUserId());
-            userInterest.setToUserId(ui.getToUserId());
-            userInterest.setCreateTime(DateTimeKit.nowLong());
-            userInterestService.save(userInterest);
+    public String userInterest(Integer userId, String toUserIds) {
+        try {
+            userInfoService.interest(userId, toUserIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
         }
         return success();
     }
@@ -363,5 +352,24 @@ public class UserApi extends BaseController implements ConstCache {
             return fail();
         }
         return success();
+    }
+
+    /**
+     * 查看交集
+     *
+     * @return result
+     */
+    @PostMapping(value = "/intersection")
+    @ResponseBody
+    @Before(IntersectionValidate.class)
+    public String intersection(Integer userId, Integer toUserId) {
+        Record record;
+        try {
+            record = userInfoService.intersection(userId, toUserId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success(record, "intersection");
     }
 }

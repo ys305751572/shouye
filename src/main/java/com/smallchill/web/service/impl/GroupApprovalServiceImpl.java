@@ -3,6 +3,8 @@ package com.smallchill.web.service.impl;
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInOthersBlankException;
+import com.smallchill.api.function.modal.vo.GroupApprovalVo;
+import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
@@ -12,12 +14,16 @@ import com.smallchill.web.model.GroupApproval;
 import com.smallchill.web.model.GroupExtend;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -145,6 +151,30 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         group.setProfessionalLimit(professionalLimit);
         group.setZyLimit(zyLimit);
         groupService.update(group);
+    }
+
+    @Override
+    public GroupApprovalVo gaInfo(Integer groupId) {
+
+        String sql = "SELECT g.id, g.`targat`, ge.`cost` FROM tb_group g LEFT JOIN tb_group_extend ge " +
+                "ON g.`id` = ge.`group_id` WHERE g.`id` = #{groupId}";
+
+        Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId));
+        String target = record.getStr("targat");
+        BigDecimal cost = record.get("cost") == null ? BigDecimal.valueOf(0) : BigDecimal.valueOf(Double.parseDouble(record.get("cost").toString()));
+        List<String> targets = new ArrayList<>();
+        if (StringUtils.isNotBlank(target)) {
+            String[] targetss = target.split("\\|");
+            for (String t : targetss) {
+                if (StringUtils.isNotBlank(t)) {
+                    targets.add(t);
+                }
+            }
+        }
+        GroupApprovalVo vo = new GroupApprovalVo();
+        vo.setMoney(cost);
+        vo.setTarget(targets);
+        return vo;
     }
 
     /**

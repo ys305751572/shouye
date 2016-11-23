@@ -93,6 +93,7 @@ select
     ui.user_id userId,
     ui.username,
     ui.avater,
+    ui.mobile,
     ui.province_id province,
     ui.city_id city,
     ui.school,

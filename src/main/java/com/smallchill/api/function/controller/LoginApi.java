@@ -53,6 +53,7 @@ public class LoginApi extends BaseController {
             userLogin = userLoginService.loginCheck(mobile);
             UserInfo userInfo = userLoginService.afterLoginQuery(userLogin, this.getRequest());
             userVo = Convert.userInfoToRecord(userInfo);
+            userVo.setPer(userInfo.getPer());
         } catch (UserNotFoundException e) {
             return toJson(Result.fail(ErrorType.ERROR_CODE_USERNOTFOUND));
         } catch (UserFreezeException e) {
