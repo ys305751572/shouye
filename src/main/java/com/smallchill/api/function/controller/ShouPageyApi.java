@@ -42,12 +42,15 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
      */
     @RequestMapping(value = "/index")
     @ResponseBody
-    public String index(Integer userId) {
+    public String index(Integer userId, Integer domainId, Integer city, Integer grouping) {
         final Integer userid = userId;
-        ShouPageVo vo = CacheKit.get(DIY_CACHE, INDEX + userId, new ILoader() {
+        final Integer domainid = domainId;
+        final Integer cityid = city;
+        final Integer groupingid = grouping;
+        ShouPageVo vo = CacheKit.get(DIY_CACHE, INDEX + userId + "_" + domainId + "_" + city + "_grouping" + grouping, new ILoader() {
             @Override
             public Object load() {
-                return shoupageService.index(userid);
+                return shoupageService.index(userid, domainid, cityid, groupingid);
             }
         });
         return success(vo, "shoupage");
@@ -87,7 +90,7 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
                 return shoupageService.listIntereste(userid);
             }
         });
-        return success(resultMap,"intereste");
+        return success(resultMap, "intereste");
     }
 
     /**

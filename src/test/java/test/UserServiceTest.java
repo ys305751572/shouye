@@ -39,8 +39,8 @@ public class UserServiceTest extends BaseJunit4Test{
 
     @Test
     public void testUserFriends() {
-        List<UserVo> list = shoupageService.friends(5);
-        System.out.println(JsonKit.toJson(Result.success(list)));
+//        List<UserVo> list = shoupageService.friends(5);
+//        System.out.println(JsonKit.toJson(Result.success(list)));
     }
 
     /**

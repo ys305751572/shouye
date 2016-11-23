@@ -9,22 +9,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * 手页录
  * Created by yesong on 2016/11/1 0001.
  */
 public interface ShoupageService {
 
-    ShouPageVo index(Integer userId);
+    ShouPageVo index(Integer userId, Integer domainId, Integer city, Integer grouping);
 
-    List<UserVo> friends(Integer userId);
+    List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping);
 
     int countNew(Integer userId, Long date);
 
-    Map<String,List<UserVo>> listNew(Integer userId);
+    Map<String, List<UserVo>> listNew(Integer userId);
 
     int countIntereste(Integer userId, Long date);
 
-    Map<String,Object> listIntereste(Integer userId);
+    Map<String, Object> listIntereste(Integer userId);
 
     int countInterested(Integer userId, Long date);
 

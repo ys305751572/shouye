@@ -83,14 +83,14 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      * @return 首页录vo
      */
     @Override
-    public ShouPageVo index(Integer userId) {
+    public ShouPageVo index(Integer userId, Integer domainId, Integer city, Integer grouping) {
 
         UserLastReadTime userLastReadTime = lastReadTimeByUserId(userId);
 
         if (userLastReadTime == null) {
             userLastReadTime = new UserLastReadTime();
         }
-        List<UserVo> voList = friends(userId);
+        List<UserVo> voList = friends(userId, domainId, city, grouping);
         ShouPageVo shouPageVo = new ShouPageVo();
 
         shouPageVo.setNewCount(countNew(userId, userLastReadTime.getNewTime()));
@@ -99,16 +99,39 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         shouPageVo.setInterestedCount(countInterested(userId, userLastReadTime.getInterested()));
         shouPageVo.setGroupCount(countGroup(userId, userLastReadTime.getGroup()));
         shouPageVo.setList(voList == null || voList.size() == 0 ? new ArrayList<UserVo>() : voList);
-
-        System.out.println(JsonKit.toJson(shouPageVo));
         return shouPageVo;
     }
 
     @Override
-    public List<UserVo> friends(Integer userId) {
+    public List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping) {
         String sql = Blade.dao().getScript("UserFriend.list").getSql();
-        String where = "uf.user_id = #{userId}";
-        List<Record> friends = Db.init().selectList(sql, where, Record.create().set("userId", userId));
+        StringBuffer where = new StringBuffer("uf.user_id = #{userId}");
+        Record _r = Record.create().set("userId", userId);
+        if (city != null) {
+            where.append(" and ui.city_id = #{city} ");
+            _r.set("city", city);
+        }
+        if (grouping != null) {
+            String groupingStr = "";
+            switch (grouping) {
+                case 1:
+                    groupingStr = "熟人";
+                    break;
+                case 2:
+                    groupingStr = "校友";
+                    break;
+                case 3:
+                    groupingStr = "同组织";
+            }
+            where.append(" and uf.label like concat('%',#{grouping},'%')");
+            _r.set("grouping", groupingStr);
+        }
+        if (domainId != null) {
+            where.append("RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain})");
+            _r.set("domain", domainId);
+        }
+
+        List<Record> friends = Db.init().selectList(sql, where.toString(), _r);
         List<UserVo> voList = new ArrayList<>();
         for (Record record : friends) {
             UserVo userVo = Convert.recordToVo(record);
@@ -453,8 +476,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             int status = record.getInt("status");
             if (status == 1) {
                 groupvo.setStatus(0);
-            }
-            else {
+            } else {
                 groupvo.setStatus(1);
             }
             groupvos.add(groupvo);

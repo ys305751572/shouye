@@ -34,6 +34,7 @@ public class UserApiIntercept extends ApiQueryIntercept {
 
         for (Map record : list) {
             Object statusObj = record.get("status");
+            record.put("status", 1);
             if (statusObj == null) record.put("status", 1);
             if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 0)) {
                 int fromUserId = (int) record.get("from_user_id");
