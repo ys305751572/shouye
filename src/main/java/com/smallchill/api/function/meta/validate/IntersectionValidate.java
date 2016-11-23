@@ -5,13 +5,13 @@ import com.smallchill.core.aop.Invocation;
 import com.smallchill.core.intercept.ApiValidator;
 
 /**
- * 用户-感兴趣参数验证
- * Created by yesong on 2016/11/11 0011.
+ *
+ * Created by yesong on 2016/11/23 0023.
  */
-public class UserInterestValidate extends ApiValidator{
+public class IntersectionValidate extends ApiValidator{
     @Override
     protected void doValidate(Invocation inv) {
         validateRequired("userId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
-        validateRequired("toUserIds", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
+        validateRequired("toUserId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
     }
 }

@@ -3,6 +3,7 @@ package com.smallchill.web.service;
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInOthersBlankException;
+import com.smallchill.api.function.modal.vo.GroupApprovalVo;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.core.toolbox.support.BladePage;
 import com.smallchill.web.model.Group;
@@ -41,4 +42,11 @@ public interface GroupApprovalService extends IService<GroupApproval> {
      * 权限设置
      */
     void permissionSetting(Group group,Integer permissionsType,Integer isJoin,Integer costType,Integer cost,Integer sexLimit,Integer industryLimit,Integer domainLimit,Integer provinceLimit,Integer cityLimit,Integer professionalLimit,Integer zyLimit);
+
+    /**
+     * 申请页信息
+     * @param groupId 组织ID
+     * @return vo
+     */
+    GroupApprovalVo gaInfo(Integer groupId);
 }

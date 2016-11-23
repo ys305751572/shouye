@@ -132,6 +132,30 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         vo.setBtnList(list);
         vo.setSameKeyList(sameKeyList);
 
+
+        if (ua != null && ua.getStatus() == 1) {
+            vo.setMobile(record.getStr("mobile"));
+        } else {
+            vo.setMobile("");
+        }
+
+        vo.setStatus(1);
+        Integer statusObj = (ua == null ? null : ua.getStatus());
+        if (statusObj != null && statusObj == 0) {
+            int fromUserId = ua.getFromUserId();
+            if (fromUserId == userId) {
+                vo.setStatus(4);
+            }
+        } else if (statusObj != null && statusObj == 1) {
+            vo.setStatus(2);
+        }
+
+        Integer istatus = (ui == null ? null : ui.getStatus());
+        if (istatus != null && istatus == 0) {
+            record.put("status", 3);
+            vo.setStatus(3);
+        }
+
         if (groupId != null) {
             saveGroupUserRecord(userId, toUserId, groupId);
         }
@@ -573,5 +597,73 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         List<Record> customRecods = findCustomGrouping(userId);
         defaultRecords.addAll(customRecods);
         return defaultRecords;
+    }
+
+    /**
+     * 对用户感兴趣
+     *
+     * @param userId    当前用户ID
+     * @param toUserIds 感兴趣用户ID,多个ID用","号分割
+     */
+    @Transactional
+    @Override
+    public void interest(Integer userId, String toUserIds) {
+        String[] toUserIdss = toUserIds.split(",");
+        for (String toUserId : toUserIdss) {
+            String where = "user_id = #{userId} and to_user_id = #{toUserId}";
+            Record record = Record.create().set("userId", userId).set("toUserId", toUserId);
+            UserInterest userInterest = userInterestService.findFirstBy(where, record);
+            if (userInterest != null) {
+                userInterestService.updateBy("status = 0", where, record);
+            } else {
+                userInterest = new UserInterest();
+                userInterest.setStatus(0);
+                userInterest.setUserId(userId);
+                userInterest.setToUserId(Integer.parseInt(toUserId));
+                userInterest.setCreateTime(DateTimeKit.nowLong());
+                userInterestService.save(userInterest);
+            }
+        }
+    }
+
+    /**
+     * 查看交集
+     *
+     * @param userId   当前用户ID
+     * @param toUserId 目标用户ID
+     * @return record
+     */
+    @Override
+    public Record intersection(Integer userId, Integer toUserId) {
+        String sql = "SELECT uf.`friend_id` FROM tb_user_friend uf " +
+                "WHERE uf.`user_id` = #{userId} AND uf.`friend_id` IN (SELECT uf2.`friend_id` FROM tb_user_friend uf2 WHERE uf2.`user_id` = #{toUserId})";
+        List<Record> recordList = Db.init().selectList(sql, Record.create().set("userId", userId).set("toUserId", toUserId));
+        String sql2 = "select ui.user_id userId, ui.username FROM tb_user_info ui where ui.user_id in (#{ids})";
+        StringBuffer ids = new StringBuffer();
+        for (Record record : recordList) {
+            ids.append(record.getStr("friend_id")).append(",");
+        }
+        List<Record> userList;
+        if (ids.length() > 0) {
+            userList = Db.init().selectList(sql2, Record.create().set("ids", ids.substring(0, ids.length() - 1)));
+        } else {
+            userList = new ArrayList<>();
+        }
+        String sql3 = "SELECT ug.group_id FROM tb_user_group ug WHERE ug.`user_id` = 20 AND ug.`group_id` " +
+                "IN (SELECT ug2.group_id FROM tb_user_group ug2 WHERE ug2.`user_id` = 21)\n";
+        List<Record> groupRecordList = Db.init().selectList(sql3, Record.create().set("userId", userId).set("toUserId", toUserId));
+        StringBuffer ids2 = new StringBuffer();
+        for (Record record : groupRecordList) {
+            ids2.append(record.getStr("group_id")).append(",");
+        }
+        String sql4 = "SELECT id,`name` FROM tb_group WHERE id IN (#{ids2})";
+        List<Record> groupList;
+        if (ids2.length() > 0) {
+            groupList = Db.init().selectList(sql4, Record.create().set("ids2", ids2.substring(0, ids2.length() - 1)));
+        } else {
+            groupList = new ArrayList<>();
+        }
+        Record record = Record.create();
+        return record.set("uservos", userList).set("groupvos", groupList);
     }
 }

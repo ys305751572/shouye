@@ -51,13 +51,22 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * 5.熟人的熟人结识
      */
     @Override
-    public void toUserOneWay(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException,
+    public void toUserOneWay(UserApproval ua, String toUserIds) throws UserInOthersBlankException, UserHasApprovalException,
             UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException {
-        if (this.requestValidate(ua)) {
-            ua.setIntroduceUserId(0);
-            ua.setGroupId(0);
-            ua.setCreateTime(DateTimeKit.nowLong());
-            this.save(ua);
+        if (StringUtils.isBlank(toUserIds)) {
+            return;
+        }
+        String[] toUserIdss = toUserIds.split(",");
+        for (String toUserId : toUserIdss) {
+            if (StringUtils.isNotBlank(toUserId)) {
+                ua.setToUserId(Integer.parseInt(toUserId));
+                if (this.requestValidate(ua)) {
+                    ua.setIntroduceUserId(0);
+                    ua.setGroupId(0);
+                    ua.setCreateTime(DateTimeKit.nowLong());
+                    this.save(ua);
+                }
+            }
         }
     }
 

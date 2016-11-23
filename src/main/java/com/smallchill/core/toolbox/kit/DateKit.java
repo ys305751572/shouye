@@ -312,6 +312,35 @@ public class DateKit {
 	}
 
 	/**
+	 * <li>功能描述：时间相减得到天数
+	 *
+	 * @param beginDateStr
+	 * @param endDateStr
+	 * @return long
+	 * @author Administrator
+	 */
+	public static long getDaySub(long beginDateStr, long endDateStr) {
+		long day = 0;
+		day = (endDateStr - beginDateStr) / (24 * 60 * 60 * 1000);
+		// System.out.println("相隔的天数="+day);
+		return day;
+	}
+
+	/**
+	 * <li>功能描述：时间相减得到分数
+	 *
+	 * @param beginDateStr
+	 * @param endDateStr
+	 * @return long
+	 * @author Administrator
+	 */
+	public static long getMinSub(long beginDateStr, long endDateStr) {
+		long day = 0;
+		day = (endDateStr - beginDateStr) / ( 60 * 60 * 1000);
+		return day;
+	}
+
+	/**
 	 * 得到n天之后的日期
 	 * 
 	 * @param days

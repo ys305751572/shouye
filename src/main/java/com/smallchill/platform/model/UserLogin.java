@@ -27,7 +27,7 @@ public class UserLogin extends BaseModel {
     @Column(name = "password")
     private String password = "";
     @Column(name = "status")
-    private Integer status = 0;
+    private Integer status = 1;
     @Column(name = "content")
     private String content = "";
     @Column(name = "unlock_time")

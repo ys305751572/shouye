@@ -15,4 +15,6 @@ public interface UserInterestService extends IService<UserInterest>{
      * @return
      */
     UserInterest getByUserId(Integer userId, Integer toUserId);
+
+
 }

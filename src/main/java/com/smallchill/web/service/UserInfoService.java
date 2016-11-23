@@ -104,4 +104,19 @@ public interface UserInfoService extends IService<UserInfo> {
      * @return records
      */
     List<Record> findIndexGrouping(Integer userId);
+
+    /**
+     * 用户感兴趣多选
+     * @param userId 当前用户ID
+     * @param toUserIds 感兴趣用户ID,多个ID用","号分割
+     */
+    void interest(Integer userId, String toUserIds);
+
+    /**
+     * 查看交集
+     * @param userId
+     * @param toUserId
+     * @return
+     */
+    Record intersection(Integer userId, Integer toUserId);
 }

@@ -27,7 +27,7 @@ public class UserApprovalTest extends BaseJunit4Test{
         ua.setType(3);
         ua.setValidateInfo("申请加为好友");
         try {
-            userApprovalService.toUserOneWay(ua);
+            userApprovalService.toUserOneWay(ua,"21");
         } catch (UserHasApprovalException e) {
             e.printStackTrace();
         } catch (UsernotFriendException e) {
