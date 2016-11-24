@@ -18,6 +18,12 @@ public interface GroupApprovalService extends IService<GroupApproval> {
     void join(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException;
 
     /**
+     * 邀请用户加入组织
+     * @param userId 用户id
+     * @param content 验证信息
+     */
+    void userInvitation(Integer userId,String content);
+    /**
      * 干部列表
      * @param groupId
      * @return

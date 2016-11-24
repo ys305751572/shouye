@@ -70,9 +70,15 @@ var exwhere;
         console.log(ids);
         console.log(rowData);
 
+        //组织会员邀请加入
+        if (this.alias == "invitation" ) {
+            this.open(this.url);
+            return;
+        }
+
         //组织会员分组
         if (this.alias == "classification" ) {
-            this.open(this.url);
+           this.open(this.url);
             return;
         }
 

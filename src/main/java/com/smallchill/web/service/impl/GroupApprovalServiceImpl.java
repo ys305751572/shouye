@@ -7,6 +7,7 @@ import com.smallchill.api.function.modal.vo.GroupApprovalVo;
 import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.service.MessageService;
 import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.support.BladePage;
@@ -33,8 +34,6 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     private GroupService groupService;
     @Autowired
     private UserInfoService userInfoService;
-    @Autowired
-    private GroupApprovalService groupApprovalService;
     @Autowired
     private GroupExtendService groupExtendService;
     @Autowired
@@ -81,6 +80,21 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     }
 
     @Override
+    @Transactional
+    public void userInvitation(Integer userId, String content) {
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        GroupApproval groupApproval = new GroupApproval();
+        groupApproval.setUserId(userId);
+        groupApproval.setGroupId(group.getId());
+        groupApproval.setStatus(1); //未处理
+        groupApproval.setType(2); //组织邀请
+        groupApproval.setPaied(2); //已付款(邀请免费,默认算付款)
+        groupApproval.setValidateInfo(content); //验证信息
+        groupApproval.setCreateTime(DateTimeKit.nowLong());
+        this.save(groupApproval);
+    }
+
+    @Override
     public BladePage cadresList(Integer groupId) {
         String sql = "SELECT \n" +
                 "  tug.id AS id,\n" +
@@ -113,7 +127,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     @Override
     @Transactional
     public void updateStatus(Integer id, Integer status) {
-        GroupApproval groupApproval = groupApprovalService.findById(id);
+        GroupApproval groupApproval = this.findById(id);
         if(status==2){
             //批准通过的时间
             groupApproval.setThroughTime(DateTimeKit.nowLong());
@@ -148,7 +162,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         }
 
         groupApproval.setStatus(status);
-        groupApprovalService.update(groupApproval);
+        this.update(groupApproval);
     }
 
     @Override

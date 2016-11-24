@@ -5,6 +5,7 @@ import com.smallchill.api.function.service.MessageService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.common.pay.util.TimeUtil;
 import com.smallchill.core.constant.Cst;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
@@ -45,7 +46,6 @@ public class UserGroupController extends BaseController {
 
     @Autowired
     MessageService messageService;
-
     @Autowired
     UserInfoService userInfoService;
     @Autowired
@@ -58,6 +58,8 @@ public class UserGroupController extends BaseController {
     UserTagService userTagService;
     @Autowired
     TagService tagService;
+    @Autowired
+    GroupApprovalService groupApprovalService;
 
     @RequestMapping(value = "/")
     public String groupIndex(ModelMap mm) {
@@ -327,6 +329,7 @@ public class UserGroupController extends BaseController {
         mm.put("code", CODE);
         return BASE_PATH + "userGroup_message.html";
     }
+
     //消息发送
     @ResponseBody
     @RequestMapping("/send_message")
@@ -347,8 +350,50 @@ public class UserGroupController extends BaseController {
 
     }
 
+    /**
+     * 邀请加入
+     */
+    @RequestMapping("/invitation")
+    public String invitation(ModelMap mm) {
+        List list = userGroupService.findInvitationUser();
+        mm.put("list", list);
+        mm.put("code", CODE);
+        return BASE_PATH + "userGroup_invitation.html";
+    }
 
+    @RequestMapping(value = "/user_invitation")
+    @ResponseBody
+    public AjaxResult userInvitation(Integer userId,String content){
 
+        UserInfo userInfo = userInfoService.findByUserId(userId);
+        try{
+            if(userInfo==null){
+                return error("没有找到用户");
+            }
+            groupApprovalService.userInvitation(userId,content);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error(SEND_FAIL_MSG);
+        }
+        return success(SEND_SUCCESS_MSG);
+
+    }
+
+    @RequestMapping(value = "/add_userName")
+    @ResponseBody
+    public AjaxResult addUserName(Integer userId){
+        UserInfo userInfo = userInfoService.findByUserId(userId);
+        try{
+            if(userInfo==null){
+                return error("没有找到用户");
+            }
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error("添加失败");
+        }
+        return success(userInfo.getUsername());
+
+    }
 
 
 }

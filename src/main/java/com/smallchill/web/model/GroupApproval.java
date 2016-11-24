@@ -25,6 +25,8 @@ public class GroupApproval extends BaseModel {
     private Integer groupId;
     @Column(name = "status")
     private Integer status = 1;
+    @Column(name = "type")
+    private Integer type = 1;
     @Column(name = "paied")
     private Integer paied = 1;
     @Column(name = "match_type")
@@ -106,5 +108,13 @@ public class GroupApproval extends BaseModel {
 
     public void setThroughTime(Long throughTime) {
         this.throughTime = throughTime;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

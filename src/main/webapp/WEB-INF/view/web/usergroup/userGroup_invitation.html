@@ -1,0 +1,120 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<style>
+	#sp .btn {
+		background-color: #FFFFFF !important;
+		border: 1px solid #D5D5D5;
+		color: #393939 !important;
+	}
+	.but{
+		width: 50px;
+		height: 34px;
+		background: #6fb3e0;
+		font-weight: bold;
+		color: white;
+		border: 0 none;
+		border-radius: 1px;
+		cursor: pointer;
+
+	}
+	.but:hover, .but:focus {
+		box-shadow: 0 0 0 2px white, 0 0 0 3px #6fb3e0;
+	}
+
+</style>
+
+<form class="form-horizontal" role="form">
+	<div class="space-4"></div>
+	<!-- #section:elements.form -->
+	<div class="form-group" id="sp">
+		<label class="col-sm-2 control-label no-padding-right" > 手机 </label>
+		<div class="col-sm-7">
+			<select class="selectpicker show-tick form-control" data-live-search="true" id="mobile" >
+				<option value=" "> </option>
+				@for(x in list){
+					<option value="${x.userId!}">${x.mobile!}</option>
+				@}
+			</select>
+		</div>
+		<div class="col-sm-1">
+			<input type="button" name="" class="but" value="添加" onclick="addUser()"/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 邀请用户 </label>
+		<div class="col-sm-8">
+			<input type="text" name="userName" id="userName" placeholder="" class="form-control" disabled/>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" > 内容 </label>
+
+		<div class="col-sm-8">
+			<textarea id="content" style="height:200px" name="content" placeholder="" class="form-control"></textarea>
+		</div>
+	</div>
+
+	<div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+		<div class="col-md-offset-1 col-md-10">
+			<button class="btn btn-info" type="button" id="btn_save" >
+				<i class="ace-icon fa fa-check bigger-110"></i>
+				发送
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" id="btn_close">
+				<i class="ace-icon fa fa-close bigger-110"></i>
+				关闭
+			</button>
+		</div>
+	</div>
+
+	<script src="${basePath}/static/laydate/laydate.js"></script>
+	<link rel="stylesheet" href="${basePath}/static/bootstrap-select-1.11.0/dist/css/bootstrap-select.min.css">
+	<script src="${basePath}/static/bootstrap-select-1.11.0/dist/js/bootstrap-select.min.js"></script>
+	<script type="text/javascript">
+
+		var layerIndex = parent.layer.getFrameIndex(window.name);
+
+		$(function(){
+
+			$("#btn_close").bind("click",function(){
+				parent.layer.close(layerIndex);
+			});
+
+			$("#btn_save").bind("click",function(){
+				var userId = $("#mobile").val();
+				var content = $("#content").val();
+
+				$.post("${basePath}/${code}/user_invitation",{userId:userId , content:content}, function(data){
+					if(data.code===0){
+						layer_alert(data.message, "success");
+						parent.layer.close(layerIndex);
+					}
+					else{
+						layer_alert(data.msg, "error");
+					}
+				}, "json");
+
+			});
+		});
+
+		function addUser(){
+			var userId = $("#mobile").val();
+			$.post("${basePath}/${code}/add_userName",{userId:userId }, function(data){
+				if(data.code===0){
+					console.log(data);
+					$("#userName").val(data.message);
+				}
+				else{
+					layer_alert(data.message, "error");
+				}
+			}, "json");
+		}
+
+	</script>
+
+	<div class="space-4"></div>
+</form>
+@}
