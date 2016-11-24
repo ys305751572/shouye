@@ -26,10 +26,10 @@ public interface GroupApprovalService extends IService<GroupApproval> {
 
     /**
      * 委任or移除 干部
-     * @param userId    用户id
+     * @param id    组织用户关联id
      * @param status    是否干部
      */
-    void appointedSave(Integer userId,Integer status);
+    void appointedSave(Integer id,Integer status);
 
     /**
      * 修改审核状态

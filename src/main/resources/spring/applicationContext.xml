@@ -38,7 +38,7 @@
 			<bean class="org.beetl.sql.core.db.MySqlStyle"/>
 		</property>
 	</bean>
-	
+
 
 	<!-- 工程启动监听配置 -->
 	<bean id="startupListener" class="com.smallchill.core.listener.StartupListener" />

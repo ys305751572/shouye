@@ -111,15 +111,6 @@ public class UserInfo extends BaseModel {
     @Column(name = "targat")
     private String targat = "";
 
-    @Column(name = "vip_end_time")
-    private Long vipEndTime = -1L;
-
-    @Column(name = "vip_type")
-    private Integer type = 1;
-
-    @Column(name = "join_type")
-    private Integer JoinType = 1;
-
     @Column(name = "per")
     private Integer per = 0;
 
@@ -397,30 +388,6 @@ public class UserInfo extends BaseModel {
 
     public void setTargat(String targat) {
         this.targat = targat;
-    }
-
-    public Long getVipEndTime() {
-        return vipEndTime;
-    }
-
-    public void setVipEndTime(Long vipEndTime) {
-        this.vipEndTime = vipEndTime;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public Integer getJoinType() {
-        return JoinType;
-    }
-
-    public void setJoinType(Integer joinType) {
-        JoinType = joinType;
     }
 
     public Long getCreateTime() {

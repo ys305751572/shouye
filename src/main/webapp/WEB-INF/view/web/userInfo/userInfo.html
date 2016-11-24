@@ -97,7 +97,15 @@
 			{name:"groupName", index:"groupName", width:120},
 			{name:"vipType", index:"vipType", width:120,
 				formatter: function (cellvalue, options, rowObject) {
-					if(cellvalue == 1 ){
+					var cellvalues = cellvalue+"";
+					var a = cellvalues.split(",");
+					var index = true;
+					for(var j=0;j<a.length;j++){
+						if(a[j]==2){
+							index = false;
+						}
+					}
+					if(index){
 						return "会员";
 					}else{
 						return "干事";

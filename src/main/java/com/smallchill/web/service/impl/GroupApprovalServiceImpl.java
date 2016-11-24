@@ -5,14 +5,12 @@ import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInOthersBlankException;
 import com.smallchill.api.function.modal.vo.GroupApprovalVo;
 import com.smallchill.api.function.modal.vo.ShouPageVo;
+import com.smallchill.api.function.service.MessageService;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.support.BladePage;
-import com.smallchill.web.model.Group;
-import com.smallchill.web.model.GroupApproval;
-import com.smallchill.web.model.GroupExtend;
-import com.smallchill.web.model.UserInfo;
+import com.smallchill.web.model.*;
 import com.smallchill.web.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +19,7 @@ import com.smallchill.core.base.service.BaseService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 组织审核
@@ -44,6 +39,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     private GroupExtendService groupExtendService;
     @Autowired
     private UserGroupService userGroupService;
+    @Autowired
+    private MessageService messageService;
 
     /**
      * 是否已经申请
@@ -86,16 +83,17 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     @Override
     public BladePage cadresList(Integer groupId) {
         String sql = "SELECT \n" +
+                "  tug.id AS id,\n" +
                 "  tui.user_id AS userId,\n" +
                 "  tui.username AS userName,\n" +
-                "  tui.vip_type AS vipType,\n" +
+                "  tug.vip_type AS vipType,\n" +
                 "  tui.mobile AS mobile\n" +
                 "FROM\n" +
                 "  tb_user_group tug \n" +
                 "  LEFT JOIN tb_user_info tui \n" +
                 "    ON tug.user_id = tui.user_id \n" +
                 "WHERE 1=1 \n" +
-                "AND tui.vip_type = 2 \n" +
+                "AND tug.vip_type = 2 \n" +
                 "AND tug.group_id = #{groupId} \n" +
                 "ORDER BY userId";
         Map<String, Object> map = new HashMap<>();
@@ -106,16 +104,49 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Override
     @Transactional
-    public void appointedSave(Integer userId, Integer status) {
-        UserInfo userInfo = userInfoService.findByUserId(userId);
-        userInfo.setType(status);
-        userInfoService.update(userInfo);
+    public void appointedSave(Integer id, Integer status) {
+        UserGroup userGroup = userGroupService.findById(id);
+        userGroup.setType(status);
+        userGroupService.update(userGroup);
     }
 
     @Override
     @Transactional
     public void updateStatus(Integer id, Integer status) {
         GroupApproval groupApproval = groupApprovalService.findById(id);
+        if(status==2){
+            //批准通过的时间
+            groupApproval.setThroughTime(DateTimeKit.nowLong());
+            //新增一条会员组织关系
+            GroupExtend groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",groupApproval.getGroupId()));
+            UserGroup userGroup = new UserGroup();
+            userGroup.setGroupId(groupApproval.getGroupId());
+            userGroup.setUserId(groupApproval.getUserId());
+            if(groupExtend!=null){
+                if(groupExtend.getCostStatus()==1){
+                    Calendar calendar = Calendar.getInstance();
+                    Date date = new Date(System.currentTimeMillis());
+                    calendar.setTime(date);
+                    calendar.add(Calendar.YEAR, +1);
+                    date = calendar.getTime();
+                    Long time = date.getTime();
+                    userGroup.setVipEndTime(time);
+                }else {
+                    userGroup.setVipEndTime(-1L);
+                }
+            }
+            userGroup.setJoinType(1); //会员
+            userGroup.setType(1);   //主动加入
+            //发现消息
+            messageService.sendMsgForUserAuditAgree(groupApproval.getGroupId(),groupApproval.getUserId());
+
+        }else if(status==3){
+            //第三个参数为订单号(暂时没有)
+            messageService.sendMsgForUserAuditRefuse(groupApproval.getGroupId(),groupApproval.getUserId(),null);
+        }else if(status==4){
+            messageService.sendMsgForUserAuditBlank(groupApproval.getGroupId(),groupApproval.getUserId(),null);
+        }
+
         groupApproval.setStatus(status);
         groupApprovalService.update(groupApproval);
     }

@@ -25,6 +25,15 @@ public class UserGroup extends BaseModel {
     @Column(name = "group_id")
     private Integer groupId;
 
+    @Column(name = "vip_end_time")
+    private Long vipEndTime = -1L;
+
+    @Column(name = "vip_type")
+    private Integer type = 1;
+
+    @Column(name = "join_type")
+    private Integer JoinType = 1;
+
     @Column(name = "create_time")
     private Long createTime;
 
@@ -58,5 +67,29 @@ public class UserGroup extends BaseModel {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getVipEndTime() {
+        return vipEndTime;
+    }
+
+    public void setVipEndTime(Long vipEndTime) {
+        this.vipEndTime = vipEndTime;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getJoinType() {
+        return JoinType;
+    }
+
+    public void setJoinType(Integer joinType) {
+        JoinType = joinType;
     }
 }

@@ -99,7 +99,14 @@
             {name:"mobile",index:"mobile", width:120},
             {name:"createTime",index:"createTime", width:120},
             {name:"vipEndTime",index:"vipEndTime", width:120},
-            {name:"vipType",index:"vipType", width:120},
+            {name:"vipType",index:"vipType", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    if(cellvalue==1){
+                        return "会员";
+                    }else {
+                        return "干事";
+                    }
+                }},
             {name:"joinType",index:"joinType", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
@@ -191,29 +198,11 @@
             { title:false,
                 width: 300,
                 formatter: function (cellvalue, options, rowObject) {
-                    var id = rowObject.id;
-                    var status = rowObject.approvalStatus;
+                    var id = rowObject.userId;
 
-                    var approval = "<button title='批准' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"updateStatus(\'" + id + "\',\'" + 2 + "\')\">" +
-                            "<i class='fa fa-circle-o'></i> 批准</button>";
-
-                    var refused = "<button title='拒绝' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"updateStatus(\'" + id + "\',\'" + 3 + "\')\">" +
-                            "<i class='fa fa-circle-o'></i> 拒绝</button>";
-
-                    var shielding = "<button title='拉黑' class='btn btn-primary btn-circle edit' onclick=\"updateStatus(\'" + id + "\',\'" + 4 + "\')\">" +
-                            "<i class='fa fa-circle'></i> 拉黑</button>";
-
-                    var removeShielding = "<button title='移除拉黑' class='btn btn-primary btn-circle edit' onclick=\"updateStatus(\'" + id + "\',\'" + 1 + "\')\">" +
-                            "<i class='fa fa-circle'></i> 移除拉黑</button>";
-
-                    if (status == "1") {
-                        return  approval + "&nbsp;" + refused + "&nbsp;" + shielding ;
-                    } else if(status == "4"){
-                        return removeShielding;
-                    }else {
-                        return "/";
-                    }
-
+                    var remove = "<button title='移除组织' class='btn btn-primary btn-circle edit' onclick=\"remove(\'" + id + "\')\">" +
+                            "<i class='fa fa-circle'></i> 移除组织</button>";
+                    return remove;
                 }
             }
 
@@ -307,24 +296,13 @@
         return date;
     }
 
-    function updateStatus(id,status){
-        var str = "";
-        if(status==1){
-            str = "确定将该用户移除黑名单吗?";
-        }else if(status==2){
-            str = "确定批准该用户的申请吗?"
-        }else if(status==3){
-            str = "确定拒绝该用户的申请吗?"
-        }else if(status==4){
-            str = "确定拉黑该用户吗?"
-        }
-
+    function remove(id){
         //询问框
-        layer.confirm(str, {
+        layer.confirm("确定将该用户移除组织吗?", {
             btn: ['确定','取消'] //按钮
         }, function(){
             $.post(
-                    "${basePath}/${code}/updateStatus",
+                    "${basePath}/${code}/removeUser",
                     {id:id,status:status},
                     function (data){
                         if(data.code===0){

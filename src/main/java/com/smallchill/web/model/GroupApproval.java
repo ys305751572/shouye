@@ -31,6 +31,8 @@ public class GroupApproval extends BaseModel {
     private String matchType;
     @Column(name = "validate_info")
     private String validateInfo;
+    @Column(name = "through_time")
+    private Long throughTime;
     @Column(name = "create_time")
     private Long createTime = DateTimeKit.nowLong();
 
@@ -96,5 +98,13 @@ public class GroupApproval extends BaseModel {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getThroughTime() {
+        return throughTime;
+    }
+
+    public void setThroughTime(Long throughTime) {
+        this.throughTime = throughTime;
     }
 }

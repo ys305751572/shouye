@@ -115,14 +115,21 @@ public class GroupApprovalController extends BaseController {
     public String appointed(ModelMap mm) {
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         String sql = "SELECT \n" +
-                "  tui.user_id AS userId,\n" +
+                "  tug.id AS id,\n" +
+                "  tug.user_id AS userId,\n" +
                 "  tui.mobile AS mobile\n" +
                 "FROM\n" +
                 "  tb_user_group tug \n" +
                 "  LEFT JOIN tb_user_info tui \n" +
                 "    ON tug.user_id = tui.user_id \n" +
                 "WHERE 1=1 \n" +
-                "AND tui.vip_type = 1 \n" +
+                "AND tug.vip_type = 1 \n" +
+                "AND tug.user_id NOT IN\n" +
+                "  (SELECT \n" +
+                "    user_id \n" +
+                "  FROM\n" +
+                "    tb_user_group \n" +
+                "  WHERE vip_type = 2)" +
                 "AND tug.group_id = #{groupId} \n";
         List list = Db.init().selectList(sql,Record.create().set("groupId", group.getId()));
         mm.put("userInfos", list);
@@ -136,9 +143,9 @@ public class GroupApprovalController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/appointedSave")
-    public AjaxResult appointedSave(Integer userId,Integer status) {
+    public AjaxResult appointedSave(Integer id,Integer status) {
         try{
-            groupApprovalService.appointedSave(userId,status);
+            groupApprovalService.appointedSave(id,status);
         }catch (RuntimeException e){
             e.printStackTrace();
             return error("设置错误");

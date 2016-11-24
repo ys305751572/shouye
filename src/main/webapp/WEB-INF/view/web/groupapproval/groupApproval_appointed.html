@@ -25,12 +25,14 @@
 		var grid_url = ctx+"/${code}/cadresList";//查询列表接口
 		var _colnames=[
 			"序号",
+			"用户ID",
 			"名称",
 			"手机",
 			"类型",
 			"操作"
 		];
 		var _colmodel=[
+			{name:"id",index:"id", width:80,hidden:true},
 			{name:"userId",index:"userId", width:80,hidden:true},
 			{name:"userName",index:"userName", width:220},
 			{name:"mobile",index:"mobile", width:220},
@@ -38,7 +40,7 @@
 			{
 				width: 120,
 				formatter: function (cellvalue, options, rowObject) {
-					var id = rowObject.userId;
+					var id = rowObject.id;
 
 					var del = "<button title='移除' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"appointedSave(\'" + id + "\')\">" +
 							"<i class='fa fa-circle-o'></i> 移除</button>";
@@ -72,13 +74,13 @@
 			});
 			return;
 		}
-		var userId,str,status;
+		var id,str,status;
 		if(data==0){
-			userId = $("#mobile").val();
+			id = $("#mobile").val();
 			str = '确定将该用户设置为干部吗？';
 			status = 2;
 		}else {
-			userId = data;
+			id = data;
 			str = '确定取消该干部吗？';
 			status = 1;
 		}
@@ -87,7 +89,7 @@
 		}, function(){
 			$.post(
 				"${basePath}/${code}/appointedSave",
-				{userId:userId,status:status},
+				{id:id,status:status},
 				function (data){
 					if(data.code===0){
 						layer.msg(data.message, {
@@ -116,7 +118,7 @@
 			<select class="selectpicker show-tick form-control" data-live-search="true" id="mobile" >
 				<option value=" "> </option>
 				@ for(u in userInfos){
-					<option value="${u.userId!}">${u.mobile!}</option>
+					<option value="${u.id!}">${u.mobile!}</option>
 				@}
 			</select>
 		</div>

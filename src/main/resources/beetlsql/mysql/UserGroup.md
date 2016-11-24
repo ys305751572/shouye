@@ -26,8 +26,8 @@ SELECT
   tui.mobile AS mobile,
   DATE_FORMAT(FROM_UNIXTIME(tug.create_time / 1000),'%Y-%m-%d') AS createTime,
   DATE_FORMAT(FROM_UNIXTIME(tui.vip_end_time / 1000),'%Y-%m-%d') AS vipEndTime,
-  tui.vip_type AS vipType,
-  tui.join_type AS joinType,
+  tug.vip_type AS vipType,
+  tug.join_type AS joinType,
   GROUP_CONCAT(DISTINCT(tuc.classification)) AS classification,
   GROUP_CONCAT(DISTINCT(tut.tag)) AS tag
 FROM tb_user_group tug

@@ -45,6 +45,7 @@ public class UserGroupController extends BaseController {
 
     @Autowired
     MessageService messageService;
+
     @Autowired
     UserInfoService userInfoService;
     @Autowired
@@ -104,7 +105,26 @@ public class UserGroupController extends BaseController {
         return object;
     }
 
-    //分类
+
+    /**
+     *移除用户
+     */
+    @ResponseBody
+    @RequestMapping(value = "/removeUser")
+    public AjaxResult removeUser(Integer id) {
+        try{
+            userGroupService.removeUser(id);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error("移除失败");
+        }
+        return success("移除成功");
+    }
+
+
+    /**
+     * 分类
+     */
     @RequestMapping("/classification")
     public String classification(ModelMap mm) {
         List<Classification> list = classificationService.findAll();
@@ -181,8 +201,9 @@ public class UserGroupController extends BaseController {
         }
     }
 
-
-    //标签
+    /**
+     * 标签
+     */
     @RequestMapping("/tag")
     public String tag(ModelMap mm) {
         List<Tag> list = tagService.findAll();
@@ -259,13 +280,14 @@ public class UserGroupController extends BaseController {
     }
 
 
-    //发送内容
+    /**
+     * 发送
+     */
     //消息发送页面(单发)
     @RequestMapping("/message" + "/{id}")
     public String userMessages(ModelMap mm,@PathVariable Integer id) {
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         UserInfo userInfo =userInfoService.findByUserId(id);
-        Integer flag = 0;
 
         List<Message> messages = messageService.findBy(
                 "from_id = #{fromId} AND to_id = #{toId} AND send_date >= #{startDate} AND send_date < #{endDate} AND send_mass = #{sendMass} GROUP BY send_date",
@@ -276,11 +298,8 @@ public class UserGroupController extends BaseController {
                         .set("endDate",TimeUtil.getTimesnight())
                         .set("sendMass",1)
         );
-        if(messages.size()==3){
-            flag = 1;
-        }
 
-        mm.put("flag", flag);
+        mm.put("flag", messages.size());
         mm.put("userInfo", userInfo);
         mm.put("userInfoNum", 0);
         mm.put("code", CODE);
@@ -292,7 +311,6 @@ public class UserGroupController extends BaseController {
     public String _userMessages(ModelMap mm,HttpServletRequest request) {
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         UserInfo userInfo = new UserInfo();
-        Integer flag = 0;
 
         List<Message> messages = messageService.findBy(
                 "from_id = #{fromId} AND send_date >= #{startDate} AND send_date < #{endDate} AND send_mass = #{sendMass} GROUP BY send_date",
@@ -302,12 +320,8 @@ public class UserGroupController extends BaseController {
                         .set("endDate",TimeUtil.getTimesnight())
                         .set("sendMass",2)
         );
-        if(messages.size()==3){
-            flag = 1;
-        }
 
-        mm.put("flag", flag);
-
+        mm.put("flag", messages.size());
         mm.put("userInfoNum", request.getSession().getAttribute("userGroupNum"));
         mm.put("userInfo", userInfo);
         mm.put("code", CODE);

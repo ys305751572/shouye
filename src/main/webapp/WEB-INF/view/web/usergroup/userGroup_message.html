@@ -35,7 +35,7 @@
 
 	<div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
 		<div class="col-md-offset-1 col-md-10">
-			<button class="btn btn-info" type="button" id="btn_save">
+			<button class="btn btn-info" type="button" id="btn_save" >
 				<i class="ace-icon fa fa-check bigger-110"></i>
 				确认
 			</button>
@@ -54,12 +54,20 @@
 		var userName = "${userInfo.username}";
 		var userId = "${userInfo.userId}";
 		var userInfoNum = "${userInfoNum}";
+		var flag = "${flag}";
 
 		$(function(){
+
+
 			if(userInfoNum==0){
 				$("#name").val(userName);
 			}else {
 				$("#name").val(userInfoNum+" 个");
+			}
+
+			if(flag>=3){
+				$("#btn_save").attr("disabled",true);
+				$("#name").val("发送次数已达上限!");
 			}
 
 
@@ -73,7 +81,8 @@
 
 				$.post("${basePath}/${code}/send_message",{userId:userId , title:title, content:content}, function(data){
 					if(data.code===0){
-
+						layer_alert(data.message, "success");
+						parent.layer.close(layerIndex);
 					}
 					else{
 						layer_alert(data.msg, "error");
