@@ -1,11 +1,20 @@
 package com.smallchill.web.controller;
 
+import com.smallchill.api.function.modal.vo.SendVo;
+import com.smallchill.common.task.TimeWorkManager;
+import com.smallchill.core.constant.Cst;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.grid.GridManager;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.web.meta.task.SendTimeWork;
+import com.smallchill.web.meta.task.TestTimeWork;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.UserInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -72,14 +81,32 @@ public class UserInfoController extends BaseController {
 	@RequestMapping(KEY_LIST)
 	public Object list() {
 		JqGrid grid = (JqGrid)paginate(LIST_SOURCE);
-		List<CaseInsensitiveHashMap> list = grid.getRows();
 
-		//查询结果所有ID
+		Integer page = getParameterToInt("page", 1);
+		Integer rows = userInfoService.findAll().size();
+		String where = getParameter("where", "");
+		String sidx = getParameter("sidx", "");
+		String sord = getParameter("sord", "");
+		String sort = getParameter("sort", "");
+		String order = getParameter("order", "");
+
+		if (StrKit.notBlank(sidx)) {
+			sort = sidx + " " + sord
+					+ (StrKit.notBlank(sort) ? ("," + sort) : "");
+		}
+
+		JqGrid grid1 = (JqGrid) GridManager.paginate(null, page, rows, LIST_SOURCE, where, sort, order, Cst.me().getDefaultPageFactory(), this);
 		List<Integer> ids = new ArrayList<>();
+		List<CaseInsensitiveHashMap> list = grid1.getRows();
+		//查询结果所有ID
 		for (CaseInsensitiveHashMap map : list) {
-			Integer id = (Integer) map.get("ID");
+			Integer id = (Integer) map.get("userId");
 			ids.add(id);
 		}
+
+		System.out.println("===================Rows===================");
+		System.out.println(list.size());
+		System.out.println("===================Rows===================");
 		getRequest().getSession().setAttribute("userInfoIds",ids);
 		getRequest().getSession().setAttribute("userInfoNum",list.size());
 
@@ -166,9 +193,21 @@ public class UserInfoController extends BaseController {
 	//消息发送
 	@ResponseBody
 	@RequestMapping("/send_message")
-	public AjaxResult sendMessage(HttpServletRequest request,String userInfoId,Integer send,String sendTime,String title,String content) {
+	public AjaxResult sendMessage(Integer userInfoId,Integer send,String sendTime,String title,String content) {
 		try{
-			userInfoService.sendMessage(request,userInfoId,send,sendTime,title,content);
+			Long time ;
+			if(StringUtils.isNotBlank(sendTime)){
+				time = DateTimeKit.parseDateTime(sendTime).getTime();
+			}else {
+				time = System.currentTimeMillis() + 1000;
+			}
+			SendVo.setToId(userInfoId);
+			SendVo.setReceiveType(1);
+			SendVo.setSendType(send);
+			SendVo.setSendTime(time);
+			SendVo.setTitle(title);
+			SendVo.setContent(content);
+			TimeWorkManager.create().addTimeWork("sendTimeWork",time,SendTimeWork.class);
 		}catch (RuntimeException e){
 			e.printStackTrace();
 			return error(SEND_FAIL_MSG);

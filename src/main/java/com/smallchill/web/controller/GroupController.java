@@ -1,15 +1,22 @@
 package com.smallchill.web.controller;
 
+import com.smallchill.api.function.modal.vo.SendVo;
 import com.smallchill.common.base.BaseController;
+import com.smallchill.common.task.TimeWorkManager;
 import com.smallchill.common.vo.User;
+import com.smallchill.core.constant.Cst;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.grid.GridManager;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.core.toolbox.kit.StrKit;
 import com.smallchill.web.meta.intercept.GroupIntercept;
+import com.smallchill.web.meta.task.SendTimeWork;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.GroupExtend;
 import com.smallchill.web.model.GroupLoad;
@@ -75,15 +82,31 @@ public class GroupController extends BaseController {
     @RequestMapping(KEY_LIST)
     public Object list(HttpServletRequest request) {
         JqGrid object = (JqGrid) paginate(LIST_SOURCE, new GroupIntercept());
-        List<CaseInsensitiveHashMap> groupList = object.getRows();
-        //查询结果所有ID
+
+        Integer page = getParameterToInt("page", 1);
+        Integer rows = groupService.findAll().size();
+        String where = getParameter("where", "");
+        String sidx = getParameter("sidx", "");
+        String sord = getParameter("sord", "");
+        String sort = getParameter("sort", "");
+        String order = getParameter("order", "");
+
+        if (StrKit.notBlank(sidx)) {
+            sort = sidx + " " + sord
+                    + (StrKit.notBlank(sort) ? ("," + sort) : "");
+        }
+
+        JqGrid grid1 = (JqGrid) GridManager.paginate(null, page, rows, LIST_SOURCE, where, sort, order, Cst.me().getDefaultPageFactory(), this);
         List<Integer> ids = new ArrayList<>();
-        for (CaseInsensitiveHashMap map : groupList) {
+        List<CaseInsensitiveHashMap> list = grid1.getRows();
+        //查询结果所有ID
+        for (CaseInsensitiveHashMap map : list) {
             Integer id = (Integer) map.get("ID");
             ids.add(id);
         }
+
         request.getSession().setAttribute("groupIds",ids);
-        request.getSession().setAttribute("groupNum",groupList.size());
+        request.getSession().setAttribute("groupNum",list.size());
 
         //查询结果的所有会员数
 
@@ -121,13 +144,26 @@ public class GroupController extends BaseController {
     //消息发送
     @ResponseBody
     @RequestMapping("/send_message")
-    public AjaxResult sendMessage(HttpServletRequest request,String groupId,Integer send,String sendTime,String title,String content) {
-        boolean index = groupService.sendMessage(request,groupId,send,sendTime,title,content);
-        if (index) {
-            return success(SEND_SUCCESS_MSG);
-        } else {
+    public AjaxResult sendMessage(Integer groupId,Integer send,String sendTime,String title,String content) {
+        try{
+            Long time;
+            if(StringUtils.isNotBlank(sendTime)){
+                time = DateTimeKit.parseDateTime(sendTime).getTime();
+            }else {
+                time = System.currentTimeMillis() + 1000;
+            }
+            SendVo.setToId(groupId);
+            SendVo.setReceiveType(2);
+            SendVo.setSendType(send);
+            SendVo.setSendTime(time);
+            SendVo.setTitle(title);
+            SendVo.setContent(content);
+            TimeWorkManager.create().addTimeWork("sendTimeWork",time,SendTimeWork.class);
+        }catch (RuntimeException e){
+            e.printStackTrace();
             return error(SEND_FAIL_MSG);
         }
+        return success(SEND_SUCCESS_MSG);
     }
 
     //审核状态

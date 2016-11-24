@@ -3,6 +3,7 @@ package com.smallchill.api.function.service.impl;
 import com.smallchill.api.function.meta.consts.MessageConts;
 import com.smallchill.api.function.modal.Message;
 import com.smallchill.api.function.service.MessageService;
+import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.Group;
@@ -105,40 +106,50 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
     /**
      * 组织发送消息给单个用户
      *
-     * @param groupId 组织ID
-     * @param userId  用户id
-     * @param title   标题
-     * @param content 内容
+     * @param id       用户ID
+     * @param sendMass  发送次数
+     * @param sendData 发送日期
+     * @param title    标题
+     * @param content  内容
      */
     @Override
-    public void sendMsgFromGroupToUser(int groupId, int userId, String title, String content) {
-        Group group = groupService.findById(groupId);
+    public void sendMsgFromGroupToUser(Integer id,Integer sendMass ,Long sendData ,String title, String content) {
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         Message msg = new Message();
-        msg.setFromId(groupId);
-        msg.setToId(userId);
+        msg.setFromId(group.getId());
+        msg.setToId(id);
         msg.setTitle(MSG_GROUP + group.getName());
         msg.setContent(content);
+        msg.setReceiveType(1);
+        msg.setSendMass(sendMass);
+        msg.setSendDate(sendData);
         msg.setCreateTime(DateTimeKit.nowLong());
+
         this.save(msg);
     }
 
     /**
      * 组织发送消息给多个用户
      *
-     * @param groupId 组织ID
-     * @param userIds 用户ids
-     * @param title   标题
-     * @param content 内容
+     * @param ids       用户ID
+     * @param sendMass  发送次数
+     * @param sendData 发送日期
+     * @param title    标题
+     * @param content  内容
      */
     @Override
-    public void sendMsgFromGroupToUsers(int groupId, List<Integer> userIds, String title, String content) {
-        Group group = groupService.findById(groupId);
+    public void sendMsgFromGroupToUser(List<Integer> ids,Integer sendMass ,Long sendData ,String title, String content) {
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         Message msg = new Message();
-        msg.setFromId(groupId);
+        msg.setFromId(group.getId());
         msg.setTitle(MSG_GROUP + group.getName());
         msg.setContent(content);
+        msg.setReceiveType(1);
+        msg.setSendMass(sendMass);
+        msg.setSendDate(sendData);
         msg.setCreateTime(DateTimeKit.nowLong());
-        for (Integer userId : userIds) {
+
+        for (Integer userId : ids) {
             msg.setToId(userId);
             this.save(msg);
         }
@@ -152,7 +163,7 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
      * @param content 内容
      */
     @Override
-    public void sendMsgFromSysToUser(int userId, String title, String content) {
+    public void sendMsgFromSysToUser(int userId,Integer sendType, Long sendTime, String title, String content) {
         Message msg = new Message();
         msg.setFromId(-1);
         msg.setTitle(MSG_SYS + title);

@@ -1,23 +1,34 @@
 package com.smallchill.web.controller;
 
+import com.smallchill.api.function.modal.Message;
+import com.smallchill.api.function.service.MessageService;
 import com.smallchill.common.base.BaseController;
+import com.smallchill.common.pay.util.TimeUtil;
+import com.smallchill.core.constant.Cst;
+import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.grid.GridManager;
+import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.core.toolbox.kit.StrKit;
 import com.smallchill.system.model.Demo;
 import com.smallchill.system.model.RoleGroup;
 import com.smallchill.web.meta.intercept.GroupAdminIntercept;
-import com.smallchill.web.model.Classification;
-import com.smallchill.web.model.Tag;
+import com.smallchill.web.model.*;
 import com.smallchill.web.model.UserClassification;
-import com.smallchill.web.model.UserTag;
 import com.smallchill.web.service.*;
+import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +43,10 @@ public class UserGroupController extends BaseController {
     private static String CODE = "userGroup";
     private static String PERFIX = "tb_user_group";
 
+    @Autowired
+    MessageService messageService;
+    @Autowired
+    UserInfoService userInfoService;
     @Autowired
     UserGroupService userGroupService;
     @Autowired
@@ -57,9 +72,39 @@ public class UserGroupController extends BaseController {
     @RequestMapping(KEY_LIST)
     public Object loadList() {
         Object object = paginate(LIST_SOURCE,new GroupAdminIntercept());
+
+        Integer page = getParameterToInt("page", 1);
+        Integer rows = userGroupService.findAll().size();
+        String where = getParameter("where", "");
+        String sidx = getParameter("sidx", "");
+        String sord = getParameter("sord", "");
+        String sort = getParameter("sort", "");
+        String order = getParameter("order", "");
+
+        if (StrKit.notBlank(sidx)) {
+            sort = sidx + " " + sord
+                    + (StrKit.notBlank(sort) ? ("," + sort) : "");
+        }
+
+        JqGrid grid1 = (JqGrid) GridManager.paginate(null, page, rows, LIST_SOURCE, where, sort, order, new GroupAdminIntercept(), this);
+        List<Integer> ids = new ArrayList<>();
+        List<CaseInsensitiveHashMap> list = grid1.getRows();
+        //查询结果所有ID
+        for (CaseInsensitiveHashMap map : list) {
+            Integer id = (Integer) map.get("userId");
+            ids.add(id);
+        }
+
+        System.out.println("===================Rows===================");
+        System.out.println(list.size());
+        System.out.println("===================Rows===================");
+        getRequest().getSession().setAttribute("userGroupIds",ids);
+        getRequest().getSession().setAttribute("userGroupNum",list.size());
+
         return object;
     }
 
+    //分类
     @RequestMapping("/classification")
     public String classification(ModelMap mm) {
         List<Classification> list = classificationService.findAll();
@@ -137,6 +182,7 @@ public class UserGroupController extends BaseController {
     }
 
 
+    //标签
     @RequestMapping("/tag")
     public String tag(ModelMap mm) {
         List<Tag> list = tagService.findAll();
@@ -211,6 +257,84 @@ public class UserGroupController extends BaseController {
             return error(DEL_FAIL_MSG);
         }
     }
+
+
+    //发送内容
+    //消息发送页面(单发)
+    @RequestMapping("/message" + "/{id}")
+    public String userMessages(ModelMap mm,@PathVariable Integer id) {
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        UserInfo userInfo =userInfoService.findByUserId(id);
+        Integer flag = 0;
+
+        List<Message> messages = messageService.findBy(
+                "from_id = #{fromId} AND to_id = #{toId} AND send_date >= #{startDate} AND send_date < #{endDate} AND send_mass = #{sendMass} GROUP BY send_date",
+                Record.create()
+                        .set("fromId",group.getId())
+                        .set("toId",id)
+                        .set("startDate", TimeUtil.getTimesmorning())
+                        .set("endDate",TimeUtil.getTimesnight())
+                        .set("sendMass",1)
+        );
+        if(messages.size()==3){
+            flag = 1;
+        }
+
+        mm.put("flag", flag);
+        mm.put("userInfo", userInfo);
+        mm.put("userInfoNum", 0);
+        mm.put("code", CODE);
+        return BASE_PATH + "userGroup_message.html";
+    }
+
+    //消息发送页面(群发)
+    @RequestMapping("/message")
+    public String _userMessages(ModelMap mm,HttpServletRequest request) {
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        UserInfo userInfo = new UserInfo();
+        Integer flag = 0;
+
+        List<Message> messages = messageService.findBy(
+                "from_id = #{fromId} AND send_date >= #{startDate} AND send_date < #{endDate} AND send_mass = #{sendMass} GROUP BY send_date",
+                Record.create()
+                        .set("fromId",group.getId())
+                        .set("startDate", TimeUtil.getTimesmorning())
+                        .set("endDate",TimeUtil.getTimesnight())
+                        .set("sendMass",2)
+        );
+        if(messages.size()==3){
+            flag = 1;
+        }
+
+        mm.put("flag", flag);
+
+        mm.put("userInfoNum", request.getSession().getAttribute("userGroupNum"));
+        mm.put("userInfo", userInfo);
+        mm.put("code", CODE);
+        return BASE_PATH + "userGroup_message.html";
+    }
+    //消息发送
+    @ResponseBody
+    @RequestMapping("/send_message")
+    public AjaxResult sendMessage(Integer userId,String title,String content) {
+        try{
+            Long time = DateTimeKit.nowLong();
+            if(userId!=null){
+                messageService.sendMsgFromGroupToUser(userId,1,time,title,content);
+            }else {
+                List<Integer> ids = (List<Integer>) ShiroKit.getSession().getAttribute("userGroupIds");
+                messageService.sendMsgFromGroupToUser(ids,2,time,title,content);
+            }
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error(SEND_FAIL_MSG);
+        }
+        return success(SEND_SUCCESS_MSG);
+
+    }
+
+
+
 
 
 }

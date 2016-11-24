@@ -4,7 +4,7 @@
 	<div class="space-4"></div>
 	<!-- #section:elements.form -->
 	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" > 接受组织 </label>
+		<label class="col-sm-2 control-label no-padding-right" > 接受用户 </label>
 
 		<div class="col-sm-8">
 			<input type="text" name="name" id="name" placeholder="" class="form-control" disabled="disabled"/>
@@ -12,17 +12,9 @@
 	</div>
 
 	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" > 发送方式 </label>
+		<label class="col-sm-2 control-label no-padding-right" > 发送类型 </label>
 		<div class="col-sm-8">
-				<label><input type="radio" name="send" class="rdo" checked value="1">系统通知</label>
-				<label><input type="radio" name="send" class="rdo" value="2">手机短信</label>
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" > 定时发送 </label>
-		<div class="col-sm-8">
-			<input type="text" id="send_time" name="" class="form-control"  value="" placeholder=""  readonly/>
+			<label><input type="radio" name="send" class="rdo" checked value="0">系统通知(3次)</label>
 		</div>
 	</div>
 
@@ -57,27 +49,17 @@
 
 	<script src="${basePath}/static/laydate/laydate.js"></script>
 	<script type="text/javascript">
-		laydate({
-			elem: '#send_time',
-			istime: true,
-			format: 'YYYY-MM-DD hh:mm:ss', // 分隔符可以任意定义，该例子表示只显示年月日
-			//festival: true, //显示节日
-			choose: function(datas){ //选择日期完毕的回调
-				/*   alert('得到：'+datas); */
-			}
-		});
-
 
 		var layerIndex = parent.layer.getFrameIndex(window.name);
-		var groupName = "${group.name}";
-		var groupId = "${group.id}";
-		var groupNum = "${groupNum}";
+		var userName = "${userInfo.username}";
+		var userId = "${userInfo.userId}";
+		var userInfoNum = "${userInfoNum}";
 
 		$(function(){
-			if(groupNum==0){
-				$("#name").val(groupName);
+			if(userInfoNum==0){
+				$("#name").val(userName);
 			}else {
-				$("#name").val(groupNum+" 个");
+				$("#name").val(userInfoNum+" 个");
 			}
 
 
@@ -86,19 +68,15 @@
 			});
 
 			$("#btn_save").bind("click",function(){
-				var send = $("input[name='send']:checked").val();
-				var sendTime = $("#send_time").val();
 				var title = $("#title").val();
 				var content = $("#content").val();
-				console.log(groupId);
 
-				$.post("${basePath}/group/send_message",{groupId:groupId , send:send, sendTime:sendTime, title:title, content:content}, function(data){
+				$.post("${basePath}/${code}/send_message",{userId:userId , title:title, content:content}, function(data){
 					if(data.code===0){
-						layer_alert(data.message, "success");
-						parent.layer.close(layerIndex);
+
 					}
 					else{
-						layer_alert(data.message, "error");
+						layer_alert(data.msg, "error");
 					}
 				}, "json");
 

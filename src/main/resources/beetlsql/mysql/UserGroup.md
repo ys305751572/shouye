@@ -28,8 +28,8 @@ SELECT
   DATE_FORMAT(FROM_UNIXTIME(tui.vip_end_time / 1000),'%Y-%m-%d') AS vipEndTime,
   tui.vip_type AS vipType,
   tui.join_type AS joinType,
-  GROUP_CONCAT(tuc.classification) AS classification,
-  GROUP_CONCAT(tut.tag) AS tag
+  GROUP_CONCAT(DISTINCT(tuc.classification)) AS classification,
+  GROUP_CONCAT(DISTINCT(tut.tag)) AS tag
 FROM tb_user_group tug
   LEFT JOIN tb_group tg ON tug.group_id = tg.id
   LEFT JOIN tb_user_info tui ON tui.user_id = tug.user_id

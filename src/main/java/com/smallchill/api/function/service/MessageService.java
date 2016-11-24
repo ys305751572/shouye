@@ -48,30 +48,34 @@ public interface MessageService extends IService<Message>{
 
     /**
      * 组织发送消息给单个用户
-     * @param groupId 组织ID
-     * @param userId 用户id
-     * @param title 标题
-     * @param content 内容
+     * @param id       用户ID
+     * @param sendMass  单/群发
+     * @param sendData 发送日期
+     * @param title    标题
+     * @param content  内容
      */
-    void sendMsgFromGroupToUser(int groupId, int userId, String title, String content);
+    void sendMsgFromGroupToUser(Integer id,Integer sendMass ,Long sendData ,String title, String content);
 
     /**
      * 组织发送消息给多个用户
-     * @param groupId 组织ID
-     * @param userIds 用户ids
-     * @param title 标题
-     * @param content 内容
+     * @param ids       用户ID
+     * @param sendMass  单/群发
+     * @param sendData 发送日期
+     * @param title    标题
+     * @param content  内容
      */
-    void sendMsgFromGroupToUsers(int groupId, List<Integer> userIds, String title, String content);
+    void sendMsgFromGroupToUser(List<Integer> ids,Integer sendMass ,Long sendData ,String title, String content);
 
 
     /**
      * 后台向单个用户发送系统消息
      * @param userId 用户ID
+     * @param sendType 发送类型
+     * @param sendTime 发送时间
      * @param title 标题
      * @param content 内容
      */
-    void sendMsgFromSysToUser(int userId, String title, String content);
+    void sendMsgFromSysToUser(int userId,Integer sendType, Long sendTime, String title, String content);
 
     /**
      * 后台向多个用户发送系统消息

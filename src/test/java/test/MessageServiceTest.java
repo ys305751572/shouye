@@ -37,7 +37,7 @@ public class MessageServiceTest extends BaseJunit4Test{
         List<Integer> userIds = new ArrayList<>();
         userIds.add(5);
         userIds.add(6);
-        messageService.sendMsgFromGroupToUsers(groupId, userIds, "", "请大家准时参加某某时间的会议");
+//        messageService.sendMsgFromGroupToUsers(groupId, userIds, "", "请大家准时参加某某时间的会议");
     }
 
     @Test

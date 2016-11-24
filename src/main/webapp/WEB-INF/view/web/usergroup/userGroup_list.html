@@ -125,10 +125,6 @@
                     var cev = "";
                     var index=0;
                     for(var j=0;j<a.length;j++){
-                        if(a[j]==a[j+1]){
-                            continue;
-                        }
-                        index++;
                         if(a[j] != "undefined"){
                             if(index<3){
                                 cev += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + a[j];
@@ -146,11 +142,9 @@
                                 }
                             }
 
-
                         }
 
                     }
-
                     return cev+html;
                 }
             },
@@ -170,10 +164,6 @@
                     var cev1 = "";
                     var index1=0;
                     for(var j=0;j<a1.length;j++){
-                        if(a1[j]==a1[j+1]){
-                            continue;
-                        }
-                        index1++;
                         if(a1[j] != "undefined"){
                             if(index1<3){
                                 cev1 += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + a1[j];
@@ -236,7 +226,7 @@
             forceFit : true,
             colNames:_colnames,
             colModel:_colmodel,
-            jsonReader:{id:"id"},
+            jsonReader:{id:"userId"},
             pager : pager_selector,
             postData: {sort: "id", order: "asc"}
         });

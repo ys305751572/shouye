@@ -39,6 +39,24 @@ public class Message extends BaseModel {
     @Column(name = "action4")
     private String action4 = "";
 
+    //接收类型 1:用户 2:组织
+    @Column(name = "receive_type")
+    private Integer receiveType;
+
+    //发送类型 1:消息发送 2:手机短信 3:滚动公告
+    @Column(name = "send_type")
+    private Integer sendType;
+    //定时发送时间
+    @Column(name = "send_time")
+    private Long sendTime;
+
+    //组织: 1:单发 2:群发
+    @Column(name = "send_mass")
+    private Integer sendMass;
+    //组织: 发送日期
+    @Column(name = "send_date")
+    private Long sendDate;
+
     @Column(name = "create_time")
     private Long createTime;
 
@@ -147,5 +165,45 @@ public class Message extends BaseModel {
 
     public void setAction4(String action4) {
         this.action4 = action4;
+    }
+
+    public Integer getReceiveType() {
+        return receiveType;
+    }
+
+    public void setReceiveType(Integer receiveType) {
+        this.receiveType = receiveType;
+    }
+
+    public Integer getSendType() {
+        return sendType;
+    }
+
+    public void setSendType(Integer sendType) {
+        this.sendType = sendType;
+    }
+
+    public Long getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(Long sendTime) {
+        this.sendTime = sendTime;
+    }
+
+    public Long getSendDate() {
+        return sendDate;
+    }
+
+    public void setSendDate(Long sendDate) {
+        this.sendDate = sendDate;
+    }
+
+    public Integer getSendMass() {
+        return sendMass;
+    }
+
+    public void setSendMass(Integer sendMass) {
+        this.sendMass = sendMass;
     }
 }
