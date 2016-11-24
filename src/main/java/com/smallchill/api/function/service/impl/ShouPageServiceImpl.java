@@ -51,7 +51,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + " from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
 
-    private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status uastatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
+    private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
             + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` where i.to_user_id = #{userId} OR ua.`status` != 3";
 
     private String SQL_MY_GROUP = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
@@ -72,8 +72,8 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     private int NOT_FRINED = 2000; // 未结识
     private int FRIEND = 2001; // 已结识
     private int NOT_PROCESS_FROM_USER_ID = 2002; // 显示忽略 结识按钮
-    private int NOT_PROCESS_TO_USER_ID = 2003;
-    private int PASS = 2004;
+    private int NOT_PROCESS_TO_USER_ID = 2003; // 等待对方确认
+    private int PASS = 2004;                   // 已忽略
 
 
     /**
@@ -83,14 +83,14 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      * @return 首页录vo
      */
     @Override
-    public ShouPageVo index(Integer userId, Integer domainId, Integer city, Integer grouping) {
+    public ShouPageVo index(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord) {
 
         UserLastReadTime userLastReadTime = lastReadTimeByUserId(userId);
 
         if (userLastReadTime == null) {
             userLastReadTime = new UserLastReadTime();
         }
-        List<UserVo> voList = friends(userId, domainId, city, grouping);
+        List<UserVo> voList = friends(userId, domainId, city, grouping,keyWord);
         ShouPageVo shouPageVo = new ShouPageVo();
 
         shouPageVo.setNewCount(countNew(userId, userLastReadTime.getNewTime()));
@@ -103,7 +103,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     }
 
     @Override
-    public List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping) {
+    public List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping,String keyWord) {
         String sql = Blade.dao().getScript("UserFriend.list").getSql();
         StringBuffer where = new StringBuffer("uf.user_id = #{userId}");
         Record _r = Record.create().set("userId", userId);
@@ -126,15 +126,22 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             where.append(" and uf.label like concat('%',#{grouping},'%')");
             _r.set("grouping", groupingStr);
         }
+        if (StringUtils.isNotBlank(keyWord)) {
+            where.append(" and (ui.username LIKE concat('%', #{keyWord},'%') or ui.key_word LIKE concat('%', #{keyWord}, '%'))");
+            _r.set("keyWord",keyWord);
+        }
         if (domainId != null) {
             where.append("RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain})");
             _r.set("domain", domainId);
         }
 
+
         List<Record> friends = Db.init().selectList(sql, where.toString(), _r);
         List<UserVo> voList = new ArrayList<>();
         for (Record record : friends) {
             UserVo userVo = Convert.recordToVo(record);
+            userVo.setCarrer(null);
+            userVo.setDesc(null);
             userVo.setSameKeyList(Convert.labelToSameKeyList(record.getStr("label")));
             voList.add(userVo);
         }
@@ -275,20 +282,24 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      * @param vo 好友信息
      */
     private void setUserVoStatus(UserVo vo, Record record, Integer userId) {
-
-        int status = Integer.parseInt(record.get("status").toString());
         int type = 0;
-        if (status == 1) {
-            type = FRIEND;
-        } else if (status == 2) {
-            type = PASS;
-        } else if (status == 0) {
-            int fromUserId = Integer.parseInt(record.get("from_user_id").toString());
-            int toUserId = Integer.parseInt(record.get("to_user_id").toString());
-            if (userId == fromUserId) {
-                type = NOT_PROCESS_TO_USER_ID;
-            } else if (userId == toUserId) {
-                type = NOT_PROCESS_FROM_USER_ID;
+        if (record.get("status") == null) {
+            type = 0;
+        }
+        else {
+            int status = Integer.parseInt(record.get("status").toString());
+            if (status == 1) {
+                type = FRIEND;
+            } else if (status == 2) {
+                type = PASS;
+            } else if (status == 0) {
+                int fromUserId = Integer.parseInt(record.get("from_user_id").toString());
+                int toUserId = Integer.parseInt(record.get("to_user_id").toString());
+                if (userId == fromUserId) {
+                    type = NOT_PROCESS_TO_USER_ID;
+                } else if (userId == toUserId) {
+                    type = NOT_PROCESS_FROM_USER_ID;
+                }
             }
         }
         vo.setStatus(type);
@@ -362,20 +373,11 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         ult.setInterested(DateTimeKit.nowLong());
         this.updateUserLastReadTime(userId, ult);
 
-        int type;
         List<Record> list = Db.init().selectList(SQL_INTERESTED_USER, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         for (Record record : list) {
             UserVo vo = Convert.recordToVo(record);
-            Object unstatusObj = record.get("uatatus");
-            if (unstatusObj == null || !unstatusObj.toString().equals("1")) {
-                // 未结识
-                type = 2;
-            } else {
-                // 已结识
-                type = 1;
-            }
-            vo.setStatus(type);
+            setUserVoStatus(vo, record, userId);
             voList.add(vo);
         }
         return voList;
@@ -396,7 +398,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         this.updateUserLastReadTime(userId, ult);
 
         String sql2 = sql + " on (ui.`user_id` = ua.`from_user_id` OR ui.`user_id` = ua.`to_user_id` ) ";
-        String where = "ui.`user_id` != #{userId} and ua.type = 2 and ( ua.status = 0 or ua.status = 1)";
+        String where = "ui.`user_id` != #{userId} and ua.type = 2 and (ua.status = 1 or ua.status = 0)";
         List<Record> list = Db.init().selectList(sql2, where, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         UserVo vo;

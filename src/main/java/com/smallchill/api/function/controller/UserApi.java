@@ -113,17 +113,17 @@ public class UserApi extends BaseController implements ConstCache {
         final Integer toUserid = toUserId;
         final Integer groupid = groupId;
         try {
-            vo = CacheKit.get(DIY_CACHE, CACHE_KEY + userId + "_" + toUserId, new ILoader() {
-                @Override
-                public Object load() {
-                    return userInfoService.findUserInfoDetail(userid, toUserid, groupid);
-                }
-            });
+//            vo = CacheKit.get(DIY_CACHE, CACHE_KEY + userId + "_" + toUserId, new ILoader() {
+//                @Override
+//                public Object load() {
+//                    return userInfoService.findUserInfoDetail(userid, toUserid, groupid);
+//                }
+//            });
+            vo = userInfoService.findUserInfoDetail(userid, toUserid, groupid);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
         }
-
         return success(vo);
     }
 

@@ -272,8 +272,24 @@ public class GroupApi extends BaseController {
      */
     @PostMapping(value = "/hotword")
     @ResponseBody
-    public String hotWord() {
-        List<Record> list = Db.init().selectList("SELECT id,name FROM tb_hot_keyword limit 0,10");
-        return success(list);
+    public String hotWord(Integer userId) {
+        List<Record> list = Db.init().selectList("SELECT name FROM tb_hot_keyword limit 0,10");
+        List<String> hotList = new ArrayList<>();
+        for (Record record : list) {
+            hotList.add(record.getStr("name"));
+        }
+
+        UserInfo userInfo = userInfoService.findByUserId(userId);
+        String keyword = userInfo.getKeyWord();
+        List<String> keywordList = new ArrayList<>();
+        if (StringUtils.isNotBlank(keyword)) {
+            String[] keywords = keyword.split("\\|");
+            for (String k : keywords) {
+                if (StringUtils.isNotBlank(k)) {
+                    keywordList.add(k);
+                }
+            }
+        }
+        return success(Record.create().set("hotWordList", hotList).set("keyWordList", keywordList), "guessWord");
     }
 }

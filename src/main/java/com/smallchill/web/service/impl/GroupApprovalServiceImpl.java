@@ -186,13 +186,12 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Override
     public GroupApprovalVo gaInfo(Integer groupId) {
-
-        String sql = "SELECT g.id, g.`targat`, ge.`cost` FROM tb_group g LEFT JOIN tb_group_extend ge " +
-                "ON g.`id` = ge.`group_id` WHERE g.`id` = #{groupId}";
-
+        String sql = "SELECT g.id, g.`targat`, ge.`cost`,ge.`cost_status`, ge.`cost_type` FROM  tb_group g LEFT JOIN tb_group_extend ge " +
+                                    "ON g.`id` = ge.`group_id` WHERE g.`id` = #{groupId}";
         Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId));
         String target = record.getStr("targat");
-        BigDecimal cost = record.get("cost") == null ? BigDecimal.valueOf(0) : BigDecimal.valueOf(Double.parseDouble(record.get("cost").toString()));
+        BigDecimal cost = record.get("cost") == null ? BigDecimal.valueOf(0) :
+                BigDecimal.valueOf(Double.parseDouble(record.get("cost").toString()));
         List<String> targets = new ArrayList<>();
         if (StringUtils.isNotBlank(target)) {
             String[] targetss = target.split("\\|");
@@ -205,6 +204,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         GroupApprovalVo vo = new GroupApprovalVo();
         vo.setMoney(cost);
         vo.setTarget(targets);
+        vo.setCostStatus(record.getInt("cost_status"));
+        vo.setCostType(record.getInt("cost_type"));
         return vo;
     }
 

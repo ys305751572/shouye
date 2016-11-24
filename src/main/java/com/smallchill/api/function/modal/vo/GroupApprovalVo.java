@@ -9,10 +9,28 @@ import java.util.List;
  * 申请信息
  * Created by yesong on 2016/11/23 0023.
  */
-public class GroupApprovalVo extends BaseVo{
+public class GroupApprovalVo extends BaseVo {
 
     private List<String> target;
     private BigDecimal money;
+    private Integer costType; //  收费方式  1:年费 2:永久
+    private Integer costStatus; // 会费状态 1:免费 2:收费
+
+    public Integer getCostStatus() {
+        return costStatus;
+    }
+
+    public void setCostStatus(Integer costStatus) {
+        this.costStatus = costStatus;
+    }
+
+    public Integer getCostType() {
+        return costType;
+    }
+
+    public void setCostType(Integer costType) {
+        this.costType = costType;
+    }
 
     public List<String> getTarget() {
         return target;

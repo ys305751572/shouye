@@ -42,17 +42,18 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
      */
     @RequestMapping(value = "/index")
     @ResponseBody
-    public String index(Integer userId, Integer domainId, Integer city, Integer grouping) {
+    public String index(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord) {
         final Integer userid = userId;
         final Integer domainid = domainId;
         final Integer cityid = city;
         final Integer groupingid = grouping;
-        ShouPageVo vo = CacheKit.get(DIY_CACHE, INDEX + userId + "_" + domainId + "_" + city + "_grouping" + grouping, new ILoader() {
-            @Override
-            public Object load() {
-                return shoupageService.index(userid, domainid, cityid, groupingid);
-            }
-        });
+//        ShouPageVo vo = CacheKit.get(DIY_CACHE, INDEX + userId + "_" + domainId + "_" + city + "_grouping" + grouping, new ILoader() {
+//            @Override
+//            public Object load() {
+//                return shoupageService.index(userid, domainid, cityid, groupingid);
+//            }
+//        });
+        ShouPageVo vo = shoupageService.index(userid, domainid, cityid, groupingid, keyWord);
         return success(vo, "shoupage");
     }
 
@@ -66,12 +67,13 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
     public String newFriend(Integer userId) {
         final Integer userid = userId;
         Map<String, List<UserVo>> resultMap;
-        resultMap = CacheKit.get(DIY_CACHE, SHOUPAGE_NEW + userId, new ILoader() {
-            @Override
-            public Object load() {
-                return shoupageService.listNew(userid);
-            }
-        });
+//        resultMap = CacheKit.get(DIY_CACHE, SHOUPAGE_NEW + userId, new ILoader() {
+//            @Override
+//            public Object load() {
+//                return shoupageService.listNew(userid);
+//            }
+//        });
+        resultMap = shoupageService.listNew(userid);
         return success(resultMap, "newFriend");
     }
 
@@ -84,12 +86,13 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
     @ResponseBody
     public String intereste(Integer userId) {
         final Integer userid = userId;
-        Map<String, Object> resultMap = CacheKit.get(DIY_CACHE, SHOUPAGE_INTERESTE + userId, new ILoader() {
-            @Override
-            public Object load() {
-                return shoupageService.listIntereste(userid);
-            }
-        });
+//        Map<String, Object> resultMap = CacheKit.get(DIY_CACHE, SHOUPAGE_INTERESTE + userId, new ILoader() {
+//            @Override
+//            public Object load() {
+//                return shoupageService.listIntereste(userid);
+//            }
+//        });
+        Map<String, Object> resultMap = shoupageService.listIntereste(userid);
         return success(resultMap, "intereste");
     }
 
@@ -102,12 +105,13 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
     @ResponseBody
     public String interested(Integer userId) {
         final Integer userid = userId;
-        List<UserVo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_INTERESTED + userid, new ILoader() {
-            @Override
-            public Object load() {
-                return shoupageService.listInterested(userid);
-            }
-        });
+//        List<UserVo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_INTERESTED + userid, new ILoader() {
+//            @Override
+//            public Object load() {
+//                return shoupageService.listInterested(userid);
+//            }
+//        });
+        List<UserVo> list = shoupageService.listInterested(userid);
         return success(list);
     }
 
@@ -121,12 +125,13 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
     @ResponseBody
     public String acquaintances(Integer userId) {
         final Integer userid = userId;
-        List<UserVo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_ACQUAINTANCES + userId, new ILoader() {
-            @Override
-            public Object load() {
-                return shoupageService.listAcquaintances(userid);
-            }
-        });
+//        List<UserVo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_ACQUAINTANCES + userId, new ILoader() {
+//            @Override
+//            public Object load() {
+//                return shoupageService.listAcquaintances(userid);
+//            }
+//        });
+        List<UserVo> list =  shoupageService.listAcquaintances(userid);
         return success(list);
     }
 
@@ -140,12 +145,13 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
     @ResponseBody
     public String groups(Integer userId) {
         final Integer userid = userId;
-        List<Groupvo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_PAGE + userId, new ILoader() {
-            @Override
-            public Object load() {
-                return shoupageService.listGroup(userid);
-            }
-        });
+//        List<Groupvo> list = CacheKit.get(DIY_CACHE, SHOUPAGE_PAGE + userId, new ILoader() {
+//            @Override
+//            public Object load() {
+//                return shoupageService.listGroup(userid);
+//            }
+//        });
+        List<Groupvo> list = shoupageService.listGroup(userid);
         return success(list);
     }
 }
