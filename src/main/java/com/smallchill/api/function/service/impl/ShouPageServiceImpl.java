@@ -104,9 +104,14 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     @Override
     public List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping,String keyWord) {
-        String sql = Blade.dao().getScript("UserFriend.list").getSql();
-        StringBuffer where = new StringBuffer("uf.user_id = #{userId}");
+        String sql = Blade.dao().getScript("UserFriend.list").getSql();StringBuffer where = new StringBuffer("");
         Record _r = Record.create().set("userId", userId);
+        if (domainId != null) {
+            sql += " RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain}) ";
+            _r.set("domain", domainId);
+        }
+
+        where.append(" 1 = 1");
         if (city != null) {
             where.append(" and ui.city_id = #{city} ");
             _r.set("city", city);
@@ -130,10 +135,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             where.append(" and (ui.username LIKE concat('%', #{keyWord},'%') or ui.key_word LIKE concat('%', #{keyWord}, '%'))");
             _r.set("keyWord",keyWord);
         }
-        if (domainId != null) {
-            where.append("RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain})");
-            _r.set("domain", domainId);
-        }
+        where.append(" and uf.user_id = #{userId}");
 
 
         List<Record> friends = Db.init().selectList(sql, where.toString(), _r);
@@ -282,9 +284,9 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      * @param vo 好友信息
      */
     private void setUserVoStatus(UserVo vo, Record record, Integer userId) {
-        int type = 0;
+        int type = NOT_FRINED;
         if (record.get("status") == null) {
-            type = 0;
+            type = NOT_FRINED;
         }
         else {
             int status = Integer.parseInt(record.get("status").toString());
@@ -462,10 +464,10 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
                 "    ga.status\n" +
                 "FROM\n" +
                 "    tb_group g\n" +
-                "RIGHT JOIN\n" +
+                "LEFT JOIN\n" +
                 "    tb_group_approval ga\n" +
                 "ON\n" +
-                "    (g.id = ga.group_id)" +
+                "    (g.id = ga.group_id and ga.status = 2)" +
                 " WHERE ga.user_id = #{userId}";
 
         List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));

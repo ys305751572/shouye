@@ -42,9 +42,9 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
      */
     @RequestMapping(value = "/index")
     @ResponseBody
-    public String index(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord) {
+    public String index(Integer userId, Integer domain, Integer city, Integer grouping, String keyWord) {
         final Integer userid = userId;
-        final Integer domainid = domainId;
+        final Integer domainid = domain;
         final Integer cityid = city;
         final Integer groupingid = grouping;
 //        ShouPageVo vo = CacheKit.get(DIY_CACHE, INDEX + userId + "_" + domainId + "_" + city + "_grouping" + grouping, new ILoader() {

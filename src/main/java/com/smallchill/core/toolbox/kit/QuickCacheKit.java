@@ -51,6 +51,27 @@ public class QuickCacheKit implements ConstCache{
         return cache;
     }
 
+    /**
+     * 创建不超时缓存
+     * @param cacheName 缓存名称
+     * @return
+     */
+    public static LoadingCache initPermanentCache(String cacheName) {
+        LoadingCache cache = cacheMap.get(cacheName);
+        if (cache == null) {
+            synchronized (QuickCacheKit.class) {
+                cache = CacheBuilder.newBuilder().build(new CacheLoader() {
+                    @Override
+                    public Object load(Object o) throws Exception {
+                        return new Null();
+                    }
+                });
+            }
+            cacheMap.put(cacheName, cache);
+        }
+        return cache;
+    }
+
     public static Cache initSms() {
         return init(SMS_CACHE, SMS_TIMEOUT, new RemovalListener() {
             @Override

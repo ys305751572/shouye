@@ -23,7 +23,7 @@ public class Convert {
     public static UserVo recordToVo(Record record) {
         Integer id = Integer.parseInt(record.get("userId").toString());
         String username = (String) record.get("username");
-        String city = (String) record.get("proviceCity");
+        String city = (String) record.get("provinceCity");
         String domain = (String) record.get("domain");
         String keyWord = (String) record.get("keyWord");
         keyWord = keyWord.replaceAll("\\|", "\\/");
