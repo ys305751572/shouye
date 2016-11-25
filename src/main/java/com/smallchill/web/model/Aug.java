@@ -27,6 +27,9 @@ public class Aug extends BaseModel {
     @Column(name = "to_user_id")
     private Integer toUserId;
 
+    @Column(name = "validate_info")
+    private String validateInfo;
+
     @Column(name = "status")
     private Integer status;
 
@@ -79,5 +82,13 @@ public class Aug extends BaseModel {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public String getValidateInfo() {
+        return validateInfo;
+    }
+
+    public void setValidateInfo(String validateInfo) {
+        this.validateInfo = validateInfo;
     }
 }
