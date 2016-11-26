@@ -119,6 +119,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         return Db.init().selectOne(sql, Record.create().set("userId", userId));
     }
 
+
     @Override
     public UserVo findUserInfoDetail(Integer userId, Integer toUserId, Integer groupId) {
         String sql = Blade.dao().getScript("UserInfo.userInfoDetail").getSql();

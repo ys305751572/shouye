@@ -1,9 +1,12 @@
 package com.smallchill.api.function.service.impl;
 
+import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.LocalSerivce;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 用户坐标
