@@ -109,3 +109,41 @@ select
     ui.desc
 from tb_user_info ui 
 where ui.user_id = #{userId}
+
+userInfoDetailWithUa
+==============
+SELECT
+  ui.user_id userId,
+  ui.username,
+  ui.avater,
+  ui.mobile,
+  ui.province_id province,
+  ui.city_id city,
+  ui.school,
+  ui.province_city proviceCity,
+  ui.domain,
+  ui.key_word keyWord,
+  ui.organization,
+  ui.per,
+  ui.career,
+  ui.professional,
+  ui.desc,
+  ua.status
+FROM
+  tb_user_info ui
+  LEFT JOIN tb_user_approval ua
+    ON (
+      ui.user_id = ua.from_user_id
+      OR ui.user_id = ua.to_user_id
+    )
+    AND ((
+      ua.from_user_id = #{toUserId}
+      AND ua.`to_user_id` = #{userId}
+    )
+    OR (
+      ua.to_user_id = #{toUserId}
+      AND ua.from_user_id = #{userId}
+    ) )
+
+    WHERE ui.user_id = #{toUserId}
+

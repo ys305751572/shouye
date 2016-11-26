@@ -248,7 +248,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         UserVo vo;
         for (Record record : list) {
             vo = Convert.recordToVo(record);
-            setUserVoStatus(vo, record, userId);
+            Convert.setUserVoStatus(vo, record, userId);
             Integer introduceUserId = record.get("introduce_user_id") == null ? 0 : Integer.parseInt(record.get("introduce_user_id").toString());
             Integer groupId = record.get("group_id") == null ? 0 : Integer.parseInt(record.get("group_id").toString());
             if (introduceUserId == 0 && groupId == 0) {
@@ -276,35 +276,6 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         resultMap.put("list0", voList0);
         resultMap.put("list1", voList1);
         resultMap.put("list2", voList2);
-    }
-
-    /**
-     * 设置当前用户与
-     *
-     * @param vo 好友信息
-     */
-    private void setUserVoStatus(UserVo vo, Record record, Integer userId) {
-        int type = NOT_FRINED;
-        if (record.get("status") == null) {
-            type = NOT_FRINED;
-        }
-        else {
-            int status = Integer.parseInt(record.get("status").toString());
-            if (status == 1) {
-                type = FRIEND;
-            } else if (status == 2) {
-                type = PASS;
-            } else if (status == 0) {
-                int fromUserId = Integer.parseInt(record.get("from_user_id").toString());
-                int toUserId = Integer.parseInt(record.get("to_user_id").toString());
-                if (userId == fromUserId) {
-                    type = NOT_PROCESS_TO_USER_ID;
-                } else if (userId == toUserId) {
-                    type = NOT_PROCESS_FROM_USER_ID;
-                }
-            }
-        }
-        vo.setStatus(type);
     }
 
     /**
@@ -379,7 +350,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         List<UserVo> voList = new ArrayList<>();
         for (Record record : list) {
             UserVo vo = Convert.recordToVo(record);
-            setUserVoStatus(vo, record, userId);
+            Convert.setUserVoStatus(vo, record, userId);
             voList.add(vo);
         }
         return voList;

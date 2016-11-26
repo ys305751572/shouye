@@ -74,4 +74,28 @@ LEFT JOIN
     tb_group_approval ga
 ON
     (g.id = ga.group_id AND ga.user_id = #{userId})
+
+groupDetailWithUa
+=======================
+SELECT
+    g.id,
+    g.name,
+    IFNULL(g.avater,"") avater,
+    g.province,
+    g.city,
+    g.type,
+    g.province_city provinceCity,
+    (select count(*) from tb_user_group ug where ug.group_id = g.id) memberCount,
+    g.targat,
+    ga.user_id userId,
+    ga.status
+FROM
+    tb_group g
+LEFT JOIN
+    tb_group_approval ga
+ON
+    (g.id = ga.group_id AND ga.user_id = #{userId})
+WHERE
+    g.id = #{groupId}
+
    

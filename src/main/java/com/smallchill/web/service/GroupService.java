@@ -136,4 +136,12 @@ public interface GroupService extends IService<Group> {
      * @param userId  用户ID
      */
     void out(Integer groupId, Integer userId);
+
+    /**
+     * 查询组织详情(带与组织关系)
+     * @param groupId 组织ID
+     * @param userId 用户ID
+     * @return groupvo
+     */
+    Groupvo findGroupWithGa(Integer groupId, Integer userId);
 }

@@ -3,6 +3,7 @@ package com.smallchill.api.function.controller;
 import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.api.function.meta.intercept.AroundUserIntercept;
 import com.smallchill.api.function.meta.validate.AroundUserValidate;
+import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.LocalSerivce;
 import com.smallchill.api.function.service.ScanService;
@@ -83,9 +84,8 @@ public class ScanApi extends BaseController {
     @PostMapping(value = "/group")
     @ResponseBody
     public String scanGroup(Integer userId, Integer groupId) {
-
-
-        return null;
+        Groupvo groupvo = scanService.scanGroup(userId, groupId);
+        return success(groupvo);
     }
 
     /**
@@ -98,6 +98,6 @@ public class ScanApi extends BaseController {
     @PostMapping(value = "/inentify/member")
     @ResponseBody
     public String identifyMember(Integer userId, Integer toUserId) {
-        return null;
+        return success(scanService.identifyMember(userId, toUserId));
     }
 }

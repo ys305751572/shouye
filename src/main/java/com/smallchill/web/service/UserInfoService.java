@@ -46,7 +46,7 @@ public interface UserInfoService extends IService<UserInfo> {
      * @param title    标题
      * @param content  内容
      */
-    void sendMessage(Integer id,Integer sendNum ,Long sendData ,String title, String content);
+    void sendMessage(Integer id, Integer sendNum, Long sendData, String title, String content);
 
     /**
      * 根据关键字查询用户列表
@@ -100,6 +100,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 查询分组首页
+     *
      * @param userId 用户ID
      * @return records
      */
@@ -107,16 +108,27 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 用户感兴趣多选
-     * @param userId 当前用户ID
+     *
+     * @param userId    当前用户ID
      * @param toUserIds 感兴趣用户ID,多个ID用","号分割
      */
     void interest(Integer userId, String toUserIds);
 
     /**
      * 查看交集
+     *
      * @param userId
      * @param toUserId
      * @return
      */
     Record intersection(Integer userId, Integer toUserId);
+
+    /**
+     * 查询用户详细信息（带与当前用户关系）
+     *
+     * @param userId   当前用户ID
+     * @param toUserId 目标用户ID
+     * @return uservo
+     */
+    UserVo findUserDetailWithUa(Integer userId, Integer toUserId);
 }

@@ -38,3 +38,14 @@ FROM
 WHERE SS.juli < 50
   AND SS.user_id != #{userId}
 ORDER BY SS.juli ASC
+
+isInSameGroup
+=============
+SELECT
+	COUNT(ug.`id`) counts
+FROM
+	tb_user_group ug
+WHERE
+	ug.`user_id` = #{userId} AND ug.`vip_type` = 2
+AND ug.`group_id` IN
+(SELECT ug2.`group_id` FROM tb_user_group ug2 WHERE ug2.`user_id` = #{toUserId})

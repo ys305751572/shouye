@@ -125,4 +125,38 @@ public class Convert {
         }
         return list;
     }
+
+    /**
+     * 设置当前用户与
+     *
+     * @param vo 好友信息
+     */
+    public static void setUserVoStatus(UserVo vo, Record record, Integer userId) {
+        int type = NOT_FRINED;
+        if (record.get("status") == null) {
+            type = NOT_FRINED;
+        } else {
+            int status = Integer.parseInt(record.get("status").toString());
+            if (status == 1) {
+                type = FRIEND;
+            } else if (status == 2) {
+                type = PASS;
+            } else if (status == 0) {
+                int fromUserId = Integer.parseInt(record.get("from_user_id").toString());
+                int toUserId = Integer.parseInt(record.get("to_user_id").toString());
+                if (userId == fromUserId) {
+                    type = NOT_PROCESS_TO_USER_ID;
+                } else if (userId == toUserId) {
+                    type = NOT_PROCESS_FROM_USER_ID;
+                }
+            }
+        }
+        vo.setStatus(type);
+    }
+
+    private static int NOT_FRINED = 2000; // 未结识
+    private static int FRIEND = 2001; // 已结识
+    private static int NOT_PROCESS_FROM_USER_ID = 2002; // 显示忽略 结识按钮
+    private static int NOT_PROCESS_TO_USER_ID = 2003; // 等待对方确认
+    private static int PASS = 2004;                   // 已忽略
 }

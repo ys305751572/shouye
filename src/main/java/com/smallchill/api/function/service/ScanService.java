@@ -12,4 +12,6 @@ public interface ScanService {
     UserVo scanUser(Integer userId, Integer toUserId);
 
     Groupvo scanGroup(Integer userId, Integer groupId);
+
+    UserVo identifyMember(Integer userId, Integer toUserId);
 }

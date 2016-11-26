@@ -8,6 +8,7 @@ import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.*;
 import com.smallchill.common.task.TimeWorkManager;
 import com.smallchill.core.base.service.BaseService;
+import com.smallchill.core.modules.support.Conver;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
@@ -493,8 +494,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     }
 
     @Override
-    public void sendMessage(Integer id,Integer sendNum ,Long sendData ,String title, String content) {
-        if (id!=null) {
+    public void sendMessage(Integer id, Integer sendNum, Long sendData, String title, String content) {
+        if (id != null) {
             //给一个组织发送信息
             System.out.println("----id----");
             System.out.println(id);
@@ -650,8 +651,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         } else {
             userList = new ArrayList<>();
         }
-        String sql3 = "SELECT ug.group_id FROM tb_user_group ug WHERE ug.`user_id` = 20 AND ug.`group_id` " +
-                "IN (SELECT ug2.group_id FROM tb_user_group ug2 WHERE ug2.`user_id` = 21)\n";
+        String sql3 = "SELECT ug.group_id FROM tb_user_group ug WHERE ug.`user_id` = #{toUserId} AND ug.`group_id` " +
+                "IN (SELECT ug2.group_id FROM tb_user_group ug2 WHERE ug2.`user_id` = #{userId})\n";
         List<Record> groupRecordList = Db.init().selectList(sql3, Record.create().set("userId", userId).set("toUserId", toUserId));
         StringBuffer ids2 = new StringBuffer();
         for (Record record : groupRecordList) {
@@ -666,5 +667,14 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         }
         Record record = Record.create();
         return record.set("uservos", userList).set("groupvos", groupList);
+    }
+
+    @Override
+    public UserVo findUserDetailWithUa(Integer userId, Integer toUserId) {
+        String sql = Blade.dao().getScript("UserInfo.userInfoDetailWithUa").getSql();
+        Record record = Db.init().selectOne(sql, Record.create().set("userId", userId).set("toUserId", toUserId));
+        UserVo userVo = Convert.recordToVo(record);
+        Convert.setUserVoStatus(userVo, record, userId);
+        return userVo;
     }
 }

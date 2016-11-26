@@ -29,6 +29,8 @@ public class UserVo extends BaseVo implements Serializable {
     private String school; // 学校
     private String desc;  // 个人介绍
 
+    private Integer isMember; // 是否会员 1：非会员 2：会员
+
     private List<Button> btnList;
     private List<String> sameKeyList;
 
@@ -38,6 +40,14 @@ public class UserVo extends BaseVo implements Serializable {
 
     public void setSameKeyList(List<String> sameKeyList) {
         this.sameKeyList = sameKeyList;
+    }
+
+    public Integer getIsMember() {
+        return isMember;
+    }
+
+    public void setIsMember(Integer isMember) {
+        this.isMember = isMember;
     }
 
     public Integer getPer() {

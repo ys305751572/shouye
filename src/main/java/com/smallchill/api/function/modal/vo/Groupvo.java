@@ -1,34 +1,45 @@
 package com.smallchill.api.function.modal.vo;
 
+import com.smallchill.core.base.model.BaseModel;
+
 import java.io.Serializable;
 
 /**
  * api group vo
  * Created by yesong on 2016/10/26 0026.
  */
-public class Groupvo implements Serializable {
+public class Groupvo extends BaseModel implements Serializable {
 
     private Integer id;
     private String name;
     private String avater;
     private String target;
     private Integer memberCount;
-    private String city;
+    private String provinceCity;
     private Integer type;
     private Integer status;
     private String info;
     private String remainingTime;
+    private Integer isjoin;
 
     private Groupvo() {
     }
 
-    public Groupvo(Integer id, String name, String avater, String target, Integer memberCount, String city) {
+    public Groupvo(Integer id, String name, String avater, String target, Integer memberCount, String provinceCity) {
         this.id = id;
         this.name = name;
         this.avater = avater;
         this.target = target;
         this.memberCount = memberCount;
-        this.city = city;
+        this.provinceCity = provinceCity;
+    }
+
+    public Integer getIsjoin() {
+        return isjoin;
+    }
+
+    public void setIsjoin(Integer isjoin) {
+        this.isjoin = isjoin;
     }
 
     public String getRemainingTime() {
@@ -103,11 +114,11 @@ public class Groupvo implements Serializable {
         this.memberCount = memberCount;
     }
 
-    public String getCity() {
-        return city;
+    public String getProvinceCity() {
+        return provinceCity;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setProvinceCity(String provinceCity) {
+        this.provinceCity = provinceCity;
     }
 }

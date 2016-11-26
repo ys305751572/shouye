@@ -1,9 +1,11 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
+import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.service.MessageService;
 import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.LeomanKit;
 import com.smallchill.core.toolbox.Record;
@@ -388,5 +390,22 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         Record record = Record.create().set("groupId", groupId).set("userId", userId);
         userGroupService.deleteBy(where, record);
         groupApprovalService.deleteBy(where, record);
+    }
+
+    @Override
+    public Groupvo findGroupWithGa(Integer groupId, Integer userId) {
+        String sql = Blade.dao().getScript("Group.groupDetailWithUa").getSql();
+        Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId).set("userId", userId));
+        int isjoin;
+        if (record.get("status") == null || Integer.parseInt(record.get("status").toString()) == 1
+                || Integer.parseInt(record.get("status").toString()) == 3
+                || Integer.parseInt(record.get("status").toString()) == 4) {
+            isjoin = 0;
+        } else {
+            isjoin = 1;
+        }
+        Groupvo groupvo = Convert.recordToGroupVo(record);
+        groupvo.setIsjoin(isjoin);
+        return groupvo;
     }
 }
