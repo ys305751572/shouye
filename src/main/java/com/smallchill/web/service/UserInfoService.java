@@ -131,4 +131,11 @@ public interface UserInfoService extends IService<UserInfo> {
      * @return uservo
      */
     UserVo findUserDetailWithUa(Integer userId, Integer toUserId);
+
+    /**
+     * 重新绑定手机号
+     * @param mobile 手机号
+     * @throws UserExitsException
+     */
+    void updateMobile(String mobile, Integer userId) throws UserExitsException;
 }

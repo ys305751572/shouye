@@ -147,3 +147,48 @@ FROM
 
     WHERE ui.user_id = #{toUserId}
 
+blanklist
+====================
+SELECT
+  ui.user_id userId,
+  ui.username,
+  IFNULL(ui.avater, '') AS avater,
+  ui.province_city provinceCity,
+  ui.domain,
+  ui.key_word keyWord,
+  ui.organization,
+  ui.professional,
+  ui.per
+FROM
+  tb_user_approval ua
+  LEFT JOIN tb_user_info ui
+    ON ui.`user_id` = ua.`to_user_id`
+    WHERE ua.`status` = 3 AND ua.`from_user_id` = #{userId}
+
+userlistByjoinGroup
+==============================================
+SELECT
+  ui.user_id userId,
+  ui.username,
+  ui.avater,
+  ui.mobile,
+  ui.province_id province,
+  ui.city_id city,
+  ui.school,
+  ui.province_city proviceCity,
+  ui.domain,
+  ui.key_word keyWord,
+  ui.organization,
+  ui.per,
+  ui.career,
+  ui.professional,
+  ui.desc,
+  ga.status
+FROM
+  tb_group_approval ga
+LEFT JOIN
+  tb_user_info ui
+ON
+  ga.`user_id` = ui.`user_id`
+WHERE ga.`group_id` = #{groupId}
+  AND ga.`type` = 1 AND ga.`status` = 1

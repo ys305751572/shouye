@@ -677,4 +677,13 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         Convert.setUserVoStatus(userVo, record, userId);
         return userVo;
     }
+
+    @Override
+    public void updateMobile(String mobile ,Integer userId) throws UserExitsException {
+        UserInfo userInfo = this.findFirstBy("mobile = #{mobile}", Record.create().set("mobile", mobile));
+        if (userInfo != null)
+                throw new UserExitsException();
+
+        this.updateBy("mobile = #{mobile}","user_id = #{userId}", Record.create().set("mobile", mobile).set("userId", userId));
+    }
 }

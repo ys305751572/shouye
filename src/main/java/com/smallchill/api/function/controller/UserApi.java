@@ -2,21 +2,23 @@ package com.smallchill.api.function.controller;
 
 import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.common.kit.ExcludeParams;
+import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.function.meta.intercept.UserApiIntercept;
 import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.meta.validate.*;
 import com.smallchill.api.function.modal.GroupInterest;
+import com.smallchill.api.function.modal.Message;
 import com.smallchill.api.function.modal.UserFriendGrouping;
 import com.smallchill.api.function.modal.UserInterest;
 import com.smallchill.api.function.modal.vo.UserVo;
-import com.smallchill.api.function.service.GroupInterestService;
-import com.smallchill.api.function.service.UfgmService;
-import com.smallchill.api.function.service.UserFriendGroupingService;
-import com.smallchill.api.function.service.UserInterestService;
+import com.smallchill.api.function.service.*;
+import com.smallchill.api.system.service.VcodeService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
 import com.smallchill.core.constant.ConstCache;
 import com.smallchill.core.interfaces.ILoader;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.CacheKit;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,6 +56,10 @@ public class UserApi extends BaseController implements ConstCache {
     private UserInterestService userInterestService;
     @Autowired
     private GroupInterestService groupInterestService;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
+    private VcodeService vcodeService;
 
 
     /**
@@ -371,5 +378,92 @@ public class UserApi extends BaseController implements ConstCache {
             return fail();
         }
         return success(record, "intersection");
+    }
+
+    /**
+     * 我的消息列表
+     *
+     * @param userId 当前用户ID
+     * @return result
+     */
+    @PostMapping(value = "/message/list")
+    @ResponseBody
+    @Before(GroupPageValidator.class)
+    public String messageList(Integer userId) {
+        List<Message> list = messageService.findByUserId(userId);
+        if (list != null) {
+            for (Message message : list) {
+                message.setAction1(null);
+                message.setAction2(null);
+                message.setAction3(null);
+                message.setAction4(null);
+                message.setFromId(null);
+                message.setSendTime(null);
+                message.setToId(null);
+                message.setReplaces(null);
+            }
+        } else list = new ArrayList<>();
+        return success(list);
+    }
+
+    /**
+     * 黑名单列表
+     *
+     * @param userId 当前用户ID
+     * @return result
+     */
+    @PostMapping(value = "/blank/list")
+    @ResponseBody
+    public String blankList(Integer userId) {
+        String sql = Blade.dao().getScript("UserInfo.blanklist").getSql();
+        List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));
+        List<UserVo> userVos = new ArrayList<>();
+        for (Record record : list) {
+            userVos.add(Convert.recordToVo(record));
+        }
+        return success(userVos);
+    }
+
+    /**
+     * 验证验证码是否正确
+     *
+     * @param mobile 手机号
+     * @param code   验证码
+     * @return result
+     */
+    @PostMapping(value = "/code/validate")
+    @ResponseBody
+    @Before(VcodeValidate.class)
+    public String validateCode(String mobile, String code) {
+        if (vcodeService.validate(mobile, code)) {
+            return success();
+        }
+        else {
+            return fail(ErrorType.ERROR_CODE_VALIDATECODE_FAIL);
+        }
+    }
+
+    /**
+     * 重新绑定手机号
+     * @param mobile 手机号
+     * @param code 验证码
+     * @return result
+     */
+    @PostMapping(value = "/mobile/rebind")
+    @ResponseBody
+    @Before(VcodeValidate.class)
+    public String updateBindMobile(String mobile, String code, Integer userId) {
+        if (vcodeService.validate(mobile, code)) {
+            try {
+                userInfoService.updateMobile(mobile, userId);
+            } catch (UserExitsException e) {
+                e.printStackTrace();
+                return fail(ErrorType.ERROR_CODE_USERHASEXTIS);
+            }
+            return success();
+        }
+        else {
+            return fail(ErrorType.ERROR_CODE_VALIDATECODE_FAIL);
+        }
     }
 }

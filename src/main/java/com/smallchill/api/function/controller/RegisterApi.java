@@ -3,9 +3,11 @@ package com.smallchill.api.function.controller;
 import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.function.meta.other.Convert;
+import com.smallchill.api.function.meta.validate.VcodeValidate;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.system.service.VcodeService;
 import com.smallchill.common.base.BaseController;
+import com.smallchill.core.annotation.Before;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.platform.service.UserLoginService;
 import com.smallchill.web.model.UserInfo;
@@ -42,11 +44,13 @@ public class RegisterApi extends BaseController {
      */
     @RequestMapping(value = "/register")
     @ResponseBody
+    @Before(VcodeValidate.class)
     public String register(String mobile, String code) {
 
         if (vcodeService.validate(mobile, code)) {
             return success();
         } else if (userLoginService.userIfExtis(mobile)) {
+
             return fail(ErrorType.ERROR_CODE_USERHASEXTIS);
         } else {
             return fail(ErrorType.ERROR_CODE_VALIDATECODE_FAIL);
