@@ -21,4 +21,8 @@ public interface ConstCache {
 	
 	final static String SYS_CACHE = "sysCache";
 
+	final static String PROVINCE_CACHE = "provinceCache";
+
+	final static String CITY_CACHE = "cityCache";
+
 }

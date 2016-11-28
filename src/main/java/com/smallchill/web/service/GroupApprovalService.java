@@ -61,7 +61,7 @@ public interface GroupApprovalService extends IService<GroupApproval> {
     /**
      * 权限设置
      */
-    void permissionSetting(Group group,Integer permissionsType,Integer isJoin,Integer costType,Integer cost,Integer sexLimit,Integer industryLimit,Integer domainLimit,Integer provinceLimit,Integer cityLimit,Integer professionalLimit,Integer zyLimit);
+    void permissionSetting(Group group,Integer permissionsType,Integer isJoin,Integer isIntroduce,Integer costType,Integer cost,Integer sexLimit,Integer industryLimit,Integer domainLimit,Integer provinceLimit,Integer cityLimit,Integer professionalLimit,Integer zyLimit);
 
     /**
      * 申请页信息

@@ -1,0 +1,124 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form class="form-horizontal" role="form">
+	<div class="space-4"></div>
+	<!-- #section:elements.form -->
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >页签标题</label>
+		<div class="col-sm-8">
+			<input type="text" name="title" id="title" class="form-control" maxlength="6" value="" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >详情内容</label>
+		<div class="col-sm-8">
+			<textarea  id="content" name="content" class="form-control" cols="100" rows="8" style="visibility:hidden;width:592px;height:300px;"></textarea>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >仅会员可见</label>
+		<div class="col-sm-1">
+			<input type="checkbox" name="isOpen" id="isOpen" style="height:20px;width: 20px; margin-top: 7px;" />
+		</div>
+	</div>
+
+	<div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+		<div class="col-md-offset-1 col-md-10">
+			<button class="btn btn-info" type="button" id="btn_save">
+				<i class="ace-icon fa fa-check bigger-110"></i>
+				确认
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" id="btn_close">
+				<i class="ace-icon fa fa-close bigger-110"></i>
+				关闭
+			</button>
+		</div>
+	</div>
+
+	<link rel="stylesheet" href="${basePath}/static/kindeditor/themes/default/default.css" />
+	<link rel="stylesheet" href="${basePath}/static/kindeditor/plugins/code/prettify.css" />
+	<script charset="utf-8" src="${basePath}/static/kindeditor/kindeditor.js"></script>
+	<script charset="utf-8" src="${basePath}/static/kindeditor/lang/zh_CN.js"></script>
+	<script charset="utf-8" src="${basePath}/static/kindeditor/plugins/code/prettify.js"></script>
+	<script charset="utf-8" src="${basePath}/static/kindeditor/plugins/image/image.js"></script>
+	<script src="${basePath}/static/laydate/laydate.js"></script>
+	<script type="text/javascript">
+		var editor;
+		KindEditor.ready(function(K) {
+			var options = {
+				cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
+				uploadJson : '${ctxPath}/kindeditor/upload_json',
+				//uploadJson : '${ctxPath}/image/upload_blob',
+				fileManagerJson : '${ctxPath}/kindeditor/file_manager_json',
+				items: ['source', '|', 'fontname', 'fontsize', '|', 'forecolor', 'bold', 'italic', 'underline', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'image', 'multiimage', '|', 'plainpaste', 'wordpaste', '|','fullscreen'],
+				filterMode : true
+			};
+			editor = K.create('textarea[name="content"]', options);
+		});
+
+		var layerIndex = parent.layer.getFrameIndex(window.name);
+		var status = "${status}";
+		var groupId = "${group.id}";
+		var title,content,isOpen;
+
+		$(function(){
+			if(status==1){
+				title = "${group.title1}";
+				content = '${group.content1}';
+				isOpen = "${group.isOpen1}";
+			}
+			if(status==2){
+				title = "${group.title2}";
+				content = '${group.content2}';
+				isOpen = "${group.isOpen2}";
+			}
+			if(status==3){
+				title = "${group.title3}";
+				content = '${group.content3}';
+				isOpen = "${group.isOpen3}";
+			}
+			if(isOpen==1){
+				$("#isOpen").attr('checked','checked');
+			}
+			$("#title").val(title);
+			$("#content").text(content);
+
+			$("#btn_close").bind("click",function(){
+				parent.layer.close(layerIndex);
+			});
+
+			$("#btn_save").bind("click",function(){
+				editor.sync();
+				var isOpen;
+				var title = $("#title").val();
+				var content = $("#content").val();
+				if($('#isOpen').is(':checked')){
+					isOpen = 1;
+				}else {
+					isOpen = 2;
+				}
+				$.post("${basePath}/${code}/contentSave",{groupId:groupId , title:title, content:content, isOpen:isOpen, status:status}, function(data){
+					if(data.code===0){
+						layer_alert(data.message, "success");
+						parent.layer.close(layerIndex);
+						parent.location.reload();
+					}
+					else{
+						layer_alert(data.message, "error");
+					}
+				}, "json");
+
+			});
+
+
+
+		})
+
+	</script>
+
+	<div class="space-4"></div>
+</form>
+@}

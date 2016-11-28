@@ -24,11 +24,13 @@ public class ImportProvinceTest extends BaseJunit4Test{
 
 
     public static List<City> join() {
-        File file = new File("E:\\project\\shouye\\json.txt");
+        File file = new File("E:\\projects\\shouye\\json.txt");
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new FileReader(file));
+//            reader = new BufferedReader(new FileReader(file));
+            InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
+            reader = new BufferedReader(isr);
             StringBuffer buffer = new StringBuffer();
             String text;
             while ((text = reader.readLine()) != null) {
@@ -59,7 +61,7 @@ public class ImportProvinceTest extends BaseJunit4Test{
     }
 
     public static void insert(City city) {
-        Db.init().insert("insert into tb_province_city (code,name,parent_id) values (#{code), #{name}, #{parentId}",
+        Db.init().insert("insert into tb_province_city (code,name,parent_code) values (#{code}, #{name}, #{parentId})",
                 Record.create().set("code", city.getId()).set("name", city.getName()).set("parentId",city.getParentId()));
     }
 }

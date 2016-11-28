@@ -1,0 +1,191 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<style>
+    .but{
+        width: 50px;
+        height: 34px;
+        background: #6fb3e0;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 1px;
+        cursor: pointer;
+
+    }
+    .but:hover, .but:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #6fb3e0;
+    }
+</style>
+
+<form class="form-horizontal" role="form">
+    <div class="space-4"></div>
+    <!-- #section:elements.form -->
+
+    <div class="form-group">
+        @ var _table="tb_group";
+        @ var _col=[
+        @			  {name:"头像上传",index:"avater", type:"imgupload",newline:true,length:8,returnType:"id"}
+        @		   ];
+        @ include("/common/_curd/_add.html",{"col":_col,"table":_table}){}
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 组织名称 </label>
+        <div class="col-sm-3">
+            <input type="text" name="name" id="name" placeholder="" value="${group.name}" disabled/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" >所在省</label>
+        <div class="col-sm-3">
+            <select name="province" id="province" class="form-control">
+                <option value=""></option>
+                <option value="0">省</option>
+            </select>
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" >所在市</label>
+        <div class="col-sm-3">
+            <select name="city" id="city" class="form-control">
+                <option value=""></option>
+                <option value="0">市</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" >填写关键字</label>
+        <div class="col-sm-3">
+            <input type="text" id="targat" value="" placeholder="可输入10个字" class="form-control" maxlength="10" />
+        </div>
+        <div class="col-sm-1">
+            <input type="button" name="" class="but" value="添加" onclick="keyWorkAdd(this)"/>
+        </div>
+    </div>
+
+    <div class="form-group" id="keyWork">
+        <label class="col-sm-2 control-label no-padding-right" ></label>
+
+    </div>
+
+    <div id="phone">
+        <div class="form-group">
+            <label class="col-sm-2 control-label no-padding-right" >服务热线</label>
+            <div class="col-sm-2">
+                <input type="text" name="" value="" placeholder="区号" class="form-control" maxlength="4"/>
+            </div>
+            <div class="col-sm-3">
+                <input type="text" name="" value="" placeholder="固定号码" class="form-control" maxlength="8"/>
+            </div>
+            <div class="col-sm-1">
+                <input type="button" name="" class="but" value="添加" onclick="phoneAdd()"/>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+        <div class="col-md-offset-1 col-md-10">
+            <button class="btn btn-info" type="button" id="btn_save">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                保存
+            </button>
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn" type="button" id="btn_close">
+                <i class="ace-icon fa fa-close bigger-110"></i>
+                关闭
+            </button>
+        </div>
+    </div>
+
+    <script src="${basePath}/static/laydate/laydate.js"></script>
+    <script type="text/javascript">
+
+        var layerIndex = parent.layer.getFrameIndex(window.name);
+        var targat = "${group.targat}";
+        var targatList = targat.split("|");
+        $(function(){
+            var html = "";
+            for(var j=0;j<targatList.length;j++){
+                html += "<div class='col-sm-2 input-group' data-type='' style='float:left;background: #6fb3e0;color: #dde9ff;position: relative;font-size: 14px;width: auto;height:30px;line-height:30px;text-indent: 10px;margin:0 5px 5px 0'>" + targatList[j];
+                html += "	<span class='o_close' data-percent='' onclick='keyWorkDel(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+                html += "	<input type='hidden' name='targat' value='" + targatList[j] + "'>";
+                html += "</div>   ";
+            }
+            $("#keyWork").append(html);
+            $("#targat").val("");
+
+
+            $("#btn_close").bind("click",function(){
+                parent.layer.close(layerIndex);
+            });
+
+            $("#btn_save").bind("click",function(){
+                var send = $("input[name='send']:checked").val();
+                var sendTime = $("#send_time").val();
+                var title = $("#title").val();
+                var content = $("#content").val();
+                $.post("${basePath}/group/send_message",{groupId:groupId , send:send, sendTime:sendTime, title:title, content:content}, function(data){
+                    if(data.code===0){
+                        layer_alert(data.message, "success");
+                        parent.layer.close(layerIndex);
+                    }
+                    else{
+                        layer_alert(data.message, "error");
+                    }
+                }, "json");
+
+            });
+        });
+
+        function keyWorkAdd(data){
+            var text = $("#targat").val();
+            if(text == ''){
+                return;
+            }
+
+            var length = $("#keyWork").children("div").length;
+            if(length>4){
+                layer_alert("最多只能添加5个关键字!","warn");
+                return;
+            }
+
+            var html = "";
+            html += "<div class='col-sm-2 input-group' data-type='' style='float:left;background: #6fb3e0;color: #dde9ff;position: relative;font-size: 14px;width: auto;height:30px;line-height:30px;text-indent: 10px;margin:0 5px 5px 0'>" + text;
+            html += "	<span class='o_close' data-percent='' onclick='keyWorkDel(this)' style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+            html += "	<input type='hidden' name='targat' value='" + text + "'>";
+            html += "</div>   ";
+
+            $("#keyWork").append(html);
+            $("#targat").val("");
+        }
+
+        function keyWorkDel(data){
+            $(data).parent().remove();
+        }
+
+        function phoneAdd(){
+            var html = "";
+            html += " <div class='form-group'>																				";
+            html += " 	<label class='col-sm-2 control-label no-padding-right' ></label>                                    ";
+            html += " 	<div class='col-sm-2'>                                                                              ";
+            html += " 		<input type='text' name='' value='' placeholder='区号' class='form-control' maxlength='4'/>     ";
+            html += " 	</div>                                                                                              ";
+            html += " 	<div class='col-sm-3'>                                                                              ";
+            html += " 		<input type='text' name='' value='' placeholder='固定号码' class='form-control' maxlength='8'/> ";
+            html += " 	</div>                                                                                              ";
+            html += " 	<div class='col-sm-1'>                                                                              ";
+            html += " 		<input type='button' name='' class='but' value='删除' onclick='phoneDel(this)'/>                ";
+            html += " 	</div>                                                                                              ";
+            html += " </div>                                                                                                ";
+            $("#phone").append(html);
+        }
+
+        function phoneDel(data){
+            $(data).parent().parent().remove();
+        }
+
+    </script>
+
+    <div class="space-4"></div>
+</form>
+@}

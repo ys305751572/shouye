@@ -19,6 +19,13 @@
             <label><input type="radio" name="isJoin" class="rdo" value="2">关闭组织</label>
         </div>
     </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 是否允许引荐 </label>
+        <div class="col-sm-8">
+            <label><input type="radio" name="isIntroduce" class="rdo" checked value="1">允许引荐</label>
+            <label><input type="radio" name="isIntroduce" class="rdo" value="2">拒绝引荐</label>
+        </div>
+    </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 会员费用 </label>
@@ -26,6 +33,7 @@
             <input type="text" name="cost" id="cost" placeholder="" class="form-control" value="0"/>
         </div>
     </div>
+
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 会员期限 </label>
         <div class="col-sm-8">
@@ -118,6 +126,7 @@
 
             var permissions_type = "${group.permissionsType}";
             var is_join = "${group.isJoin}";
+            var is_introduce = "${group.isIntroduce}";
             var sex_limit = "${group.sexLimit}";
             var industry_limit = "${group.industryLimit}";
             var domain_limit = "${group.domainLimit}";
@@ -147,6 +156,12 @@
                 $("input[name='costType']:eq(1)").attr("checked",'checked');
             }
 
+            if(is_introduce == 1){
+                $("input[name='isIntroduce']:eq(0)").attr("checked",'checked');
+            }else if(is_introduce == 2){
+                $("input[name='isIntroduce']:eq(1)").attr("checked",'checked');
+            }
+
             $("#cost").val(_cost);
             $("#sex_limit").val(sex_limit);
             $("#industry_limit").val(industry_limit);
@@ -167,6 +182,8 @@
                 var permissionsType = $("input[name='permissionsType']:checked").val();
                 //是否开放申请
                 var isJoin = $("input[name='isJoin']:checked").val();
+                //是否允许引荐
+                var isIntroduce = $("input[name='isIntroduce']:checked").val();
                 //会员费用类型
                 var costType = $("input[name='costType']:checked").val();
                 //会员费用
@@ -185,6 +202,7 @@
                     {
                         permissionsType:permissionsType ,
                         isJoin:isJoin,
+                        isIntroduce:isIntroduce,
                         costType:costType,
                         cost:cost,
                         sexLimit:sexLimit,

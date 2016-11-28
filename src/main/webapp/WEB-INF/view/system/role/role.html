@@ -20,13 +20,13 @@
 	function initGrid(){
 		var list = JSON.parse('${demoList}');
 		var grid_url = ctx+"/${code}/list";//查询列表接口
-		var _colnames=[ "序列","角色名称","上级角色","所在部门", "备注","分组"];
+		var _colnames=[ "序列","角色名称","上级角色","所在部门", "备注"/*,"分组"*/];
 		var _colmodel=[   {name:"ID",index:"ID", width:80,hidden:true},
 						  {name:"NAME",index:"NAME", width:100},
 						  {name:"PNAME",index:"PID", width:100},
 						  {name:"DEPTNAME",index:"DEPTID", width:100},
 						  {name:"TIPS",index:"TIPS", width:80},
-						  {name:"groups",index:"ID",width:500,
+/*						  {name:"groups",index:"ID",width:500,
 							  formatter: function(cellvalue, options, rowObject) {
 								  var rowId = rowObject.ID;
 								  var html = "";
@@ -65,7 +65,7 @@
 
 								  return cev+html;
 							  }
-						  }
+						  }*/
 						];
 		
 		jQuery(grid_selector).jqGrid({

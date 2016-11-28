@@ -1,18 +1,42 @@
 @layout("/common/_curd/_container.html"){
 <!-- PAGE CONTENT BEGINS -->
+
+<style>
+    .but{
+        width: 50px;
+        height: 34px;
+        background: #6fb3e0;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 1px;
+        cursor: pointer;
+
+    }
+    .but:hover, .but:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #6fb3e0;
+    }
+</style>
+
 <form class="form-horizontal" role="form">
     <div class="space-4"></div>
+    <div class="form-group">
+        <input type="button" style="float: right;width: auto;height: 50px;margin-right: 15px" class="but" value="组织二维码" onclick="openQrcode()">
+    </div>
     <!-- #section:elements.form -->
     <div class="form-group">
         <div class="col-sm-10" style="text-align:center">
             <img src="" width="150" height="150">
         </div>
     </div>
-
+    <input type="hidden" value="${group.id}" id="groupId">
     <div class="form-group" >
         <label class="col-sm-2 control-label no-padding-right" >组织名称</label>
         <div class="col-sm-8"  style="text-align:center">
-            <input type="text" id="groupName" name="" class="form-control"  value="${group.name}" placeholder=""  readonly/>
+            <input type="text" id="groupName" name="groupName" class="form-control"  value="${group.name}" placeholder=""  readonly/>
+        </div>
+        <div class="col-sm-1">
+            <input type="button" name="" class="but" value="设置" onclick="update(0)"/>
         </div>
     </div>
 
@@ -40,12 +64,15 @@
         <div class="col-sm-8">
             <input type="text" name="title1" id="title1" placeholder="" class="form-control" value="${group.title1}" readonly/>
         </div>
+        <div class="col-sm-1">
+            <input type="button" name="" class="but" value="设置" onclick="update(1)"/>
+        </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 内容 </label>
         <div class="col-sm-8">
-            <textarea id="content1" style="height:200px" name="content1" placeholder="" class="form-control"></textarea>
+            <textarea id="content1" style="height:400px" name="content" placeholder="" class="form-control" readonly>${group.content1}</textarea>
         </div>
     </div>
 
@@ -54,19 +81,25 @@
         <div class="col-sm-8">
             <input type="text" name="title2" id="title2" placeholder="" class="form-control" value="${group.title2}" readonly/>
         </div>
+        <div class="col-sm-1">
+            <input type="button" name="" class="but" value="设置" onclick="update(2)"/>
+        </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 内容2 </label>
         <div class="col-sm-8">
-            <textarea id="content2" style="height:200px" name="content2" placeholder="" class="form-control"></textarea>
+            <textarea id="content2" style="height:400px" name="content" placeholder="" class="form-control" readonly>${group.content2}</textarea>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 标题3 </label>
         <div class="col-sm-8">
-            <input type="text" name="title3" id="title3" placeholder="" class="form-control" value="${group.title2}" readonly/>
+            <input type="text" name="title3" id="title3" placeholder="" class="form-control" value="${group.title3}" readonly/>
+        </div>
+        <div class="col-sm-1">
+            <input type="button" name="" class="but" value="设置" onclick="update(3)"/>
         </div>
     </div>
 
@@ -74,14 +107,14 @@
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 内容3 </label>
         <div class="col-sm-8">
-            <textarea id="content3" style="height:200px" name="content3" placeholder="" class="form-control"></textarea>
+            <textarea id="content3" style="height:400px" name="content" placeholder="" class="form-control" readonly>${group.content3}</textarea>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 工商营业执照注册号 </label>
         <div class="col-sm-8">
-            <input type="text" name="1" id="1" placeholder="" class="form-control" value="${groupExtend.license}" readonly/>
+            <input type="text" name="license" id="license" placeholder="" class="form-control" value="${groupExtend.license}" readonly/>
         </div>
     </div>
 
@@ -95,7 +128,7 @@
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 组织代码证号 </label>
         <div class="col-sm-8">
-            <input type="text" name="2" id="3" placeholder="" class="form-control" value="${groupExtend.code}" readonly/>
+            <input type="text" name="code" id="code" placeholder="" class="form-control" value="${groupExtend.code}" readonly/>
         </div>
     </div>
 
@@ -109,38 +142,123 @@
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 运营者身份证姓名 </label>
         <div class="col-sm-8">
-            <input type="text" name="2" id="4" placeholder="" class="form-control" value="${groupExtend.artificialPersonName}" readonly/>
+            <input type="text" name="artificialPersonName" id="artificialPersonName" placeholder="" class="form-control" value="${groupExtend.artificialPersonName}" readonly/>
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 运营者身份证号码 </label>
         <div class="col-sm-8">
-            <input type="text" name="2" id="5" placeholder="" class="form-control" value="${groupExtend.artificialPersonIdcard}" readonly/>
+            <input type="text" name="artificialPersonIdcard" id="artificialPersonIdcard" placeholder="" class="form-control" value="${groupExtend.artificialPersonIdcard}" readonly/>
         </div>
     </div>
 
-    <div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
-        <div class="col-md-offset-1 col-md-10">
-            <button class="btn btn-info" type="button" id="btn_save">
-                <i class="ace-icon fa fa-check bigger-110"></i>
-                确认
-            </button>
-            &nbsp; &nbsp; &nbsp;
-            <button class="btn" type="button" id="btn_close">
-                <i class="ace-icon fa fa-close bigger-110"></i>
-                关闭
-            </button>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 运营者手机号码 </label>
+        <div class="col-sm-8">
+            <input type="text" name="artificialPersonMobile" id="artificialPersonMobile" placeholder="" class="form-control" value="${groupExtend.artificialPersonMobile}" readonly/>
         </div>
     </div>
 
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 银行开户名 </label>
+        <div class="col-sm-8">
+            <input type="text" name="groupBank" id="groupBank" placeholder="" class="form-control" value="${groupBank.bankUserName}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 银行账户 </label>
+        <div class="col-sm-8">
+            <input type="text" name="bankAccout" id="bankAccout" placeholder="" class="form-control" value="${groupBank.bankAccout}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 省 </label>
+        <div class="col-sm-8">
+            <input type="text" name="province" id="province" placeholder="" class="form-control" value="${groupBank.province}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 市 </label>
+        <div class="col-sm-8">
+            <input type="text" name="city" id="city" placeholder="" class="form-control" value="${groupBank.city}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 开户行支行名称 </label>
+        <div class="col-sm-8">
+            <input type="text" name="branch_name" id="branch_name" placeholder="" class="form-control" value="${groupBank.branchName}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 服务热线 </label>
+        <div class="col-sm-8">
+            <input type="text" name="telphone" id="telphone" placeholder="" class="form-control" value="${group.telphone}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 组织ID </label>
+        <div class="col-sm-8">
+            <input type="text" name="idcard" id="idcard" placeholder="" class="form-control" value="${groupExtend.idCard}" readonly/>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="${basePath}/static/kindeditor/themes/default/default.css" />
+    <link rel="stylesheet" href="${basePath}/static/kindeditor/plugins/code/prettify.css" />
+    <script charset="utf-8" src="${basePath}/static/kindeditor/kindeditor.js"></script>
+    <script charset="utf-8" src="${basePath}/static/kindeditor/lang/zh_CN.js"></script>
+    <script charset="utf-8" src="${basePath}/static/kindeditor/plugins/code/prettify.js"></script>
+    <script charset="utf-8" src="${basePath}/static/kindeditor/plugins/image/image.js"></script>
     <script src="${basePath}/static/laydate/laydate.js"></script>
     <script type="text/javascript">
+        var editor;
+        KindEditor.ready(function(K) {
+            var options = {
+                cssPath : '${basePath}/static/kindeditor/plugins/code/prettify.css',
+                uploadJson : '${ctxPath}/kindeditor/upload_json',
+                //uploadJson : '${ctxPath}/image/upload_blob',
+                fileManagerJson : '${ctxPath}/kindeditor/file_manager_json',
+                items: [],
+                filterMode : true,
+                readonlyMode : true
+            };
+            editor = K.create('textarea[name="content"]', options);
+        });
+
         var layerIndex = parent.layer.getFrameIndex(window.name);
         $(function(){
 
 
+        });
 
-        })
+        function update(status){
+            var groupId = $("#groupId").val();
+            layer.open({
+                type: 2,
+                title: '设置',
+//                shadeClose: true,
+//                shade: 0.8,
+                area: ['900px', '650px'],
+                content: '${basePath}/group/modify?groupId='+groupId+'&status='+status //iframe的url
+            });
+        }
+
+        function openQrcode(){
+            var groupId = $("#groupId").val();
+            layer.open({
+                type: 2,
+                title: '',
+//                shadeClose: true,
+//                shade: 0.8,
+                area: ['310px', '310px'],
+                content: '${basePath}/${code}/qrcode?groupId='+groupId
+            });
+        }
 
     </script>
 

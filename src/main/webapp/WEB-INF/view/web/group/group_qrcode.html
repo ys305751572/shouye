@@ -1,0 +1,30 @@
+@layout("/common/_curd/_container.html"){
+<head>
+    <meta charset="utf-8"/>
+    <script src="${basePath}/static/qrcode/qrcode.js"></script>
+    <script type="text/javascript">
+        window.onload = function(){
+            // 二维码对象
+            var qrcode;
+            var groupId = '${groupId}';
+            var size = 280;
+
+            // 清除上一次的二维码
+            if(qrcode){
+                qrcode.clear();
+            }
+
+            // 创建二维码
+            qrcode = new QRCode(document.getElementById("qrcode"), {
+                width : size,//设置宽高
+                height : size
+            });
+
+            qrcode.makeCode(groupId);
+        }
+    </script>
+</head>
+<body>
+<div id="qrcode" style="margin: 10px 10px 10px 0;border:1px solid #ffffff"></div>
+</body>
+@}

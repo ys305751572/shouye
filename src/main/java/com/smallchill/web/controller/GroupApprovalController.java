@@ -68,7 +68,6 @@ public class GroupApprovalController extends BaseController {
             return error(UPDATE_FAIL_MSG);
         }
         return success(UPDATE_SUCCESS_MSG);
-
     }
 
     /**
@@ -92,13 +91,13 @@ public class GroupApprovalController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/permission_setting")
-    public AjaxResult permissionSetting(Integer permissionsType,Integer isJoin,Integer costType,Integer cost,Integer sexLimit,Integer industryLimit,Integer domainLimit,Integer provinceLimit,Integer cityLimit,Integer professionalLimit,Integer zyLimit) {
+    public AjaxResult permissionSetting(Integer permissionsType,Integer isJoin,Integer isIntroduce,Integer costType,Integer cost,Integer sexLimit,Integer industryLimit,Integer domainLimit,Integer provinceLimit,Integer cityLimit,Integer professionalLimit,Integer zyLimit) {
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         if(group==null){
             return error("错误:未找到组织");
         }
         try{
-            groupApprovalService.permissionSetting(group,permissionsType,isJoin,costType,cost,sexLimit, industryLimit,domainLimit,provinceLimit,cityLimit,professionalLimit,zyLimit);
+            groupApprovalService.permissionSetting(group,permissionsType,isJoin,isIntroduce,costType,cost,sexLimit, industryLimit,domainLimit,provinceLimit,cityLimit,professionalLimit,zyLimit);
         }catch (RuntimeException e){
             e.printStackTrace();
             return error(UPDATE_FAIL_MSG);

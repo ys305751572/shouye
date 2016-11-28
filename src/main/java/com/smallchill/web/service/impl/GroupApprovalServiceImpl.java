@@ -222,7 +222,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Override
     @Transactional
-    public void permissionSetting(Group group, Integer permissionsType, Integer isJoin, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer zyLimit) {
+    public void permissionSetting(Group group, Integer permissionsType, Integer isJoin,Integer isIntroduce, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer zyLimit) {
         GroupExtend groupExtend = null;
         if (group.getId() != null) {
             groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}", Record.create().set("groupId", group.getId()));
@@ -244,6 +244,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         group.setPermissionsType(permissionsType);
         group.setIsJoin(isJoin);
         group.setSexLimit(sexLimit);
+        group.setIsIntroduce(isIntroduce);
         group.setIndustryLimit(industryLimit);
         group.setDomainLimit(domainLimit);
         group.setProvinceLimit(provinceLimit);

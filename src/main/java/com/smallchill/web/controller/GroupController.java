@@ -5,6 +5,7 @@ import com.smallchill.common.base.BaseController;
 import com.smallchill.common.task.TimeWorkManager;
 import com.smallchill.common.vo.User;
 import com.smallchill.core.constant.Cst;
+import com.smallchill.core.interfaces.ILoader;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
@@ -12,19 +13,18 @@ import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.core.toolbox.grid.GridManager;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.core.toolbox.kit.StrKit;
 import com.smallchill.web.meta.intercept.GroupIntercept;
 import com.smallchill.web.meta.task.SendTimeWork;
 import com.smallchill.web.model.Group;
+import com.smallchill.web.model.GroupBank;
 import com.smallchill.web.model.GroupExtend;
 import com.smallchill.web.model.GroupLoad;
 import com.smallchill.web.model.vo.GroupVo;
-import com.smallchill.web.service.GroupBankService;
-import com.smallchill.web.service.GroupExtendService;
-import com.smallchill.web.service.GroupLoadService;
-import com.smallchill.web.service.GroupService;
+import com.smallchill.web.service.*;
 import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 组织管理
@@ -104,7 +105,6 @@ public class GroupController extends BaseController {
             Integer id = (Integer) map.get("ID");
             ids.add(id);
         }
-
         request.getSession().setAttribute("groupIds",ids);
         request.getSession().setAttribute("groupNum",list.size());
 
@@ -118,6 +118,21 @@ public class GroupController extends BaseController {
     @RequestMapping(KEY_ADD)
     public String add(ModelMap mm) throws JSONException {
         mm.put("code", CODE);
+        List<Map<String, Object>> province = CacheKit.get(PROVINCE_CACHE, "province_all",
+            new ILoader() {
+                public Object load() {
+                    return Db.init().selectList("SELECT \n" +
+                            "  id AS id,\n" +
+                            "  code AS code,\n" +
+                            "  name AS name,\n" +
+                            "  parent_code AS parentCode\n" +
+                            "FROM\n" +
+                            "  tb_province_city \n" +
+                            "WHERE parent_code = '0' ");
+                }
+            });
+        mm.put("province", province);
+
         return BASE_PATH + "group_add.html";
     }
 
@@ -356,7 +371,6 @@ public class GroupController extends BaseController {
             e.printStackTrace();
             return error(SAVE_FAIL_MSG);
         }
-
         return success(SAVE_SUCCESS_MSG);
     }
 
@@ -368,15 +382,75 @@ public class GroupController extends BaseController {
     public String update(ModelMap mm){
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         GroupExtend groupExtend = new GroupExtend();
+        GroupBank groupBank = new GroupBank();
         if(group!=null){
-            mm.put("group",group);
+            mm.put("group",groupService.findById(group.getId()));
             groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
+            groupBank = groupBankService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
         }else {
             mm.put("group",new Group());
         }
 
         mm.put("groupExtend",groupExtend);
+        mm.put("groupBank",groupBank);
+        mm.put("code",CODE);
         return BASE_PATH +"group_update.html";
+    }
+
+
+    /**
+     * 修改组织详情
+     */
+    @RequestMapping(value = "/modify")
+    public String modify(ModelMap mm,Integer groupId,Integer status){
+        if(groupId==null)return null;
+        Group group = groupService.findById(groupId);
+        mm.put("group",group);
+        mm.put("code",CODE);
+        if(status==0){
+            return BASE_PATH +"group_modify.html";
+        }else {
+            mm.put("status",status);
+            return BASE_PATH +"group_content.html";
+        }
+    }
+
+    @RequestMapping(value = "/contentSave")
+    @ResponseBody
+    public AjaxResult contentSave(Integer groupId,String title,String content,Integer isOpen,Integer status){
+        Group group = groupService.findById(groupId);
+        try{
+            if(status==1){
+                group.setTitle1(title);
+                group.setContent1(content);
+                group.setIsOpen1(isOpen);
+            }
+            if(status==2){
+                group.setTitle2(title);
+                group.setContent2(content);
+                group.setIsOpen2(isOpen);
+            }
+            if(status==3){
+                group.setTitle3(title);
+                group.setContent3(content);
+                group.setIsOpen3(isOpen);
+            }
+
+            groupService.update(group);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error(SAVE_FAIL_MSG);
+        }
+        return success(SAVE_SUCCESS_MSG);
+    }
+
+    /**
+     * 二维码
+     */
+    @RequestMapping(value = "qrcode")
+    public String qrcode(ModelMap mm,Integer groupId){
+        mm.put("groupId",groupId);
+        return BASE_PATH +"group_qrcode.html";
     }
 
 }

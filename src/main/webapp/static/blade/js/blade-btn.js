@@ -108,8 +108,7 @@ var exwhere;
 
         //发送内容按钮
         if (this.alias == "content") {
-            var url = this.url;
-            this.open(url + split + ids, ids);
+            this.open(this.url);
             return;
         }
 

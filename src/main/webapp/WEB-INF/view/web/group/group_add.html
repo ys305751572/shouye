@@ -135,7 +135,6 @@
 		<div class="form-group">
 			<h4 class="col-sm-2 control-label no-padding-right" > --账号资料-- </h4>
 		</div>
-		<!-- 表单 -->
 		@ var _table="tb_group";
 		@ var _col=[
 		@			  {name:"头像上传",index:"avater", type:"imgupload",newline:true,length:8,returnType:"id"}
@@ -164,8 +163,9 @@
 			<label class="col-sm-2 control-label no-padding-right" >所在省</label>
 			<div class="col-sm-3">
 				<select name="province" id="province" class="form-control">
-					<option value=""></option>
-					<option value="0">省</option>
+					@for(x in province){
+						<option value="${x.code!}">${x.name!}</option>
+					@}
 				</select>
 			</div>
 			<label class="col-sm-2 control-label no-padding-right" >所在市</label>
@@ -364,6 +364,20 @@
 
 
 	$(function(){
+		$("#province").change(function (){
+			var code = $(this).val();
+			$.post(
+				"${ctxPath}/provinceCity/city",
+				{code:code},
+				function (data) {
+					for(var i=0;i<data.length;i++){
+
+						console.log(data[i])
+					}
+				}
+
+			)
+		});
 
 		$("#msforms").html5Validate(function() {
 			alert(123)
