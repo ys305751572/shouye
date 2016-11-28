@@ -1,6 +1,8 @@
 package com.smallchill.web.service;
 
 import com.smallchill.api.common.exception.UserExitsException;
+import com.smallchill.api.common.exception.UserIsNotManagerException;
+import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.core.toolbox.Record;
@@ -134,8 +136,47 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 重新绑定手机号
+     *
      * @param mobile 手机号
      * @throws UserExitsException
      */
     void updateMobile(String mobile, Integer userId) throws UserExitsException;
+
+    /**
+     * 加入组织用户列表
+     *
+     * @param userId 当前用户ID
+     * @return uservolist
+     */
+    List<UserVo> findUserListByJoinGroup(Integer userId) throws UserIsNotManagerException;
+
+    /**
+     * 查询该用户身份为干事的组织ID
+     *
+     * @param userId 用户ID
+     * @return groupId
+     */
+    Integer findGroupIdByUserId(Integer userId);
+
+    /**
+     * 引荐用户列表
+     * @param userId 用户ID
+     * @return IntroduceUserVolist
+     */
+    List<IntroduceUserVo> findIntroduceUserVoList(Integer userId) throws UserIsNotManagerException;
+
+    /**
+     * 设置组织是否允许加入
+     * @param userId 当前用户ID
+     * @param status 状态  1:开放 2:关闭
+     * @return result
+     */
+    void setIsJoin(Integer userId, Integer status) throws UserIsNotManagerException;
+
+    /**
+     * 设置组织是否允许引荐
+     * @param userId 当前用户ID
+     * @param status 状态  1:允许 2:拒绝
+     */
+    void setisIntroduce(Integer userId, Integer status) throws UserIsNotManagerException;
 }

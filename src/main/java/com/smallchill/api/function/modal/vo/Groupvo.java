@@ -8,7 +8,7 @@ import java.io.Serializable;
  * api group vo
  * Created by yesong on 2016/10/26 0026.
  */
-public class Groupvo extends BaseModel implements Serializable {
+public class Groupvo extends BaseModel {
 
     private Integer id;
     private String name;

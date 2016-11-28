@@ -1,9 +1,11 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.api.common.exception.UserExitsException;
+import com.smallchill.api.common.exception.UserIsNotManagerException;
 import com.smallchill.api.function.meta.other.ButtonRegister;
 import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.modal.*;
+import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.*;
 import com.smallchill.common.task.TimeWorkManager;
@@ -580,7 +582,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Override
     public List<Record> findCustomGrouping(Integer userId) {
-        String sql = "SELECT COUNT(ufgm.`ufg_id`) AS counts, ufg.`name` " +
+        String sql = "SELECT COUNT(ufgm.`ufg_id`) AS counts,ufg.id ,ufg.`name` " +
                 " FROM tb_user_friend_grouping_member ufgm JOIN tb_user_friend_grouping ufg ON ufgm.`ufg_id` = ufg.`id` " +
                 "WHERE ufg.`user_id` = #{userId} GROUP BY ufgm.`ufg_id`";
         List<Record> records = Db.init().selectList(sql, Record.create().set("userId", userId));
@@ -679,11 +681,91 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     }
 
     @Override
-    public void updateMobile(String mobile ,Integer userId) throws UserExitsException {
+    public void updateMobile(String mobile, Integer userId) throws UserExitsException {
         UserInfo userInfo = this.findFirstBy("mobile = #{mobile}", Record.create().set("mobile", mobile));
         if (userInfo != null)
-                throw new UserExitsException();
+            throw new UserExitsException();
+        this.updateBy("mobile = #{mobile}", "user_id = #{userId}", Record.create().set("mobile", mobile).set("userId", userId));
+    }
 
-        this.updateBy("mobile = #{mobile}","user_id = #{userId}", Record.create().set("mobile", mobile).set("userId", userId));
+    /**
+     * 加入组织用户列表
+     *
+     * @param userId 当前用户ID
+     * @return uservolist
+     */
+    @Override
+    public List<UserVo> findUserListByJoinGroup(Integer userId) throws UserIsNotManagerException {
+        Integer groupId = findGroupIdByUserId(userId);
+        if (groupId == null) {
+            throw new UserIsNotManagerException();
+        }
+        String sql = Blade.dao().getScript("UserInfo.userlistByjoinGroup").getSql();
+        List<Record> recordList = Db.init().selectList(sql, Record.create().set("groupId", groupId));
+        List<UserVo> voList = new ArrayList<>();
+        for (Record record : recordList) {
+            UserVo userVo = Convert.recordToVo(record);
+            userVo.setPaied(record.getInt("paied"));
+            userVo.setValidateInfo(record.getStr("validateInfo"));
+            voList.add(userVo);
+        }
+        return voList;
+    }
+
+    /**
+     * 查询该用户身份为干事的组织ID
+     *
+     * @param userId 用户ID
+     * @return groupId
+     */
+    @Override
+    public Integer findGroupIdByUserId(Integer userId) {
+        String sql = "select group_id from tb_user_group ug where ug.user_id = #{userId} and ug.vip_type = 2";
+        Record record = Db.init().selectOne(sql, Record.create().set("userId", userId));
+        return record == null ? null : record.getInt("group_id");
+    }
+
+    /**
+     * 引荐用户列表
+     * @param userId 用户ID
+     * @return IntroduceUserVolist
+     */
+    @Override
+    public List<IntroduceUserVo> findIntroduceUserVoList(Integer userId) throws UserIsNotManagerException {
+        Integer groupId = findGroupIdByUserId(userId);
+        if (groupId == null) {
+            throw new UserIsNotManagerException();
+        }
+        String sql = Blade.dao().getScript("UserInfo.introduceUserList").getSql();
+        List<Record> list = Db.init().selectList(sql, Record.create().set("groupId", groupId));
+        return Convert.recordToVoOfIntroduces(list);
+    }
+
+    /**
+     * 设置组织是否允许加入
+     * @param userId 当前用户ID
+     * @param status 状态  1:开放 2:关闭
+     */
+    @Override
+    public void setIsJoin(Integer userId, Integer status) throws UserIsNotManagerException {
+        Integer groupId = findGroupIdByUserId(userId);
+        if (groupId == null) {
+            throw new UserIsNotManagerException();
+        }
+        Db.init().update("update tb_group set is_join = #{status} where id = #{groupId}", Record.create().set("groupId", groupId).set("status", status));
+    }
+
+    /**
+     * 设置组织是否允许引荐
+     * @param userId 当前用户ID
+     * @param status 状态  1:允许 2:拒绝
+     */
+    @Override
+    public void setisIntroduce(Integer userId, Integer status) throws UserIsNotManagerException {
+        Integer groupId = findGroupIdByUserId(userId);
+        if (groupId == null) {
+            throw new UserIsNotManagerException();
+        }
+        Db.init().update("update tb_group set is_introduce = #{status} where id = #{groupId}", Record.create().set("groupId", groupId).set("status", status));
     }
 }

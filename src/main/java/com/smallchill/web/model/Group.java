@@ -82,6 +82,8 @@ public class Group extends BaseModel {
     //能否申请加入: 1:开放 2:关闭
     @Column(name = "is_join")
     private Integer isJoin;
+    @Column(name = "is_introduce")
+    private Integer isIntroduce; // 是否允许引荐: 1:允许 2:拒绝
     //性别限制
     @Column(name = "sex_limit")
     private Integer sexLimit;
@@ -106,6 +108,14 @@ public class Group extends BaseModel {
     // 组织服务电话
     @Column(name = "telphone")
     private String telphone;
+
+    public Integer getIsIntroduce() {
+        return isIntroduce;
+    }
+
+    public void setIsIntroduce(Integer isIntroduce) {
+        this.isIntroduce = isIntroduce;
+    }
 
     public String getTelphone() {
         return telphone;

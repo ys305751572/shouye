@@ -144,7 +144,6 @@ FROM
       ua.to_user_id = #{toUserId}
       AND ua.from_user_id = #{userId}
     ) )
-
     WHERE ui.user_id = #{toUserId}
 
 blanklist
@@ -183,7 +182,9 @@ SELECT
   ui.career,
   ui.professional,
   ui.desc,
-  ga.status
+  ga.status,
+  ga.paied,
+  ga.validate_info validateInfo
 FROM
   tb_group_approval ga
 LEFT JOIN
@@ -192,3 +193,49 @@ ON
   ga.`user_id` = ui.`user_id`
 WHERE ga.`group_id` = #{groupId}
   AND ga.`type` = 1 AND ga.`status` = 1
+  
+introduceUserList
+=================
+SELECT 
+  ui1.user_id AS userId1,
+  ui1.username AS username1,
+  ui1.avater AS avater1,
+  ui1.mobile AS mobile1,
+  ui1.province_id province1,
+  ui1.city_id city1,
+  ui1.school school1,
+  ui1.province_city proviceCity1,
+  ui1.domain domain1,
+  ui1.key_word keyWord1,
+  ui1.organization organization1,
+  ui1.per per1,
+  ui1.career career1,
+  ui1.professional professional1,
+  ui1.desc desc1,
+  ua.validate_info validateInfo1,
+  ui2.user_id userId2,
+  ui2.username username2,
+  ui2.avater avater2,
+  ui2.mobile mobile2,
+  ui2.province_id province2,
+  ui2.city_id city2,
+  ui2.school school2,
+  ui2.province_city proviceCity2,
+  ui2.domain domain2,
+  ui2.key_word keyWord2,
+  ui2.organization organization2,
+  ui2.per per2,
+  ui2.career career2,
+  ui2.professional professional2,
+  ui2.desc desc2,
+  ua.validate_info validateInfo2
+FROM tb_user_approval ua 
+LEFT JOIN 
+tb_user_info ui1 
+ON 
+ua.`from_user_id` = ui1.`user_id` 
+LEFT JOIN
+tb_user_info ui2
+ON
+ua.`to_user_id` = ui2.`user_id`
+WHERE ua.`group_id` = #{groupId}

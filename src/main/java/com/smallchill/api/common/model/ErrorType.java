@@ -28,7 +28,9 @@ public enum ErrorType {
     ERROR_CODE_APP_USERINMYBLANK("该用户在您的黑名单中，请先从黑名单中移除", 4004),
     ERROR_CODE_APP_MYSELF("您不能向自己发送好友请求", 4005),
     ERROR_CODE_APP_MYSELF2("您不能审核自己", 4006),
-    ERROR_CODE_APP_APPROVAL_FAIL("请求消息已失效", 4007);
+    ERROR_CODE_APP_APPROVAL_FAIL("请求消息已失效", 4007),
+
+    ERROR_CODE_APP_NOT_MANAGER_FAIL("您不是该组织干事", 5001);
 
     private String name;
     private int code;

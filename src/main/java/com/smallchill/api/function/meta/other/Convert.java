@@ -2,6 +2,7 @@ package com.smallchill.api.function.meta.other;
 
 import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.vo.Groupvo;
+import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.SearchResult;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.toolbox.Record;
@@ -37,6 +38,60 @@ public class Convert {
         userVo.setCarrer(record.getStr("career"));
         userVo.setSchool(record.getStr("school"));
         return userVo;
+    }
+
+    public static List<IntroduceUserVo> recordToVoOfIntroduces(List<Record> recordList) {
+        List<IntroduceUserVo> introduceUserVos = new ArrayList<>();
+        for (Record record : recordList) {
+            introduceUserVos.add(recordToVoOfIntroduce(record));
+        }
+        return introduceUserVos;
+    }
+
+    /**
+     * 引荐人数据字段 to vo
+     * @param record record
+     * @return IntroduceUserVo
+     */
+    public static IntroduceUserVo recordToVoOfIntroduce(Record record) {
+        IntroduceUserVo introduceUserVo = new IntroduceUserVo();
+        Integer id = Integer.parseInt(record.get("userId1").toString());
+        String username = (String) record.get("username1");
+        String city = (String) record.get("provinceCity1");
+        String domain = (String) record.get("domain1");
+        String keyWord = (String) record.get("keyWord1");
+        keyWord = keyWord.replaceAll("\\|", "\\/");
+        String professional = (String) record.get("professional1");
+        String organization = (String) record.get("organization1");
+        Integer per = record.getInt("per1");
+        UserVo fromUserVo = new UserVo(id, username, city, domain, keyWord, organization, professional, "");
+        fromUserVo.setPer(per);
+        fromUserVo.setDesc(record.getStr("desc1"));
+        fromUserVo.setAvater(record.getStr("avater1"));
+        fromUserVo.setCarrer(record.getStr("career1"));
+        fromUserVo.setSchool(record.getStr("school1"));
+        fromUserVo.setValidateInfo(record.getStr("validateInfo1"));
+
+        Integer id2 = Integer.parseInt(record.get("userId2").toString());
+        String username2 = (String) record.get("username2");
+        String city2 = (String) record.get("provinceCity2");
+        String domain2 = (String) record.get("domain2");
+        String keyWord2 = (String) record.get("keyWord2");
+        keyWord2 = keyWord2.replaceAll("\\|", "\\/");
+        String professional2 = (String) record.get("professional2");
+        String organization2 = (String) record.get("organization2");
+        Integer per2 = record.getInt("per2");
+        UserVo toUserVo = new UserVo(id2, username2, city2, domain2, keyWord2, organization2, professional2, "");
+        toUserVo.setPer(per2);
+        toUserVo.setDesc(record.getStr("desc2"));
+        toUserVo.setAvater(record.getStr("avater2"));
+        toUserVo.setCarrer(record.getStr("career2"));
+        toUserVo.setSchool(record.getStr("school2"));
+        toUserVo.setValidateInfo(record.getStr("validateInfo2"));
+
+        introduceUserVo.setFromUserVo(fromUserVo);
+        introduceUserVo.setToUserVo(toUserVo);
+        return introduceUserVo;
     }
 
 

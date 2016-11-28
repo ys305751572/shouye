@@ -1,6 +1,7 @@
 package com.smallchill.api.function.controller;
 
 import com.smallchill.api.common.exception.UserExitsException;
+import com.smallchill.api.common.exception.UserIsNotManagerException;
 import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.function.meta.intercept.UserApiIntercept;
@@ -10,6 +11,7 @@ import com.smallchill.api.function.modal.GroupInterest;
 import com.smallchill.api.function.modal.Message;
 import com.smallchill.api.function.modal.UserFriendGrouping;
 import com.smallchill.api.function.modal.UserInterest;
+import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.*;
 import com.smallchill.api.system.service.VcodeService;
@@ -437,16 +439,16 @@ public class UserApi extends BaseController implements ConstCache {
     public String validateCode(String mobile, String code) {
         if (vcodeService.validate(mobile, code)) {
             return success();
-        }
-        else {
+        } else {
             return fail(ErrorType.ERROR_CODE_VALIDATECODE_FAIL);
         }
     }
 
     /**
      * 重新绑定手机号
+     *
      * @param mobile 手机号
-     * @param code 验证码
+     * @param code   验证码
      * @return result
      */
     @PostMapping(value = "/mobile/rebind")
@@ -461,9 +463,81 @@ public class UserApi extends BaseController implements ConstCache {
                 return fail(ErrorType.ERROR_CODE_USERHASEXTIS);
             }
             return success();
-        }
-        else {
+        } else {
             return fail(ErrorType.ERROR_CODE_VALIDATECODE_FAIL);
         }
+    }
+
+    /**
+     * 组织后台-加入组织用户审核列表
+     *
+     * @param userId 当前用户ID
+     * @return result
+     */
+    @PostMapping(value = "/groupserver/joinlist")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String groupServerJoinList(Integer userId) {
+        List<UserVo> list = null;
+        try {
+            list = userInfoService.findUserListByJoinGroup(userId);
+        } catch (UserIsNotManagerException e) {
+            return fail(ErrorType.ERROR_CODE_APP_NOT_MANAGER_FAIL);
+        }
+        return success(list);
+    }
+
+    /**
+     * 组织后台-引荐列表
+     * @param userId 当前用户ID
+     * @return result
+     */
+    @PostMapping(value = "/groupserver/introducelist")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String groupServerIntroduceList(Integer userId) {
+        List<IntroduceUserVo> list;
+        try {
+            list = userInfoService.findIntroduceUserVoList(userId);
+        } catch (UserIsNotManagerException e) {
+            return fail(ErrorType.ERROR_CODE_APP_NOT_MANAGER_FAIL);
+        }
+        return success(list);
+    }
+
+    /**
+     * 设置组织是否允许加入
+     * @param userId 当前用户ID
+     * @param status 状态  1:开放 2:关闭
+     * @return result
+     */
+    @PostMapping(value = "/groupserver/isjoin")
+    @ResponseBody
+    @Before(UserAndStatusValidate.class)
+    public String setIsJoin(Integer userId, Integer status) {
+        try {
+            userInfoService.setIsJoin(userId, status);
+        } catch (UserIsNotManagerException e) {
+            return fail(ErrorType.ERROR_CODE_APP_NOT_MANAGER_FAIL);
+        }
+        return success();
+    }
+
+    /**
+     * 设置组织是否允许引荐
+     * @param userId 当前用户ID
+     * @param status 状态  1:允许 2:拒绝
+     * @return result
+     */
+    @PostMapping(value = "/groupserver/isintroduc")
+    @ResponseBody
+    @Before(UserAndStatusValidate.class)
+    public String setisIntroduce(Integer userId, Integer status) {
+        try {
+            userInfoService.setisIntroduce(userId, status);
+        } catch (UserIsNotManagerException e) {
+            return fail(ErrorType.ERROR_CODE_APP_NOT_MANAGER_FAIL);
+        }
+        return success();
     }
 }
