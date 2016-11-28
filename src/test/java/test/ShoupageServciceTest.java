@@ -31,7 +31,7 @@ public class ShoupageServciceTest extends BaseJunit4Test{
 
     @Test
     public void myAcquaintances() {
-        List<UserVo> list = shoupageService.listAcquaintances(20);
+        List<UserVo> list = shoupageService.listAcquaintances(20, null);
         System.out.println(JsonKit.toJson(list));
     }
 

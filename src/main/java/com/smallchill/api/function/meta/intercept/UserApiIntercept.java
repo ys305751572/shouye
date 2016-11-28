@@ -33,22 +33,28 @@ public class UserApiIntercept extends ApiQueryIntercept {
         Integer userId = Integer.parseInt(getRecord().get("userId").toString());
 
         for (Map record : list) {
+            Object istatus = record.get("istatus");
+            if (istatus != null && Integer.parseInt(istatus.toString()) == 0) {
+                record.put("status", Convert.INTEREST);
+            }
+            else {
+                record.put("status", Convert.NOT_FRINED);
+            }
             Object statusObj = record.get("status");
-            record.put("status", 1);
-            if (statusObj == null) record.put("status", 1);
+            if (statusObj == null) record.put("status", Convert.NOT_FRINED);
             if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 0)) {
                 int fromUserId = (int) record.get("from_user_id");
                 if (fromUserId == userId) {
-                    record.put("status", 4);
+                    record.put("status", Convert.NOT_PROCESS_TO_USER_ID);
+                }
+                else {
+                    record.put("status", Convert.NOT_PROCESS_FROM_USER_ID);
                 }
             } else if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 1)) {
-                record.put("status", 2);
+                record.put("status", Convert.FRIEND);
             }
 
-            Object istatus = record.get("istatus");
-            if (istatus != null && Integer.parseInt(istatus.toString()) == 0) {
-                record.put("status", 3);
-            }
+
             String keyWord = record.get("keyWord").toString();
             if (StringUtils.isNotBlank(keyWord)) {
                 keyWord = keyWord.replaceAll("\\|", "\\/");

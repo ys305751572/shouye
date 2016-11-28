@@ -6,6 +6,8 @@ import com.smallchill.api.common.exception.UserInOthersBlankException;
 import com.smallchill.api.function.modal.vo.GroupApprovalVo;
 import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.service.MessageService;
+import com.smallchill.api.function.service.UserDomainService;
+import com.smallchill.api.function.service.UserprofessionalService;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
@@ -69,6 +71,59 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         }
         return false;
     }
+
+    /**
+     * 用户是否满足加入组织
+     * @param userId 当前用户id
+     * @param groupId 组织ID
+     */
+    @Override
+    public boolean isMeetConditions(Integer userId, Integer groupId) {
+        Group group = groupService.findById(groupId);
+        UserInfo userInfo = userInfoService.findByUserId(userId);
+        int gender = group.getSexLimit();
+        if (gender != 0 && gender != userInfo.getGender()) return false;
+        int province = group.getProvinceLimit();
+        if (province != 0 && province != userInfo.getProvinceId()) return false;
+        int city = group.getCityLimit();
+        if (city != 0 && city != userInfo.getCityId()) return false;
+        int industryLimit = group.getIndustryLimit();
+        int domainLimit = group.getDomainLimit();
+        // 查询是否有符合的行业领域
+        if (industryLimit != 0 || domainLimit != 0) {
+            StringBuffer domainSql = new StringBuffer("select count(id) as counts from tb_userinfo_domain where 1 = 1");
+            domainSql.append(" and user_id = #{userId}");
+            if (industryLimit != 0) {
+                domainSql.append(" and p_id = #{industryLimit}");
+            }
+            if (domainLimit != 0) {
+                domainSql.append(" and domain_id = #{domainLimit}");
+            }
+            Record domainRecord = Db.init().selectOne(domainSql.toString(), Record.create().set("userId", userId)
+                    .set("industryLimit", industryLimit).set("domainLimit", domainLimit));
+            if (domainRecord.getInt("counts") <= 0) return false;
+        }
+
+        int professionalLimit = group.getProfessionalLimit();
+        int zyLimit = group.getZyLimit();
+        if (professionalLimit != 0 || zyLimit != 0) {
+            // 查询是否有符合的专业
+            StringBuffer proSql = new StringBuffer("select count(id) as counts from tb_userinfo_professional where 1 = 1");
+            proSql.append(" and user_id = #{userId}");
+            if (professionalLimit != 0) {
+                proSql.append(" and p_id = #{professionalLimit}");
+            }
+            if (zyLimit != 0) {
+                proSql.append(" and pro_id = #{zyLimit}");
+            }
+
+            Record proRecord = Db.init().selectOne(proSql.toString(), Record.create().set("userId", userId)
+                    .set("professionalLimit", professionalLimit).set("zyLimit", zyLimit));
+            if (proRecord.getInt("counts") <= 0) return false;
+        }
+        return true;
+    }
+
 
     @Override
     public void join(GroupApproval ga) throws UserInOthersBlankException, UserHasApprovalException, UserHasJoinGroupException {

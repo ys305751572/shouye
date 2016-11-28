@@ -14,9 +14,9 @@ import java.util.Map;
  */
 public interface ShoupageService {
 
-    ShouPageVo index(Integer userId, Integer domainId, Integer city, Integer grouping,String keyWord);
+    ShouPageVo index(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord);
 
-    List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping,String keyWord);
+    List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord);
 
     int countNew(Integer userId, Long date);
 
@@ -32,7 +32,7 @@ public interface ShoupageService {
 
     int countAcquaintances(Integer userId, Long date);
 
-    List<UserVo> listAcquaintances(Integer userId);
+    List<UserVo> listAcquaintances(Integer userId, Integer backupUserId);
 
     int countGroup(Integer userId, Long date);
 

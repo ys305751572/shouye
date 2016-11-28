@@ -131,7 +131,7 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
 //                return shoupageService.listAcquaintances(userid);
 //            }
 //        });
-        List<UserVo> list =  shoupageService.listAcquaintances(userid);
+        List<UserVo> list =  shoupageService.listAcquaintances(userid, null);
         return success(list);
     }
 

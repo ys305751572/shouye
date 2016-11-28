@@ -231,7 +231,7 @@ public class UserApi extends BaseController implements ConstCache {
      */
     @RequestMapping(value = "/uninterest")
     @ResponseBody
-    @Before(UserInterestValidate.class)
+    @Before(UserUnInterestValidate.class)
     public String userUnInterest(UserInterest ui) {
 
         String where = "user_id = #{userId} and to_user_id = #{toUserId}";
@@ -325,6 +325,26 @@ public class UserApi extends BaseController implements ConstCache {
     @Before(GroupPageValidator.class)
     public String createGrouping(Integer userId, String name, String userIds) {
         userInfoService.createGrouping(userId, name, userIds);
+        return success();
+    }
+
+    /**
+     * 修改分组信息
+     * @param userId
+     * @param groupingId
+     * @param name
+     * @return
+     */
+    @PostMapping(value = "/grouping/update")
+    @ResponseBody
+    @Before(UpdateGroupingValidate.class)
+    public String updateGrouping(Integer userId, Integer groupingId, String name) {
+        try {
+            userInfoService.updateGrouping(userId, groupingId, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
         return success();
     }
 

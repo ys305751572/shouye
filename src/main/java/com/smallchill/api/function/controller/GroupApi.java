@@ -139,6 +139,11 @@ public class GroupApi extends BaseController {
     @ResponseBody
     @Before(GroupJoinValidator.class)
     public String join(GroupApproval ga) {
+
+        // 判断用户是否满足组织的加入限制条件
+        if (!groupApprovalService.isMeetConditions(ga.getUserId(), ga.getGroupId())) {
+            return fail(ErrorType.ERROR_CODE_APP_CANNOT_JOIN_GROUP_FAIL);
+        }
         try {
             groupApprovalService.join(ga);
         } catch (UserHasApprovalException e) {

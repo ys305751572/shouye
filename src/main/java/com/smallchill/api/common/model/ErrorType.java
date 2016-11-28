@@ -30,7 +30,9 @@ public enum ErrorType {
     ERROR_CODE_APP_MYSELF2("您不能审核自己", 4006),
     ERROR_CODE_APP_APPROVAL_FAIL("请求消息已失效", 4007),
 
-    ERROR_CODE_APP_NOT_MANAGER_FAIL("您不是该组织干事", 5001);
+    ERROR_CODE_APP_NOT_MANAGER_FAIL("您不是该组织干事", 5001),
+
+    ERROR_CODE_APP_CANNOT_JOIN_GROUP_FAIL("您不符合加入组织要求", 6001);
 
     private String name;
     private int code;

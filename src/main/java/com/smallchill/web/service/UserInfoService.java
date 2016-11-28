@@ -69,6 +69,14 @@ public interface UserInfoService extends IService<UserInfo> {
     void createGrouping(Integer userId, String name, String userIds);
 
     /**
+     * 修改分组名称
+     * @param userId   用户ID
+     * @param grouping 分组ID
+     * @param name     名字
+     */
+    void updateGrouping(Integer userId, Integer grouping, String name);
+
+    /**
      * 加入分组用户
      *
      * @param userId  用户ID

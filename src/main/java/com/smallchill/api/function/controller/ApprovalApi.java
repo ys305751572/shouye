@@ -101,6 +101,18 @@ public class ApprovalApi extends BaseController {
     }
 
     /**
+     * 对我感兴趣用户结识API
+     * @param ua 请求信息
+     * @return result
+     */
+    @PostMapping(value = "/auditinterest")
+    @ResponseBody
+    @Before(UserApprovalValidate.class)
+    public String auditOfInterest(UserApproval ua) {
+        return null;
+    }
+
+    /**
      * (引荐)审核
      *
      * @return result

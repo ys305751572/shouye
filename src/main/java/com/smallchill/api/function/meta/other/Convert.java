@@ -50,6 +50,7 @@ public class Convert {
 
     /**
      * 引荐人数据字段 to vo
+     *
      * @param record record
      * @return IntroduceUserVo
      */
@@ -187,9 +188,11 @@ public class Convert {
      * @param vo 好友信息
      */
     public static void setUserVoStatus(UserVo vo, Record record, Integer userId) {
-        int type = NOT_FRINED;
+        Integer type = vo.getStatus();
         if (record.get("status") == null) {
-            type = NOT_FRINED;
+            if (vo.getStatus() == null) {
+                type = NOT_FRINED;
+            }
         } else {
             int status = Integer.parseInt(record.get("status").toString());
             if (status == 1) {
@@ -206,12 +209,14 @@ public class Convert {
                 }
             }
         }
-        vo.setStatus(type);
+        vo.setStatus(type == null ? NOT_FRINED : type);
     }
 
-    private static int NOT_FRINED = 2000; // 未结识
-    private static int FRIEND = 2001; // 已结识
-    private static int NOT_PROCESS_FROM_USER_ID = 2002; // 显示忽略 结识按钮
-    private static int NOT_PROCESS_TO_USER_ID = 2003; // 等待对方确认
-    private static int PASS = 2004;                   // 已忽略
+    public static int NOT_FRINED = 2000; // 未结识
+    public static int FRIEND = 2001; // 已结识
+    public static int NOT_PROCESS_FROM_USER_ID = 2002; // 显示忽略 结识按钮
+    public static int NOT_PROCESS_TO_USER_ID = 2003; // 等待对方确认
+    public static int PASS = 2004;                   // 已忽略
+    public static int UN_INTEREST = 2005;                   // 未感兴趣
+    public static int INTEREST = 2006;                   // 已感兴趣
 }

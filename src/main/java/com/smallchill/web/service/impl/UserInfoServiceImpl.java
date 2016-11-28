@@ -137,29 +137,22 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         vo.setSameKeyList(sameKeyList);
 
 
-        if (ua != null && ua.getStatus() == 1) {
+        if (ua != null && ua.getStatus() == 2) {
             vo.setMobile(record.getStr("mobile"));
+            vo.setType(ua.getType());
         } else {
             vo.setMobile("");
         }
 
-        vo.setStatus(1);
-        Integer statusObj = (ua == null ? null : ua.getStatus());
-        if (statusObj != null && statusObj == 0) {
-            int fromUserId = ua.getFromUserId();
-            if (fromUserId == userId) {
-                vo.setStatus(4);
-            }
-        } else if (statusObj != null && statusObj == 1) {
-            vo.setStatus(2);
-        }
-
+        vo.setStatus(Convert.NOT_FRINED);
         Integer istatus = (ui == null ? null : ui.getStatus());
         if (istatus != null && istatus == 0) {
-            record.put("status", 3);
-            vo.setStatus(3);
+            vo.setStatus(Convert.INTEREST);
+        } else {
+            vo.setStatus(Convert.UN_INTEREST);
         }
-
+        record.set("status", ua == null ? null : ua.getStatus());
+        Convert.setUserVoStatus(vo, record, userId);
         if (groupId != null) {
             saveGroupUserRecord(userId, toUserId, groupId);
         }
@@ -532,7 +525,24 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         }
     }
 
-    @Transactional
+    /**
+     * 修改分组名称
+     *
+     * @param userId     用户ID
+     * @param groupingId 分组ID
+     * @param name       名字
+     */
+    @Override
+    public void updateGrouping(Integer userId, Integer groupingId, String name) {
+        String sql = "select count(id) counts from tb_user_friend_grouping where id = #{groupingId} and user_id = #{userId}";
+        Record record = Db.init().selectOne(sql, Record.create().set("groupingId", groupingId).set("userId", userId));
+        int counts = record.getInt("counts");
+        if (counts > 0) {
+            Db.init().update("update tb_user_friend_grouping set name = #{name} where id = #{groupingId}",
+                    Record.create().set("name", name).set("groupingId", groupingId));
+        }
+    }
+
     @Override
     public void joinToGrouping(Integer userId, String userIds, Integer groupingId) {
         if (StringUtils.isNotBlank(userIds)) {
@@ -727,6 +737,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     /**
      * 引荐用户列表
+     *
      * @param userId 用户ID
      * @return IntroduceUserVolist
      */
@@ -743,6 +754,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     /**
      * 设置组织是否允许加入
+     *
      * @param userId 当前用户ID
      * @param status 状态  1:开放 2:关闭
      */
@@ -757,6 +769,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     /**
      * 设置组织是否允许引荐
+     *
      * @param userId 当前用户ID
      * @param status 状态  1:允许 2:拒绝
      */

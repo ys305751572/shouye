@@ -33,13 +33,9 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     private UserInfoService userInfoService;
 
     @Autowired
-    private UserGroupService userGroupService;
-
-    @Autowired
     private AugService augService;
 
-    /**************************************************
-     * 发送******************************************
+    /*************************************************** 发送******************************************
      * <p>
      * <p>
      * 发送审核申请-单向；
@@ -365,7 +361,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      */
     @Override
     public void resetStatus(UserApproval ua) {
-        String set = "status = 2";
+        String set = "status = 5";
         Record record = Record.create();
         record.put("fromUserId", ua.getFromUserId());
         record.put("toUserId", ua.getToUserId());

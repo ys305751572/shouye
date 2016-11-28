@@ -31,9 +31,18 @@ public class UserVo extends BaseVo implements Serializable {
 
     private Integer isMember; // 是否会员 1：非会员 2：会员
     private Integer paied; // 是否支付会费 1:未支付 2:已支付
+    private Integer type; // 1:朋友 2:熟人
 
     private List<Button> btnList;
     private List<String> sameKeyList;
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
     public Integer getPaied() {
         return paied;

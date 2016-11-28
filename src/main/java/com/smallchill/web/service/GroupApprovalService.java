@@ -15,6 +15,20 @@ import com.smallchill.web.model.GroupApproval;
  */
 public interface GroupApprovalService extends IService<GroupApproval> {
 
+    /**
+     * 用户是否满足加入组织
+     * @param userId 当前用户id
+     * @param groupId 组织ID
+     */
+    boolean isMeetConditions(Integer userId, Integer groupId);
+
+    /**
+     * 加入组织
+     * @param ga
+     * @throws UserHasApprovalException
+     * @throws UserHasJoinGroupException
+     * @throws UserInOthersBlankException
+     */
     void join(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException;
 
     /**

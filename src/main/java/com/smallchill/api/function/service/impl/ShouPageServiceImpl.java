@@ -45,11 +45,11 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.status,ua.from_user_id,ua.to_user_id " +
             "from tb_user_approval ua join tb_user_info ui";
 
-    private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id where i.user_id = #{userId}";
+    private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.to_user_id = ui.user_id where i.user_id = #{userId} and i.status = 0";
 
     private String GROUP_BASE_INFO_SQL = " g.id,g.name,IFNULL(g.avater,'') as avater,g.province,g.city,g.type,g.province_city provinceCity,g.member_count memberCount,g.targat ";
 
-    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + " from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId}";
+    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + " from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId} and i.status = 0";
 
     private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
             + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` where i.to_user_id = #{userId} OR ua.`status` != 3";
@@ -364,11 +364,13 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     }
 
     @Override
-    public List<UserVo> listAcquaintances(Integer userId) {
+    public List<UserVo> listAcquaintances(Integer userId, Integer backupUserId) {
 
-        UserLastReadTime ult = lastReadTimeByUserId(userId);
-        ult.setAcquaintances(DateTimeKit.nowLong());
-        this.updateUserLastReadTime(userId, ult);
+        if (backupUserId == null) {
+            UserLastReadTime ult = lastReadTimeByUserId(userId);
+            ult.setAcquaintances(DateTimeKit.nowLong());
+            this.updateUserLastReadTime(userId, ult);
+        }
 
         String sql2 = sql + " on (ui.`user_id` = ua.`from_user_id` OR ui.`user_id` = ua.`to_user_id` ) ";
         String where = "ui.`user_id` != #{userId} and ua.type = 2 and (ua.status = 1 or ua.status = 0)";
