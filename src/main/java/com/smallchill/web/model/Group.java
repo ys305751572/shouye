@@ -31,6 +31,8 @@ public class Group extends BaseModel {
     private Integer province;
     @Column(name = "city")
     private Integer city;
+    @Column(name = "province_city")
+    private String provinceCity;
     @Column(name = "targat")
     private String targat;
     @Column(name = "activity_count")
@@ -380,4 +382,11 @@ public class Group extends BaseModel {
         this.zyLimit = zyLimit;
     }
 
+    public String getProvinceCity() {
+        return provinceCity;
+    }
+
+    public void setProvinceCity(String provinceCity) {
+        this.provinceCity = provinceCity;
+    }
 }

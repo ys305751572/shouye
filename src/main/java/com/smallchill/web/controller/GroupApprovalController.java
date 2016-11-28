@@ -67,7 +67,6 @@ public class GroupApprovalController extends BaseController {
             e.printStackTrace();
             return error(UPDATE_FAIL_MSG);
         }
-
         return success(UPDATE_SUCCESS_MSG);
 
     }

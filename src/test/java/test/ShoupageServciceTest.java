@@ -53,8 +53,4 @@ public class ShoupageServciceTest extends BaseJunit4Test{
         System.out.println(JsonKit.toJson(list));
     }
 
-    @Test
-    public void testList() {
-        augService.testList();
-    }
 }

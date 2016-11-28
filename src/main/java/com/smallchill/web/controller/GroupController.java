@@ -359,4 +359,24 @@ public class GroupController extends BaseController {
 
         return success(SAVE_SUCCESS_MSG);
     }
+
+
+    /**
+     * 组织资料设置
+     */
+    @RequestMapping(KEY_UPDATE)
+    public String update(ModelMap mm){
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        GroupExtend groupExtend = new GroupExtend();
+        if(group!=null){
+            mm.put("group",group);
+            groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
+        }else {
+            mm.put("group",new Group());
+        }
+
+        mm.put("groupExtend",groupExtend);
+        return BASE_PATH +"group_update.html";
+    }
+
 }

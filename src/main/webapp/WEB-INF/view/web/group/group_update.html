@@ -1,0 +1,149 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form class="form-horizontal" role="form">
+    <div class="space-4"></div>
+    <!-- #section:elements.form -->
+    <div class="form-group">
+        <div class="col-sm-10" style="text-align:center">
+            <img src="" width="150" height="150">
+        </div>
+    </div>
+
+    <div class="form-group" >
+        <label class="col-sm-2 control-label no-padding-right" >组织名称</label>
+        <div class="col-sm-8"  style="text-align:center">
+            <input type="text" id="groupName" name="" class="form-control"  value="${group.name}" placeholder=""  readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 组织类型 </label>
+        <div class="col-sm-8">
+            <input type="text" id="type" name="type" class="form-control"  value="${group.type}" placeholder=""  readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 地址 </label>
+        <div class="col-sm-8">
+            <input type="text" name="province_city" id="province_city" placeholder="" class="form-control" value="${group.provinceCity}" readonly/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 关键字 </label>
+        <div class="col-sm-8">
+            <input type="text" name="targat" id="targat" placeholder="" class="form-control" value="${group.targat}" readonly/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 标题 </label>
+        <div class="col-sm-8">
+            <input type="text" name="title1" id="title1" placeholder="" class="form-control" value="${group.title1}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 内容 </label>
+        <div class="col-sm-8">
+            <textarea id="content1" style="height:200px" name="content1" placeholder="" class="form-control"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 标题2 </label>
+        <div class="col-sm-8">
+            <input type="text" name="title2" id="title2" placeholder="" class="form-control" value="${group.title2}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 内容2 </label>
+        <div class="col-sm-8">
+            <textarea id="content2" style="height:200px" name="content2" placeholder="" class="form-control"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 标题3 </label>
+        <div class="col-sm-8">
+            <input type="text" name="title3" id="title3" placeholder="" class="form-control" value="${group.title2}" readonly/>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 内容3 </label>
+        <div class="col-sm-8">
+            <textarea id="content3" style="height:200px" name="content3" placeholder="" class="form-control"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 工商营业执照注册号 </label>
+        <div class="col-sm-8">
+            <input type="text" name="1" id="1" placeholder="" class="form-control" value="${groupExtend.license}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 工商营业执照 </label>
+        <div class="col-sm-8">
+            <img src=""><!-- license_image -->
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 组织代码证号 </label>
+        <div class="col-sm-8">
+            <input type="text" name="2" id="3" placeholder="" class="form-control" value="${groupExtend.code}" readonly/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 工商营业执照 </label>
+        <div class="col-sm-8">
+            <img src=""><!-- code_image -->
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 运营者身份证姓名 </label>
+        <div class="col-sm-8">
+            <input type="text" name="2" id="4" placeholder="" class="form-control" value="${groupExtend.artificialPersonName}" readonly/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 运营者身份证号码 </label>
+        <div class="col-sm-8">
+            <input type="text" name="2" id="5" placeholder="" class="form-control" value="${groupExtend.artificialPersonIdcard}" readonly/>
+        </div>
+    </div>
+
+    <div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+        <div class="col-md-offset-1 col-md-10">
+            <button class="btn btn-info" type="button" id="btn_save">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                确认
+            </button>
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn" type="button" id="btn_close">
+                <i class="ace-icon fa fa-close bigger-110"></i>
+                关闭
+            </button>
+        </div>
+    </div>
+
+    <script src="${basePath}/static/laydate/laydate.js"></script>
+    <script type="text/javascript">
+        var layerIndex = parent.layer.getFrameIndex(window.name);
+        $(function(){
+
+
+
+        })
+
+    </script>
+
+    <div class="space-4"></div>
+</form>
+@}

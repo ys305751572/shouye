@@ -1,10 +1,17 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.support.BladePage;
 import com.smallchill.web.model.Aug;
+import com.smallchill.web.model.Group;
+import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.service.AugService;
+import com.smallchill.web.service.UserApprovalService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 
@@ -19,64 +26,66 @@ import java.util.Map;
 @Service
 public class AugServiceImpl extends BaseService<Aug> implements AugService {
 
+    @Autowired
+    UserApprovalService userApprovalService;
+
     @Override
-    public JqGrid testList() {
-        String sql = "SELECT * FROM (SELECT\n" +
-                "tui.id AS id,\n" +
-                "tui.user_id AS userId,\n" +
-                "tui.avater AS avater,\n" +
-                "tul.login_username AS accountId,\n" +
-                "tui.username AS userName,\n" +
-                "tui.gender AS gender,\n" +
-                "tui.age AS age,\n" +
-                "tui.province_city AS provinceCity,\n" +
-                "tui.school AS school,\n" +
-                "tui.career AS career,\n" +
-                "tui.domain AS domain,\n" +
-                "tui.professional AS professional,\n" +
-                "tui.zy AS proficient,\n" +
-                "tui.sc AS adept,\n" +
-                "tui.zl AS seniority,\n" +
-                "tui.zy2 AS resources,\n" +
-                "tui.organization AS organization,\n" +
-                "tui.org_type AS orgType,\n" +
-                "tui.product_type AS productType,\n" +
-                "tui.industry_ranking AS industryRanking,\n" +
-                "tui.qualification AS qualification,\n" +
-                "tui.key_word AS keyWord,\n" +
-                "GROUP_CONCAT(tug._name) AS groupName,\n" +
-                "tug._type AS groupType,\n" +
-                "tui.group_status AS groupStatus,\n" +
-                "tui.vip_type AS vipType,\n" +
-                "tus.organization_num AS organizationNum,\n" +
-                "tus.friend_num AS friendNum,\n" +
-                "tus.acquaintances_num AS acquaintancesNum,\n" +
-                "tus.activity_apply_num AS activityApplyNum,\n" +
-                "tus.activity_sign_num AS activitySignNum,\n" +
-                "(tus.activity_sign_num / tus.activity_apply_num) AS activityParticipate,\n" +
-                "tus.content_num AS contentNum,\n" +
-                "tui.mobile AS mobile,\n" +
-                "tul.create_time AS createTime,\n" +
-                "tul.last_login_time AS lastLoginTime,\n" +
-                "tul.status AS STATUS,\n" +
-                "GROUP_CONCAT(tup.pro_id) AS proId,\n" +
-                "GROUP_CONCAT(tuc.career_id) AS careerId,\n" +
-                "GROUP_CONCAT(tud.domain_id) AS domainId\n" +
-                "FROM tb_user_info tui\n" +
-                "LEFT JOIN tb_userinfo_statistical tus ON tui.id = tus.user_id\n" +
-                "LEFT JOIN (SELECT a.user_id AS user_id, b.id AS id, b.name AS _name,b.type AS _type FROM tb_user_group a LEFT JOIN tb_group b ON a.group_id = b.id) tug ON tui.id = tug.user_id\n" +
-                "LEFT JOIN tb_user_login tul ON tui.user_id = tul.id\n" +
-                "LEFT JOIN tb_userinfo_career tuc ON tui.id = tuc.user_id\n" +
-                "LEFT JOIN tb_userinfo_domain tud ON tui.id = tud.user_id\n" +
-                "LEFT JOIN tb_userinfo_professional tup ON tui.id = tup.user_id\n" +
-                "GROUP BY tui.id) blade_statement WHERE 1=1  AND (domainId = #{domainId} ) ORDER BY id DESC\n";
+    public void updateStatus(Integer id, Integer status) {
+        Aug aug = this.findById(id);
+        if(status==2){  //批准
+            UserApproval userApproval = new UserApproval();
+            userApproval.setFromUserId(aug.getFromUserId());
+            userApproval.setToUserId(aug.getToUserId());
+            userApproval.setIntroduceUserId(0); //无
+            userApproval.setGroupId(aug.getGroupId());
+            userApproval.setValidateInfo(aug.getValidateInfo());
+            userApproval.setType(1); //结识
+            userApproval.setStatus(1); //未处理
+            userApproval.setCreateTime(DateTimeKit.nowLong());
+            userApprovalService.save(userApproval);
+        }
+        aug.setStatus(status);
+        this.update(aug);
+    }
 
+    @Override
+    public List loadOne(Integer userId) {
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        String sql = "SELECT\n" +
+                "  tua.id AS id,\n" +
+                "  tua.from_user_id AS fromUserId,\n" +
+                "  tua.to_user_id AS toUserId,\n" +
+                "  tua.group_id AS groupId,\n" +
+                "  tui.username AS userName,\n" +
+                "  tui.gender AS gender,\n" +
+                "  tui.age AS age,\n" +
+                "  tui.province_city AS provinceCity,\n" +
+                "  tui.school AS school,\n" +
+                "  tui.career AS career,\n" +
+                "  tui.domain AS domain,\n" +
+                "  tui.professional AS professional,\n" +
+                "  tui.zy AS zy,\n" +
+                "  tui.sc AS sc,\n" +
+                "  tui.zl AS zl,\n" +
+                "  tui.zy2 AS zy2,\n" +
+                "  tg.name AS groupName,\n" +
+                "  tg.type AS groupType,\n" +
+                "  tui.product_type AS productType,\n" +
+                "  tui.industry_ranking AS industryRanking,\n" +
+                "  tui.qualification AS qualification,\n" +
+                "  tui.key_word AS keyWord,\n" +
+                "  tug.vip_type AS vipType,\n" +
+                "  tua.validate_info AS validateInfo,\n" +
+                "  tua.status AS approvalStatus,\n" +
+                "  DATE_FORMAT(FROM_UNIXTIME(tua.create_time/1000),'%Y-%m-%d') AS createTime\n" +
+                "FROM\n" +
+                "  tb_approval_user_group tua\n" +
+                "LEFT JOIN tb_user_group tug ON tua.group_id = tug.group_id AND tua.to_user_id = tug.user_id\n" +
+                "LEFT JOIN tb_group tg ON tua.group_id = tg.id\n" +
+                "LEFT JOIN tb_user_info tui ON tui.user_id = tua.to_user_id\n" +
+                "WHERE tua.group_id = #{groupId} AND tua.to_user_id = #{userId}";
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("domainId", 104);
-        map.put("orderBy" , "id desc");
-//        List list =      Db.init().paginate(statement + orderBy, Map.class, map, page, rows);
-        BladePage page = Db.init().paginate(sql, Map.class, map, 1, 10);
-        return null;
+        List list = Db.init().selectList(sql, Record.create().set("groupId",group.getId()).set("userId",userId));
+        return list;
     }
 }

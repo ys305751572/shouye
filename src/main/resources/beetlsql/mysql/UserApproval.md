@@ -6,3 +6,4 @@ from
     tb_user_approval ua 
 join 
     tb_user_info ui
+

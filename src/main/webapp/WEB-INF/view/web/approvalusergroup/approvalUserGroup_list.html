@@ -11,7 +11,7 @@
     });
 
     function initGrid(){
-        var grid_url = ctx+"/groupApproval/list";//查询列表接口
+        var grid_url = ctx+"/${code}/list";//查询列表接口
         var _colnames=[
             "序列",
             "名字",
@@ -33,7 +33,7 @@
             "资质",
             "个人关键字",
 //            "发布",
-            "加入方式",
+            "会员类型",
             "验证信息",
             "状态",
             "申请时间",
@@ -90,12 +90,14 @@
             {name:"industryRanking",index:"industryRanking", width:120},
             {name:"qualification",index:"qualification", width:220},
             {name:"keyWord",index:"keyWord", width:120},
-            {name:"approvalType",index:"approvalType", width:120,
+            {name:"vipType",index:"vipType", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
-                        return "主动申请";
+                        return "会员";
+                    }else if(cellvalue==2){
+                        return "干事";
                     }else {
-                        return "组织邀请";
+                        return "非会员";
                     }
                 }
             },
@@ -105,15 +107,11 @@
                     if(cellvalue==1){
                         return "未处理";
                     }else if(cellvalue==2){
-                        //主动申请
                         return "批准";
                     }else if(cellvalue==3){
                         return "拒绝";
                     }else if(cellvalue==4){
                         return "拉黑";
-                    }else if(cellvalue==5){
-                        //邀请加入
-                        return "同意加入";
                     }
                 }
             },
@@ -123,7 +121,6 @@
                 formatter: function (cellvalue, options, rowObject) {
                     var id = rowObject.id;
                     var status = rowObject.approvalStatus;
-                    var type = rowObject.approvalType;
 
                     var approval = "<button title='批准' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"updateStatus(\'" + id + "\',\'" + 2 + "\')\">" +
                             "<i class='fa fa-circle-o'></i> 批准</button>";
@@ -137,7 +134,6 @@
                     var removeShielding = "<button title='移除拉黑' class='btn btn-primary btn-circle edit' onclick=\"updateStatus(\'" + id + "\',\'" + 1 + "\')\">" +
                             "<i class='fa fa-circle'></i> 移除拉黑</button>";
 
-                    if(type==1){
                         if (status == "1") {
                             return  approval + "&nbsp;" + refused + "&nbsp;" + shielding ;
                         } else if(status == "4"){
@@ -145,9 +141,6 @@
                         }else {
                             return "/";
                         }
-                    }else {
-                        return "/";
-                    }
 
                 }
             }
@@ -161,23 +154,142 @@
             forceFit : true,
             colNames:_colnames,
             colModel:_colmodel,
-            jsonReader:{id:"id"},
+            jsonReader:{id:"toUserId"},
             pager : pager_selector,
-            postData: {sort: "id", order: "asc"}
+            postData: {sort: "id", order: "asc"},
+
+            subGrid: true,  // (1)开启子表格支持
+            subGridRowExpanded: function(subgrid_id, row_id) {  //(2)子表格容器的id和需要展开子表格的行id，将传入此事件函数
+                var subgrid_table_id;
+                subgrid_table_id = subgrid_id + "_t";   //(3)根据subgrid_id定义对应的子表格的table的id
+
+                var subgrid_pager_id;
+                subgrid_pager_id = subgrid_id + "_pgr" ; //(4)根据subgrid_id定义对应的子表格的pager的id
+
+                // (5)动态添加子报表的table和pager
+                $("#" + subgrid_id).html("<table id='"+subgrid_table_id+"'class='scroll'></table><div id='"+subgrid_pager_id+"'class='scroll'></div>");
+
+                // (6)创建jqGrid对象
+                $("#" + subgrid_table_id).jqGrid({
+                    url: ctx+"/${code}/loadToUserId/"+row_id,  //(7)子表格数据对应的url，注意传入的contact.id参数
+                    datatype: "json",
+                    colNames: [
+                        "名字",
+                        "性别",
+                        "年龄",
+                        "地区",
+                        "毕业院校",
+                        "事业状态",
+                        "行业领域",
+                        "职业",
+                        "专业",
+                        "擅长",
+                        "资历",
+                        "资源",
+                        "组织名称",
+                        "组织类型",
+                        "产品服务",
+                        "行业地位",
+                        "资质",
+                        "个人关键字",
+//            "发布",
+                        "会员类型",
+                        "验证信息",
+                        "状态",
+                        "申请时间",
+                    ],
+                    colModel: [
+                        {name:"userName",index:"userName", width:120},
+                        {name:"gender",index:"gender", width:120,
+                            formatter: function (cellvalue, options, rowObject) {
+                                if(cellvalue==1){
+                                    return "男";
+                                }else {
+                                    return "女";
+                                }
+                            }
+                        },
+                        {name:"age",index:"age", width:100},
+                        {name:"provinceCity",index:"provinceCity", width:100},
+                        {name:"school",index:"school", width:200},
+                        {name:"career",index:"career", width:200},
+                        {name:"domain",index:"domain", width:200},
+                        {name:"professional",index:"professional", width:200},
+                        {name:"zy",index:"zy", width:140},
+                        {name:"sc",index:"sc", width:120},
+                        {name:"zl",index:"zl", width:120},
+                        {name:"zy2",index:"zy2", width:120},
+                        {name:"groupName",index:"groupName", width:120},
+                        {name:"groupType",index:"groupType", width:120,
+                            formatter: function (cellvalue, options, rowObject) {
+                                if(cellvalue==1){
+                                    return "行业协会";
+                                }else if(cellvalue==2){
+                                    return "校友会";
+                                }else if(cellvalue==3){
+                                    return "兴趣组织";
+                                }else if(cellvalue==4){
+                                    return "公益机构";
+                                }else if(cellvalue==5){
+                                    return "文化沙龙";
+                                }
+                            }
+                        },
+                        {name:"productType",index:"productType", width:120,
+                            formatter: function (cellvalue, options, rowObject) {
+                                if(cellvalue==1){
+                                    return "产品";
+                                }else {
+                                    return "服务";
+                                }
+
+                            }
+                        },
+                        {name:"industryRanking",index:"industryRanking", width:120},
+                        {name:"qualification",index:"qualification", width:220},
+                        {name:"keyWord",index:"keyWord", width:120},
+                        {name:"vipType",index:"vipType", width:120,
+                            formatter: function (cellvalue, options, rowObject) {
+                                if(cellvalue==1){
+                                    return "会员";
+                                }else if(cellvalue==2){
+                                    return "干事";
+                                }else {
+                                    return "非会员";
+                                }
+                            }
+                        },
+                        {name:"validateInfo",index:"validateInfo", width:220},
+                        {name:"approvalStatus",index:"approvalStatus", width:120,
+                            formatter: function (cellvalue, options, rowObject) {
+                                if(cellvalue==1){
+                                    return "未处理";
+                                }else if(cellvalue==2){
+                                    return "批准";
+                                }else if(cellvalue==3){
+                                    return "拒绝";
+                                }else if(cellvalue==4){
+                                    return "拉黑";
+                                }
+                            }
+                        },
+                        {name:"createTime",index:"createTime", width:150}
+                    ],
+                    jsonReader: {   // (8)针对子表格的jsonReader设置
+                        root:"gridModel",
+                        records: "record",
+                        repeatitems : false
+                    },
+                    prmNames: {search: "search"},
+                    pager: subgrid_pager_id,
+                    viewrecords: true,
+                    height: "100%",
+                    rowNum: 1
+                });
+            }
+
         });
 
-    }
-
-    function date_format(data){
-        var d = new Date(data);    //根据时间戳生成的时间对象
-
-        var date = (d.getFullYear()) + "-" +
-                (d.getMonth() + 1) + "-" +
-                (d.getDate()) + " " +
-                (d.getHours()) + ":" +
-                (d.getMinutes()) + ":" +
-                (d.getSeconds());
-        return date;
     }
 
     function updateStatus(id,status){
@@ -223,12 +335,9 @@
     <div class="col-xs-12 tb-grid">
         <!-- 配置查询 -->
         @ var _col=[
-        @			  {name:"加入方式",index:"approvalType", type:"select_924"},
         @			  {name:"审核状态",index:"approvalStatus", type:"select_925"}
         @		   ];
         @ include("/common/_function/_search.html",{"col":_col}){}
-        <!-- 按钮组 -->
-        <div class="welljq well-sm" id="btns"></div>
         <div class="welljq well-sm" id="columns">
             <input type="checkbox" value="userName" class="cbox" checked="checked" disabled="disabled"/>名字
             <input type="checkbox" value="gender" class="cbox" checked="checked"/>性别

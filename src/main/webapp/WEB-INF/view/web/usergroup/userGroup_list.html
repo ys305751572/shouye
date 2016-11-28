@@ -133,7 +133,7 @@
                     var index=0;
                     for(var j=0;j<a.length;j++){
                         if(a[j] != "undefined"){
-                            if(index<3){
+                            if(j<3){
                                 cev += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + a[j];
                                 cev += "	<span class='o_close' data-percent='' onclick=\"user_classification_del('"+a[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
                                 cev += "</div>   ";
@@ -172,12 +172,11 @@
                     var index1=0;
                     for(var j=0;j<a1.length;j++){
                         if(a1[j] != "undefined"){
-                            if(index1<3){
+                            if(j<3){
                                 cev1 += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + a1[j];
                                 cev1 += "	<span class='o_close' data-percent='' onclick=\"user_tag_del('"+a1[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
                                 cev1 += "</div>   ";
-                            }else{
-                                cev1 += "<div class='col-sm-3 input-group hid' style='display: none;float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0;'>" + a1[j];
+                            }else{                                cev1 += "<div class='col-sm-3 input-group hid' style='display: none;float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0;'>" + a1[j];
                                 cev1 += "	<span class='o_close' data-percent='' onclick=\"user_tag_del('"+a1[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
                                 cev1 += "</div>   ";
 
