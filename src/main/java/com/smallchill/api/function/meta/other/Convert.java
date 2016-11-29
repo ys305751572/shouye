@@ -196,10 +196,6 @@ public class Convert {
         } else {
             int status = Integer.parseInt(record.get("status").toString());
             if (status == 1) {
-                type = FRIEND;
-            } else if (status == 2) {
-                type = PASS;
-            } else if (status == 0) {
                 int fromUserId = Integer.parseInt(record.get("from_user_id").toString());
                 int toUserId = Integer.parseInt(record.get("to_user_id").toString());
                 if (userId == fromUserId) {
@@ -207,6 +203,10 @@ public class Convert {
                 } else if (userId == toUserId) {
                     type = NOT_PROCESS_FROM_USER_ID;
                 }
+            } else if (status == 2) {
+                type = FRIEND;
+            } else if (status == 3) {
+                type = PASS;
             }
         }
         vo.setStatus(type == null ? NOT_FRINED : type);

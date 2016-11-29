@@ -330,6 +330,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 修改分组信息
+     *
      * @param userId
      * @param groupingId
      * @param name
@@ -346,6 +347,26 @@ public class UserApi extends BaseController implements ConstCache {
             return fail();
         }
         return success();
+    }
+
+    /**
+     * 分组用户列表
+     *
+     * @param userId     当前用户ID
+     * @param groupingId 分组ID
+     * @return
+     */
+    @PostMapping(value = "/grouping/user/list")
+    @ResponseBody
+    public String userListByGroupingId(Integer userId, Integer groupingId) {
+        List<UserVo> list = null;
+        try {
+            list = userInfoService.findUserListByGroupingId(groupingId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success(list);
     }
 
     /**
@@ -509,6 +530,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 组织后台-引荐列表
+     *
      * @param userId 当前用户ID
      * @return result
      */
@@ -527,6 +549,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 设置组织是否允许加入
+     *
      * @param userId 当前用户ID
      * @param status 状态  1:开放 2:关闭
      * @return result
@@ -545,6 +568,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 设置组织是否允许引荐
+     *
      * @param userId 当前用户ID
      * @param status 状态  1:允许 2:拒绝
      * @return result
@@ -560,4 +584,6 @@ public class UserApi extends BaseController implements ConstCache {
         }
         return success();
     }
+
+
 }

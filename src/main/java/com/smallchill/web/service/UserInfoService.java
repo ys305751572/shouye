@@ -85,6 +85,13 @@ public interface UserInfoService extends IService<UserInfo> {
     void joinToGrouping(Integer userId, String userIds, Integer groupingId);
 
     /**
+     * 查询分组用户列表
+     * @param groupingId 分组ID
+     * @return uservolist
+     */
+    List<UserVo> findUserListByGroupingId(Integer groupingId);
+
+    /**
      * 删除用户分组
      *
      * @param userId     用户ID

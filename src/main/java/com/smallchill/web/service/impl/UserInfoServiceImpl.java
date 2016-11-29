@@ -525,6 +525,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         }
     }
 
+
     /**
      * 修改分组名称
      *
@@ -557,6 +558,26 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
                 }
             }
         }
+    }
+
+    /**
+     * 查询分组用户列表
+     *
+     * @param groupingId 分组ID
+     * @return uservos
+     */
+    @Override
+    public List<UserVo> findUserListByGroupingId(Integer groupingId) {
+        String sql = Blade.dao().getScript("UserInfo.findUserListByGroupig").getSql();
+        Record record = Record.create().set("groupingId", groupingId);
+        List<Record> records = Db.init().selectList(sql, record);
+        List<UserVo> userVos = new ArrayList<>();
+        for (Record record1 : records) {
+            UserVo userVo = Convert.recordToVo(record1);
+            userVo.setSameKeyList(Convert.labelToSameKeyList(record1.getStr("label")));
+            userVos.add(userVo);
+        }
+        return userVos;
     }
 
     /**

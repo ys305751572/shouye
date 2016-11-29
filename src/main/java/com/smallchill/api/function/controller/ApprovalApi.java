@@ -2,10 +2,7 @@ package com.smallchill.api.function.controller;
 
 import com.smallchill.api.common.exception.*;
 import com.smallchill.api.common.model.ErrorType;
-import com.smallchill.api.function.meta.validate.GroupPageValidator;
-import com.smallchill.api.function.meta.validate.GroupUserValidate;
-import com.smallchill.api.function.meta.validate.UserAduitValidate;
-import com.smallchill.api.function.meta.validate.UserApprovalValidate;
+import com.smallchill.api.function.meta.validate.*;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
 import com.smallchill.core.toolbox.Record;
@@ -107,9 +104,24 @@ public class ApprovalApi extends BaseController {
      */
     @PostMapping(value = "/auditinterest")
     @ResponseBody
-    @Before(UserApprovalValidate.class)
+    @Before(FromUserIdAndtoUserIdValidate.class)
     public String auditOfInterest(UserApproval ua) {
-        return null;
+        try {
+            userApprovalService.auditOfInterest(ua);
+        } catch (BothUserHasApprovalException e) {
+            return fail(ErrorType.ERROR_CODE_APP_USERHASAPPROVAL);
+        } catch (UserInOthersBlankException e) {
+            return fail(ErrorType.ERROR_CODE_APP_USERINBLANK);
+        } catch (UserHasApprovalException e) {
+            return fail(ErrorType.ERROR_CODE_APP_USERHASAPPROVAL);
+        } catch (UsernotFriendException e) {
+            return fail(ErrorType.ERROR_CODE_APP_USERNOTFRIEND);
+        } catch (UserInMyBlankException e) {
+            return fail(ErrorType.ERROR_CODE_APP_USERINMYBLANK);
+        } catch (UserHasFriendException e) {
+            return fail(ErrorType.ERROR_CODE_APP_USERHASJOIN);
+        }
+        return success();
     }
 
     /**

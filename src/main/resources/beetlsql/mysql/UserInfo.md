@@ -239,3 +239,29 @@ tb_user_info ui2
 ON
 ua.`to_user_id` = ui2.`user_id`
 WHERE ua.`group_id` = #{groupId}
+
+findUserListByGroupig
+=====================
+SELECT
+  ui.user_id userId,
+  ui.username,
+  ui.avater,
+  ui.mobile,
+  ui.province_id province,
+  ui.city_id city,
+  ui.school,
+  ui.province_city proviceCity,
+  ui.domain,
+  ui.key_word keyWord,
+  ui.organization,
+  ui.per,
+  ui.career,
+  ui.professional,
+  ui.desc,
+  uf.`label`
+FROM tb_user_friend_grouping_member ufgm 
+LEFT JOIN tb_user_friend uf
+ON uf.`friend_id` = ufgm.`friend_id` 
+LEFT JOIN tb_user_info ui 
+ON ui.`user_id` = ufgm.`friend_id`
+WHERE ufgm.`ufg_id` = #{groupingId}

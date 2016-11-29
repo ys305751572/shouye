@@ -1,6 +1,7 @@
 package com.smallchill.api.function.modal.vo;
 
 import com.smallchill.core.base.model.BaseModel;
+import com.smallchill.core.toolbox.Record;
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,6 +23,16 @@ public class ShouPageVo extends BaseModel {
     private Integer groupCount = 0;
 
     private List<UserVo> list;
+
+    private List<Record> groupings;
+
+    public List<Record> getGroupings() {
+        return groupings;
+    }
+
+    public void setGroupings(List<Record> groupings) {
+        this.groupings = groupings;
+    }
 
     public Integer getGroupCount() {
         return groupCount;

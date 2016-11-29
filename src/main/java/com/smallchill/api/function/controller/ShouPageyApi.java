@@ -9,8 +9,10 @@ import com.smallchill.api.function.service.ShoupageService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.constant.ConstCache;
 import com.smallchill.core.interfaces.ILoader;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.web.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
 
     @Autowired
     private ShoupageService shoupageService;
+    @Autowired
+    private UserInfoService userInfoService;
 
     /**
      * 手页录首页
@@ -54,6 +58,8 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
 //            }
 //        });
         ShouPageVo vo = shoupageService.index(userid, domainid, cityid, groupingid, keyWord);
+        List<Record> list = userInfoService.findIndexGrouping(userId);
+        vo.setGroupings(list);
         return success(vo, "shoupage");
     }
 

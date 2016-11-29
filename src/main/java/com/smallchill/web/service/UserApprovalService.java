@@ -136,4 +136,10 @@ public interface UserApprovalService extends IService<UserApproval> {
     UserApproval getUserByFromUserIdAndToUserIdApprovalOfTowWay(Integer userId, Integer distUserId);
 
     UserApproval getUserByFromUserIdAndToUserIdApprovalOfOneWay(Integer userId, Integer distUserId);
+
+    /**
+     * 对我感兴趣用户-（同意，忽略）
+     * @param ua 申请信息
+     */
+    void auditOfInterest(UserApproval ua) throws BothUserHasApprovalException, UserInOthersBlankException, UserHasApprovalException, UsernotFriendException, UserInMyBlankException, UserHasFriendException;
 }
