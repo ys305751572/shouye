@@ -17,12 +17,10 @@ import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.model.Dict;
 import com.smallchill.web.meta.intercept.GroupIntercept;
 import com.smallchill.web.meta.task.SendTimeWork;
-import com.smallchill.web.model.Group;
-import com.smallchill.web.model.GroupBank;
-import com.smallchill.web.model.GroupExtend;
-import com.smallchill.web.model.GroupLoad;
+import com.smallchill.web.model.*;
 import com.smallchill.web.model.vo.GroupVo;
 import com.smallchill.web.service.*;
 import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
@@ -66,6 +64,8 @@ public class GroupController extends BaseController {
     GroupExtendService groupExtendService;
     @Autowired
     GroupLoadService groupLoadService;
+    @Autowired
+    ProvinceCityService provinceCityService;
 
 //    @RequestMapping("/")
 //    public String index(ModelMap mm) {
@@ -115,24 +115,14 @@ public class GroupController extends BaseController {
         return object;
     }
 
+
     @RequestMapping(KEY_ADD)
     public String add(ModelMap mm) throws JSONException {
         mm.put("code", CODE);
-        List<Map<String, Object>> province = CacheKit.get(PROVINCE_CACHE, "province_all",
-            new ILoader() {
-                public Object load() {
-                    return Db.init().selectList("SELECT \n" +
-                            "  id AS id,\n" +
-                            "  code AS code,\n" +
-                            "  name AS name,\n" +
-                            "  parent_code AS parentCode\n" +
-                            "FROM\n" +
-                            "  tb_province_city \n" +
-                            "WHERE parent_code = '0' ");
-                }
-            });
+        List<Map<String, Object>> province = provinceCityService.province();
+        List groupType = Db.init().selectList("SELECT * FROM tfw_dict WHERE CODE='908'");
+        mm.put("groupType", groupType);
         mm.put("province", province);
-
         return BASE_PATH + "group_add.html";
     }
 
@@ -190,10 +180,8 @@ public class GroupController extends BaseController {
         }catch (RuntimeException e){
             e.printStackTrace();
             return error("失败");
-
         }
         return success("成功");
-
     }
 
 
@@ -306,10 +294,14 @@ public class GroupController extends BaseController {
                            String content1,
                            String content2,
                            String content3,
-                           String targat) {
+                           String targat,
+                           String phones) {
 //        GroupBank groupBank =mapping(BANK, GroupBank.class);
 //        GroupExtend groupExtend =mapping(EXTEND, GroupExtend.class);
         try{
+            ProvinceCity _province = provinceCityService.findById(province);
+            ProvinceCity _city = provinceCityService.findById(city);
+
             groupVo.setName(name);
             groupVo.setCode(code);
             groupVo.setLicense(license);
@@ -327,6 +319,7 @@ public class GroupController extends BaseController {
             groupVo.setType(type);
             Integer adminId = (Integer) ShiroKit.getUser().getId();
             groupVo.setCreateAdminId(adminId);
+            groupVo.setProvinceCity(_province.getName()+"-"+_city.getName());
             groupVo.setProvince(province);
             groupVo.setCity(city);
             groupVo.setTitle1(title1);
@@ -350,8 +343,20 @@ public class GroupController extends BaseController {
                     _targat = _t.toString().substring(0,_t.length()-1);
                 }
                 groupVo.setTarget(_targat);
-
             }
+            if(StringUtils.isNotBlank(phones)){
+                String[] phone = JsonKit.parse(phones,String[].class);
+                StringBuffer _p = new StringBuffer();
+                String telphone = "";
+                for(String p : phone){
+                    _p.append(p).append("|");
+                }
+                if(StringUtils.isNotBlank(_p.toString())){
+                    telphone = _p.toString().substring(0,_p.length()-1);
+                }
+                groupVo.setTelphone(telphone);
+            }
+
             //新增一个组织管理员
             User user = new User();
             String pwd = groupVo.getPassword();
@@ -360,12 +365,18 @@ public class GroupController extends BaseController {
             user.setPassword(pwdMd5);
             user.setSalt(salt);
             user.setAccount(groupVo.getArtificialPersonMobile());
-            //设置角色为组织管理员(暂时为设置组织管理员)
+            user.setName(groupVo.getArtificialPersonName());
+            user.setBirthday(new Date());
+            user.setSex(1);
+            user.setPassword(groupVo.getArtificialPersonMobile());
             user.setDeptid(1);
-            //设置管理员为已审核
-            user.setStatus(1);
+            //设置角色为组织管理员(暂时为设置组织管理员)
+            user.setRoleid("2");
+            //设置管理员为待审核(待审组织通过设置为1)
+            user.setStatus(0);
             user.setCreatetime(new Date());
             Blade.create(User.class).save(user);
+
             groupService.saveGroup(groupVo);
         }catch (RuntimeException e){
             e.printStackTrace();
@@ -390,13 +401,21 @@ public class GroupController extends BaseController {
         }else {
             mm.put("group",new Group());
         }
+        ProvinceCity province = provinceCityService.findById(groupBank.getProvince());
+        ProvinceCity city = provinceCityService.findById(groupBank.getCity());
+
+        String sql = "SELECT NAME FROM tfw_user WHERE id = #{id}";
+        Record adminName = Db.init().selectOne(sql,Record.create().set("id",groupExtend.getCreateAdminId()));
+
+        mm.put("province",province != null ? province.getName() : "无");
+        mm.put("city",city != null ? city.getName() : "无");
+        mm.put("adminName",adminName != null ? adminName : "无");
 
         mm.put("groupExtend",groupExtend);
         mm.put("groupBank",groupBank);
         mm.put("code",CODE);
         return BASE_PATH +"group_update.html";
     }
-
 
     /**
      * 修改组织详情
@@ -408,11 +427,58 @@ public class GroupController extends BaseController {
         mm.put("group",group);
         mm.put("code",CODE);
         if(status==0){
+            List<Map<String, Object>> province = provinceCityService.province();
+            mm.put("province",province);
             return BASE_PATH +"group_modify.html";
         }else {
             mm.put("status",status);
             return BASE_PATH +"group_content.html";
         }
+    }
+
+    @RequestMapping(value = "setGroup")
+    @ResponseBody
+    public AjaxResult setGroup(Integer groupId,Integer province,Integer city,String targat,String phones){
+        try{
+            Group group = groupService.findById(groupId);
+            ProvinceCity _province = provinceCityService.findById(province);
+            ProvinceCity _city = provinceCityService.findById(city);
+
+            group.setProvince(province);
+            group.setCity(city);
+            group.setProvinceCity(_province.getName()+"-"+_city.getName());
+
+            if(StringUtils.isNotBlank(targat)){
+                String[] targats = JsonKit.parse(targat,String[].class);
+                StringBuffer _t = new StringBuffer();
+                String _targat = "";
+                for(String t : targats){
+                    _t.append(t).append("|");
+                }
+                if(StringUtils.isNotBlank(_t.toString())){
+                    _targat = _t.toString().substring(0,_t.length()-1);
+                }
+                group.setTargat(_targat);
+            }
+            if(StringUtils.isNotBlank(phones)){
+                String[] phone = JsonKit.parse(phones,String[].class);
+                StringBuffer _p = new StringBuffer();
+                String telphone = "";
+                for(String p : phone){
+                    _p.append(p).append("|");
+                }
+                if(StringUtils.isNotBlank(_p.toString())){
+                    telphone = _p.toString().substring(0,_p.length()-1);
+                }
+                group.setTelphone(telphone);
+            }
+            groupService.update(group);
+
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error(UPDATE_FAIL_MSG);
+        }
+        return success(UPDATE_SUCCESS_MSG);
     }
 
     @RequestMapping(value = "/contentSave")

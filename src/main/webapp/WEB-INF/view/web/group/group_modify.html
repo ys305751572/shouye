@@ -24,7 +24,7 @@
     <div class="form-group">
         @ var _table="tb_group";
         @ var _col=[
-        @			  {name:"头像上传",index:"avater", type:"imgupload",newline:true,length:8,returnType:"id"}
+        @			  {name:"图片上传",index:"avater", type:"imgupload",newline:true,length:8,returnType:"id"}
         @		   ];
         @ include("/common/_curd/_add.html",{"col":_col,"table":_table}){}
     </div>
@@ -39,15 +39,15 @@
         <label class="col-sm-2 control-label no-padding-right" >所在省</label>
         <div class="col-sm-3">
             <select name="province" id="province" class="form-control">
-                <option value=""></option>
-                <option value="0">省</option>
+                @for(x in province){
+                    <option value="${x.id!}">${x.name!}</option>
+                @}
             </select>
         </div>
         <label class="col-sm-2 control-label no-padding-right" >所在市</label>
         <div class="col-sm-3">
             <select name="city" id="city" class="form-control">
-                <option value=""></option>
-                <option value="0">市</option>
+
             </select>
         </div>
     </div>
@@ -70,14 +70,8 @@
     <div id="phone">
         <div class="form-group">
             <label class="col-sm-2 control-label no-padding-right" >服务热线</label>
-            <div class="col-sm-2">
-                <input type="text" name="" value="" placeholder="区号" class="form-control" maxlength="4"/>
-            </div>
-            <div class="col-sm-3">
-                <input type="text" name="" value="" placeholder="固定号码" class="form-control" maxlength="8"/>
-            </div>
             <div class="col-sm-1">
-                <input type="button" name="" class="but" value="添加" onclick="phoneAdd()"/>
+                <input type="button" name="" class="but" value="添加" onclick="phoneAdd('')"/>
             </div>
         </div>
     </div>
@@ -104,6 +98,16 @@
         var targat = "${group.targat}";
         var targatList = targat.split("|");
         $(function(){
+            var provinceId = "${group.province}";
+            city(provinceId);
+            selected();
+            telphone();
+
+            $("#province").change(function (){
+                var id = $(this).val();
+                city(id);
+            });
+
             var html = "";
             for(var j=0;j<targatList.length;j++){
                 html += "<div class='col-sm-2 input-group' data-type='' style='float:left;background: #6fb3e0;color: #dde9ff;position: relative;font-size: 14px;width: auto;height:30px;line-height:30px;text-indent: 10px;margin:0 5px 5px 0'>" + targatList[j];
@@ -111,20 +115,32 @@
                 html += "	<input type='hidden' name='targat' value='" + targatList[j] + "'>";
                 html += "</div>   ";
             }
+
             $("#keyWork").append(html);
             $("#targat").val("");
-
 
             $("#btn_close").bind("click",function(){
                 parent.layer.close(layerIndex);
             });
 
             $("#btn_save").bind("click",function(){
-                var send = $("input[name='send']:checked").val();
-                var sendTime = $("#send_time").val();
-                var title = $("#title").val();
-                var content = $("#content").val();
-                $.post("${basePath}/group/send_message",{groupId:groupId , send:send, sendTime:sendTime, title:title, content:content}, function(data){
+                var groupId = "${group.id}";
+                var province = $("#province").val();
+                var city = $("#city").val();
+
+                var targat = [];
+                var phones = [];
+
+                $("#keyWork div").each(function () {
+                    var value = $(this).find("input[name='targat']").val();
+                    targat.push(value)
+                });
+
+                $("input[name='landline']").each(function () {
+                    phones.push($(this).val());
+                });
+
+                $.post("${basePath}/${code}/setGroup",{groupId:groupId,province:province, city:city, targat:JSON.stringify(targat), phones:JSON.stringify(phones)}, function(data){
                     if(data.code===0){
                         layer_alert(data.message, "success");
                         parent.layer.close(layerIndex);
@@ -163,15 +179,12 @@
             $(data).parent().remove();
         }
 
-        function phoneAdd(){
+        function phoneAdd(phone){
             var html = "";
             html += " <div class='form-group'>																				";
             html += " 	<label class='col-sm-2 control-label no-padding-right' ></label>                                    ";
-            html += " 	<div class='col-sm-2'>                                                                              ";
-            html += " 		<input type='text' name='' value='' placeholder='区号' class='form-control' maxlength='4'/>     ";
-            html += " 	</div>                                                                                              ";
             html += " 	<div class='col-sm-3'>                                                                              ";
-            html += " 		<input type='text' name='' value='' placeholder='固定号码' class='form-control' maxlength='8'/> ";
+            html += " 		<input type='text' name='landline' value='"+phone+"' placeholder='固定号码' class='form-control' /> ";
             html += " 	</div>                                                                                              ";
             html += " 	<div class='col-sm-1'>                                                                              ";
             html += " 		<input type='button' name='' class='but' value='删除' onclick='phoneDel(this)'/>                ";
@@ -183,6 +196,47 @@
         function phoneDel(data){
             $(data).parent().parent().remove();
         }
+
+        function selected(){
+            var provinceId = "${group.province}";
+            $("#province option").each(function(){
+                if(provinceId == $(this).val()){
+                    $(this).attr("selected","selected");
+                }
+            });
+        }
+
+        function city(id){
+            var cityId = "${group.city}";
+            $.post(
+                "${ctxPath}/provinceCity/city",
+                {id:id},
+                function (data) {
+                    $("#city").empty();
+                    var html = "";
+                    for(var i=0;i<data.length;i++){
+                        var id = data[i].id;
+                        var name = data[i].name;
+                        if(id!=cityId){
+                            html += "<option value='"+id+"'>"+name+"</option>";
+                        }else {
+                            html += "<option value='"+id+"' selected>"+name+"</option>";
+                        }
+                    }
+                    $("#city").append(html);
+                },"json"
+            );
+        }
+
+        function telphone(){
+            var telphone = "${group.telphone}";
+            var list = telphone.split("|");
+            for(var i=0;i<list.length;i++){
+                var phone = list[i];
+                phoneAdd(phone)
+            }
+        }
+
 
     </script>
 

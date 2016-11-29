@@ -206,6 +206,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             }
             userGroup.setJoinType(1); //会员
             userGroup.setType(1);   //主动加入
+            userGroupService.save(userGroup);
             //发现消息
             messageService.sendMsgForUserAuditAgree(groupApproval.getGroupId(),groupApproval.getUserId());
 

@@ -118,7 +118,9 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         group.setType(groupVo.getType());
         group.setProvince(groupVo.getProvince());
         group.setCity(groupVo.getCity());
+        group.setProvinceCity(groupVo.getProvinceCity());
         group.setTargat(groupVo.getTarget());
+        group.setTelphone(groupVo.getTelphone());
 
         group.setTitle1(groupVo.getTitle1());
         group.setContent1(groupVo.getContent1());

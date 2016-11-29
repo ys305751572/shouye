@@ -80,7 +80,7 @@ public class GroupApprovalController extends BaseController {
         if(group!=null && group.getId()!=null){
             groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId", group.getId()));
         }
-        mm.put("group",group);
+        mm.put("group",groupService.findById(group.getId()));
         mm.put("groupExtend",groupExtend);
         mm.put("code", CODE);
         return BASE_PATH + "groupApproval_permissions.html";

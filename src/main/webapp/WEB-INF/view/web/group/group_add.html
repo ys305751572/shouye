@@ -37,12 +37,20 @@
 		</div>
 
 		<div class="form-group">
-			<label class="col-sm-2 control-label no-padding-right" > 组织代码证扫描件 </label>
+<!--			<label class="col-sm-2 control-label no-padding-right" > 组织代码证扫描件 </label>
 			<div class="col-sm-3">
-				<input type="text" name="" class="form-control"  value="" placeholder="" /> <!--codeImage-->
+				<input type="text" name="" class="form-control"  value="" placeholder="" /> &lt;!&ndash;codeImage&ndash;&gt;
 
-			</div>
+			</div>-->
 
+			@ var __table="tb_group_extend";
+			@ var __col=[
+			@			  {name:"组织代码证号扫描件",index:"codeImage", type:"imgupload",newline:true,length:8,returnType:"id"}
+			@		   ];
+			@ include("/common/_curd/_add.html",{"col":__col,"table":__table}){}
+		</div>
+
+		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" > 营业执照注册号 </label>
 			<div class="col-sm-3">
 				<input type="text" name="license" id="license" class="form-control"  value="" placeholder="" required/>
@@ -50,13 +58,14 @@
 		</div>
 
 		<div class="form-group">
-			<label class="col-sm-2 control-label no-padding-right" >营业执照扫描件</label>
-
-			<div class="col-sm-3">
-				<input type="text" name="" value="" placeholder="" class="form-control" /> <!--licenseImage-->
-			</div>
-
-			<label class="col-sm-2 control-label no-padding-right" >运营者身份证姓名</label>
+			@ var ___table="tb_group_extend";
+			@ var ___col=[
+			@			  {name:"营业执照扫描件",index:"licenseImage", type:"imgupload",newline:true,length:8,returnType:"id"}
+			@		   ];
+			@ include("/common/_curd/_add.html",{"col":___col,"table":___table}){}
+		</div>
+		<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >运营者身份证姓名</label>
 			<div class="col-sm-3">
 				<input type="text" name="artificialPersonName" id="artificialPersonName" value="" placeholder="" class="form-control" required/>
 			</div>
@@ -77,7 +86,7 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >短信验证码</label>
 			<div class="col-sm-3">
-				<input type="text"   name="" value="" placeholder="" class="form-control" required/>
+				<input type="text" name="" value="" placeholder="暂无" class="form-control" required/>
 			</div>
 		</div>
 
@@ -104,7 +113,7 @@
 
 			<label class="col-sm-2 control-label no-padding-right" >开户银行</label>
 			<div class="col-sm-3">
-				<input type="text" name="bankId" id="bankId" value="" placeholder="没有表" class="form-control" required/>
+				<input type="text" name="bankName" id="bankName" value="" placeholder="" class="form-control" required/>
 			</div>
 		</div>
 
@@ -112,15 +121,14 @@
 			<label class="col-sm-2 control-label no-padding-right" >开户行所在省</label>
 			<div class="col-sm-3" >
 				<select name="banckProvince" id="banckProvince" class="form-control">
-					<option value=""></option>
-					<option value="0">省</option>
+					@for(x in province){
+					<option value="${x.id!}">${x.name!}</option>
+					@}
 				</select>
 			</div>
 			<label class="col-sm-2 control-label no-padding-right" >开户行所在市</label>
 			<div class="col-sm-3">
 				<select name="bankCity" id="bankCity" class="form-control">
-					<option value=""></option>
-					<option value="0">市</option>
 				</select>
 			</div>
 
@@ -135,11 +143,15 @@
 		<div class="form-group">
 			<h4 class="col-sm-2 control-label no-padding-right" > --账号资料-- </h4>
 		</div>
-		@ var _table="tb_group";
-		@ var _col=[
-		@			  {name:"头像上传",index:"avater", type:"imgupload",newline:true,length:8,returnType:"id"}
-		@		   ];
-		@ include("/common/_curd/_add.html",{"col":_col,"table":_table}){}
+
+		<div class="form-group">
+			@ var _table="tb_group";
+			@ var _col=[
+			@			  {name:"头像上传",index:"avater", type:"imgupload",newline:true,length:8,returnType:"id"}
+			@		   ];
+			@ include("/common/_curd/_add.html",{"col":_col,"table":_table}){}
+		</div>
+
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >组织ID</label>
 			<div class="col-sm-3">
@@ -155,7 +167,11 @@
 
 			<label class="col-sm-2 control-label no-padding-right" >组织类型</label>
 			<div class="col-sm-3">
-				<blade:select type="dict" id="dict" code="908" name="tb_group.type" value="0" />
+				<select name="groupType" id="groupType" class="form-control">
+					@for(x in groupType){
+						<option value="${x.NUM!}">${x.NAME!}</option>
+					@}
+				</select>
 			</div>
 		</div>
 
@@ -164,34 +180,29 @@
 			<div class="col-sm-3">
 				<select name="province" id="province" class="form-control">
 					@for(x in province){
-						<option value="${x.code!}">${x.name!}</option>
+						<option value="${x.id!}">${x.name!}</option>
 					@}
 				</select>
 			</div>
 			<label class="col-sm-2 control-label no-padding-right" >所在市</label>
 			<div class="col-sm-3">
 				<select name="city" id="city" class="form-control">
-					<option value=""></option>
-					<option value="0">市</option>
 				</select>
 			</div>
 		</div>
 
-		<!--demo-->
 		<div id="phone">
 			<div class="form-group">
 				<label class="col-sm-2 control-label no-padding-right" >服务热线</label>
-				<div class="col-sm-2">
-					<input type="text" name="" value="" placeholder="区号" class="form-control" maxlength="4"/>
-				</div>
 				<div class="col-sm-3">
-					<input type="text" name="" value="" placeholder="固定号码" class="form-control" maxlength="8"/>
+					<input type="text" name="landline" value="" placeholder="固定号码" class="form-control"/>
 				</div>
 				<div class="col-sm-1">
 					<input type="button" name="" class="but" value="添加" onclick="phoneAdd()"/>
 				</div>
 			</div>
 		</div>
+
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >填写关键字</label>
 			<div class="col-sm-3">
@@ -204,8 +215,8 @@
 
 		<div class="form-group" id="keyWork">
 			<label class="col-sm-2 control-label no-padding-right" ></label>
-
 		</div>
+
 		<input type="button" name="next" class="next action-button" value="下一步" />
 	</fieldset>
 
@@ -319,11 +330,8 @@
 		var html = "";
 		html += " <div class='form-group'>																				";
 		html += " 	<label class='col-sm-2 control-label no-padding-right' ></label>                                    ";
-		html += " 	<div class='col-sm-2'>                                                                              ";
-		html += " 		<input type='text' name='' value='' placeholder='区号' class='form-control' maxlength='4'/>     ";
-		html += " 	</div>                                                                                              ";
 		html += " 	<div class='col-sm-3'>                                                                              ";
-		html += " 		<input type='text' name='' value='' placeholder='固定号码' class='form-control' maxlength='8'/> ";
+		html += " 		<input type='text' name='landline' value='' placeholder='固定号码' class='form-control' />       ";
 		html += " 	</div>                                                                                              ";
 		html += " 	<div class='col-sm-1'>                                                                              ";
 		html += " 		<input type='button' name='' class='but' value='删除' onclick='phoneDel(this)'/>                                        ";
@@ -362,29 +370,17 @@
 		$(data).parent().remove();
 	}
 
-
 	$(function(){
+
 		$("#province").change(function (){
-			var code = $(this).val();
-			$.post(
-				"${ctxPath}/provinceCity/city",
-				{code:code},
-				function (data) {
-					for(var i=0;i<data.length;i++){
-
-						console.log(data[i])
-					}
-				}
-
-			)
+			var id = $(this).val();
+			city(id,1);
 		});
 
-		$("#msforms").html5Validate(function() {
-			alert(123)
-		}, {
-			// novalidate: false
+		$("#banckProvince").change(function (){
+			var id = $(this).val();
+			city(id,2);
 		});
-
 
 		var editor1;
 		var editor2;
@@ -438,7 +434,7 @@
 			var bankCity = $('#bankCity').val();
 			var branchName = $('#branchName').val();
 			var password = $('#password').val();
-			var type = $('#type').val();
+			var type = $('#groupType').val();
 			var province = $('#province').val();
 			var city = $('#city').val();
 
@@ -451,6 +447,7 @@
 			var content3 = $('#content3').val();
 
 			var targat = [];
+			var phones = [];
 
 			var isOpen1 ;
 			var isOpen2 ;
@@ -461,11 +458,13 @@
 			}else {
 				isOpen1 = 2;
 			}
+
 			if($('#isOpen2').is(':checked')){
 				isOpen2 = 1;
 			}else {
 				isOpen2 = 2;
 			}
+
 			if($('#isOpen3').is(':checked')){
 				isOpen3 = 1;
 			}else {
@@ -476,6 +475,11 @@
 				var value = $(this).find("input[name='targat']").val();
 				targat.push(value)
 			});
+
+			$("input[name='landline']").each(function () {
+				phones.push($(this).val());
+			});
+
 			$.post(
 				"${ctxPath}/${code}/save",
 				{
@@ -505,8 +509,8 @@
 					content1 : content1,
 					content2 : content2,
 					content3 : content3,
-					targat : JSON.stringify(targat)
-
+					targat : JSON.stringify(targat),
+					phones : JSON.stringify(phones)
 				},
 				function (data) {
 					if (data.code===0) {
@@ -527,7 +531,33 @@
 
 		})
 
-	})
+	});
+
+	function city(id,type){
+		$.post(
+			"${ctxPath}/provinceCity/city",
+			{id:id},
+			function (data) {
+				if(type==1){
+					$("#city").empty();
+				}else {
+					$("#bankCity").empty();;
+				}
+				var html = "";
+				for(var i=0;i<data.length;i++){
+					var id = data[i].id;
+					var name = data[i].name;
+					html += "<option value='"+id+"'>"+name+"</option>";
+				}
+				if(type==1){
+					$("#city").append(html);
+				}else{
+					$("#bankCity").append(html);
+				}
+			},"json"
+		)
+	}
+
 
 
 

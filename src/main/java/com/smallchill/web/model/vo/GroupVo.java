@@ -27,7 +27,9 @@ public class GroupVo {
 
     private Integer province;
     private Integer city;
+    private String provinceCity;
     private String target;
+    private String telphone;
 
     private String title1;
     private String content1;
@@ -307,5 +309,21 @@ public class GroupVo {
 
     public void setAuditStatus(Integer auditStatus) {
         this.auditStatus = auditStatus;
+    }
+
+    public String getTelphone() {
+        return telphone;
+    }
+
+    public void setTelphone(String telphone) {
+        this.telphone = telphone;
+    }
+
+    public String getProvinceCity() {
+        return provinceCity;
+    }
+
+    public void setProvinceCity(String provinceCity) {
+        this.provinceCity = provinceCity;
     }
 }
