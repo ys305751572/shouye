@@ -120,7 +120,7 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >开户行所在省</label>
 			<div class="col-sm-3" >
-				<select name="banckProvince" id="banckProvince" class="form-control">
+				<select name="banckProvince" id="banckProvince" class="form-control" required>
 					@for(x in province){
 					<option value="${x.code!}">${x.name!}</option>
 					@}
@@ -128,7 +128,7 @@
 			</div>
 			<label class="col-sm-2 control-label no-padding-right" >开户行所在市</label>
 			<div class="col-sm-3">
-				<select name="bankCity" id="bankCity" class="form-control">
+				<select name="bankCity" id="bankCity" class="form-control" required>
 				</select>
 			</div>
 
@@ -163,12 +163,12 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >设置密码</label>
 			<div class="col-sm-3">
-				<input type="text" name="password" id="password" value="" placeholder="" class="form-control" />
+				<input type="text" name="password" id="password" value="" placeholder="" class="form-control" required/>
 			</div>
 
 			<label class="col-sm-2 control-label no-padding-right" >组织类型</label>
 			<div class="col-sm-3">
-				<select name="groupType" id="groupType" class="form-control">
+				<select name="groupType" id="groupType" class="form-control" required>
 					@for(x in groupType){
 						<option value="${x.NUM!}">${x.NAME!}</option>
 					@}
@@ -179,7 +179,7 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >所在省</label>
 			<div class="col-sm-3">
-				<select name="province" id="province" class="form-control">
+				<select name="province" id="province" class="form-control" required>
 					@for(x in province){
 						<option value="${x.code!}">${x.name!}</option>
 					@}
@@ -187,7 +187,7 @@
 			</div>
 			<label class="col-sm-2 control-label no-padding-right" >所在市</label>
 			<div class="col-sm-3">
-				<select name="city" id="city" class="form-control">
+				<select name="city" id="city" class="form-control" required>
 				</select>
 			</div>
 		</div>

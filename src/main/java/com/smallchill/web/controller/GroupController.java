@@ -309,6 +309,22 @@ public class GroupController extends BaseController {
 //        GroupBank groupBank =mapping(BANK, GroupBank.class);
 //        GroupExtend groupExtend =mapping(EXTEND, GroupExtend.class);
         try{
+            if(city==null || bankCity==null){
+                return error("省市不能为空");
+            }
+            if(codeImage==null){
+                return error("组织代码证号扫描件不能为空");
+            }
+            if(licenseImage==null){
+                return error("营业执照扫描件不能为空");
+            }
+            if(avater==null){
+                return error("组织头像不能为空");
+            }
+            if(type==null){
+                return error("组织类型不能为空");
+            }
+
             ProvinceCity _province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",province));
             ProvinceCity _city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",city));
             Attach _codeImage = attachService.findById(codeImage);
