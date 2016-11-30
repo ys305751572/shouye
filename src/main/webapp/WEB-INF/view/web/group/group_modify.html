@@ -20,7 +20,6 @@
 <form class="form-horizontal" role="form">
     <div class="space-4"></div>
     <!-- #section:elements.form -->
-
     <div class="form-group">
         @ var _table="tb_group";
         @ var _col=[
@@ -40,7 +39,7 @@
         <div class="col-sm-3">
             <select name="province" id="province" class="form-control">
                 @for(x in province){
-                    <option value="${x.id!}">${x.name!}</option>
+                    <option value="${x.code!}">${x.name!}</option>
                 @}
             </select>
         </div>
@@ -98,8 +97,8 @@
         var targat = "${group.targat}";
         var targatList = targat.split("|");
         $(function(){
-            var provinceId = "${group.province}";
-            city(provinceId);
+            var provinceCode = "${group.province}";
+            city(provinceCode);
             selected();
             telphone();
 
@@ -124,6 +123,7 @@
             });
 
             $("#btn_save").bind("click",function(){
+                var avaterId = $("#_avater").val();
                 var groupId = "${group.id}";
                 var province = $("#province").val();
                 var city = $("#city").val();
@@ -140,7 +140,7 @@
                     phones.push($(this).val());
                 });
 
-                $.post("${basePath}/${code}/setGroup",{groupId:groupId,province:province, city:city, targat:JSON.stringify(targat), phones:JSON.stringify(phones)}, function(data){
+                $.post("${basePath}/${code}/setGroup",{groupId:groupId,avaterId:avaterId,province:province, city:city, targat:JSON.stringify(targat), phones:JSON.stringify(phones)}, function(data){
                     if(data.code===0){
                         layer_alert(data.message, "success");
                         parent.layer.close(layerIndex);
@@ -206,21 +206,21 @@
             });
         }
 
-        function city(id){
-            var cityId = "${group.city}";
+        function city(code){
+            var city = "${group.city}";
             $.post(
                 "${ctxPath}/provinceCity/city",
-                {id:id},
+                {code:code},
                 function (data) {
                     $("#city").empty();
                     var html = "";
                     for(var i=0;i<data.length;i++){
-                        var id = data[i].id;
+                        var code = data[i].code;
                         var name = data[i].name;
-                        if(id!=cityId){
-                            html += "<option value='"+id+"'>"+name+"</option>";
+                        if(code!=city){
+                            html += "<option value='"+code+"'>"+name+"</option>";
                         }else {
-                            html += "<option value='"+id+"' selected>"+name+"</option>";
+                            html += "<option value='"+code+"' selected>"+name+"</option>";
                         }
                     }
                     $("#city").append(html);

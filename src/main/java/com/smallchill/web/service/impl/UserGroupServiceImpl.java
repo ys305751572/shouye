@@ -54,6 +54,7 @@ public class UserGroupServiceImpl extends BaseService<UserGroup> implements User
                 "  LEFT JOIN tb_user_group tug \n" +
                 "    ON tui.user_id = tug.user_id \n" +
                 "WHERE tui.user_id NOT IN (SELECT user_id FROM tb_user_group WHERE group_id = #{groupId})\n" +
+                "  AND tui.user_id NOT IN (SELECT user_id FROM tb_group_approval WHERE group_id = #{groupId}) \n" +
                 "AND tui.mobile <> \" \" \n" +
                 "GROUP BY tui.user_id ";
         List list = Db.init().selectList(sql,Record.create().set("groupId",group.getId()));

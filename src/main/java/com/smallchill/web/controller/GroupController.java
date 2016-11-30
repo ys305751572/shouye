@@ -9,6 +9,7 @@ import com.smallchill.core.interfaces.ILoader;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.LeomanKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.core.toolbox.grid.GridManager;
@@ -17,7 +18,9 @@ import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.model.Attach;
 import com.smallchill.system.model.Dict;
+import com.smallchill.system.service.AttachService;
 import com.smallchill.web.meta.intercept.GroupIntercept;
 import com.smallchill.web.meta.task.SendTimeWork;
 import com.smallchill.web.model.*;
@@ -66,6 +69,8 @@ public class GroupController extends BaseController {
     GroupLoadService groupLoadService;
     @Autowired
     ProvinceCityService provinceCityService;
+    @Autowired
+    AttachService attachService;
 
 //    @RequestMapping("/")
 //    public String index(ModelMap mm) {
@@ -119,6 +124,7 @@ public class GroupController extends BaseController {
     @RequestMapping(KEY_ADD)
     public String add(ModelMap mm) throws JSONException {
         mm.put("code", CODE);
+        mm.put("idCard", LeomanKit.generateUUID());
         List<Map<String, Object>> province = provinceCityService.province();
         List groupType = Db.init().selectList("SELECT * FROM tfw_dict WHERE CODE='908'");
         mm.put("groupType", groupType);
@@ -270,7 +276,9 @@ public class GroupController extends BaseController {
     public AjaxResult save(GroupVo groupVo,
                            String name,
                            String code,
+                           Integer codeImage,
                            String license,
+                           Integer licenseImage,
                            String artificialPersonName,
                            String artificialPersonIdcard,
                            String artificialPersonMobile,
@@ -281,6 +289,8 @@ public class GroupController extends BaseController {
                            Integer banckProvince,
                            Integer bankCity,
                            String branchName,
+                           Integer avater,
+                           String idcard,
                            String password,
                            Integer type,
                            Integer province,
@@ -299,12 +309,16 @@ public class GroupController extends BaseController {
 //        GroupBank groupBank =mapping(BANK, GroupBank.class);
 //        GroupExtend groupExtend =mapping(EXTEND, GroupExtend.class);
         try{
-            ProvinceCity _province = provinceCityService.findById(province);
-            ProvinceCity _city = provinceCityService.findById(city);
-
+            ProvinceCity _province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",province));
+            ProvinceCity _city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",city));
+            Attach _codeImage = attachService.findById(codeImage);
+            Attach _licenseImage = attachService.findById(licenseImage);
+            Attach _avater = attachService.findById(avater);
             groupVo.setName(name);
             groupVo.setCode(code);
+            groupVo.setCodeImage(_codeImage!=null?_codeImage.getUrl():"");
             groupVo.setLicense(license);
+            groupVo.setLicenseImage(_licenseImage!=null?_licenseImage.getUrl():"");
             groupVo.setArtificialPersonName(artificialPersonName);
             groupVo.setArtificialPersonIdcard(artificialPersonIdcard);
             groupVo.setArtificialPersonMobile(artificialPersonMobile);
@@ -315,6 +329,8 @@ public class GroupController extends BaseController {
             groupVo.setBanckProvince(banckProvince);
             groupVo.setBankCity(bankCity);
             groupVo.setBranchName(branchName);
+            groupVo.setAvater(_avater!=null?_avater.getUrl():"");
+            groupVo.setIdcard(idcard);
             groupVo.setPassword(password);
             groupVo.setType(type);
             Integer adminId = (Integer) ShiroKit.getUser().getId();
@@ -438,12 +454,14 @@ public class GroupController extends BaseController {
 
     @RequestMapping(value = "setGroup")
     @ResponseBody
-    public AjaxResult setGroup(Integer groupId,Integer province,Integer city,String targat,String phones){
+    public AjaxResult setGroup(Integer groupId,Integer avaterId,Integer province,Integer city,String targat,String phones){
         try{
             Group group = groupService.findById(groupId);
-            ProvinceCity _province = provinceCityService.findById(province);
-            ProvinceCity _city = provinceCityService.findById(city);
+            Attach attach = attachService.findById(avaterId);
+            ProvinceCity _province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",province));
+            ProvinceCity _city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",city));
 
+            group.setAvater(attach!=null?attach.getUrl():"");
             group.setProvince(province);
             group.setCity(city);
             group.setProvinceCity(_province.getName()+"-"+_city.getName());

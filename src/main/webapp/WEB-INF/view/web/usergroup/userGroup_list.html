@@ -98,7 +98,15 @@
             {name:"keyWord",index:"keyWord", width:120},
             {name:"mobile",index:"mobile", width:120},
             {name:"createTime",index:"createTime", width:120},
-            {name:"vipEndTime",index:"vipEndTime", width:120},
+            {name:"vipEndTime",index:"vipEndTime", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    if(cellvalue!=null){
+                        return cellvalue;
+                    }else {
+                        return "永久";
+                    }
+                }
+            },
             {name:"vipType",index:"vipType", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
@@ -106,7 +114,8 @@
                     }else {
                         return "干事";
                     }
-                }},
+                }
+            },
             {name:"joinType",index:"joinType", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){

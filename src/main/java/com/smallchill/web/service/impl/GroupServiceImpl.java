@@ -74,7 +74,9 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     private void saveGroupTag(GroupVo groupVo, Integer groupId) {
         GroupExtend gg = new GroupExtend();
         gg.setGroupId(groupId);
-        gg.setIdCard(LeomanKit.generateUUID()); // 后台自动生成
+        gg.setLicenseImage(groupVo.getLicenseImage());
+        gg.setCodeImge(groupVo.getCodeImage());
+        gg.setIdCard(groupVo.getIdcard()); // 后台自动生成
         gg.setPassword(groupVo.getPassword());
         gg.setCode(groupVo.getCode());
         gg.setLicense(groupVo.getLicense());
@@ -114,6 +116,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     private int saveGroupInfo(GroupVo groupVo) {
         Group group = new Group();
         group.setName(groupVo.getName());
+        group.setAvater(groupVo.getAvater());
 
         group.setType(groupVo.getType());
         group.setProvince(groupVo.getProvince());

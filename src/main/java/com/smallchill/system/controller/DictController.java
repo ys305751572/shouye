@@ -16,6 +16,8 @@
 package com.smallchill.system.controller;
 
 import com.smallchill.core.constant.ConstErrorMsg;
+import com.smallchill.system.service.DictService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +43,9 @@ public class DictController extends BaseController implements ConstErrorMsg {
     private static String BASE_PATH = "/system/dict/";
     private static String CODE = "dict";
     private static String PERFIX = "tfw_dict";
+
+    @Autowired
+    DictService dictService;
 
     @RequestMapping("/")
     public String index(ModelMap mm) {
@@ -170,5 +175,15 @@ public class DictController extends BaseController implements ConstErrorMsg {
         } catch (Exception ex) {
             return 1;
         }
+    }
+
+    /**
+     * 根据PID获取list
+     */
+    @RequestMapping(value = "/findChild")
+    @ResponseBody
+    public List findChild(Integer id){
+        List list = dictService.findChild(id);
+        return list;
     }
 }

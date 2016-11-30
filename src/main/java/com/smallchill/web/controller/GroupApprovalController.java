@@ -5,6 +5,7 @@ import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.system.service.DictService;
 import com.smallchill.web.meta.intercept.GroupAdminIntercept;
 import com.smallchill.web.model.*;
 import com.smallchill.web.service.*;
@@ -38,6 +39,10 @@ public class GroupApprovalController extends BaseController {
     UserInfoService userInfoService;
     @Autowired
     UserGroupService userGroupService;
+    @Autowired
+    ProvinceCityService provinceCityService;
+    @Autowired
+    DictService dictService;
 
     @RequestMapping(value = "/")
     public String groupIndex(ModelMap mm) {
@@ -83,6 +88,19 @@ public class GroupApprovalController extends BaseController {
         mm.put("group",groupService.findById(group.getId()));
         mm.put("groupExtend",groupExtend);
         mm.put("code", CODE);
+
+        //行业
+        List domains = dictService.findDomains();
+        mm.put("domains", domains);
+
+        //省
+        List<Map<String, Object>> province = provinceCityService.province();
+        mm.put("province", province);
+
+        //职业
+        List professional = dictService.findProfessional();
+        mm.put("professional", professional);
+
         return BASE_PATH + "groupApproval_permissions.html";
     }
 

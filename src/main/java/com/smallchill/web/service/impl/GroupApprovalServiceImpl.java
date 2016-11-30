@@ -42,6 +42,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     private UserGroupService userGroupService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private ProvinceCityService provinceCityService;
 
     /**
      * 是否已经申请
@@ -204,6 +206,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
                     userGroup.setVipEndTime(-1L);
                 }
             }
+            userGroup.setCreateTime(System.currentTimeMillis());
             userGroup.setJoinType(1); //会员
             userGroup.setType(1);   //主动加入
             userGroupService.save(userGroup);
@@ -225,13 +228,40 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     @Transactional
     public void permissionSetting(Group group, Integer permissionsType, Integer isJoin,Integer isIntroduce, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer zyLimit) {
         GroupExtend groupExtend = null;
+        List<UserGroup> userGroups = null;
         if (group.getId() != null) {
             groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}", Record.create().set("groupId", group.getId()));
+            userGroups = userGroupService.findBy("group_id = #{groupId}", Record.create().set("groupId", group.getId()));
+
         }
 
         if (groupExtend != null) {
+
+            if(!Objects.equals(costType, groupExtend.getCostType())){
+                //改变了收费模式
+                if(costType==1){
+                    //年费
+                    for(UserGroup userGroup : userGroups){
+                        Calendar calendar = Calendar.getInstance();
+                        Date date = new Date(System.currentTimeMillis());
+                        calendar.setTime(date);
+                        calendar.add(Calendar.YEAR, +1);
+                        date = calendar.getTime();
+                        Long time = date.getTime();
+                        userGroup.setVipEndTime(time);
+                        userGroupService.update(userGroup);
+                    }
+                }else {
+                    //永久
+                    for(UserGroup userGroup : userGroups){
+                        userGroup.setVipEndTime(-1L);
+                        userGroupService.update(userGroup);
+                    }
+                }
+            }
             groupExtend.setCostType(costType);
             groupExtend.setCost(cost);
+
             if (cost == null || cost == 0) {
                 //免费
                 groupExtend.setCostStatus(1);
@@ -248,8 +278,10 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         group.setIsIntroduce(isIntroduce);
         group.setIndustryLimit(industryLimit);
         group.setDomainLimit(domainLimit);
-        group.setProvinceLimit(provinceLimit);
-        group.setCityLimit(cityLimit);
+        ProvinceCity province = provinceCityService.findById(provinceLimit);
+        ProvinceCity city = provinceCityService.findById(cityLimit);
+        group.setProvinceLimit(province.getCode());
+        group.setCityLimit(city.getCode());
         group.setProfessionalLimit(professionalLimit);
         group.setZyLimit(zyLimit);
         groupService.update(group);

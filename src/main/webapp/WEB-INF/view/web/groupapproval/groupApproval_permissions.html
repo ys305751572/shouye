@@ -58,14 +58,15 @@
         <div class="col-sm-3">
             <select name="industry_limit" id="industry_limit" class="form-control">
                 <option value="0">不限</option>
-                <option value="1">1</option>
+                @for(x in domains){
+                <option value="${x.ID!}">${x.NAME!}</option>
+                @}
             </select>
         </div>
         <label class="col-sm-2 control-label no-padding-right" >领域限制</label>
         <div class="col-sm-3">
             <select name="domain_limit" id="domain_limit" class="form-control">
                 <option value="0">不限</option>
-                <option value="1">1</option>
             </select>
         </div>
     </div>
@@ -75,14 +76,15 @@
         <div class="col-sm-3">
             <select name="province_limit" id="province_limit" class="form-control">
                 <option value="0">不限</option>
-                <option value="1">省</option>
+                @for(x in province){
+                <option value="${x.code!}">${x.name!}</option>
+                @}
             </select>
         </div>
         <label class="col-sm-2 control-label no-padding-right" >所在市</label>
         <div class="col-sm-3">
             <select name="city_limit" id="city_limit" class="form-control">
                 <option value="0">不限</option>
-                <option value="1">市</option>
             </select>
         </div>
     </div>
@@ -92,14 +94,15 @@
         <div class="col-sm-3">
             <select name="professional_limit" id="professional_limit" class="form-control">
                 <option value="0">不限</option>
-                <option value="1">1</option>
+                @for(x in professional){
+                <option value="${x.ID!}">${x.NAME!}</option>
+                @}
             </select>
         </div>
         <label class="col-sm-2 control-label no-padding-right" >专业限制</label>
         <div class="col-sm-3">
             <select name="zy_limit" id="zy_limit" class="form-control">
                 <option value="0">不限</option>
-                <option value="1">1</option>
             </select>
         </div>
     </div>
@@ -121,8 +124,84 @@
     <script src="${basePath}/static/laydate/laydate.js"></script>
     <script type="text/javascript">
 
+        function selected(provinceId){
+            $("#province option").each(function(){
+                if(provinceId == $(this).val()){
+                    $(this).attr("selected","selected");
+                }
+            });
+        }
+
+        function city(code){
+            var city = "${group.cityLimit}";
+            $.post(
+                "${ctxPath}/provinceCity/city",
+                {code:code},
+                function (data) {
+                    $("#city_limit").empty();
+                    var html = "<option value=''>不限</option>";
+                    for(var i=0;i<data.length;i++){
+                        var code = data[i].code;
+                        var name = data[i].name;
+                        if(code==city){
+                            html += "<option value='"+code+"' selected>"+name+"</option>";
+                        }else {
+                            html += "<option value='"+code+"'>"+name+"</option>";
+                        }
+                    }
+                    $("#city_limit").append(html);
+                },"json"
+            );
+        }
+
+        function findChild(id,type){
+            $.post(
+                "${basePath}/dict/findChild",
+                {id:id},
+                function (data){
+                    var zy_limit = "${group.zyLimit}";
+                    var domain_limit = "${group.domainLimit}";
+                    var html = "<option value='0'>不限</option>";
+                    for(var i=0;i<data.length;i++){
+                        var id = data[i].ID;
+                        var name = data[i].NAME;
+                        if(id==zy_limit || id == domain_limit){
+                            html += "<option value='"+id+"' selected>"+name+"</option>";
+                        }else {
+                            html += "<option value='"+id+"'>"+name+"</option>";
+                        }
+                    }
+                    if(type==1){
+                        $("#domain_limit").empty();
+                        //行业领域
+                        $("#domain_limit").append(html);
+                    }else {
+                        $("#zy_limit").empty();
+                        //职业专业
+                        $("#zy_limit").append(html);
+                    }
+                },
+                "json"
+            )
+        }
+
         var layerIndex = parent.layer.getFrameIndex(window.name);
         $(function(){
+
+            $("#province_limit").change(function (){
+                var code = $(this).val();
+                city(code);
+            });
+
+            $("#industry_limit").change(function (){
+                var id = $(this).val();
+                findChild(id,1);
+            });
+
+            $("#professional_limit").change(function (){
+                var id = $(this).val();
+                findChild(id,2);
+            });
 
             var permissions_type = "${group.permissionsType}";
             var is_join = "${group.isJoin}";
@@ -162,6 +241,11 @@
                 $("input[name='isIntroduce']:eq(1)").attr("checked",'checked');
             }
 
+            selected(province_limit);
+            city(province_limit);
+            findChild(industry_limit,1);
+            findChild(professional_limit,2);
+
             $("#cost").val(_cost);
             $("#sex_limit").val(sex_limit);
             $("#industry_limit").val(industry_limit);
@@ -170,8 +254,6 @@
             $("#city_limit").val(city_limit);
             $("#professional_limit").val(professional_limit);
             $("#zy_limit").val(zy_limit);
-
-
 
             $("#btn_close").bind("click",function(){
                 parent.layer.close(layerIndex);
@@ -228,9 +310,7 @@
             });
 
         })
-
     </script>
-
     <div class="space-4"></div>
 </form>
 @}

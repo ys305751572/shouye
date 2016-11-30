@@ -8,7 +8,9 @@ public class GroupVo {
 
     private Integer id;
     private String name;
+    private String codeImage;
     private String code;
+    private String licenseImage;
     private String license;
     private String artificialPersonName;
     private String artificialPersonIdcard;
@@ -20,6 +22,8 @@ public class GroupVo {
     private Integer banckProvince;
     private Integer bankCity;
     private String branchName;
+    private String avater;
+    private String idcard;
     private String password;
     private Integer type;
     private Integer createAdminId;
@@ -325,5 +329,37 @@ public class GroupVo {
 
     public void setProvinceCity(String provinceCity) {
         this.provinceCity = provinceCity;
+    }
+
+    public String getIdcard() {
+        return idcard;
+    }
+
+    public void setIdcard(String idcard) {
+        this.idcard = idcard;
+    }
+
+    public String getCodeImage() {
+        return codeImage;
+    }
+
+    public void setCodeImage(String codeImage) {
+        this.codeImage = codeImage;
+    }
+
+    public String getLicenseImage() {
+        return licenseImage;
+    }
+
+    public void setLicenseImage(String licenseImage) {
+        this.licenseImage = licenseImage;
+    }
+
+    public String getAvater() {
+        return avater;
+    }
+
+    public void setAvater(String avater) {
+        this.avater = avater;
     }
 }

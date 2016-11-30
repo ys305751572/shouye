@@ -364,7 +364,6 @@ public class UserGroupController extends BaseController {
     @RequestMapping(value = "/user_invitation")
     @ResponseBody
     public AjaxResult userInvitation(Integer userId,String content){
-
         UserInfo userInfo = userInfoService.findByUserId(userId);
         try{
             if(userInfo==null){
