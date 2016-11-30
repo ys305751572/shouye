@@ -400,8 +400,9 @@ public class GroupController extends BaseController {
             user.setName(groupVo.getArtificialPersonName());
             user.setBirthday(new Date());
             user.setSex(1);
-            user.setPassword(groupVo.getArtificialPersonMobile());
+            user.setPhone(groupVo.getArtificialPersonMobile());
             user.setDeptid(1);
+            user.setVersion(1);
             //设置角色为组织管理员(暂时为设置组织管理员)
             user.setRoleid("2");
             //设置管理员为待审核(待审组织通过设置为1)
@@ -441,7 +442,7 @@ public class GroupController extends BaseController {
 
         mm.put("province",province != null ? province.getName() : "无");
         mm.put("city",city != null ? city.getName() : "无");
-        mm.put("adminName",adminName != null ? adminName : "无");
+        mm.put("adminName",adminName != null ? adminName.get("NAME") : "无");
 
         mm.put("groupExtend",groupExtend);
         mm.put("groupBank",groupBank);
