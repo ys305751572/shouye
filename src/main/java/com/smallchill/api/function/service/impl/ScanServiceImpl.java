@@ -37,6 +37,7 @@ public class ScanServiceImpl implements ScanService {
 
     /**
      * 识别会员
+     *
      * @param userId
      * @param toUserId
      * @return
@@ -47,12 +48,34 @@ public class ScanServiceImpl implements ScanService {
         String sql = Blade.dao().getScript("Scan.isInSameGroup").getSql();
         Record record = Db.init().selectOne(sql, Record.create().set("userId", userId).set("toUserId", toUserId));
         int counts = record.getInt("counts");
-        if(counts > 0) {
+        if (counts > 0) {
             userVo.setIsMember(2);
-        }
-        else {
+        } else {
             userVo.setIsMember(1);
         }
         return userVo;
+    }
+
+    /**
+     * 判断当前用户是否某组织干事
+     *
+     * @param userId 用户ID
+     * @return record
+     */
+    @Override
+    public Record findMemeberByUserId(Integer userId) {
+        String sql = Blade.dao().getScript("Scan.findMemberByUserId").getSql();
+        Record record = Db.init().selectOne(sql, Record.create().set("userId", userId));
+        if (record == null) {
+            record = Record.create();
+        }
+        int groupId = record.getInt("group_id");
+        String name = record.getStr("name");
+
+        record.set("name", name);
+        record.set("groupId", groupId);
+        record.set("isMember", groupId == 0 ? 1 : 2);
+        record.remove("group_id");
+        return record;
     }
 }

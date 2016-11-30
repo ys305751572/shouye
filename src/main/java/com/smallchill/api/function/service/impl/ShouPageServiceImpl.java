@@ -440,7 +440,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
                 "LEFT JOIN\n" +
                 "    tb_group_approval ga\n" +
                 "ON\n" +
-                "    (g.id = ga.group_id and ga.status = 2)" +
+                "    (g.id = ga.group_id AND (ga.`status` = 2 OR (ga.`status` = 1 AND ga.`type` = 2)))" +
                 " WHERE ga.user_id = #{userId}";
 
         List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));

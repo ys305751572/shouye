@@ -320,4 +320,36 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     private void save1(GroupApproval ga) {
         this.save(ga);
     }
+
+
+    /**
+     * 组织邀请审核
+     *
+     * @param groupId 组织ID
+     * @param userId  用户ID
+     */
+    @Transactional
+    @Override
+    public void userAuditGroupAgree(Integer groupId, Integer userId) {
+        GroupApproval groupApproval = this.findFirstBy("group_id = #{groupId} and user_id = #{userId}", Record.create().set("groupId", groupId).set("userId", userId));
+        groupApproval.setStatus(2);
+        groupApproval.setThroughTime(DateTimeKit.nowLong());
+        this.update(groupApproval);
+
+        UserGroup userGroup = new UserGroup();
+        userGroup.setGroupId(groupApproval.getGroupId());
+        userGroup.setUserId(groupApproval.getUserId());
+        userGroup.setVipEndTime(-1L);
+        userGroup.setType(1);
+        userGroup.setJoinType(2);
+        userGroupService.save(userGroup);
+    }
+
+    @Override
+    public void userAuditGroupRefuse(Integer groupId, Integer userId) {
+        GroupApproval groupApproval = this.findFirstBy("group_id = #{groupId} and user_id = #{userId}", Record.create().set("groupId", groupId).set("userId", userId));
+        groupApproval.setStatus(3);
+        groupApproval.setThroughTime(DateTimeKit.nowLong());
+        this.update(groupApproval);
+    }
 }

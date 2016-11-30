@@ -23,10 +23,20 @@ public class UserProfessional extends BaseModel {
     private Integer proId;
     @Column(name = "pro_name")
     private String proName;
+    @Column(name = "level")
+    private String level;
     @Column(name = "p_id")
     private Integer pid;
     @Column(name = "create_time")
     private Long createTime;
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
 
     public Integer getId() {
         return id;

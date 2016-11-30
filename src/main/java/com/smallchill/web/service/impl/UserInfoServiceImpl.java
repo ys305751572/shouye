@@ -8,36 +8,28 @@ import com.smallchill.api.function.modal.*;
 import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.*;
-import com.smallchill.common.task.TimeWorkManager;
 import com.smallchill.core.base.service.BaseService;
-import com.smallchill.core.modules.support.Conver;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.NetKit;
 import com.smallchill.platform.model.UserLogin;
 import com.smallchill.platform.service.UserLoginService;
-import com.smallchill.web.meta.task.SendTimeWork;
-import com.smallchill.web.meta.task.TestTimeWork;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
+import com.smallchill.web.model.UserinfoCareer;
 import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
-import org.beetl.ext.fn.ParseInt;
-import org.beetl.sql.core.kit.StringKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -73,15 +65,20 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private UserCareerService userCareerService;
+
     @Transactional
     @Override
     public UserInfo updateUserInfo(UserInfo userInfo, HttpServletRequest request) throws UserExitsException {
 
         String domain = userInfo.getDomain();
         String pro = userInfo.getProfessional();
+        String career = userInfo.getCareer();
         int per = per(userInfo);
         userInfo.setPer(per);
         domainAndProfessional(userInfo);
+        List<Integer> careerIds = processCareer(career, userInfo);
         if (userInfo.getUserId() != null) {
             _update(userInfo);
         } else {
@@ -95,8 +92,29 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         }
         userInfo.setDomain(domain);
         userInfo.setProfessional(pro);
-        processUserInfo(userInfo);
+        userInfo.setCareer(career);
+        processUserInfo(userInfo, careerIds);
+        // 新增用户默认分组
+        // createDefaultGrouping(userInfo.getUserId());
+
         return userInfo;
+    }
+
+    private List<Integer> processCareer(String career, UserInfo userinfo) {
+        StringBuffer nameBuffer = new StringBuffer();
+        List<Integer> ids = new ArrayList<>();
+        if (StringUtils.isNotBlank(career)) {
+            String[] careerss = career.split("\\|");
+            for (String c : careerss) {
+                if (StringUtils.isNotBlank(c)) {
+                    String[] cc = c.split(",");
+                    nameBuffer.append(cc[1]);
+                    ids.add(Integer.parseInt(cc[0]));
+                }
+            }
+        }
+        userinfo.setCareer(nameBuffer.substring(0, nameBuffer.length() - 1));
+        return ids;
     }
 
     /**
@@ -120,6 +138,30 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     public Record findUserInfoDetail(Integer userId) {
         String sql = Blade.dao().getScript("UserInfo.userInfoDetail").getSql();
         return Db.init().selectOne(sql, Record.create().set("userId", userId));
+    }
+
+    /**
+     * 查询个人信息编辑页
+     *
+     * @param userId 当前用户ID
+     * @return uservo
+     */
+    @Override
+    public UserVo findUserinfo(Integer userId) {
+        Record record = this.findUserInfoDetail(userId);
+        UserVo userVo = Convert.recordToVo(record);
+        // 查询用户事业状态
+        // 查询用户专业
+        // 查询用户行业领域
+        String where = "user_id = #{userId}";
+        Record paramsRecord = Record.create().set("userId", userId);
+        List<UserProfessional> professionalList = userprofessionalService.findBy(where, paramsRecord);
+        List<UserDomain> userDomainList = userDomainService.findBy(where, paramsRecord);
+        List<UserinfoCareer> userinfoCareerList = userCareerService.findBy(where, paramsRecord);
+        userVo.setProfessionalList(professionalList);
+        userVo.setUserDomainList(userDomainList);
+        userVo.setUserinfoCareerList(userinfoCareerList);
+        return userVo;
     }
 
 
@@ -209,7 +251,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
      *
      * @param userInfo 用户详细信息
      */
-    private void processUserInfo(UserInfo userInfo) {
+    private void processUserInfo(UserInfo userInfo, List<Integer> careerIds) {
         String domain = userInfo.getDomain();
         String professional = userInfo.getProfessional();
 
@@ -256,6 +298,22 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
                 }
             }
         }
+
+        // ---------------------------处理事业状态------------------------
+        if (StringUtils.isNotBlank(userInfo.getCareer())) {
+            // 先删除该用户所有事业状态
+            userCareerService.deleteBy("user_id = #{userId}", Record.create().set("userId", userInfo.getUserId()));
+            if (CollectionKit.isNotEmpty(careerIds)) {
+                UserinfoCareer career;
+                for (Integer careerId : careerIds) {
+                    career = new UserinfoCareer();
+                    career.setCareerId(careerId);
+                    career.setUserId(userInfo.getUserId());
+                    career.setCreateTime(DateTimeKit.nowLong());
+                    userCareerService.save(career);
+                }
+            }
+        }
     }
 
     /**
@@ -298,6 +356,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             }
             professionalName = professionalBuffer.substring(0, professionalBuffer.length() - 1);
         }
+
+        // ----------------------处理事业状态-------------------------
         userInfo.setDomain(domainName);
         userInfo.setProfessional(professionalName);
         userInfo.setCreateTime(DateTimeKit.nowLong());
@@ -518,6 +578,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         UserFriendGrouping ufg = new UserFriendGrouping();
         ufg.setUserId(userId);
         ufg.setName(name);
+        ufg.setIsDefault(2);
         Integer newId = userFriendGroupingService.saveRtId(ufg);
 
         if (StringUtils.isNotBlank(userIds)) {
@@ -580,6 +641,45 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         return userVos;
     }
 
+    @Override
+    public List<UserVo> findUserListByDefaultId(Integer userId, Integer defaultId) {
+        String text = null;
+        switch (defaultId) {
+            case 1:
+                text = "熟人";
+                break;
+            case 2:
+                text = "同校";
+                break;
+            case 3:
+                text = "同组织";
+                break;
+        }
+        String params = "ui.user_id userId,\n" +
+                "    ui.username,\n" +
+                "    ui.avater,\n" +
+                "    ui.mobile,\n" +
+                "    ui.province_id province,\n" +
+                "    ui.city_id city,\n" +
+                "    ui.school,\n" +
+                "    ui.province_city provinceCity,\n" +
+                "    ui.domain,\n" +
+                "    ui.key_word keyWord,\n" +
+                "    ui.organization,\n" +
+                "    ui.per,\n" +
+                "    ui.career,\n" +
+                "    ui.professional,\n" +
+                "    ui.desc";
+        String sql = "SELECT  " + params + " AS counts,'熟人' AS `name` FROM tb_user_friend uf left join tb_user_info ui on uf.friend_id = ui.user_id WHERE uf.`user_id` = #{userId} AND uf.`label` LIKE CONCAT('%', #{text},'%')";
+        List<Record> recordList = Db.init().selectList(sql, Record.create().set("userId", userId).set("text", text));
+        List<UserVo> userVos = new ArrayList<>();
+        for (Record record : recordList) {
+            userVos.add(Convert.recordToVo(record));
+        }
+        return userVos;
+    }
+
+
     /**
      * 删除用户分组
      *
@@ -607,17 +707,15 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
                         "SELECT COUNT(*) AS counts,'校友' AS `name` FROM tb_user_friend uf WHERE uf.`user_id` = #{userId} AND uf.`label` LIKE CONCAT('%', '校友','%')\n" +
                         "UNION ALL\n" +
                         "SELECT COUNT(*) AS counts, '同组织' AS `name` FROM tb_user_friend uf WHERE uf.`user_id` = #{userId} AND uf.`label` LIKE CONCAT('%', '同组织','%')";
-        List<Record> records = Db.init().selectList(sql, Record.create().set("userId", usereId));
-        return records;
+        return Db.init().selectList(sql, Record.create().set("userId", usereId));
     }
 
     @Override
     public List<Record> findCustomGrouping(Integer userId) {
-        String sql = "SELECT COUNT(ufgm.`ufg_id`) AS counts,ufg.id ,ufg.`name` " +
-                " FROM tb_user_friend_grouping_member ufgm JOIN tb_user_friend_grouping ufg ON ufgm.`ufg_id` = ufg.`id` " +
-                "WHERE ufg.`user_id` = #{userId} GROUP BY ufgm.`ufg_id`";
-        List<Record> records = Db.init().selectList(sql, Record.create().set("userId", userId));
-        return records;
+        String sql = "SELECT COUNT(ufgm.`friend_id`) counts,ufg.`id`,IFNULL(ufg.`name`, '') `name` FROM `tb_user_friend_grouping` ufg \n" +
+                "LEFT JOIN `tb_user_friend_grouping_member` ufgm ON ufg.id = ufgm.`ufg_id` \n" +
+                "WHERE ufg.`user_id` = 20 GROUP BY ufg.`id`";
+        return Db.init().selectList(sql, Record.create().set("userId", userId));
     }
 
     /**
@@ -801,5 +899,38 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             throw new UserIsNotManagerException();
         }
         Db.init().update("update tb_group set is_introduce = #{status} where id = #{groupId}", Record.create().set("groupId", groupId).set("status", status));
+    }
+
+    /**
+     * 判断用户是否有默认分组
+     *
+     * @param userId 当前用户ID
+     * @return boolean
+     */
+    @Override
+    public boolean isHaveDefaultGrouping(Integer userId) {
+        String sql = "select count(id) counts from tb_user_friend_grouping where user_id = #{userId} and is_default = 1";
+        Record record = Db.init().selectOne(sql, Record.create().set("userId", userId));
+        int counts = record.getInt("counts");
+        return counts > 0;
+    }
+
+    /**
+     * 新增默认分组
+     *
+     * @param userId 当前用户ID
+     */
+    @Transactional
+    @Override
+    public void createDefaultGrouping(Integer userId) {
+        UserFriendGrouping ufg = new UserFriendGrouping();
+        ufg.setUserId(userId);
+        ufg.setIsDefault(1);
+        ufg.setName("熟人");
+        userFriendGroupingService.save(ufg);
+        ufg.setName("校友");
+        userFriendGroupingService.save(ufg);
+        ufg.setName("同组织");
+        userFriendGroupingService.save(ufg);
     }
 }

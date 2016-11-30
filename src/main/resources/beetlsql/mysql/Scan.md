@@ -49,3 +49,19 @@ WHERE
 	ug.`user_id` = #{userId} AND ug.`vip_type` = 2
 AND ug.`group_id` IN
 (SELECT ug2.`group_id` FROM tb_user_group ug2 WHERE ug2.`user_id` = #{toUserId})
+
+findMemberByUserId
+==================
+SELECT
+    ug.group_id,
+    g.name
+FROM
+    tb_user_group ug
+LEFT JOIN
+    tb_group g
+ON
+    ug.group_id = g.id
+WHERE
+    ug.user_id = #{userId} 
+and
+    ug.vip_type = 2

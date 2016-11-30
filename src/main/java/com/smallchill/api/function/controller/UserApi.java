@@ -157,6 +157,24 @@ public class UserApi extends BaseController implements ConstCache {
     }
 
     /**
+     * 个人中心修改页
+     *
+     * @param userId 当前用户ID
+     * @return result
+     */
+    @ResponseBody
+    @PostMapping(value = "/info/update/page")
+    public String updatePage(Integer userId) {
+        UserVo userVo = null;
+        try {
+            userVo = userInfoService.findUserinfo(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success(userVo);
+    }
+
+    /**
      * 修改用户信息
      *
      * @param userInfo 用户信息
@@ -352,16 +370,21 @@ public class UserApi extends BaseController implements ConstCache {
     /**
      * 分组用户列表
      *
-     * @param userId     当前用户ID
      * @param groupingId 分组ID
      * @return
      */
     @PostMapping(value = "/grouping/user/list")
     @ResponseBody
-    public String userListByGroupingId(Integer userId, Integer groupingId) {
+    @Before(UserIdValidate.class)
+    public String userListByGroupingId(Integer userId, Integer groupingId, Integer defaultId) {
         List<UserVo> list = null;
         try {
-            list = userInfoService.findUserListByGroupingId(groupingId);
+            if (groupingId != null) {
+                list = userInfoService.findUserListByGroupingId(groupingId);
+            } else {
+                list = userInfoService.findUserListByDefaultId(userId, defaultId);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return fail();

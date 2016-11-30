@@ -23,6 +23,16 @@ public class UserFriendGrouping extends BaseModel {
     private Integer userId;
     @Column(name = "name")
     private String name;
+    @Column(name = "is_default")
+    private Integer isDefault;
+
+    public Integer getIsDefault() {
+        return isDefault;
+    }
+
+    public void setIsDefault(Integer isDefault) {
+        this.isDefault = isDefault;
+    }
 
     public Integer getId() {
         return id;

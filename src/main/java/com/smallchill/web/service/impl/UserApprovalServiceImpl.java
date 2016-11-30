@@ -109,7 +109,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
             aug.setGroupId(ua.getGroupId());
             aug.setFromUserId(ua.getFromUserId());
             aug.setToUserId(ua.getToUserId());
-            aug.setStatus(0);
+            aug.setStatus(1);
             aug.setValidateInfo(ua.getValidateInfo());
             aug.setCreateTime(DateTimeKit.nowLong());
             augService.save(aug);
@@ -294,7 +294,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     }
 
     /**
-     * (引荐)审核
+     * (推荐)审核
      *
      * @param ua 审核信息
      */

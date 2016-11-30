@@ -24,6 +24,8 @@ public interface UserInfoService extends IService<UserInfo> {
 
     Record findUserInfoDetail(Integer userId);
 
+    UserVo findUserinfo(Integer userId);
+
     UserVo findUserInfoDetail(Integer userId, Integer toUserId, Integer groupId);
 
     String findUsernameByUserId(Integer userId);
@@ -90,6 +92,13 @@ public interface UserInfoService extends IService<UserInfo> {
      * @return uservolist
      */
     List<UserVo> findUserListByGroupingId(Integer groupingId);
+
+    /**
+     *
+     * @param defaultId 默认分组ID 1:熟人 2:同校 3:同组织
+     * @return uservos
+     */
+    List<UserVo> findUserListByDefaultId(Integer userId, Integer defaultId);
 
     /**
      * 删除用户分组
@@ -194,4 +203,17 @@ public interface UserInfoService extends IService<UserInfo> {
      * @param status 状态  1:允许 2:拒绝
      */
     void setisIntroduce(Integer userId, Integer status) throws UserIsNotManagerException;
+
+    /**
+     * 判断用户是否有默认分组
+     * @param userId 当前用户ID
+     * @return boolean
+     */
+    boolean isHaveDefaultGrouping(Integer userId);
+
+    /**
+     * 新增默认分组
+     * @param userId 当前用户ID
+     */
+    void createDefaultGrouping(Integer userId);
 }

@@ -69,4 +69,18 @@ public interface GroupApprovalService extends IService<GroupApproval> {
      * @return vo
      */
     GroupApprovalVo gaInfo(Integer groupId);
+
+    /**
+     * 组织邀请审核 - 同意
+     * @param groupId 组织ID
+     * @param userId 用户ID
+     */
+    void userAuditGroupAgree(Integer groupId, Integer userId);
+
+    /**
+     * 组织邀请审核 -- 拒绝
+     * @param groupId 组织ID
+     * @param userId 用户ID
+     */
+    void userAuditGroupRefuse(Integer groupId, Integer userId);
 }

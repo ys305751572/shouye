@@ -57,6 +57,12 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
 //                return shoupageService.index(userid, domainid, cityid, groupingid);
 //            }
 //        });
+
+//        boolean hasDefaultGrouping = userInfoService.isHaveDefaultGrouping(userId);
+//        if (!hasDefaultGrouping) {
+//            userInfoService.createDefaultGrouping(userId);
+//        }
+
         ShouPageVo vo = shoupageService.index(userid, domainid, cityid, groupingid, keyWord);
         List<Record> list = userInfoService.findIndexGrouping(userId);
         vo.setGroupings(list);

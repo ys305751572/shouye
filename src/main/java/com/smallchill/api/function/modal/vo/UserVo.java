@@ -2,6 +2,9 @@ package com.smallchill.api.function.modal.vo;
 
 import com.smallchill.api.common.model.BaseVo;
 import com.smallchill.api.function.modal.Button;
+import com.smallchill.api.function.modal.UserDomain;
+import com.smallchill.api.function.modal.UserProfessional;
+import com.smallchill.web.model.UserinfoCareer;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,6 +38,34 @@ public class UserVo extends BaseVo implements Serializable {
 
     private List<Button> btnList;
     private List<String> sameKeyList;
+
+    private List<UserProfessional> professionalList;
+    private List<UserDomain> userDomainList;
+    private List<UserinfoCareer> userinfoCareerList;
+
+    public List<UserProfessional> getProfessionalList() {
+        return professionalList;
+    }
+
+    public void setProfessionalList(List<UserProfessional> professionalList) {
+        this.professionalList = professionalList;
+    }
+
+    public List<UserDomain> getUserDomainList() {
+        return userDomainList;
+    }
+
+    public void setUserDomainList(List<UserDomain> userDomainList) {
+        this.userDomainList = userDomainList;
+    }
+
+    public List<UserinfoCareer> getUserinfoCareerList() {
+        return userinfoCareerList;
+    }
+
+    public void setUserinfoCareerList(List<UserinfoCareer> userinfoCareerList) {
+        this.userinfoCareerList = userinfoCareerList;
+    }
 
     public Integer getType() {
         return type;

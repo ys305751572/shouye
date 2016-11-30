@@ -63,6 +63,17 @@ public class DefaultFileProxyFactory implements IFileProxy {
 		return Blade.create(Attach.class).saveRtStrId(attach);
 	}
 
+	@Override
+	public Object getFileIdByQiniu(BladeFile bf) {
+		Attach attach = new Attach();
+		attach.setCreater(Func.toInt(ShiroKit.getUser().getId(), 0));
+		attach.setCreatetime(new Date());
+		attach.setName(bf.getOriginalFileName());
+		attach.setStatus(1);
+		attach.setUrl(bf.getThirdUrl());
+		return Blade.create(Attach.class).saveRtStrId(attach);
+	}
+
 	/**
 	 * 获取文件后缀
 	 */

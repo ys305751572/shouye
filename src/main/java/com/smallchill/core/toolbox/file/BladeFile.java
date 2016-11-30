@@ -54,6 +54,11 @@ public class BladeFile {
 	 */
 	private String originalFileName;
 
+	/**
+	 * 第三方获取url
+	 */
+	private String thirdUrl;
+
 	public BladeFile() {
 		
 	}
@@ -112,6 +117,14 @@ public class BladeFile {
 		}
 		return fileId;
 	}
+
+	public Object getFileIdByQiniu() {
+		if(null == this.fileId) {
+			IFileProxy fileFactory = FileProxyManager.me().getDefaultFileProxyFactory();
+			this.fileId = fileFactory.getFileIdByQiniu(this);
+		}
+		return fileId;
+	}
 	
 	public void setFileId(Object fileId) {
 		this.fileId = fileId;
@@ -157,4 +170,11 @@ public class BladeFile {
 		this.originalFileName = originalFileName;
 	}
 
+	public String getThirdUrl() {
+		return thirdUrl;
+	}
+
+	public void setThirdUrl(String thirdUrl) {
+		this.thirdUrl = thirdUrl;
+	}
 }

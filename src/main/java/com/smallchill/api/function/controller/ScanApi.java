@@ -3,6 +3,7 @@ package com.smallchill.api.function.controller;
 import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.api.function.meta.intercept.AroundUserIntercept;
 import com.smallchill.api.function.meta.validate.AroundUserValidate;
+import com.smallchill.api.function.meta.validate.UserIdValidate;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.LocalSerivce;
@@ -30,6 +31,7 @@ public class ScanApi extends BaseController {
 
     @Autowired
     private ScanService scanService;
+
     /**
      * 上传坐标
      *
@@ -55,9 +57,23 @@ public class ScanApi extends BaseController {
     @ResponseBody
     @Before(AroundUserValidate.class)
     public String list(Integer userId, Double lon, Double lat) {
+        localSerivce.upload(userId, lon, lat);
         JqGrid page = apiPaginate("Scan.list", new AroundUserIntercept().addRecord(Record.create().set("userId", userId)
                 .set("lon", lon).set("lat", lat)), ExcludeParams.create().set("lon").set("lat").set("userId"));
         return success(page);
+    }
+
+    /**
+     * 当前用户是否干事
+     *
+     * @param userId
+     * @return
+     */
+    @PostMapping(value = "/oauth")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String oauth(Integer userId) {
+        return success(scanService.findMemeberByUserId(userId),"oauth");
     }
 
     /**
@@ -70,7 +86,7 @@ public class ScanApi extends BaseController {
     @PostMapping(value = "/user")
     @ResponseBody
     public String scanUser(Integer userId, Integer toUserId) {
-        UserVo uservo  = scanService.scanUser(userId, toUserId);
+        UserVo uservo = scanService.scanUser(userId, toUserId);
         return success(uservo);
     }
 

@@ -99,6 +99,7 @@ public class ApprovalApi extends BaseController {
 
     /**
      * 对我感兴趣用户结识API
+     *
      * @param ua 请求信息
      * @return result
      */
@@ -125,7 +126,7 @@ public class ApprovalApi extends BaseController {
     }
 
     /**
-     * (引荐)审核
+     * (推荐)审核
      *
      * @return result
      */
@@ -179,5 +180,29 @@ public class ApprovalApi extends BaseController {
     @Before(GroupUserValidate.class)
     public String groupIntroduceInfo(Integer groupId, Integer userId) {
         return success(groupApprovalService.gaInfo(groupId));
+    }
+
+    /**
+     * 组织邀请审核
+     *
+     * @param groupId 组织ID
+     * @param userId  当前用户ID
+     * @return result
+     */
+    @PostMapping(value = "/auditGroup")
+    @ResponseBody
+    @Before(GroupUserValidate.class)
+    public String auditGroup(Integer groupId, Integer userId, Integer status) {
+        try {
+            if (status == 1) {
+                groupApprovalService.userAuditGroupAgree(groupId, userId);
+            }
+            else {
+                groupApprovalService.userAuditGroupRefuse(groupId, userId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success();
     }
 }

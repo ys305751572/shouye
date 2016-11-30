@@ -45,5 +45,13 @@ public interface IFileProxy {
 	 * @return
 	 */
 	Object getFileId(BladeFile bf);
+
+	/**
+	 * 获取入库id
+	 * 图片地址来至七牛
+	 * @param bf
+	 * @return
+     */
+	Object getFileIdByQiniu(BladeFile bf);
 	
 }
