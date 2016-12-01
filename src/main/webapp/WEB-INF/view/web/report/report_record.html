@@ -126,7 +126,7 @@
             colModel:_colmodel,
             jsonReader:{id:"id"},
             pager : pager_selector,
-            postData: {sort: "id", order: "asc"},
+            postData: {sort: "id", order: "desc"},
             subGrid: true,  // (1)开启子表格支持
             subGridRowExpanded: function(subgrid_id, row_id) {  //(2)子表格容器的id和需要展开子表格的行id，将传入此事件函数
                 var subgrid_table_id;

@@ -13,7 +13,6 @@ public class GroupAdminIntercept extends PageIntercept {
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         String condition = "and groupId ="+group.getId()+" ";
         ac.setCondition(condition);
-
     }
 
 }

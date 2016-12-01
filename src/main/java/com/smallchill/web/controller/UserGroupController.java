@@ -33,7 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Administrator on 2016/11/22.
+ * Created by Administrator
+ * on 2016/11/22.
  */
 @RequestMapping(value = "/userGroup")
 @Controller
@@ -63,8 +64,9 @@ public class UserGroupController extends BaseController {
 
     @RequestMapping(value = "/")
     public String groupIndex(ModelMap mm) {
-        List<Classification> list = classificationService.findAll();
-        List<Tag> list2 = tagService.findAll();
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        List<Classification> list = classificationService.findBy("group_id=#{groupId}",Record.create().set("groupId",group.getId()));
+        List<Tag> list2 = tagService.findBy("group_id=#{groupId}",Record.create().set("groupId",group.getId()));
         mm.put("tagList", JsonKit.toJson(list2));
         mm.put("classificationList", JsonKit.toJson(list));
         mm.put("code", CODE);
@@ -98,9 +100,6 @@ public class UserGroupController extends BaseController {
             ids.add(id);
         }
 
-        System.out.println("===================Rows===================");
-        System.out.println(list.size());
-        System.out.println("===================Rows===================");
         getRequest().getSession().setAttribute("userGroupIds",ids);
         getRequest().getSession().setAttribute("userGroupNum",list.size());
 
@@ -129,7 +128,8 @@ public class UserGroupController extends BaseController {
      */
     @RequestMapping("/classification")
     public String classification(ModelMap mm) {
-        List<Classification> list = classificationService.findAll();
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        List<Classification> list = classificationService.findBy("group_id=#{groupId}",Record.create().set("groupId",group.getId()));
         mm.put("classificationList", JsonKit.toJson(list));
         mm.put("code", CODE);
         return BASE_PATH + "userGroup_classification.html";
@@ -139,11 +139,13 @@ public class UserGroupController extends BaseController {
     @ResponseBody
     @RequestMapping("/classification_save")
     public AjaxResult classification_save(String vals) {
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         String[] ss = JsonKit.parse(vals,String[].class);
         boolean index = true;
         for(String s : ss){
             Classification classification = new Classification();
             classification.setClassification(s);
+            classification.setGroupId(group.getId());
             boolean temp = classificationService.save(classification);
             if(!temp){
                 index = false;
@@ -208,7 +210,8 @@ public class UserGroupController extends BaseController {
      */
     @RequestMapping("/tag")
     public String tag(ModelMap mm) {
-        List<Tag> list = tagService.findAll();
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        List<Tag> list = tagService.findBy("group_id=#{groupId}",Record.create().set("groupId",group.getId()));
         mm.put("tagList", JsonKit.toJson(list));
         mm.put("code", CODE);
         return BASE_PATH + "userGroup_tag.html";
@@ -217,11 +220,13 @@ public class UserGroupController extends BaseController {
     @ResponseBody
     @RequestMapping("/tag_save")
     public AjaxResult tag_save(String vals) {
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         String[] ss = JsonKit.parse(vals,String[].class);
         boolean index = true;
         for(String s : ss){
             Tag tag = new Tag();
             tag.setTag(s);
+            tag.setGroupId(group.getId());
             boolean temp = tagService.save(tag);
             if(!temp){
                 index = false;

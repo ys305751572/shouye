@@ -138,7 +138,17 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         group.setIsOpen3(groupVo.getIsOpen3());
 
         group.setCreateTime(DateTimeKit.nowLong());
-        group.setAuditStatus(1); //新增组织为待审核状态
+        group.setAuditStatus(1);        //新增组织为待审核状态
+        group.setPermissionsType(1);    //权限类型: 1:公开组织 2:隐藏组织
+        group.setIsJoin(1);             //能否申请加入: 1:开放 2:关闭
+        group.setIsIntroduce(1);        //是否允许引荐: 1:允许 2:拒绝
+        group.setSexLimit(0);           //性别限制
+        group.setIndustryLimit(0);      //行业限制
+        group.setDomainLimit(0);        //领域限制
+        group.setProvinceLimit(0);      //省限制
+        group.setCity(0);               //市限制
+        group.setProfessionalLimit(0);  //职业限制
+        group.setZyLimit(0);            //专业限制
         return this.saveRtId(group);
     }
 

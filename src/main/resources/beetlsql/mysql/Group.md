@@ -23,7 +23,7 @@ FROM (SELECT * FROM tb_group WHERE audit_status = '3') tg
     LEFT JOIN (select num,name from tfw_dict where code=908) tfd ON tg.type = tfd.num
     LEFT JOIN tfw_user cUser ON tge.create_admin_id = cUser.ID
     LEFT JOIN tfw_user aUser ON tge.approval_admin_id = aUser.ID
-
+ORDER BY tg.id DESC
 
 audit
 ===
@@ -44,6 +44,7 @@ FROM tb_group tg
   LEFT JOIN (SELECT num, name FROM tfw_dict WHERE CODE = 911) tfd ON tg.audit_status = tfd.num
   LEFT JOIN tfw_user cUser ON tge.create_admin_id = cUser.ID
   LEFT JOIN tfw_user aUser ON tge.approval_admin_id = aUser.ID
+ORDER BY tg.id DESC
 
 load
 ===

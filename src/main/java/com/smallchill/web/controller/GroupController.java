@@ -397,7 +397,7 @@ public class GroupController extends BaseController {
             user.setPassword(pwdMd5);
             user.setSalt(salt);
             user.setAccount(groupVo.getArtificialPersonMobile());
-            user.setName(groupVo.getArtificialPersonName());
+            user.setName(groupVo.getName());
             user.setBirthday(new Date());
             user.setSex(1);
             user.setPhone(groupVo.getArtificialPersonMobile());
@@ -405,8 +405,7 @@ public class GroupController extends BaseController {
             user.setVersion(1);
             //设置角色为组织管理员(暂时为设置组织管理员)
             user.setRoleid("2");
-            //设置管理员为待审核(待审组织通过设置为1)
-            user.setStatus(0);
+            user.setStatus(1);
             user.setCreatetime(new Date());
             Blade.create(User.class).save(user);
 

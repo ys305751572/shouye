@@ -7,7 +7,7 @@
     var hidden = 1;
     $(function(){
         initGrid();
-        initMenuBtn("btns","${code}");
+        initMenuBtn("btns","${code}");_container
     });
 
     function initGrid(){
@@ -37,7 +37,11 @@
         ];
         var _colmodel=[
             {name:"id",index:"id", width:80,hidden:true},
-            {name:"avater",index:"avater", width:120},
+            {name:"avater",index:"avater", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    return "<img src='"+cellvalue+"' width='100' height='100'>"
+                }
+            },
             {name:"idcard",index:"idcard", width:220},
             {name:"gName",index:"gName", width:120},
             {name:"gType",index:"gType", width:100},
@@ -118,7 +122,7 @@
             colModel:_colmodel,
             jsonReader:{id:"id"},
             pager : pager_selector,
-            postData: {sort: "id", order: "asc"}
+            postData: {sort: "id", order: "desc"}
         });
 
     }

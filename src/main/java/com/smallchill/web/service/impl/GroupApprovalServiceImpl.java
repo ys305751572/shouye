@@ -194,7 +194,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             userGroup.setGroupId(groupApproval.getGroupId());
             userGroup.setUserId(groupApproval.getUserId());
             if(groupExtend!=null){
-                if(groupExtend.getCostStatus()==1){
+                if(groupExtend.getCostStatus()!=null && groupExtend.getCostStatus()==1){
                     Calendar calendar = Calendar.getInstance();
                     Date date = new Date(System.currentTimeMillis());
                     calendar.setTime(date);

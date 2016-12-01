@@ -19,4 +19,5 @@ FROM
   LEFT JOIN tb_group tg ON tg.id = tor.group_id
   LEFT JOIN tb_user_info tui ON tui.user_id = tor.user_id
 WHERE tor.order_type = '1' OR tor.order_type = '2'
+ORDER BY tor.id DESC
 

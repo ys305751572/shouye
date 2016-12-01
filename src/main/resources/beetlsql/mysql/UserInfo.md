@@ -51,6 +51,7 @@ FROM tb_user_info tui
   LEFT JOIN tb_userinfo_professional tup ON tui.user_id = tup.user_id
   LEFT JOIN (SELECT id,num,name FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id = tfd.id
 GROUP BY tui.user_id
+ORDER BY tui.user_id DESC
 
 listPage
 ====

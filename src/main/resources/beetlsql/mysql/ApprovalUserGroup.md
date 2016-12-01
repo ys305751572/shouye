@@ -31,4 +31,5 @@ FROM tb_approval_user_group tua
 LEFT JOIN tb_user_group tug ON tua.group_id = tug.group_id AND tua.from_user_id = tug.user_id
 LEFT JOIN tb_group tg ON tua.group_id = tg.id
 LEFT JOIN tb_user_info tui ON tui.user_id = tua.from_user_id
+ORDER BY tua.id DESC
 

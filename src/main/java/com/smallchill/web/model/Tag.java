@@ -19,6 +19,9 @@ public class Tag extends BaseModel {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "group_id")
+    private Integer groupId;
+
     @Column(name = "tag")
     private String tag;
 
@@ -28,6 +31,14 @@ public class Tag extends BaseModel {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 
     public String getTag() {

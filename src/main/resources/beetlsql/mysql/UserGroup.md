@@ -33,6 +33,7 @@ SELECT
 FROM tb_user_group tug
   LEFT JOIN tb_group tg ON tug.group_id = tg.id
   LEFT JOIN tb_user_info tui ON tui.user_id = tug.user_id
-  LEFT JOIN (SELECT a.user_id userId, b.classification classification FROM tb_user_classification a LEFT JOIN tb_classification b ON a.classification_id = b.id) tuc ON tug.user_id = tuc.userId
-  LEFT JOIN (SELECT a.user_id userId, b.tag tag FROM tb_user_tag a LEFT JOIN tb_tag b ON a.tag_id = b.id) tut ON tug.user_id = tut.userId
+  LEFT JOIN (SELECT a.user_id userId, b.classification classification ,b.group_id groupId FROM tb_user_classification a LEFT JOIN tb_classification b ON a.classification_id = b.id) tuc ON tug.user_id = tuc.userId AND tug.group_id = tuc.groupId
+  LEFT JOIN (SELECT a.user_id userId, b.tag tag, b.group_id groupId FROM tb_user_tag a LEFT JOIN tb_tag b ON a.tag_id = b.id) tut ON tug.user_id = tut.userId AND tug.group_id = tut.groupId
 GROUP BY tug.id
+ORDER BY tug.id DESC

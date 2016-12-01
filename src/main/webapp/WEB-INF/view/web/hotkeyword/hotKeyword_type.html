@@ -1,0 +1,62 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form class="form-horizontal" role="form">
+    <div class="space-4"></div>
+    <!-- #section:elements.form -->
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 使用类型 </label>
+        <div class="col-sm-8">
+            <label><input type="radio" name="keywordType" class="rdo" value="1">设置热门关键字</label>
+            <label><input type="radio" name="keywordType" class="rdo" value="2">默认热门关键字</label>
+        </div>
+    </div>
+    <div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+        <div class="col-md-offset-1 col-md-10">
+            <button class="btn btn-info" type="button" id="btn_save">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                设置
+            </button>
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn" type="button" id="btn_close">
+                <i class="ace-icon fa fa-close bigger-110"></i>
+                关闭
+            </button>
+        </div>
+    </div>
+
+    <script src="${basePath}/static/laydate/laydate.js"></script>
+    <script type="text/javascript">
+
+        var layerIndex = parent.layer.getFrameIndex(window.name);
+        $(function(){
+
+            $("#btn_close").bind("click",function(){
+                parent.layer.close(layerIndex);
+            });
+
+            $("#btn_save").bind("click",function(){
+                var keywordType = $("input[name='keywordType']:checked").val();
+                $.post(
+                    "${basePath}/${code}/setRelease",
+                    {
+                        type:keywordType
+                    },
+                    function(data){
+                        if(data.code===0){
+                            parent.$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+                            parent.layer.close(layerIndex);
+                        }
+                        else{
+                            layer_alert(data.message, "error");
+                        }
+                    },
+                    "json"
+                );
+
+            });
+
+        })
+    </script>
+    <div class="space-4"></div>
+</form>
+@}

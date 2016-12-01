@@ -1,0 +1,65 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+<form class="form-horizontal" role="form">
+    <div class="space-4"></div>
+    <!-- #section:elements.form -->
+    <input type="hidden" id="id" value="${hotKeyword.id}">
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 关键字 </label>
+        <div class="col-sm-8">
+            <input type="text" name="name" id="name" placeholder="" class="form-control" value="${hotKeyword.name}"/>
+        </div>
+    </div>
+
+    <div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
+        <div class="col-md-offset-1 col-md-10">
+            <button class="btn btn-info" type="button" id="btn_save">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                设置
+            </button>
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn" type="button" id="btn_close">
+                <i class="ace-icon fa fa-close bigger-110"></i>
+                关闭
+            </button>
+        </div>
+    </div>
+
+    <script src="${basePath}/static/laydate/laydate.js"></script>
+    <script type="text/javascript">
+
+        var layerIndex = parent.layer.getFrameIndex(window.name);
+        $(function(){
+
+            $("#btn_close").bind("click",function(){
+                parent.layer.close(layerIndex);
+            });
+
+            $("#btn_save").bind("click",function(){
+                var name = $("#name").val();
+                var id = $("#id").val();
+                $.post(
+                    "${basePath}/${code}/save",
+                    {
+                        id:id,
+                        name:name
+                    },
+                    function(data){
+                        if(data.code===0){
+                            parent.$jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+                            parent.layer.close(layerIndex);
+                        }
+                        else{
+                            layer_alert("设置失败", "error");
+                        }
+                    },
+                    "json"
+                );
+
+            });
+
+        })
+    </script>
+    <div class="space-4"></div>
+</form>
+@}

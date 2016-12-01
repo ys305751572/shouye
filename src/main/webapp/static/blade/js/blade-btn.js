@@ -70,6 +70,12 @@ var exwhere;
         console.log(ids);
         console.log(rowData);
 
+        //关键字发布类型
+        if (this.alias == "release" ) {
+            this.open(this.url);
+            return;
+        }
+
         //组织会员邀请加入
         if (this.alias == "invitation" ) {
             this.open(this.url);
