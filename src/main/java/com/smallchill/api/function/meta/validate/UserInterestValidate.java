@@ -8,10 +8,11 @@ import com.smallchill.core.intercept.ApiValidator;
  * 用户-感兴趣参数验证
  * Created by yesong on 2016/11/11 0011.
  */
-public class UserInterestValidate extends ApiValidator{
+public class UserInterestValidate extends ApiValidator {
     @Override
     protected void doValidate(Invocation inv) {
         validateRequired("userId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
         validateRequired("toUserIds", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
+        validateContain("userId", "toUserIds", ",", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
     }
 }

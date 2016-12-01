@@ -10,6 +10,15 @@ public class Button implements Serializable{
 
     private String name;
     private Integer type;
+    private Integer isAllowClick = 1; // 是否可点击 1:可点击 2:不可点击
+
+    public Integer getIsAllowClick() {
+        return isAllowClick;
+    }
+
+    public void setIsAllowClick(Integer isAllowClick) {
+        this.isAllowClick = isAllowClick;
+    }
 
     public String getName() {
         return name;

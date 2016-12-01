@@ -23,7 +23,7 @@ public class UserApiIntercept extends ApiQueryIntercept {
         setParma("groupId", ac);
         setParma("history", ac);
         setParma("domain", ac);
-        ac.setCondition(" and userId IS NOT NULL");
+        ac.setCondition(" and userId IS NOT NULL ");
     }
 
     @Override

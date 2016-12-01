@@ -30,7 +30,8 @@ import java.util.*;
  * 2016-10-27 11:45:35
  */
 @Service
-public class GroupApprovalServiceImpl extends BaseService<GroupApproval> implements GroupApprovalService {
+public class GroupApprovalServiceImpl extends BaseService<GroupApproval> implements
+        GroupApprovalService {
 
     @Autowired
     private GroupService groupService;
@@ -51,8 +52,9 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
      * @param ga 申请信息
      * @return 结果
      */
-    public boolean isApprival(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException {
-        String sql = "select status from tb_group_approval where group_id = #{groupId} and user_id = #{userId}";
+    public boolean isApprival(GroupApproval ga) throws UserHasApprovalException,
+            UserHasJoinGroupException, UserInOthersBlankException {
+        String sql = "select status from tb_group_approval where group_id = #{groupId} and  user_id = #{userId}";
         Record record = Record.create();
         record.put("groupId", ga.getGroupId());
         record.put("userId", ga.getUserId());
@@ -76,21 +78,22 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     /**
      * 用户是否满足加入组织
-     * @param userId 当前用户id
+     *
+     * @param userId  当前用户id
      * @param groupId 组织ID
      */
     @Override
     public boolean isMeetConditions(Integer userId, Integer groupId) {
         Group group = groupService.findById(groupId);
         UserInfo userInfo = userInfoService.findByUserId(userId);
-        int gender = group.getSexLimit();
+        int gender = (group.getSexLimit() == null ? 0 : group.getSexLimit());
         if (gender != 0 && gender != userInfo.getGender()) return false;
-        int province = group.getProvinceLimit();
+        int province = (group.getProvinceLimit() == null ? 0 : group.getProvinceLimit());
         if (province != 0 && province != userInfo.getProvinceId()) return false;
-        int city = group.getCityLimit();
+        int city = (group.getCityLimit() == null ? 0 : group.getCityLimit());
         if (city != 0 && city != userInfo.getCityId()) return false;
-        int industryLimit = group.getIndustryLimit();
-        int domainLimit = group.getDomainLimit();
+        int industryLimit = group.getIndustryLimit() == null ? 0 : group.getIndustryLimit();
+        int domainLimit = group.getDomainLimit() == null ? 0 : group.getDomainLimit();
         // 查询是否有符合的行业领域
         if (industryLimit != 0 || domainLimit != 0) {
             StringBuffer domainSql = new StringBuffer("select count(id) as counts from tb_userinfo_domain where 1 = 1");
@@ -101,13 +104,15 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             if (domainLimit != 0) {
                 domainSql.append(" and domain_id = #{domainLimit}");
             }
-            Record domainRecord = Db.init().selectOne(domainSql.toString(), Record.create().set("userId", userId)
+            Record domainRecord = Db.init().selectOne(domainSql.toString(), Record.create
+                    ().set("userId", userId)
                     .set("industryLimit", industryLimit).set("domainLimit", domainLimit));
             if (domainRecord.getInt("counts") <= 0) return false;
         }
 
-        int professionalLimit = group.getProfessionalLimit();
-        int zyLimit = group.getZyLimit();
+        int professionalLimit = (group.getProfessionalLimit() == null ? 0 :
+                group.getProfessionalLimit());
+        int zyLimit = (group.getZyLimit() == null ? 0 : group.getZyLimit());
         if (professionalLimit != 0 || zyLimit != 0) {
             // 查询是否有符合的专业
             StringBuffer proSql = new StringBuffer("select count(id) as counts from tb_userinfo_professional where 1 = 1");
@@ -119,7 +124,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
                 proSql.append(" and pro_id = #{zyLimit}");
             }
 
-            Record proRecord = Db.init().selectOne(proSql.toString(), Record.create().set("userId", userId)
+            Record proRecord = Db.init().selectOne(proSql.toString(), Record.create().set
+                    ("userId", userId)
                     .set("professionalLimit", professionalLimit).set("zyLimit", zyLimit));
             if (proRecord.getInt("counts") <= 0) return false;
         }
@@ -128,7 +134,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
 
     @Override
-    public void join(GroupApproval ga) throws UserInOthersBlankException, UserHasApprovalException, UserHasJoinGroupException {
+    public void join(GroupApproval ga) throws UserInOthersBlankException,
+            UserHasApprovalException, UserHasJoinGroupException {
         // 是否已经发送申请
         if (!isApprival(ga)) {
             ga.setCreateTime(DateTimeKit.nowLong());
@@ -185,16 +192,17 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     @Transactional
     public void updateStatus(Integer id, Integer status) {
         GroupApproval groupApproval = this.findById(id);
-        if(status==2){
+        if (status == 2) {
             //批准通过的时间
             groupApproval.setThroughTime(DateTimeKit.nowLong());
             //新增一条会员组织关系
-            GroupExtend groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",groupApproval.getGroupId()));
+            GroupExtend groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",
+                    Record.create().set("groupId", groupApproval.getGroupId()));
             UserGroup userGroup = new UserGroup();
             userGroup.setGroupId(groupApproval.getGroupId());
             userGroup.setUserId(groupApproval.getUserId());
-            if(groupExtend!=null){
-                if(groupExtend.getCostStatus()!=null && groupExtend.getCostStatus()==1){
+            if (groupExtend != null) {
+                if (groupExtend.getCostStatus() == 1) {
                     Calendar calendar = Calendar.getInstance();
                     Date date = new Date(System.currentTimeMillis());
                     calendar.setTime(date);
@@ -202,7 +210,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
                     date = calendar.getTime();
                     Long time = date.getTime();
                     userGroup.setVipEndTime(time);
-                }else {
+                } else {
                     userGroup.setVipEndTime(-1L);
                 }
             }
@@ -211,13 +219,16 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             userGroup.setType(1);   //主动加入
             userGroupService.save(userGroup);
             //发现消息
-            messageService.sendMsgForUserAuditAgree(groupApproval.getGroupId(),groupApproval.getUserId());
+            messageService.sendMsgForUserAuditAgree(groupApproval.getGroupId(),
+                    groupApproval.getUserId());
 
-        }else if(status==3){
+        } else if (status == 3) {
             //第三个参数为订单号(暂时没有)
-            messageService.sendMsgForUserAuditRefuse(groupApproval.getGroupId(),groupApproval.getUserId(),null);
-        }else if(status==4){
-            messageService.sendMsgForUserAuditBlank(groupApproval.getGroupId(),groupApproval.getUserId(),null);
+            messageService.sendMsgForUserAuditRefuse(groupApproval.getGroupId(),
+                    groupApproval.getUserId(), null);
+        } else if (status == 4) {
+            messageService.sendMsgForUserAuditBlank(groupApproval.getGroupId(),
+                    groupApproval.getUserId(), null);
         }
 
         groupApproval.setStatus(status);
@@ -226,22 +237,27 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Override
     @Transactional
-    public void permissionSetting(Group group, Integer permissionsType, Integer isJoin,Integer isIntroduce, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer zyLimit) {
+    public void permissionSetting(Group group, Integer permissionsType, Integer isJoin, Integer
+            isIntroduce, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer
+                                          domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer
+                                          zyLimit) {
         GroupExtend groupExtend = null;
         List<UserGroup> userGroups = null;
         if (group.getId() != null) {
-            groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}", Record.create().set("groupId", group.getId()));
-            userGroups = userGroupService.findBy("group_id = #{groupId}", Record.create().set("groupId", group.getId()));
+            groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",
+                    Record.create().set("groupId", group.getId()));
+            userGroups = userGroupService.findBy("group_id = #{groupId}", Record.create().set
+                    ("groupId", group.getId()));
 
         }
 
         if (groupExtend != null) {
 
-            if(!Objects.equals(costType, groupExtend.getCostType())){
+            if (!Objects.equals(costType, groupExtend.getCostType())) {
                 //改变了收费模式
-                if(costType==1){
+                if (costType == 1) {
                     //年费
-                    for(UserGroup userGroup : userGroups){
+                    for (UserGroup userGroup : userGroups) {
                         Calendar calendar = Calendar.getInstance();
                         Date date = new Date(System.currentTimeMillis());
                         calendar.setTime(date);
@@ -251,9 +267,9 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
                         userGroup.setVipEndTime(time);
                         userGroupService.update(userGroup);
                     }
-                }else {
+                } else {
                     //永久
-                    for(UserGroup userGroup : userGroups){
+                    for (UserGroup userGroup : userGroups) {
                         userGroup.setVipEndTime(-1L);
                         userGroupService.update(userGroup);
                     }
@@ -289,8 +305,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Override
     public GroupApprovalVo gaInfo(Integer groupId) {
-        String sql = "SELECT g.id, g.`targat`, ge.`cost`,ge.`cost_status`, ge.`cost_type` FROM  tb_group g LEFT JOIN tb_group_extend ge " +
-                                    "ON g.`id` = ge.`group_id` WHERE g.`id` = #{groupId}";
+        String sql = "SELECT g.id, g.`targat`, ge.`cost`,ge.`cost_status`, ge.`cost_type` FROM tb_group g LEFT JOIN tb_group_extend ge " +
+                "ON g.`id` = ge.`group_id` WHERE g.`id` = #{groupId}";
         Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId));
         String target = record.getStr("targat");
         BigDecimal cost = record.get("cost") == null ? BigDecimal.valueOf(0) :
@@ -331,7 +347,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     @Transactional
     @Override
     public void userAuditGroupAgree(Integer groupId, Integer userId) {
-        GroupApproval groupApproval = this.findFirstBy("group_id = #{groupId} and user_id = #{userId}", Record.create().set("groupId", groupId).set("userId", userId));
+        GroupApproval groupApproval = this.findFirstBy("group_id = #{groupId} and user_id = # {userId}", Record.create().set("groupId", groupId).set("userId", userId));
         groupApproval.setStatus(2);
         groupApproval.setThroughTime(DateTimeKit.nowLong());
         this.update(groupApproval);
@@ -347,7 +363,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Override
     public void userAuditGroupRefuse(Integer groupId, Integer userId) {
-        GroupApproval groupApproval = this.findFirstBy("group_id = #{groupId} and user_id = #{userId}", Record.create().set("groupId", groupId).set("userId", userId));
+        GroupApproval groupApproval = this.findFirstBy("group_id = #{groupId} and user_id = # {userId}", Record.create().set("groupId", groupId).set("userId", userId));
         groupApproval.setStatus(3);
         groupApproval.setThroughTime(DateTimeKit.nowLong());
         this.update(groupApproval);

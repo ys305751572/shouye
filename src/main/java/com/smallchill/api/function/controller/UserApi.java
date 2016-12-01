@@ -95,7 +95,8 @@ public class UserApi extends BaseController implements ConstCache {
         JqGrid jqGrid;
         try {
             jqGrid = apiPaginate(LIST_SOURCE
-                    , new UserApiIntercept().addRecord(Record.create().set("userId", this.getRequest().getParameter("userId"))
+                    , new UserApiIntercept().addRecord(Record.create().set("userId",
+                            this.getRequest().getParameter("userId"))
                             .set("groupId", this.getRequest().getParameter("groupId"))
                             .set("history", this.getRequest().getParameter("history"))
                             .set("domain", this.getRequest().getParameter("domain"))),
@@ -147,13 +148,16 @@ public class UserApi extends BaseController implements ConstCache {
     @Before(GroupPageValidator.class)
     public String info(Integer userId) {
         Record record;
+        UserVo userVo;
         try {
             record = userInfoService.findUserInfoDetail(userId);
+            userVo = Convert.recordToVo(record);
+            userVo.setUserExtendVo(userInfoService.findUserExtendVo(record));
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
         }
-        return success(record, "userInfo");
+        return success(userVo);
     }
 
     /**
@@ -171,7 +175,7 @@ public class UserApi extends BaseController implements ConstCache {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return success(userVo);
+        return success(userVo,"userinfo");
     }
 
     /**

@@ -43,14 +43,14 @@ public class ApprovalApi extends BaseController {
     @RequestMapping(value = "/introduce")
     @ResponseBody
     @Before(UserApprovalValidate.class)
-    public String introduce(UserApproval ua, String toUserIds) {
+    public String introduce(UserApproval ua, String toUserId, String validateInfo2) {
         try {
             if (ua.getGroupId() != null) {
                 userApprovalService.toGroup(ua);
             } else if (ua.getIntroduceUserId() != null) {
-                userApprovalService.toUserTwoWay(ua);
+                userApprovalService.toUserTwoWay(ua, validateInfo2);
             } else {
-                userApprovalService.toUserOneWay(ua, toUserIds);
+                userApprovalService.toUserOneWay(ua, toUserId);
             }
         } catch (UserInOthersBlankException e) {
             return fail(ErrorType.ERROR_CODE_APP_USERINBLANK);

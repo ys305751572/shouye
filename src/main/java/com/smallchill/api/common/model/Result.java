@@ -104,8 +104,14 @@ public class Result {
             result.data.put("page", pagemap);
             result.data.put("list", list);
         } else if (data instanceof BaseVo) {
-            String objName = data.getClass().getSimpleName().toLowerCase();
-            result.data.put(objName, data);
+            String key;
+            if(name.length == 0 || StringUtils.isBlank(name[0])) {
+                key = data.getClass().getSimpleName().toLowerCase();
+            }
+            else {
+                key = name[0];
+            }
+            result.data.put(key, data);
         }
         else {
             String key = "object";

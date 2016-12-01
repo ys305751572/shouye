@@ -1,9 +1,11 @@
 package com.smallchill.api.function.meta.other;
 
+import com.smallchill.api.function.meta.consts.ButtonConst;
 import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.UserInterest;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.web.model.Aug;
 import com.smallchill.web.model.UserApproval;
 
 import java.util.ArrayList;
@@ -13,32 +15,29 @@ import java.util.List;
  * 按钮注册管理器
  * Created by yesong on 2016/11/14 0014.
  */
-public class ButtonRegister {
+public class ButtonRegister implements ButtonConst {
 
     private List<Button> list = new ArrayList<>();
 
     private UserApproval ua;
     private UserInterest ui;
+    private Aug aug;
+    private boolean isSameGroup;
 
     private Integer currentUserId;
     private Integer toUserId;
 
-    private int applyFriend_type = 1001;         // 申请好友
-    private int applyAcquaintances_type = 1002;  // 申请熟人
-    private int insterest_type = 1003;           // 感兴趣
-    private int intersection_type = 1004;             // 查看交集
-    private int queryUserAcquaintances_type = 1005;   // 查看对方熟人
-    private int recommendFriend_type = 1006;          // 推荐朋友
-
-    private ButtonRegister(Integer currentUserId, Integer toUserId, UserApproval ua, UserInterest ui) {
+    private ButtonRegister(Integer currentUserId, Integer toUserId, UserApproval ua, UserInterest ui, Aug aug, boolean isSameGroup) {
         this.currentUserId = currentUserId;
         this.toUserId = toUserId;
         this.ua = ua;
         this.ui = ui;
+        this.aug = aug;
+        this.isSameGroup = isSameGroup;
     }
 
-    public static ButtonRegister create(Integer currentUserId, Integer toUserId, UserApproval ua, UserInterest ui) {
-        return new ButtonRegister(currentUserId, toUserId, ua, ui);
+    public static ButtonRegister create(Integer currentUserId, Integer toUserId, UserApproval ua, UserInterest ui, Aug aug, boolean isSameGroup) {
+        return new ButtonRegister(currentUserId, toUserId, ua, ui, aug, isSameGroup);
     }
 
     /**
@@ -53,7 +52,53 @@ public class ButtonRegister {
         intersection();
         queryUserAcquaintances();
         recommendFriend();
+        applyWaiting();
+        applyRefuse();
+        applyGroupWaiting();
         return getList();
+    }
+
+    /**
+     * 审核拒绝
+     */
+    private ButtonRegister applyRefuse() {
+        if (ua != null && ua.getStatus() == 3) {
+            Button button = new Button();
+            button.setType(apply_refuse);
+            button.setIsAllowClick(UNALLOW_CLICK);
+            button.setName("审核不通过");
+            this.list.add(button);
+        }
+        return this;
+    }
+
+    /**
+     * 等待用户审核
+     */
+    private ButtonRegister applyWaiting() {
+        if (isUserApplying()) {
+            Button button = new Button();
+            button.setType(apply_waiting);
+            button.setIsAllowClick(UNALLOW_CLICK);
+            button.setName("等待对方审核");
+            this.list.add(button);
+        }
+        return this;
+    }
+
+    /**
+     * 等待组织审核
+     * @return
+     */
+    private ButtonRegister applyGroupWaiting() {
+        if (isGroupApplying()) {
+            Button button = new Button();
+            button.setType(apply_group_waiting);
+            button.setIsAllowClick(UNALLOW_CLICK);
+            button.setName("等待组织引荐审核");
+            this.list.add(button);
+        }
+        return this;
     }
 
     /**
@@ -73,7 +118,7 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister applyFriend() {
-        if (isStranger() && isInSameGroup()) {
+        if (isStranger() && isInSameGroup() && !isUserApplying() && !isGroupApplying() && isSameGroup) {
             Button button = new Button();
             button.setName("申请结识");
             button.setType(applyFriend_type);
@@ -88,7 +133,7 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister applyAcquaintances() {
-        if (isFriend()) {
+        if (isFriend() && !isFreindWaiting()) {
             Button button = new Button();
             button.setName("结为熟人");
             button.setType(applyAcquaintances_type);
@@ -103,7 +148,7 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister insterest() {
-        if (isStranger() && !isInterest()) {
+        if (isStranger() && !isInterest() && !isFriend()) {
             Button button = new Button();
             button.setName("感兴趣");
             button.setType(insterest_type);
@@ -118,7 +163,7 @@ public class ButtonRegister {
      * @return ButtonRegister
      */
     public ButtonRegister intersection() {
-        if (isStranger()) {
+        if (isStranger() && !isFriend()) {
             Button button = new Button();
             button.setName("查看交集");
             button.setType(intersection_type);
@@ -177,7 +222,25 @@ public class ButtonRegister {
      * @return boolean
      */
     public boolean isStranger() {
-        return ua == null || ua.getStatus() == 2 || ua.getStatus() == 4;
+        return ua == null || ua.getStatus() == 5 || ua.getStatus() == 1;
+    }
+
+    /**
+     * 是否等待组织审核
+     *
+     * @return boolean
+     */
+    public boolean isGroupApplying() {
+        return aug != null && aug.getStatus() == 1;
+    }
+
+    /**
+     * 是否正在审核
+     *
+     * @return
+     */
+    public boolean isUserApplying() {
+        return ua != null && ua.getStatus() == 1;
     }
 
     /**
@@ -186,7 +249,11 @@ public class ButtonRegister {
      * @return boolean
      */
     public boolean isFriend() {
-        return ua != null && ua.getStatus() == 1 && ua.getType() == 1;
+        return (ua != null && ua.getStatus() == 2 && ua.getType() == 1) || (ua != null && ua.getType() == 2);
+    }
+
+    public boolean isFreindWaiting() {
+        return ua != null && ua.getType() == 2 && ua.getStatus() == 1;
     }
 
     /**
@@ -241,5 +308,25 @@ public class ButtonRegister {
 
     public void setToUserId(Integer toUserId) {
         this.toUserId = toUserId;
+    }
+
+    public void setList(List<Button> list) {
+        this.list = list;
+    }
+
+    public Aug getAug() {
+        return aug;
+    }
+
+    public void setAug(Aug aug) {
+        this.aug = aug;
+    }
+
+    public boolean isSameGroup() {
+        return isSameGroup;
+    }
+
+    public void setSameGroup(boolean sameGroup) {
+        isSameGroup = sameGroup;
     }
 }

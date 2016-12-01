@@ -6,6 +6,7 @@ import com.smallchill.api.function.meta.other.ButtonRegister;
 import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.modal.*;
 import com.smallchill.api.function.modal.vo.IntroduceUserVo;
+import com.smallchill.api.function.modal.vo.UserExtendVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.*;
 import com.smallchill.core.base.service.BaseService;
@@ -18,10 +19,13 @@ import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.NetKit;
 import com.smallchill.platform.model.UserLogin;
 import com.smallchill.platform.service.UserLoginService;
+import com.smallchill.web.model.Aug;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.model.UserinfoCareer;
+import com.smallchill.web.service.AugService;
 import com.smallchill.web.service.UserApprovalService;
+import com.smallchill.web.service.UserGroupService;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +64,9 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Autowired
     private UserFriendGroupingService userFriendGroupingService;
+
+    @Autowired
+    private UserGroupService userGroupService;
     @Autowired
     private UfgmService ufgmService;
     @Autowired
@@ -67,6 +74,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Autowired
     private UserCareerService userCareerService;
+    @Autowired
+    private AugService augService;
 
     @Transactional
     @Override
@@ -150,6 +159,21 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     public UserVo findUserinfo(Integer userId) {
         Record record = this.findUserInfoDetail(userId);
         UserVo userVo = Convert.recordToVo(record);
+        userVo.setAgeId(record.getInt("age_interval_id"));
+        userVo.setAge(record.getStr("age"));
+        userVo.setGender(record.getInt("gender"));
+        userVo.setProvince(record.getInt("province"));
+        userVo.setCity(record.getInt("city"));
+        userVo.setOrgIsOpen(record.getInt("org_is_open"));
+        userVo.setOrgType(record.getInt("org_type"));
+        userVo.setProductType(record.getInt("product_type"));
+        userVo.setProductServiceName(record.getStr("product_service_name"));
+        userVo.setZy(record.getStr("zy"));
+        userVo.setZy2(record.getStr("zy2"));
+        userVo.setSc(record.getStr("sc"));
+        userVo.setZl(record.getStr("zl"));
+        userVo.setIndustryRanking(record.getStr("industry_ranking"));
+        userVo.setQualification(record.getStr("qualification"));
         // 查询用户事业状态
         // 查询用户专业
         // 查询用户行业领域
@@ -173,7 +197,12 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         UserVo vo = Convert.recordToVo(record);
         UserApproval ua = userApprovalService.getUserByFromUserIdAndToUserIdApprovalOfOneWay(userId, toUserId);
         UserInterest ui = userInterestService.getByUserId(userId, toUserId);
-        List<Button> list = ButtonRegister.create(userId, toUserId, ua, ui).addBtns();
+        Aug aug = augService.findFirstBy("from_user_id = #{userId} and to_user_id = #{toUserId}",
+                Record.create().set("userId", userId).set("toUserId", toUserId));
+        int count = userGroupService.count("user_id = #{userId} and group_id = #{groupId}",
+                Record.create().set("userId", userId).set("groupId", groupId));
+
+        List<Button> list = ButtonRegister.create(userId, toUserId, ua, ui, aug, count > 0).addBtns();
         List<String> sameKeyList = new ArrayList<>();
         vo.setBtnList(list);
         vo.setSameKeyList(sameKeyList);
@@ -198,6 +227,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         if (groupId != null) {
             saveGroupUserRecord(userId, toUserId, groupId);
         }
+
+        vo.setUserExtendVo(findUserExtendVo(record));
         return vo;
     }
 
@@ -227,6 +258,42 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         String sql = "select username from user_info where user_id = #{userId}";
         UserInfo userInfo = this.findFirst(sql, Record.create().set("userId", userId));
         return userInfo.getUsername();
+    }
+
+    /**
+     * @param record
+     * @return UserExtendVo
+     */
+    @Override
+    public UserExtendVo findUserExtendVo(Record record) {
+        UserExtendVo userExtendVo = new UserExtendVo();
+        StringBuffer userDesc = new StringBuffer();
+        userDesc.append(record.getInt("gender") == 1 ? "男" : "女");
+        userDesc.append("<br>");
+        userDesc.append(record.getStr("age"));
+        userDesc.append("<br>");
+        userDesc.append(StringUtils.isNotBlank(record.getStr("professional")) ? record.getStr("professional").replace("/", "+") : "");
+        userDesc.append("<br>");
+        userDesc.append("[专业]").append(record.getStr("zy"));
+        userDesc.append("<br>");
+        userDesc.append("[擅长]").append(record.getStr("sc"));
+        userDesc.append("<br>");
+        userDesc.append("[资历]").append(record.getStr("zl"));
+        userDesc.append("<br>");
+        userDesc.append("[资源]").append(record.getStr("zy2"));
+        userDesc.append("<br><hr>");
+        userDesc.append("个人介绍");
+        userDesc.append("<br>");
+        userDesc.append(record.getStr("desc"));
+        userExtendVo.setDesc(userDesc.toString());
+
+        String orgTypeName = record.getStr("orgTypeName");
+        String org = record.getStr("organization");
+        userExtendVo.setOrg(new StringBuffer().append("(").append(orgTypeName)
+                .append(")").append(org).toString());
+        userExtendVo.setCareer(StringUtils.isNotBlank(record.getStr("career")) ? record.getStr("career").replace("|", "+") : "");
+        userExtendVo.setSchool(StringUtils.isNotBlank(record.getStr("school")) ? record.getStr("school").replace("|", "<br>") : "");
+        return userExtendVo;
     }
 
 
@@ -674,7 +741,9 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         List<Record> recordList = Db.init().selectList(sql, Record.create().set("userId", userId).set("text", text));
         List<UserVo> userVos = new ArrayList<>();
         for (Record record : recordList) {
-            userVos.add(Convert.recordToVo(record));
+            UserVo userVo = Convert.recordToVo(record);
+            userVo.setSameKeyList(Convert.labelToSameKeyList(record.getStr("label")));
+            userVos.add(userVo);
         }
         return userVos;
     }

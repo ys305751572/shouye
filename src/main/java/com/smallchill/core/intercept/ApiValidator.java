@@ -9,6 +9,7 @@ import com.smallchill.core.toolbox.kit.DateKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.core.toolbox.kit.LogKit;
 import com.smallchill.core.toolbox.kit.StrKit;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
@@ -124,6 +125,30 @@ public abstract class ApiValidator extends ApiInterceptor {
         String value = request.getParameter(field);
         if (value == null || "".equals(value)) // 经测试,form表单域无输入时值为"",跳格键值为"\t",输入空格则为空格" "
             addError(errorType);
+    }
+
+    /**
+     * 判断是否包含
+     * @param field1
+     * @param field2
+     * @param errorType
+     */
+    protected void validateContain(String field1, String field2, String splitType, ErrorType errorType) {
+        String value1 = request.getParameter(field1);
+        String value2 = request.getParameter(field2);
+        boolean flag = false;
+        if (StringUtils.isNotBlank(value2)) {
+            String[] v2s = value2.split(splitType);
+            for (String v2 : v2s) {
+                if (StringUtils.isNotBlank(v2) && v2.equals(value1)) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) {
+                addError(errorType);
+            }
+        }
     }
 
     /**

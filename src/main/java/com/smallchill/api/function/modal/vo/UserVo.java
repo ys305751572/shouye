@@ -19,9 +19,13 @@ public class UserVo extends BaseVo implements Serializable {
     private String username;
     private String mobile;
     private String avater;
+    private Integer province;
+    private Integer city;
     private String provinceCity;
     private String domain;
     private String keyWord;
+    private Integer orgIsOpen;
+    private Integer orgType;
     private String organization;
     private String professional;
     private String validateInfo;
@@ -31,6 +35,8 @@ public class UserVo extends BaseVo implements Serializable {
     private String carrer; // 事业状态
     private String school; // 学校
     private String desc;  // 个人介绍
+    private Integer productType;
+    private String productServiceName;
 
     private Integer isMember; // 是否会员 1：非会员 2：会员
     private Integer paied; // 是否支付会费 1:未支付 2:已支付
@@ -42,6 +48,148 @@ public class UserVo extends BaseVo implements Serializable {
     private List<UserProfessional> professionalList;
     private List<UserDomain> userDomainList;
     private List<UserinfoCareer> userinfoCareerList;
+
+    private UserExtendVo userExtendVo;
+
+    private Integer gender;
+    private Integer ageId;
+    private String age;
+
+    private String zy;
+    private String zy2;
+    private String sc;
+    private String zl;
+
+    private String qualification;
+    private String industryRanking;
+
+    public String getQualification() {
+        return qualification;
+    }
+
+    public void setQualification(String qualification) {
+        this.qualification = qualification;
+    }
+
+    public String getIndustryRanking() {
+        return industryRanking;
+    }
+
+    public void setIndustryRanking(String industryRanking) {
+        this.industryRanking = industryRanking;
+    }
+
+    public String getZy() {
+        return zy;
+    }
+
+    public void setZy(String zy) {
+        this.zy = zy;
+    }
+
+    public String getZy2() {
+        return zy2;
+    }
+
+    public void setZy2(String zy2) {
+        this.zy2 = zy2;
+    }
+
+    public String getSc() {
+        return sc;
+    }
+
+    public void setSc(String sc) {
+        this.sc = sc;
+    }
+
+    public String getZl() {
+        return zl;
+    }
+
+    public void setZl(String zl) {
+        this.zl = zl;
+    }
+
+    public Integer getProductType() {
+        return productType;
+    }
+
+    public void setProductType(Integer productType) {
+        this.productType = productType;
+    }
+
+    public String getProductServiceName() {
+        return productServiceName;
+    }
+
+    public void setProductServiceName(String productServiceName) {
+        this.productServiceName = productServiceName;
+    }
+
+    public Integer getOrgIsOpen() {
+        return orgIsOpen;
+    }
+
+    public void setOrgIsOpen(Integer orgIsOpen) {
+        this.orgIsOpen = orgIsOpen;
+    }
+
+    public Integer getOrgType() {
+        return orgType;
+    }
+
+    public void setOrgType(Integer orgType) {
+        this.orgType = orgType;
+    }
+
+    public Integer getProvince() {
+        return province;
+    }
+
+    public void setProvince(Integer province) {
+        this.province = province;
+    }
+
+    public Integer getCity() {
+        return city;
+    }
+
+    public void setCity(Integer city) {
+        this.city = city;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getAgeId() {
+        return ageId;
+    }
+
+    public void setAgeId(Integer ageId) {
+        this.ageId = ageId;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public UserExtendVo getUserExtendVo() {
+        return userExtendVo;
+    }
+
+    public void setUserExtendVo(UserExtendVo userExtendVo) {
+        this.userExtendVo = userExtendVo;
+    }
 
     public List<UserProfessional> getProfessionalList() {
         return professionalList;

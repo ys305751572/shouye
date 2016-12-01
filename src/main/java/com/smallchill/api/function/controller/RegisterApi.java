@@ -71,6 +71,7 @@ public class RegisterApi extends BaseController {
         try {
             _userInfo = userInfoService.updateUserInfo(userInfo, this.getRequest());
             userVo = Convert.userInfoToRecord(_userInfo);
+            userVo.setPer(_userInfo.getPer());
         } catch (UserExitsException e) {
             e.printStackTrace();
             return fail(ErrorType.ERROR_CODE_USERHASEXTIS);

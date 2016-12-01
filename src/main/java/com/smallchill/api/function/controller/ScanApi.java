@@ -41,7 +41,7 @@ public class ScanApi extends BaseController {
     @ResponseBody
     public String upload(Integer userId, Double lon, Double lat) {
         try {
-            localSerivce.upload(userId, lon, lat);
+            localSerivce.upload(userId, lat, lon);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -44,14 +44,16 @@ SELECT
   GROUP_CONCAT(DISTINCT(tud.domain_id)) AS domainId
 FROM tb_user_info tui
   LEFT JOIN tb_userinfo_statistical tus ON tui.id = tus.user_id
-  LEFT JOIN (SELECT a.user_id AS user_id,a.vip_type AS vip_type, b.id AS id, b.name AS _name,b.type AS _type FROM tb_user_group a LEFT JOIN tb_group b ON a.group_id = b.id) tug ON tui.user_id = tug.user_id
+  LEFT JOIN (SELECT a.user_id AS user_id,a.vip_type AS vip_type, b.id AS id, b.name AS 
+_name,b.type AS _type FROM tb_user_group a LEFT JOIN tb_group b ON a.group_id = b.id) tug ON 
+tui.user_id = tug.user_id
   LEFT JOIN tb_user_login tul ON tui.user_id = tul.id
   LEFT JOIN tb_userinfo_career tuc ON tui.user_id = tuc.user_id
   LEFT JOIN tb_userinfo_domain tud ON tui.user_id = tud.user_id
   LEFT JOIN tb_userinfo_professional tup ON tui.user_id = tup.user_id
-  LEFT JOIN (SELECT id,num,name FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id = tfd.id
+  LEFT JOIN (SELECT id,num,name FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id = 
+tfd.id
 GROUP BY tui.user_id
-ORDER BY tui.user_id DESC
 
 listPage
 ====
@@ -62,7 +64,7 @@ select
     ui.province_id province,
     ui.city_id city,
     ui.school,
-    ui.province_city proviceCity,
+    ui.province_city provinceCity,
     ui.domain,
     ui.key_word keyWord,
     ui.organization,
@@ -77,17 +79,20 @@ select
     @}
     i.status istatus
 from tb_user_info ui
-LEFT JOIN tb_user_approval ua ON ((ui.user_id = ua.from_user_id OR ui.user_id = ua.to_user_id) AND (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId})) 
+LEFT JOIN tb_user_approval ua ON ((ui.user_id = ua.from_user_id OR ui.user_id = ua.to_user_id) 
+AND (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId})) 
 @if(!isEmpty(groupId)){
     RIGHT JOIN tb_user_group ug ON  (ug.user_id = ui.user_id and ug.group_id = #{groupId})
 @}
 @if(!isEmpty(history)) {
-    RIGHT JOIN tb_group_user_record gur ON (ui.user_id = gur.to_user_id and gur.group_id = #{groupId} and gur.user_id = #{userId})
+    RIGHT JOIN tb_group_user_record gur ON (ui.user_id = gur.to_user_id and gur.group_id = #
+{groupId} and gur.user_id = #{userId})
 @}
 @if(!isEmpty(domain)) {
     RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain})
 @}
-LEFT JOIN tb_interest_user i ON (i.to_user_id = ui.user_id AND i.status = 0 AND i.user_id = #{userId})
+LEFT JOIN tb_interest_user i ON (i.to_user_id = ui.user_id AND i.status = 0 AND i.user_id = #
+{userId})
 GROUP BY userId
 
 userInfoDetail
@@ -97,18 +102,39 @@ select
     ui.username,
     ui.avater,
     ui.mobile,
+    ui.age,
+    ui.age_interval_id,
+    ui.gender,
     ui.province_id province,
     ui.city_id city,
     ui.school,
+    ui.product_type,
+    ui.product_service_name,
+    ui.province_id province,
+    ui.city_id city,
     ui.province_city provinceCity,
     ui.domain,
     ui.key_word keyWord,
+    ui.org_type,
+    ui.org_is_open,
+    d.`NAME` orgTypeName,
     ui.organization,
     ui.per,
     ui.career,
     ui.professional,
-    ui.desc
+    ui.desc,
+    ui.zy,
+    ui.zy2,
+    ui.sc,
+    ui.zl,
+    ui.age,
+    ui.industry_ranking,
+    ui.qualification
 from tb_user_info ui 
+left join 
+    tfw_dict d 
+on
+   ui.org_type = d.id
 where ui.user_id = #{userId}
 
 userInfoDetailWithUa
@@ -163,7 +189,7 @@ FROM
   tb_user_approval ua
   LEFT JOIN tb_user_info ui
     ON ui.`user_id` = ua.`to_user_id`
-    WHERE ua.`status` = 3 AND ua.`from_user_id` = #{userId}
+    WHERE ua.`status` = 4 AND ua.`from_user_id` = #{userId}
 
 userlistByjoinGroup
 ==============================================

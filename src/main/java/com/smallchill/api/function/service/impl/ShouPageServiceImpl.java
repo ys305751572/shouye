@@ -51,13 +51,13 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + " from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId} and i.status = 0";
 
-    private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i join tb_user_info ui on i.user_id = ui.user_id "
-            + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` where i.to_user_id = #{userId} OR ua.`status` != 3";
+    private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i left join tb_user_info ui on i.user_id = ui.user_id "
+            + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` and ua.to_user_id = #{userId} where i.to_user_id = #{userId} and (ua.`status` != 4 OR ua.`status` IS NULL)";
 
     private String SQL_MY_GROUP = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
 
     private String NEW_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_user_approval ua WHERE (ua.`from_user_id` = #{userId} OR ua.`to_user_id` = #{userId}) " +
-            "AND (ua.`status` = 1 OR ua.`create_time` > #{lastTime})";
+            "AND (ua.`status` = 1 OR ua.`create_time` > #{lastTime}) AND ua.type = 1";
     // 感兴趣的用户
     private String INTEREST_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_interest_user iu WHERE iu.create_time > #{lastTime} AND iu.user_id = #{userId}";
     // 感兴趣的组织
@@ -233,7 +233,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      * @return 用户集
      */
     private List<Record> listNew0(Integer userId) {
-        String where = " on ui.user_id = ua.from_user_id where ua.to_user_id = #{userId}";
+        String where = " on ui.user_id = ua.from_user_id where ua.to_user_id = #{userId} and ua.type = 1";
         return Db.init().selectList(sql + where, Record.create().set("userId", userId));
     }
 
@@ -373,30 +373,13 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         }
 
         String sql2 = sql + " on (ui.`user_id` = ua.`from_user_id` OR ui.`user_id` = ua.`to_user_id` ) ";
-        String where = "ui.`user_id` != #{userId} and ua.type = 2 and (ua.status = 1 or ua.status = 0)";
+        String where = "ui.`user_id` != #{userId} and ua.type = 2 and (ua.status = 2 or ua.status = 1)";
         List<Record> list = Db.init().selectList(sql2, where, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         UserVo vo;
-        int type = 0;
         for (Record record : list) {
             vo = Convert.recordToVo(record);
-            Integer fromUserId = Integer.parseInt(record.get("from_user_id").toString());
-            Integer toUserId = Integer.parseInt(record.get("to_user_id").toString());
-            Integer status = record.get("status") == null ? null : Integer.parseInt(record.get("status").toString());
-            if (status != null && status == 0) {
-                if (fromUserId == userId) {
-                    // 等待对方审核
-                    type = NOT_PROCESS_TO_USER_ID;
-                } else if (toUserId == userId) {
-                    // 等待己方审核
-                    type = NOT_PROCESS_FROM_USER_ID;
-                }
-            } else if (status != null && status == 1) {
-                type = FRIEND;
-            } else if (status != null && (status == 2 || status == 4)) {
-                type = PASS;
-            }
-            vo.setStatus(type);
+            Convert.setUserVoStatus(vo, record, userId);
             voList.add(vo);
         }
         return voList;

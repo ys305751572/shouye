@@ -3,6 +3,7 @@ package com.smallchill.web.service;
 import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.common.exception.UserIsNotManagerException;
 import com.smallchill.api.function.modal.vo.IntroduceUserVo;
+import com.smallchill.api.function.modal.vo.UserExtendVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.core.toolbox.Record;
@@ -29,6 +30,8 @@ public interface UserInfoService extends IService<UserInfo> {
     UserVo findUserInfoDetail(Integer userId, Integer toUserId, Integer groupId);
 
     String findUsernameByUserId(Integer userId);
+
+    UserExtendVo findUserExtendVo(Record record);
 
     /**
      * 改变用户状态

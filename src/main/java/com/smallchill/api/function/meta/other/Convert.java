@@ -196,7 +196,7 @@ public class Convert {
         } else {
             int status = Integer.parseInt(record.get("status").toString());
             if (status == 1) {
-                int fromUserId = record.getInt("fromUserId");
+                int fromUserId = record.getInt("from_user_id");
                 int toUserId = record.getInt("to_user_id");
                 if (userId == fromUserId) {
                     type = NOT_PROCESS_TO_USER_ID;

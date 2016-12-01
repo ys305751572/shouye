@@ -74,7 +74,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      */
     @Transactional
     @Override
-    public void toUserTwoWay(UserApproval ua) throws UserInOthersBlankException, UserHasFriendException,
+    public void toUserTwoWay(UserApproval ua, String validateInfo2) throws UserInOthersBlankException, UserHasFriendException,
             UsernotFriendException, BothUserHasApprovalException, UserHasApprovalException, UserInMyBlankException {
 
         if (this.requestValidate(ua)) {
@@ -86,7 +86,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
             ua2.setToUserId(ua.getFromUserId());
             ua2.setType(ua.getType());
             ua2.setIntroduceUserId(ua.getIntroduceUserId());
-            ua2.setValidateInfo(ua.getValidateInfo());
+            ua2.setValidateInfo(validateInfo2);
             ua2.setStatus(0);
             ua2.setGroupId(0);
             ua2.setCreateTime(DateTimeKit.nowLong());
@@ -252,8 +252,10 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     public void userApprovalBlank(UserApproval ua) {
         Record record = Record.create().set("fromUserId", ua.getFromUserId()).set("toUserId", ua.getToUserId());
         List<UserApproval> list = this.findBy(where, record);
-        if (list == null || list.size() == 0) return;
-        if (list.size() == 1) {
+        if (list == null || list.size() == 0) {
+            createBlack(ua);
+        }
+        else if (list.size() == 1) {
             // 正常
             UserApproval distUa = list.get(0);
             distUa.setFromUserId(ua.getFromUserId());
@@ -267,6 +269,23 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
             this.updateBy(set, where2, record);
             this.deleteBy(where2, record.set("fromUserId", ua.getToUserId()).set("toUserId", ua.getFromUserId()));
         }
+    }
+
+    /**
+     * 创建黑名单记录
+     * @param ua
+     */
+    private void createBlack(UserApproval ua) {
+        UserApproval _ua = new UserApproval();
+        _ua.setFromUserId(ua.getFromUserId());
+        _ua.setToUserId(ua.getToUserId());
+        _ua.setIntroduceUserId(0);
+        _ua.setValidateInfo("");
+        _ua.setGroupId(0);
+        _ua.setType(1);
+        _ua.setStatus(4);
+        _ua.setCreateTime(DateTimeKit.nowLong());
+        this.save(_ua);
     }
 
     /**
@@ -426,7 +445,7 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
         Record record = Record.create();
         record.put("fromUserId", fromUserId);
         record.put("toUserId", toUserId);
-        return this.findFirstBy(where2, record);
+        return this.findFirstBy(where, record);
     }
 
     /**
@@ -442,13 +461,12 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
             this.update(dist);
             // 新增好友
             if (status == 2) {
-                UserFriend uf = new UserFriend();
-                uf.setStatus(0);
-                uf.setType(ua.getType());
-                uf.setUserId(ua.getToUserId());
-                uf.setFriendId(ua.getFromUserId());
-
-                if (ua.getType() == 1) {
+                if (dist.getType() == 1) {
+                    UserFriend uf = new UserFriend();
+                    uf.setStatus(0);
+                    uf.setType(ua.getType());
+                    uf.setUserId(ua.getToUserId());
+                    uf.setFriendId(ua.getFromUserId());
                     // 判断是否校友,同乡，同组织
                     UserInfo fromUser = userInfoService.findByUserId(ua.getFromUserId());
                     UserInfo toUser = userInfoService.findByUserId(ua.getToUserId());
@@ -458,11 +476,18 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
                     if (StringUtils.isNotBlank(fromUser.getSchool()) && StringUtils.isNotBlank(toUser.getSchool()) && fromUser.getSchool().equals(toUser.getSchool())) {
                         uf.setLabel(uf.getLabel() == null ? "校友" : uf.getLabel() + "|校友");
                     }
+                    userFriendService.addFriend(uf);
                 } else {
+                    List<UserFriend> userFriendList = userFriendService.findBy("(user_id = #{userId} and friend_id = #{friendId}) or (user_id = #{friendId} and friend_id = #{userId})",
+                            Record.create().set("userId", ua.getFromUserId()).set("friendId", ua.getToUserId()));
                     // 新增熟人标签
-                    uf.setLabel(uf.getLabel() == null ? "熟人" : uf.getLabel() + "|熟人");
+                    for (UserFriend userFriend : userFriendList) {
+                        userFriend.setLabel(userFriend.getLabel() == null ? "熟人" : userFriend.getLabel() + "|熟人");
+                        userFriend.setType(2);
+                        userFriendService.update(userFriend);
+                    }
                 }
-                userFriendService.addFriend(uf);
+
             }
             // 拉黑好友
             if (status == 4) {
@@ -518,7 +543,11 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
             if (dist == null && src.getType() == 2) return true;
             if (dist == null && src.getType() >= 3) throw new UsernotFriendException();
             if (dist.getStatus() == 1) throw new UserHasApprovalException();
-            if (dist.getStatus() == 2) throw new UserHasFriendException();
+            if (src.getType() == 1 && dist.getStatus() == 2) throw new UserHasFriendException();
+            if (src.getType() == 2 && dist.getStatus() == 2) {
+                auditAcquaintances(src, dist);
+                return false;
+            }
             if (dist.getStatus() == 4 && (dist.getToUserId() == src.getFromUserId()))
                 throw new UserInOthersBlankException();
             if (dist.getStatus() == 3 && (dist.getFromUserId() == src.getFromUserId()))
@@ -532,6 +561,20 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
             this.update(_dist);
         }
         return false;
+    }
+
+    /**
+     * 结为熟人
+     *
+     * @param src
+     * @param dist
+     */
+    private void auditAcquaintances(UserApproval src, UserApproval dist) {
+        dist.setType(2);
+        dist.setStatus(1);
+        dist.setFromUserId(src.getFromUserId());
+        dist.setToUserId(src.getToUserId());
+        this.update(dist);
     }
 
     /**
