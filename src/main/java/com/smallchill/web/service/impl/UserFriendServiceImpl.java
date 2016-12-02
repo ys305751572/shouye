@@ -176,8 +176,8 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
         int type = 0;
         for (Record record : list) {
             vo = Convert.recordToVo(record);
-            Integer fromUserId = Integer.parseInt(record.get("from_user_id").toString());
-            Integer toUserId2 = Integer.parseInt(record.get("to_user_id").toString());
+            Integer fromUserId = record.getInt("from_user_id");
+            Integer toUserId2 = record.getInt("to_user_id");
             Integer status = record.get("status") == null ? null : Integer.parseInt(record.get("status").toString());
             if (status != null && status == 0) {
                 if (fromUserId == userId) {

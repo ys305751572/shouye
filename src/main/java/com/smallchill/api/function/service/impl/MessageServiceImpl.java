@@ -88,6 +88,7 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
         msg.setToId(userId);
         Group group = groupService.findById(groupId);
         msg.setTitle(targat + group.getName());
+        msg.setLabel(targat.replace("[","").replace("]",""));
         msg.setContent(content);
         msg.setCreateTime(DateTimeKit.nowLong());
         this.save(msg);
@@ -119,6 +120,7 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
         msg.setFromId(group.getId());
         msg.setToId(id);
         msg.setTitle(MSG_GROUP + group.getName());
+        msg.setLabel(MSG_GROUP.replace("[","").replace("]",""));
         msg.setContent(content);
         msg.setReceiveType(1);
         msg.setSendMass(sendMass);
@@ -143,6 +145,7 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
         Message msg = new Message();
         msg.setFromId(group.getId());
         msg.setTitle(MSG_GROUP + group.getName());
+        msg.setLabel(MSG_GROUP.replace("[","").replace("]",""));
         msg.setContent(content);
         msg.setReceiveType(1);
         msg.setSendMass(sendMass);
@@ -167,6 +170,7 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
         Message msg = new Message();
         msg.setFromId(-1);
         msg.setTitle(MSG_SYS + title);
+        msg.setLabel(MSG_SYS.replace("[","").replace("]",""));
         msg.setContent(content);
         msg.setToId(userId);
         msg.setCreateTime(DateTimeKit.nowLong());
@@ -185,6 +189,7 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
         Message msg = new Message();
         msg.setFromId(-1);
         msg.setTitle(MSG_SYS + title);
+        msg.setLabel(MSG_SYS.replace("[","").replace("]",""));
         msg.setContent(content);
         msg.setCreateTime(DateTimeKit.nowLong());
         for (Integer userId : userIds) {

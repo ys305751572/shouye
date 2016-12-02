@@ -13,7 +13,7 @@ public class UserBlankValidate extends ApiValidator{
     @Override
     protected void doValidate(Invocation inv) {
         validateRequired("fromUserId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
-        validateRequired("toUserId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
-        validateTwoNotEqual("fromUserId", "toUserId", ErrorType.ERROR_CODE_APP_MYSELF2);
+        validateRequired("toUserIds", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
+        validateContain("fromUserId", "toUserId", ",",ErrorType.ERROR_CODE_APP_MYSELF2);
     }
 }

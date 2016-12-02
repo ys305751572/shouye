@@ -24,6 +24,8 @@ public class Message extends BaseModel {
     private Integer fromId;
     @Column(name = "to_id")
     private Integer toId;
+    @Column(name = "label")
+    private String label;
     @Column(name = "title")
     private String title;
     @Column(name = "content")
@@ -73,6 +75,14 @@ public class Message extends BaseModel {
         if(StringUtils.isBlank(action4)) {
             action4 = combinationMa(ma);
         }
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public Long getCreateTime() {

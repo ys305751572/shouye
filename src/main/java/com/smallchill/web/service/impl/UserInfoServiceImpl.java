@@ -351,7 +351,11 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             // 先删除该用户所有专业信息
             userprofessionalService.deleteBy("user_id = #{userId}", Record.create().set("userId", userInfo.getUserId()));
             String[] professionals = professional.split("\\|");
-            String[] professionallevels = userInfo.getProfessionalLevel().split("\\+");
+            String professionalLevel =  userInfo.getProfessionalLevel();
+            String[] professionallevels = null;
+            if (StringUtils.isNotBlank(professionalLevel)) {
+                professionallevels = userInfo.getProfessionalLevel().split("\\+");
+            }
             for (int i=0; i < professionals.length; i++) {
                 String c = professionals[i];
                 if (StringUtils.isNotBlank(c)) {
@@ -359,8 +363,10 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
                     int proId = Integer.parseInt(ss[0]);
                     int pid = Integer.parseInt(ss[1]);
                     String name = ss[2];
-                    String level = professionallevels[i];
-
+                    String level = "";
+                    if (professionallevels != null) {
+                        level = professionallevels[i];
+                    }
                     UserProfessional up = new UserProfessional();
                     up.setUserId(userInfo.getUserId());
                     up.setProId(proId);
@@ -511,6 +517,9 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         if (StringUtils.isNotBlank(userinfo.getUsername())) {
             _info.setUsername(userinfo.getUsername());
         }
+        if (StringUtils.isNotBlank(userinfo.getAvater())) {
+            _info.setAvater(userinfo.getAvater());
+        }
         if (userinfo.getAgeIntervalId() != null) {
             _info.setAgeIntervalId(userinfo.getAgeIntervalId());
             _info.setAge(userinfo.getAge());
@@ -552,12 +561,12 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         if (StringUtils.isNotBlank(userinfo.getProfessional())) {
             _info.setProfessional(userinfo.getProfessional());
         }
-        if (StringUtils.isNotBlank(userinfo.getZy()) && StringUtils.isNotBlank(userinfo.getSc())
-                && StringUtils.isNotBlank(userinfo.getZl()) && StringUtils.isNotBlank(userinfo.getZy2())) {
-            _info.setZy(userinfo.getZy());
-            _info.setSc(userinfo.getSc());
-            _info.setZl(userinfo.getZl());
-            _info.setZy2(userinfo.getZy2());
+        if (StringUtils.isNotBlank(userinfo.getZy()) || StringUtils.isNotBlank(userinfo.getSc())
+               || StringUtils.isNotBlank(userinfo.getZl()) || StringUtils.isNotBlank(userinfo.getZy2())) {
+            _info.setZy(StringUtils.isNotBlank(userinfo.getZy()) ? userinfo.getZy() : "");
+            _info.setSc(StringUtils.isNotBlank(userinfo.getSc()) ? userinfo.getSc() : "");
+            _info.setZl(StringUtils.isNotBlank(userinfo.getZl()) ? userinfo.getZl() : "");
+            _info.setZy2(StringUtils.isNotBlank(userinfo.getZy2()) ? userinfo.getZy2() : "");
         }
         if (StringUtils.isNotBlank(userinfo.getKeyWord())) {
             _info.setKeyWord(userinfo.getKeyWord());

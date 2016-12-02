@@ -252,8 +252,8 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     public void userApprovalBlank(UserApproval ua) {
         Record record = Record.create().set("fromUserId", ua.getFromUserId()).set("toUserId", ua.getToUserId());
         List<UserApproval> list = findByFromUserIdAndToUserIdTwoWay(ua.getFromUserId(), ua.getToUserId());
-        record.set("pageOffset", 0);
-        record.set("pageSize", 100);
+        record.set("_pageOffset", 0);
+        record.set("_pageSize", 100);
         if (list == null || list.size() == 0) {
             createBlack(ua);
         } else if (list.size() == 1) {
@@ -448,8 +448,8 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
         Record record = Record.create();
         record.put("fromUserId", fromUserId);
         record.put("toUserId", toUserId);
-        record.put("pageOffset", 0);
-        record.put("pageSize", 2);
+        record.put("_pageOffset", 0);
+        record.put("_pageSize", 2);
         return this.findBy(where, record);
     }
 

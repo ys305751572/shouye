@@ -15,6 +15,7 @@ public interface MessageConts {
     Integer MESSAGE_ROLE_USER = 1; // 个人
     Integer MESSAGE_ROLE_GROUP = 2; // 组织
 
+
     //==========================消息表头==============================
     String MSG_USER_AUDIT = "[加入申请]";
     String MSG_USER_AUDIT_CANAL = "[取消会员]";
