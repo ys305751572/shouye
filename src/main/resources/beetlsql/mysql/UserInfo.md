@@ -85,14 +85,12 @@ AND (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId}))
     RIGHT JOIN tb_user_group ug ON  (ug.user_id = ui.user_id and ug.group_id = #{groupId})
 @}
 @if(!isEmpty(history)) {
-    RIGHT JOIN tb_group_user_record gur ON (ui.user_id = gur.to_user_id and gur.group_id = #
-{groupId} and gur.user_id = #{userId})
+    RIGHT JOIN tb_group_user_record gur ON (ui.user_id = gur.to_user_id and gur.group_id = #{groupId} and gur.user_id = #{userId})
 @}
 @if(!isEmpty(domain)) {
     RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain})
 @}
-LEFT JOIN tb_interest_user i ON (i.to_user_id = ui.user_id AND i.status = 0 AND i.user_id = #
-{userId})
+LEFT JOIN tb_interest_user i ON (i.to_user_id = ui.user_id AND i.status = 0 AND i.user_id = #{userId})
 GROUP BY userId
 
 userInfoDetail
@@ -292,3 +290,12 @@ ON uf.`friend_id` = ufgm.`friend_id`
 LEFT JOIN tb_user_info ui 
 ON ui.`user_id` = ufgm.`friend_id`
 WHERE ufgm.`ufg_id` = #{groupingId}
+
+findCareerList
+==============
+SELECT 
+uc.`id`,uc.`career_id` careerId, uc.`user_id` userId, d.`NAME` `name`
+FROM tb_userinfo_career uc 
+LEFT JOIN tfw_dict d ON uc.`career_id` = d.`ID` 
+WHERE uc.`user_id` = #{userId}
+

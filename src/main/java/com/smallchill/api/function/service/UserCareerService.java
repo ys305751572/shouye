@@ -1,7 +1,10 @@
 package com.smallchill.api.function.service;
 
 import com.smallchill.core.base.service.IService;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserinfoCareer;
+
+import java.util.List;
 
 /**
  * 用户事业状态
@@ -9,4 +12,5 @@ import com.smallchill.web.model.UserinfoCareer;
  */
 public interface UserCareerService extends IService<UserinfoCareer>{
 
+    List<Record> findCareerByUserId(Integer userId);
 }

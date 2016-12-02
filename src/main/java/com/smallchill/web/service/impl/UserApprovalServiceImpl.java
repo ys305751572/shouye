@@ -251,11 +251,12 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
     @Override
     public void userApprovalBlank(UserApproval ua) {
         Record record = Record.create().set("fromUserId", ua.getFromUserId()).set("toUserId", ua.getToUserId());
-        List<UserApproval> list = this.findBy(where, record);
+        List<UserApproval> list = findByFromUserIdAndToUserIdTwoWay(ua.getFromUserId(), ua.getToUserId());
+        record.set("pageOffset", 0);
+        record.set("pageSize", 100);
         if (list == null || list.size() == 0) {
             createBlack(ua);
-        }
-        else if (list.size() == 1) {
+        } else if (list.size() == 1) {
             // 正常
             UserApproval distUa = list.get(0);
             distUa.setFromUserId(ua.getFromUserId());
@@ -271,8 +272,16 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
         }
     }
 
+    @Override
+    public List<UserApproval> findByFromUserIdAndToUserIdTwoWay(Integer fromUserId, Integer toUserId) {
+        Record record = Record.create().set("fromUserId", fromUserId).set("toUserId", toUserId);
+        return this.findBy(where, record);
+    }
+
+
     /**
      * 创建黑名单记录
+     *
      * @param ua
      */
     private void createBlack(UserApproval ua) {
@@ -294,8 +303,16 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
      * @param ua 申请消息
      */
     @Override
-    public void userApprovalUnBlank(UserApproval ua) {
-        this.approval(ua, 5);
+    public void userApprovalUnBlank(UserApproval ua, String userIds) {
+        if (StringUtils.isNotBlank(userIds)) {
+            String[] useridss = userIds.split(",");
+            for (String userid : useridss) {
+                if (StringUtils.isNotBlank(userid)) {
+                    ua.setToUserId(Integer.parseInt(userid));
+                    this.approval(ua, 5);
+                }
+            }
+        }
     }
 
     /**
@@ -431,6 +448,8 @@ public class UserApprovalServiceImpl extends BaseService<UserApproval> implement
         Record record = Record.create();
         record.put("fromUserId", fromUserId);
         record.put("toUserId", toUserId);
+        record.put("pageOffset", 0);
+        record.put("pageSize", 2);
         return this.findBy(where, record);
     }
 

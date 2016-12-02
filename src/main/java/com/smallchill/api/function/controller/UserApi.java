@@ -194,6 +194,7 @@ public class UserApi extends BaseController implements ConstCache {
         try {
             userInfo1 = userInfoService.updateUserInfo(userInfo, null);
             userVo = Convert.userInfoToRecord(userInfo1);
+            userVo.setPer(userInfo1.getPer());
         } catch (UserExitsException e) {
             e.printStackTrace();
         }
@@ -221,8 +222,8 @@ public class UserApi extends BaseController implements ConstCache {
     @RequestMapping(value = "/unblank")
     @ResponseBody
     @Before(UserBlankValidate.class)
-    public String unBlank(UserApproval ua) {
-        userApprovalService.userApprovalUnBlank(ua);
+    public String unBlank(UserApproval ua, String userIds) {
+        userApprovalService.userApprovalUnBlank(ua, userIds);
         return success();
     }
 

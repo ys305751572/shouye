@@ -88,6 +88,7 @@ public class ButtonRegister implements ButtonConst {
 
     /**
      * 等待组织审核
+     *
      * @return
      */
     private ButtonRegister applyGroupWaiting() {
@@ -133,7 +134,7 @@ public class ButtonRegister implements ButtonConst {
      * @return ButtonRegister
      */
     public ButtonRegister applyAcquaintances() {
-        if (isFriend() && !isFreindWaiting()) {
+        if (isFriend() && !isFreindWaiting() && !isAcquaintances()) {
             Button button = new Button();
             button.setName("结为熟人");
             button.setType(applyAcquaintances_type);
@@ -252,6 +253,7 @@ public class ButtonRegister implements ButtonConst {
         return (ua != null && ua.getStatus() == 2 && ua.getType() == 1) || (ua != null && ua.getType() == 2);
     }
 
+
     public boolean isFreindWaiting() {
         return ua != null && ua.getType() == 2 && ua.getStatus() == 1;
     }
@@ -262,7 +264,7 @@ public class ButtonRegister implements ButtonConst {
      * @return boolean
      */
     public boolean isAcquaintances() {
-        return ua != null && ua.getStatus() == 1 && ua.getType() == 2;
+        return ua != null && ua.getStatus() == 2 && ua.getType() == 2;
     }
 
     /**

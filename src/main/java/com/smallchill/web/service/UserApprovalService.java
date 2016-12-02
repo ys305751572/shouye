@@ -91,11 +91,19 @@ public interface UserApprovalService extends IService<UserApproval> {
     void userApprovalBlank(UserApproval ua);
 
     /**
+     *
+     * @param fromUserId
+     * @param toUserId
+     * @return
+     */
+    List<UserApproval> findByFromUserIdAndToUserIdTwoWay(Integer fromUserId, Integer toUserId);
+
+    /**
      * 用户审核移除黑名单
      *
      * @param ua
      */
-    void userApprovalUnBlank(UserApproval ua);
+    void userApprovalUnBlank(UserApproval ua, String userIds);
 
     /**
      * 状态重置

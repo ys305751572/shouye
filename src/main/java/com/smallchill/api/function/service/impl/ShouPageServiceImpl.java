@@ -90,7 +90,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         if (userLastReadTime == null) {
             userLastReadTime = new UserLastReadTime();
         }
-        List<UserVo> voList = friends(userId, domainId, city, grouping,keyWord);
+        List<UserVo> voList = friends(userId, domainId, city, grouping, keyWord);
         ShouPageVo shouPageVo = new ShouPageVo();
 
         shouPageVo.setNewCount(countNew(userId, userLastReadTime.getNewTime()));
@@ -103,8 +103,9 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     }
 
     @Override
-    public List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping,String keyWord) {
-        String sql = Blade.dao().getScript("UserFriend.list").getSql();StringBuffer where = new StringBuffer("");
+    public List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord) {
+        String sql = Blade.dao().getScript("UserFriend.list").getSql();
+        StringBuffer where = new StringBuffer("");
         Record _r = Record.create().set("userId", userId);
         if (domainId != null) {
             sql += " RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain}) ";
@@ -133,7 +134,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         }
         if (StringUtils.isNotBlank(keyWord)) {
             where.append(" and (ui.username LIKE concat('%', #{keyWord},'%') or ui.key_word LIKE concat('%', #{keyWord}, '%'))");
-            _r.set("keyWord",keyWord);
+            _r.set("keyWord", keyWord);
         }
         where.append(" and uf.user_id = #{userId}");
 
@@ -372,7 +373,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             this.updateUserLastReadTime(userId, ult);
         }
 
-        String sql2 = sql + " on (ui.`user_id` = ua.`from_user_id` OR ui.`user_id` = ua.`to_user_id` ) ";
+        String sql2 = sql + " on (ui.`user_id` = ua.`from_user_id` OR ui.`user_id` = ua.`to_user_id` ) AND (ua.`from_user_id` = #{userId} OR ua.`to_user_id` = #{userId}) ";
         String where = "ui.`user_id` != #{userId} and ua.type = 2 and (ua.status = 2 or ua.status = 1)";
         List<Record> list = Db.init().selectList(sql2, where, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();

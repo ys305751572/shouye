@@ -181,7 +181,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         Record paramsRecord = Record.create().set("userId", userId);
         List<UserProfessional> professionalList = userprofessionalService.findBy(where, paramsRecord);
         List<UserDomain> userDomainList = userDomainService.findBy(where, paramsRecord);
-        List<UserinfoCareer> userinfoCareerList = userCareerService.findBy(where, paramsRecord);
+        List<Record> userinfoCareerList = userCareerService.findCareerByUserId(userId);
         userVo.setProfessionalList(professionalList);
         userVo.setUserDomainList(userDomainList);
         userVo.setUserinfoCareerList(userinfoCareerList);
@@ -213,6 +213,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             vo.setType(ua.getType());
         } else {
             vo.setMobile("");
+            vo.setType(0);
         }
 
         vo.setStatus(Convert.NOT_FRINED);
@@ -224,6 +225,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         }
         record.set("status", ua == null ? null : ua.getStatus());
         Convert.setUserVoStatus(vo, record, userId);
+
         if (groupId != null) {
             saveGroupUserRecord(userId, toUserId, groupId);
         }
@@ -349,18 +351,22 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             // 先删除该用户所有专业信息
             userprofessionalService.deleteBy("user_id = #{userId}", Record.create().set("userId", userInfo.getUserId()));
             String[] professionals = professional.split("\\|");
-            for (String c : professionals) {
+            String[] professionallevels = userInfo.getProfessionalLevel().split("\\+");
+            for (int i=0; i < professionals.length; i++) {
+                String c = professionals[i];
                 if (StringUtils.isNotBlank(c)) {
                     String[] ss = c.split(",");
                     int proId = Integer.parseInt(ss[0]);
                     int pid = Integer.parseInt(ss[1]);
                     String name = ss[2];
+                    String level = professionallevels[i];
 
                     UserProfessional up = new UserProfessional();
                     up.setUserId(userInfo.getUserId());
                     up.setProId(proId);
                     up.setProName(name);
                     up.setPid(pid);
+                    up.setLevel(level);
                     userprofessionalService.save(up);
                 }
             }

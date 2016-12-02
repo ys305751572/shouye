@@ -4,6 +4,7 @@ import com.smallchill.api.common.model.BaseVo;
 import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.UserDomain;
 import com.smallchill.api.function.modal.UserProfessional;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserinfoCareer;
 
 import java.io.Serializable;
@@ -40,14 +41,14 @@ public class UserVo extends BaseVo implements Serializable {
 
     private Integer isMember; // 是否会员 1：非会员 2：会员
     private Integer paied; // 是否支付会费 1:未支付 2:已支付
-    private Integer type; // 1:朋友 2:熟人
+    private Integer type; // 0:未结识 1:朋友 2:熟人
 
     private List<Button> btnList;
     private List<String> sameKeyList;
 
     private List<UserProfessional> professionalList;
     private List<UserDomain> userDomainList;
-    private List<UserinfoCareer> userinfoCareerList;
+    private List<Record> userinfoCareerList;
 
     private UserExtendVo userExtendVo;
 
@@ -207,11 +208,11 @@ public class UserVo extends BaseVo implements Serializable {
         this.userDomainList = userDomainList;
     }
 
-    public List<UserinfoCareer> getUserinfoCareerList() {
+    public List<Record> getUserinfoCareerList() {
         return userinfoCareerList;
     }
 
-    public void setUserinfoCareerList(List<UserinfoCareer> userinfoCareerList) {
+    public void setUserinfoCareerList(List<Record> userinfoCareerList) {
         this.userinfoCareerList = userinfoCareerList;
     }
 

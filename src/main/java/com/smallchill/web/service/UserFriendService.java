@@ -34,6 +34,12 @@ public interface UserFriendService extends IService<UserFriend> {
     void delFriend(UserFriend uf);
 
     /**
+     * 删除熟人
+     * @param uf
+     */
+    void delAcquaintances(UserFriend uf);
+
+    /**
      * 加入黑名单
      * @param uf
      */

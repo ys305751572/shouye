@@ -5,6 +5,7 @@ import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserFriend;
 import com.smallchill.web.service.UserApprovalService;
@@ -34,6 +35,7 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
     /**
      * 添加好友
      * 如果好友记录不为空，则修改状态
+     *
      * @param uf 用户好友记录
      */
     @Transactional
@@ -44,15 +46,13 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
             dict.setStatus(0);
             this.update(dict);
             this.updateFriend(dict, 0);
-        }
-        else {
+        } else {
             uf.setStatus(0);
             uf.setType(1);
             this.save(uf);
             this.saveFriend(uf);
         }
     }
-
 
 
     /**
@@ -70,6 +70,43 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
         ua.setToUserId(uf.getFriendId());
         userApprovalService.resetStatus(ua);
     }
+
+    /**
+     * 删除熟人
+     *
+     * @param uf
+     */
+    @Transactional
+    @Override
+    public void delAcquaintances(UserFriend uf) {
+        // 修改tb_user_friend 状态
+        // 修改 tb_user_approval 状态
+        List<UserApproval> uaList = userApprovalService.findByFromUserIdAndToUserIdTwoWay(uf.getUserId(), uf.getFriendId());
+        List<UserFriend> ufList = this.findBy("(user_id = #{userId} and friend_id = #{friendId}) or (user_id = #{friendId} and friend_id = #{userId})",
+                Record.create().set("userId", uf.getUserId()).set("friendId", uf.getFriendId()));
+
+        updateUaListStatus(uaList);
+        updateUfListStatus(ufList);
+    }
+
+    private void updateUfListStatus(List<UserFriend> ufList) {
+        if (CollectionKit.isNotEmpty(ufList)) {
+            for (UserFriend uf : ufList) {
+                uf.setType(1);
+                this.update(uf);
+            }
+        }
+    }
+
+    private void updateUaListStatus(List<UserApproval> uaList) {
+        if (CollectionKit.isNotEmpty(uaList)) {
+            for (UserApproval ua : uaList) {
+                ua.setType(1);
+                userApprovalService.update(ua);
+            }
+        }
+    }
+
 
     @Override
     public void blank(UserFriend uf) {
@@ -90,7 +127,6 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
         this.deleteBy(where, record);
 
     }
-
 
 
     @Override
@@ -125,7 +161,8 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
 
     /**
      * 查看朋友的熟人
-     * @param userId  用户ID
+     *
+     * @param userId   用户ID
      * @param toUserId 目标用户ID
      * @return uservos
      */

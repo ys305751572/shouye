@@ -33,7 +33,7 @@ public class FriendsApi extends BaseController {
      * @param uf 好友信息
      * @return result
      */
-    @RequestMapping(value = "/del")
+    @RequestMapping(value = "/friend/del")
     @ResponseBody
     public String del(UserFriend uf) {
         try {
@@ -42,6 +42,18 @@ public class FriendsApi extends BaseController {
             e.printStackTrace();
             return fail();
         }
+        return success();
+    }
+
+    /**
+     * 删除熟人
+     * @param uf
+     * @return result
+     */
+    @PostMapping(value = "/acquaintances/del")
+    @ResponseBody
+    public String delAcquaintances(UserFriend uf) {
+        userFriendService.delAcquaintances(uf);
         return success();
     }
 
