@@ -423,4 +423,15 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         groupvo.setIsjoin(isjoin);
         return groupvo;
     }
+
+    /**
+     * 查询组织加入设置
+     * @param groupId 组织ID
+     * @return record
+     */
+    @Override
+    public Record findGroupJoinSetting(Integer groupId) {
+        String sql = "select is_join isJoin, is_introduce isIntroduce from tb_group where id = #{groupId}";
+        return Db.init().selectOne(sql, Record.create().set("groupId", groupId));
+    }
 }

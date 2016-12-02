@@ -75,6 +75,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 修改分组名称
+     *
      * @param userId   用户ID
      * @param grouping 分组ID
      * @param name     名字
@@ -91,13 +92,13 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 查询分组用户列表
+     *
      * @param groupingId 分组ID
      * @return uservolist
      */
     List<UserVo> findUserListByGroupingId(Integer groupingId);
 
     /**
-     *
      * @param defaultId 默认分组ID 1:熟人 2:同校 3:同组织
      * @return uservos
      */
@@ -187,6 +188,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 引荐用户列表
+     *
      * @param userId 用户ID
      * @return IntroduceUserVolist
      */
@@ -194,6 +196,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 设置组织是否允许加入
+     *
      * @param userId 当前用户ID
      * @param status 状态  1:开放 2:关闭
      * @return result
@@ -202,6 +205,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 设置组织是否允许引荐
+     *
      * @param userId 当前用户ID
      * @param status 状态  1:允许 2:拒绝
      */
@@ -209,6 +213,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 判断用户是否有默认分组
+     *
      * @param userId 当前用户ID
      * @return boolean
      */
@@ -216,7 +221,25 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 新增默认分组
+     *
      * @param userId 当前用户ID
      */
     void createDefaultGrouping(Integer userId);
+
+    /**
+     * 组织后台-加入组织审核
+     *
+     * @param userId    当前用户ID
+     * @param groupId   组织ID
+     * @param toUserIds 目标用户ID
+     */
+    void groupServerJoin(Integer userId, Integer groupId, String toUserIds, Integer status);
+
+    /**
+     * 组织后台-引荐审核
+     *
+     * @param userId  当前用户ID
+     * @param groupId 组织ID
+     */
+    void groupServerIntroduce(Integer userId, Integer groupId, String augIds, Integer status);
 }

@@ -23,10 +23,7 @@ import com.smallchill.web.model.Aug;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.model.UserinfoCareer;
-import com.smallchill.web.service.AugService;
-import com.smallchill.web.service.UserApprovalService;
-import com.smallchill.web.service.UserGroupService;
-import com.smallchill.web.service.UserInfoService;
+import com.smallchill.web.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -351,12 +348,12 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             // 先删除该用户所有专业信息
             userprofessionalService.deleteBy("user_id = #{userId}", Record.create().set("userId", userInfo.getUserId()));
             String[] professionals = professional.split("\\|");
-            String professionalLevel =  userInfo.getProfessionalLevel();
+            String professionalLevel = userInfo.getProfessionalLevel();
             String[] professionallevels = null;
             if (StringUtils.isNotBlank(professionalLevel)) {
                 professionallevels = userInfo.getProfessionalLevel().split("\\+");
             }
-            for (int i=0; i < professionals.length; i++) {
+            for (int i = 0; i < professionals.length; i++) {
                 String c = professionals[i];
                 if (StringUtils.isNotBlank(c)) {
                     String[] ss = c.split(",");
@@ -562,7 +559,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             _info.setProfessional(userinfo.getProfessional());
         }
         if (StringUtils.isNotBlank(userinfo.getZy()) || StringUtils.isNotBlank(userinfo.getSc())
-               || StringUtils.isNotBlank(userinfo.getZl()) || StringUtils.isNotBlank(userinfo.getZy2())) {
+                || StringUtils.isNotBlank(userinfo.getZl()) || StringUtils.isNotBlank(userinfo.getZy2())) {
             _info.setZy(StringUtils.isNotBlank(userinfo.getZy()) ? userinfo.getZy() : "");
             _info.setSc(StringUtils.isNotBlank(userinfo.getSc()) ? userinfo.getSc() : "");
             _info.setZl(StringUtils.isNotBlank(userinfo.getZl()) ? userinfo.getZl() : "");
@@ -1017,4 +1014,55 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         ufg.setName("同组织");
         userFriendGroupingService.save(ufg);
     }
+
+    /**
+     * 组织后台-加入组织审核
+     *
+     * @param userId   当前用户ID
+     * @param groupId  组织ID
+     * @param toUserIds 目标用户ID
+     */
+    @Override
+    public void groupServerJoin(Integer userId, Integer groupId, String toUserIds, Integer status) {
+        Record record = scanService.findMemeberByUserId(userId);
+        int _groupId = record.getInt("groupId");
+        if (_groupId == groupId) {
+            if (StringUtils.isBlank(toUserIds)) {
+                return;
+            }
+            String[] toUseridss = toUserIds.split(",");
+            for (String toUserId : toUseridss) {
+                Record record1 = Db.init().selectOne("select id from tb_group_approval ga where ga.group_id = #{groupId} and ga.user_id = #{userId} and ga.status = 1",
+                        Record.create().set("groupId", groupId).set("userId", toUserId));
+                int gaId = record1.getInt("id");
+                groupApprovalService.updateStatus(gaId, status);
+            }
+        }
+    }
+
+    /**
+     * 组织后台-引荐审核
+     *
+     * @param userId   当前用户ID
+     * @param augIds 申请记录ID
+     */
+    @Override
+    public void groupServerIntroduce(Integer userId, Integer groupId, String augIds, Integer status) {
+        Record record = scanService.findMemeberByUserId(userId);
+        int _groupId = record.getInt("groupId");
+        if (_groupId == groupId) {
+            if (StringUtils.isBlank(augIds)) {
+                return;
+            }
+            String[] augIdss = augIds.split(",");
+            for (String augId : augIdss) {
+                augService.updateStatus(Integer.parseInt(augId),status);
+            }
+        }
+    }
+
+    @Autowired
+    private ScanService scanService;
+    @Autowired
+    private GroupApprovalService groupApprovalService;
 }
