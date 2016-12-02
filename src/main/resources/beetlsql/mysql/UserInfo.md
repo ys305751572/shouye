@@ -2,18 +2,22 @@ list
 ===
 SELECT
   tui.id AS id,
+  tug.id AS groupId,
   tui.user_id AS userId,
   tui.avater AS avater,
   tul.login_username AS accountId,
   tui.username AS userName,
   tui.gender AS gender,
   tui.age AS age,
+  tui.age_interval_id AS ageIntervalId,
   tfd.num AS ageId,
+  tui.province_id AS provinceCode,
+  tui.city_id AS cityCode,
   tui.province_city AS provinceCity,
   tui.school AS school,
-  tui.career AS career,
-  tui.domain AS domain,
-  tui.professional AS professional,
+  GROUP_CONCAT(DISTINCT(tuc.name)) AS career,
+  GROUP_CONCAT(DISTINCT(tud.name)) AS domain,
+  GROUP_CONCAT(DISTINCT(tup.`pro_name`)) AS professional,
   tui.zy AS proficient,
   tui.sc AS adept,
   tui.zl AS seniority,
@@ -39,25 +43,27 @@ SELECT
   tul.create_time AS createTime,
   tul.last_login_time AS lastLoginTime,
   tul.status AS status,
-  GROUP_CONCAT(DISTINCT(tup.pro_id)) AS proId,
-  GROUP_CONCAT(DISTINCT(tuc.career_id)) AS careerId,
-  GROUP_CONCAT(DISTINCT(tud.domain_id)) AS domainId
+  GROUP_CONCAT(DISTINCT(tud.domain_id)) AS domainid,
+  GROUP_CONCAT(DISTINCT(tud.p_id)) AS domainPid,
+  GROUP_CONCAT(DISTINCT(tup.pro_id)) AS proid,
+  GROUP_CONCAT(DISTINCT(tup.p_id)) AS proPid,
+  GROUP_CONCAT(DISTINCT(tuc.carerrId)) AS carerrId
 FROM tb_user_info tui
   LEFT JOIN tb_userinfo_statistical tus ON tui.id = tus.user_id
-  LEFT JOIN (SELECT a.user_id AS user_id,a.vip_type AS vip_type, b.id AS id, b.name AS 
-_name,b.type AS _type FROM tb_user_group a LEFT JOIN tb_group b ON a.group_id = b.id) tug ON 
+  LEFT JOIN (SELECT a.user_id AS user_id,a.vip_type AS vip_type, b.id AS id, b.name AS
+_name,b.type AS _type FROM tb_user_group a LEFT JOIN tb_group b ON a.group_id = b.id) tug ON
 tui.user_id = tug.user_id
   LEFT JOIN tb_user_login tul ON tui.user_id = tul.id
-  LEFT JOIN tb_userinfo_career tuc ON tui.user_id = tuc.user_id
+  LEFT JOIN (SELECT a.user_id userId,a.career_id carerrId,b.name NAME FROM tb_userinfo_career a LEFT JOIN tfw_dict b ON a.career_id = b.ID) tuc ON tug.user_id = tuc.userId
   LEFT JOIN tb_userinfo_domain tud ON tui.user_id = tud.user_id
   LEFT JOIN tb_userinfo_professional tup ON tui.user_id = tup.user_id
-  LEFT JOIN (SELECT id,num,name FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id = 
+  LEFT JOIN (SELECT id,num,name FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id =
 tfd.id
 GROUP BY tui.user_id
 
 listPage
 ====
-select 
+select
     ui.user_id AS userId,
     ui.username,
     ui.avater,
@@ -79,8 +85,8 @@ select
     @}
     i.status istatus
 from tb_user_info ui
-LEFT JOIN tb_user_approval ua ON ((ui.user_id = ua.from_user_id OR ui.user_id = ua.to_user_id) 
-AND (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId})) 
+LEFT JOIN tb_user_approval ua ON ((ui.user_id = ua.from_user_id OR ui.user_id = ua.to_user_id)
+AND (ua.from_user_id = #{userId} OR ua.to_user_id = #{userId}))
 @if(!isEmpty(groupId)){
     RIGHT JOIN tb_user_group ug ON  (ug.user_id = ui.user_id and ug.group_id = #{groupId})
 @}
@@ -95,7 +101,7 @@ GROUP BY userId
 
 userInfoDetail
 ==============
-select 
+select
     ui.user_id userId,
     ui.username,
     ui.avater,
@@ -128,9 +134,9 @@ select
     ui.age,
     ui.industry_ranking,
     ui.qualification
-from tb_user_info ui 
-left join 
-    tfw_dict d 
+from tb_user_info ui
+left join
+    tfw_dict d
 on
    ui.org_type = d.id
 where ui.user_id = #{userId}
@@ -218,10 +224,10 @@ ON
   ga.`user_id` = ui.`user_id`
 WHERE ga.`group_id` = #{groupId}
   AND ga.`type` = 1 AND ga.`status` = 1
-  
+
 introduceUserList
 =================
-SELECT 
+SELECT
   ui1.user_id AS userId1,
   ui1.username AS username1,
   ui1.avater AS avater1,
@@ -254,11 +260,11 @@ SELECT
   ui2.professional professional2,
   ui2.desc desc2,
   ua.validate_info validateInfo2
-FROM tb_user_approval ua 
-LEFT JOIN 
-tb_user_info ui1 
-ON 
-ua.`from_user_id` = ui1.`user_id` 
+FROM tb_user_approval ua
+LEFT JOIN
+tb_user_info ui1
+ON
+ua.`from_user_id` = ui1.`user_id`
 LEFT JOIN
 tb_user_info ui2
 ON
@@ -284,18 +290,17 @@ SELECT
   ui.professional,
   ui.desc,
   uf.`label`
-FROM tb_user_friend_grouping_member ufgm 
+FROM tb_user_friend_grouping_member ufgm
 LEFT JOIN tb_user_friend uf
-ON uf.`friend_id` = ufgm.`friend_id` 
-LEFT JOIN tb_user_info ui 
+ON uf.`friend_id` = ufgm.`friend_id`
+LEFT JOIN tb_user_info ui
 ON ui.`user_id` = ufgm.`friend_id`
 WHERE ufgm.`ufg_id` = #{groupingId}
 
 findCareerList
 ==============
-SELECT 
+SELECT
 uc.`id`,uc.`career_id` careerId, uc.`user_id` userId, d.`NAME` `name`
-FROM tb_userinfo_career uc 
-LEFT JOIN tfw_dict d ON uc.`career_id` = d.`ID` 
+FROM tb_userinfo_career uc
+LEFT JOIN tfw_dict d ON uc.`career_id` = d.`ID`
 WHERE uc.`user_id` = #{userId}
-
