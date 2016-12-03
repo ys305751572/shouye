@@ -5,14 +5,18 @@ import com.smallchill.common.task.TimeWorkManager;
 import com.smallchill.core.constant.Cst;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.GridManager;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.web.meta.intercept.GroupIntercept;
 import com.smallchill.web.meta.task.SendTimeWork;
 import com.smallchill.web.meta.task.TestTimeWork;
+import com.smallchill.web.model.Group;
 import com.smallchill.web.model.UserInfo;
+import com.smallchill.web.service.GroupService;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
@@ -46,6 +50,8 @@ public class UserInfoController extends BaseController {
 	
 	@Autowired
 	UserInfoService userInfoService;
+	@Autowired
+	GroupService groupService;
 	
 	@RequestMapping(KEY_MAIN)
 	public String index(ModelMap mm) {
@@ -227,5 +233,50 @@ public class UserInfoController extends BaseController {
 		mm.put("userInfo", userInfo);
 		mm.put("code", CODE);
 		return BASE_PATH + "userInfo_content.html";
+	}
+
+
+
+	//跳转该组织的会员页面
+	@RequestMapping("/members"  + "/{id}")
+	public String groupMembers(ModelMap mm,@PathVariable String id) {
+		Group group = groupService.findById(id);
+		ShiroKit.getSession().setAttribute("groupMembers",group);
+		String index = "membersList";
+		mm.put("code", CODE);
+		mm.put("list", index);
+		return BASE_PATH+"userInfo.html";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/membersList")
+	public Object membersList() {
+		JqGrid grid = (JqGrid)paginate(LIST_SOURCE,new GroupIntercept());
+		Integer page = getParameterToInt("page", 1);
+		Integer rows = userInfoService.findAll().size();
+		String where = getParameter("where", "");
+		String sidx = getParameter("sidx", "");
+		String sord = getParameter("sord", "");
+		String sort = getParameter("sort", "");
+		String order = getParameter("order", "");
+
+		if (StrKit.notBlank(sidx)) {
+			sort = sidx + " " + sord
+					+ (StrKit.notBlank(sort) ? ("," + sort) : "");
+		}
+
+		JqGrid grid1 = (JqGrid) GridManager.paginate(null, page, rows, LIST_SOURCE, where, sort, order, Cst.me().getDefaultPageFactory(), this);
+		List<Integer> ids = new ArrayList<>();
+		List<CaseInsensitiveHashMap> list = grid1.getRows();
+		//查询结果所有ID
+		for (CaseInsensitiveHashMap map : list) {
+			Integer id = (Integer) map.get("userId");
+			ids.add(id);
+		}
+
+		getRequest().getSession().setAttribute("userInfoIds",ids);
+		getRequest().getSession().setAttribute("userInfoNum",list.size());
+
+		return grid;
 	}
 }

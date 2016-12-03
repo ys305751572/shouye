@@ -31,7 +31,9 @@ SELECT
   tug.vip_type AS vipType,
   tug.join_type AS joinType,
   GROUP_CONCAT(DISTINCT(tuc.classification)) AS classification,
+  GROUP_CONCAT(DISTINCT(tuc.classificationId)) AS classificationId,
   GROUP_CONCAT(DISTINCT(tut.tag)) AS tag,
+  GROUP_CONCAT(DISTINCT(tut.tagId)) AS tagId,
   GROUP_CONCAT(DISTINCT(tud.domain_id)) AS domainid,
   GROUP_CONCAT(DISTINCT(tud.p_id)) AS domainPid,
   GROUP_CONCAT(DISTINCT(tup.pro_id)) AS proid,
@@ -40,8 +42,8 @@ SELECT
 FROM tb_user_group tug
   LEFT JOIN tb_group tg ON tug.group_id = tg.id
   LEFT JOIN tb_user_info tui ON tui.user_id = tug.user_id
-  LEFT JOIN (SELECT a.user_id userId, b.classification classification ,b.group_id groupId FROM tb_user_classification a LEFT JOIN tb_classification b ON a.classification_id = b.id) tuc ON tug.user_id = tuc.userId AND tug.group_id = tuc.groupId
-  LEFT JOIN (SELECT a.user_id userId, b.tag tag, b.group_id groupId FROM tb_user_tag a LEFT JOIN tb_tag b ON a.tag_id = b.id) tut ON tug.user_id = tut.userId AND tug.group_id = tut.groupId
+  LEFT JOIN (SELECT a.classification_id AS classificationId,a.user_id userId, b.classification classification ,b.group_id groupId FROM tb_user_classification a LEFT JOIN tb_classification b ON a.classification_id = b.id) tuc ON tug.user_id = tuc.userId AND tug.group_id = tuc.groupId
+  LEFT JOIN (SELECT a.tag_id AS tagId,a.user_id userId, b.tag tag, b.group_id groupId FROM tb_user_tag a LEFT JOIN tb_tag b ON a.tag_id = b.id) tut ON tug.user_id = tut.userId AND tug.group_id = tut.groupId
   LEFT JOIN (SELECT a.user_id userId,a.career_id carerrId,b.name NAME FROM tb_userinfo_career a LEFT JOIN tfw_dict b ON a.career_id = b.ID) tucr ON tug.user_id = tucr.userId
   LEFT JOIN tb_userinfo_domain tud ON tug.user_id = tud.user_id
   LEFT JOIN tb_userinfo_professional tup ON tup.user_id = tud.user_id

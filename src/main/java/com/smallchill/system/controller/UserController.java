@@ -20,12 +20,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.smallchill.system.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.smallchill.common.base.BaseController;
 import com.smallchill.common.vo.User;
@@ -47,6 +46,9 @@ import com.smallchill.system.meta.intercept.PasswordValidator;
 import com.smallchill.system.meta.intercept.UserIntercept;
 import com.smallchill.system.meta.intercept.UserValidator;
 import com.smallchill.system.model.RoleExt;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/user")
@@ -445,6 +447,5 @@ public class UserController extends BaseController implements ConstShiro{
 
 		return json(dept);
 	}
-	
-	
+
 }

@@ -2,7 +2,7 @@ list
 ===
 SELECT
   tui.id AS id,
-  tug.id AS groupId,
+  GROUP_CONCAT(DISTINCT(tug.id)) AS groupId,
   tui.user_id AS userId,
   tui.avater AS avater,
   tul.login_username AS accountId,

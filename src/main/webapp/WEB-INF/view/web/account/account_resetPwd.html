@@ -1,0 +1,171 @@
+@layout("/common/_curd/_container.html"){
+<!-- PAGE CONTENT BEGINS -->
+
+<style>
+    .but{
+        width: 50px;
+        height: 34px;
+        background: #6fb3e0;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 1px;
+        cursor: pointer;
+
+    }
+    .but:hover, .but:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #6fb3e0;
+    }
+</style>
+
+
+<form class="form-horizontal" role="form">
+    <div class="space-4"></div>
+
+    <div class="form-group" >
+        <label class="col-sm-2 control-label no-padding-right" > 手机号 </label>
+        <div class="col-sm-5"  style="text-align:center">
+            <input type="text" id="mobile" name="mobile" class="form-control"  value="" placeholder="" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" >验证码</label>
+        <div class="col-sm-5">
+            <input type="text" id="verification_code" name="verification_code" value="" placeholder="" class="form-control" />
+        </div>
+        <div class="col-sm-1">
+            <input type="button" name="" class="but" value="获取" onclick="checkMobile()"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 新密码 </label>
+        <div class="col-sm-5">
+            <input type="password" id="pwd" name="pwd" class="form-control"  value="" placeholder="" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" > 再次确认 </label>
+        <div class="col-sm-5">
+            <input type="password" id="pwd1" name="pwd" class="form-control"  value="" placeholder="" />
+        </div>
+    </div>
+
+    <div class="clearfix form-group center" style="margin-top:15px;margin-bottom:5px;">
+        <div class="col-md-offset-1 col-md-3">
+            <button class="btn btn-info" type="button" onclick="setPwd()">
+                <i class="ace-icon fa fa-check bigger-110"></i>
+                设置
+            </button>
+        </div>
+    </div>
+
+    <script src="${basePath}/static/layer/layer.js"></script>
+    <script src="${basePath}/static/laydate/laydate.js"></script>
+    <script type="text/javascript">
+        var layerIndex = parent.layer.getFrameIndex(window.name);
+
+        function gain(){
+
+        }
+
+        function checkMobile(){
+            var mobile = $("#mobile").val();
+            $.post(
+                    "${ctxPath}/${code}/checkMobile",
+                    {
+                        mobile:mobile
+                    },
+                    function(data){
+                        if (data.code === 0) {
+                            //验证码
+                            gain();
+                        } else {
+                            layer.msg(data.message, {
+                                time: 500
+                            });
+                        }
+
+                    },"json"
+            )
+
+        }
+
+        function setPwd(){
+            var mobile = $("#mobile").val();
+            var pwd = $("#pwd").val();
+            var pwd1 = $("#pwd1").val();
+            var verification_code = $("#verification_code").val();
+
+            if(mobile == null || mobile == ""){
+                layer.msg('手机号不能为空', {
+                    time: 1000
+                });
+                return;
+            }
+
+            if(pwd == null || pwd == ""){
+                layer.msg('新密码不能为空', {
+                    time: 1000
+                });
+                return;
+            }
+
+            if(pwd1 == null || pwd1 == ""){
+                layer.msg('新密码不能为空', {
+                    time: 1000
+                });
+                return;
+            }
+
+            if(verification_code == null || verification_code == ""){
+                layer.msg('验证码不能为空', {
+                    time: 1000
+                });
+                return;
+            }
+
+            if(pwd1 != pwd){
+                layer.msg('两次密码不一样', {
+                    time: 1000
+                });
+                return;
+            }
+
+            $.post(
+                "${ctxPath}/${code}/setPwd",
+                {
+                    mobile:mobile,
+                    pwd:pwd,
+                    verificationCode:verification_code
+                },
+                function(data){
+                    if (data.code === 0) {
+                        layer.msg(data.message, {
+                            time: 500
+                        },function(){
+                            parent.layer.close(layerIndex);
+                        });
+                    } else {
+                        layer.msg(data.message, {
+                            time: 500
+                        });
+                    }
+
+                },"json"
+            )
+
+        }
+
+        $(function(){
+
+
+
+        });
+    </script>
+
+    <div class="space-4"></div>
+</form>
+@}

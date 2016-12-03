@@ -20,7 +20,9 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.smallchill.common.vo.User;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.system.service.UserService;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.GroupExtend;
 import com.smallchill.web.service.GroupExtendService;
@@ -60,6 +62,8 @@ public class LoginController extends BaseController implements Const{
 	GroupService groupService;
 	@Autowired
 	GroupExtendService groupExtendService;
+	@Autowired
+	UserService userService;
 
 	private static Logger log = LoggerFactory.getLogger(LoginController.class);
 
@@ -162,5 +166,5 @@ public class LoginController extends BaseController implements Const{
 			LogKit.logNothing(ex);
 		}
 	}
-	
+
 }

@@ -335,6 +335,24 @@
                 select(id, key);
             }, "json");
         }
+        else if (type == "searchClassification") {
+            $.post("${basePath}/cache/search_classification", {num: num}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key);
+            }, "json");
+        }
+        else if (type == "searchTag") {
+            $.post("${basePath}/cache/search_tag", {num: num}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key);
+            }, "json");
+        }
         else if (type == "getProvince") {
             $.post("${basePath}/cache/getProvince", {num: num}, function (data) {
                 if (data.code === 0) {

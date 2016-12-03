@@ -12,7 +12,7 @@ public class GroupIntercept extends PageIntercept {
 
     public void queryBefore(AopContext ac) {
         Group group = (Group) ShiroKit.getSession().getAttribute("groupMembers");
-        String condition = "and groupId ="+group.getId()+" ";
+        String condition = "and groupId LIKE '%"+group.getId()+"%' ";
         ac.setCondition(condition);
     }
 

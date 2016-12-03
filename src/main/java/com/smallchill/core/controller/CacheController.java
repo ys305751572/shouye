@@ -22,8 +22,13 @@ import java.util.Objects;
 
 import com.smallchill.system.model.Dict;
 import com.smallchill.system.service.DictService;
+import com.smallchill.web.model.Classification;
+import com.smallchill.web.model.Group;
 import com.smallchill.web.model.ProvinceCity;
+import com.smallchill.web.model.Tag;
+import com.smallchill.web.service.ClassificationService;
 import com.smallchill.web.service.ProvinceCityService;
+import com.smallchill.web.service.TagService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,6 +56,10 @@ public class CacheController extends BladeController {
 	DictService dictService;
 	@Autowired
 	ProvinceCityService provinceCityService;
+	@Autowired
+	ClassificationService classificationService;
+	@Autowired
+	TagService tagService;
 
 	public void index() {
 
@@ -510,5 +519,55 @@ public class CacheController extends BladeController {
 		return json(sb.toString());
 	}
 
+
+	/**
+	 * 组织会员 分组
+	 */
+
+	@RequestMapping("/search_classification")
+	@ResponseBody
+	public AjaxResult search_classification(){
+		Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+		List<Classification> classifications;
+		if(group!=null && group.getId()!=null){
+			classifications = classificationService.findBy("group_id = #{groupId} ", Record.create().set("groupId",group.getId()));
+		}else {
+			classifications = new ArrayList<>();
+		}
+		StringBuilder sb = new StringBuilder();
+		String id = "search_classification";
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\""+id+"\">");
+		sb.append("<option value></option>");
+		for (Classification classification : classifications) {
+			sb.append("<option value=\"" + classification.getId() + "\">" + classification.getClassification() + "</option>");
+		}
+		sb.append("</select>");
+		return json(sb.toString());
+	}
+
+	/**
+	 * 组织会员 tag
+	 */
+
+	@RequestMapping("/search_tag")
+	@ResponseBody
+	public AjaxResult search_tag(){
+		Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+		List<Tag> tags;
+		if(group!=null && group.getId()!=null){
+			tags = tagService.findBy("group_id = #{groupId} ", Record.create().set("groupId",group.getId()));
+		}else {
+			tags = new ArrayList<>();
+		}
+		StringBuilder sb = new StringBuilder();
+		String id = "search_tag";
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\""+id+"\">");
+		sb.append("<option value></option>");
+		for (Tag tag : tags) {
+			sb.append("<option value=\"" + tag.getId() + "\">" + tag.getTag() + "</option>");
+		}
+		sb.append("</select>");
+		return json(sb.toString());
+	}
 
 }
