@@ -259,7 +259,8 @@ SELECT
   ui2.career career2,
   ui2.professional professional2,
   ui2.desc desc2,
-  ua.validate_info validateInfo2
+  ua.validate_info validateInfo2,
+  ua.id
 FROM tb_user_approval ua
 LEFT JOIN
 tb_user_info ui1
