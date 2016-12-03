@@ -36,6 +36,17 @@ public class UserLastReadTime extends BaseModel {
     @Column(name = "group")
     private Long group = 0L;
 
+    @Column(name = "feekback")
+    private Long feekback = 0L;
+
+    public Long getFeekback() {
+        return feekback;
+    }
+
+    public void setFeekback(Long feekback) {
+        this.feekback = feekback;
+    }
+
     public Long getGroup() {
         return group;
     }

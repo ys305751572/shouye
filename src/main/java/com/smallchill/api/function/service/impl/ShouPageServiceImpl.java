@@ -164,8 +164,9 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      * @param userId 用户ID
      * @return 最后读取信息
      */
+    @Override
     public UserLastReadTime lastReadTimeByUserId(Integer userId) {
-        UserLastReadTime ult = userLastReadTimeService.findFirstBy("user_id", Record.create().set("userId", userId));
+        UserLastReadTime ult = userLastReadTimeService.findFirstBy("user_id = #{userId}", Record.create().set("userId", userId));
         if (ult == null) {
             return new UserLastReadTime();
         }
@@ -177,6 +178,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         newUlt.setInterested(ult.getInterested() == null ? 0 : ult.getInterested());
         newUlt.setId(ult.getId());
         newUlt.setNewTime(ult.getNewTime() == null ? 0 : ult.getNewTime());
+        newUlt.setFeekback(ult.getFeekback() == null ? 0 : ult.getFeekback());
         return newUlt;
     }
 
@@ -185,6 +187,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      *
      * @param urt 最后读取信息
      */
+    @Override
     public void updateUserLastReadTime(Integer userId, UserLastReadTime urt) {
         urt.setUserId(userId);
         if (urt.getId() == null) {

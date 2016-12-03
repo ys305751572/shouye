@@ -1,5 +1,6 @@
 package com.smallchill.api.function.service;
 
+import com.smallchill.api.function.modal.UserLastReadTime;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.InteresteGroupAndUser;
 import com.smallchill.api.function.modal.vo.ShouPageVo;
@@ -20,7 +21,11 @@ public interface ShoupageService {
 
     int countNew(Integer userId, Long date);
 
+    UserLastReadTime lastReadTimeByUserId(Integer userId);
+
     Map<String, List<UserVo>> listNew(Integer userId);
+
+    void updateUserLastReadTime(Integer userId, UserLastReadTime urt);
 
     int countIntereste(Integer userId, Long date);
 

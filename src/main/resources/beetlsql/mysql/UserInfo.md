@@ -261,13 +261,6 @@ SELECT
   ui2.desc desc2,
   ua.validate_info validateInfo2,
   ua.id
-FROM tb_user_approval ua
-LEFT JOIN
-tb_user_info ui1
-ON
-  ua.`from_user_id` = ui1.`user_id`
-  ua.validate_info validateInfo2,
-  ua.id
 FROM tb_approval_user_group ua 
 LEFT JOIN 
 tb_user_info ui1 

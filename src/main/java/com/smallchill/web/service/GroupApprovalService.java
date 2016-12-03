@@ -29,7 +29,7 @@ public interface GroupApprovalService extends IService<GroupApproval> {
      * @throws UserHasJoinGroupException
      * @throws UserInOthersBlankException
      */
-    void join(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException;
+    int join(GroupApproval ga) throws UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException;
 
     /**
      * 邀请用户加入组织

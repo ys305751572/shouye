@@ -114,7 +114,33 @@ public class PrepayIdRequestHandler extends RequestHandler {
         return prepayid;
     }
 
-    // �ж�access_token�Ƿ�ʧЧ
+    /**
+     * 退款
+     * @return
+     * @throws JSONException
+     */
+    public Map<String, Object> refund() throws JSONException {
+        String params = XMLUtil.mapToXml(super.getAllParameters());
+        String requestUrl = ConstantUtil.REFUNDEURL;
+        this.setDebugInfo(this.getDebugInfo() + "\r\n" + "requestUrl:" + requestUrl);
+        TenpayHttpClient httpClient = new TenpayHttpClient();
+        httpClient.setReqContent(requestUrl);
+        String resContent;
+        this.setDebugInfo(this.getDebugInfo() + "\r\n" + "post data:" + params);
+
+
+        Map<String, Object> resultMap = null;
+        if (httpClient.callHttpPost(requestUrl, params)) {
+            resContent = httpClient.getResContent();
+            try {
+                resultMap = XMLUtil.doXMLParse(resContent);
+            } catch (JDOMException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return resultMap;
+    }
+
     public String sendAccessToken() {
         String accesstoken = "";
         StringBuffer sb = new StringBuffer("{");

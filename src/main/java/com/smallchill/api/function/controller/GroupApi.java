@@ -153,7 +153,6 @@ public class GroupApi extends BaseController {
         } catch (UserInOthersBlankException e) {
             return fail(ErrorType.ERROR_CODE_USERINBLANK);
         } catch (Exception e) {
-            e.printStackTrace();
             return fail(ErrorType.ERROR_CODE_SERVER_EXCEPTION);
         }
         return success();

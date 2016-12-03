@@ -27,6 +27,8 @@ public class Order extends BaseModel {
     //订单编号
     @Column(name = "order_no")
     private String orderNo;
+    @Column(name = "ga_id")
+    private Integer gaId;
     //订单金额
     @Column(name = "order_amount")
     private Double orderAmount;
@@ -38,6 +40,14 @@ public class Order extends BaseModel {
     private Integer status;
     @Column(name = "create_time")
     private Long createTime;
+
+    public Integer getGaId() {
+        return gaId;
+    }
+
+    public void setGaId(Integer gaId) {
+        this.gaId = gaId;
+    }
 
     public Integer getId() {
         return id;

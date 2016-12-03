@@ -134,13 +134,14 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
 
     @Override
-    public void join(GroupApproval ga) throws UserInOthersBlankException,
+    public int join(GroupApproval ga) throws UserInOthersBlankException,
             UserHasApprovalException, UserHasJoinGroupException {
         // 是否已经发送申请
         if (!isApprival(ga)) {
             ga.setCreateTime(DateTimeKit.nowLong());
-            save1(ga);
+            return save1(ga);
         }
+        return 0;
     }
 
     @Override
@@ -338,8 +339,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
      *
      * @param ga 申请信息
      */
-    private void save1(GroupApproval ga) {
-        this.save(ga);
+    private int save1(GroupApproval ga) {
+        return this.saveRtId(ga);
     }
 
 

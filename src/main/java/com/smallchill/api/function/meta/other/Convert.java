@@ -6,6 +6,7 @@ import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.SearchResult;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.web.model.Refund;
 import com.smallchill.web.model.UserInfo;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * record转换对应的vo
@@ -213,6 +215,16 @@ public class Convert {
         vo.setStatus(type == null ? NOT_FRINED : type);
     }
 
+    /**
+     * 退款返回map,转换为refund实体类
+     * @param resultMap
+     * @return
+     */
+    public static Refund resultMapToRefund(Map<String,Object> resultMap) {
+
+
+        return new Refund();
+    }
     public static int NOT_FRINED = 2000; // 未结识
     public static int FRIEND = 2001; // 已结识
     public static int NOT_PROCESS_FROM_USER_ID = 2002; // 显示忽略 结识按钮

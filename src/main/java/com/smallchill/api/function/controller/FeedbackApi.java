@@ -1,7 +1,10 @@
 package com.smallchill.api.function.controller;
 
 import com.smallchill.api.common.plugin.CommonUtils;
+import com.smallchill.api.function.modal.UserLastReadTime;
+import com.smallchill.api.function.service.ShoupageService;
 import com.smallchill.common.base.BaseController;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.CommonKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
@@ -26,6 +29,9 @@ public class FeedbackApi extends BaseController {
     @Autowired
     private FeekbackService feekbackService;
 
+    @Autowired
+    private ShoupageService shoupageService;
+
     /**
      * 新增反馈
      * @param userId 当前用户ID
@@ -41,6 +47,7 @@ public class FeedbackApi extends BaseController {
         fb.setRno(CommonKit.getNo());
         fb.setAdminId(0);
         fb.setCreateTime(DateTimeKit.nowLong());
+        fb.setUpdateTime(0L);
         try {
             feekbackService.save(fb);
         } catch (Exception e) {
@@ -59,6 +66,10 @@ public class FeedbackApi extends BaseController {
     @PostMapping(value = "/list")
     public String list(Integer userId) {
         List<Feekback> list;
+        UserLastReadTime ult = shoupageService.lastReadTimeByUserId(userId);
+        ult.setFeekback(DateTimeKit.nowLong());
+        shoupageService.updateUserLastReadTime(userId, ult);
+
         try {
             list = feekbackService.findBy("user_id = #{userId}", Record.create().set("userId", userId));
             for (Feekback feekback : list) {
@@ -71,5 +82,21 @@ public class FeedbackApi extends BaseController {
             return fail();
         }
         return success(list);
+    }
+
+    /**
+     * 未读数
+     * @param userId 当前用户
+     * @return result
+     */
+    @PostMapping(value = "/unread")
+    @ResponseBody
+    public String unreadCount(Integer userId) {
+
+        UserLastReadTime ult = shoupageService.lastReadTimeByUserId(userId);
+        Long lastReadTime = ult.getFeekback();
+        String sql = "select count(*) as counts from tb_feekback where update_time > #{lastReadTime}";
+        Record record = Db.init().selectOne(sql, Record.create().set("lastReadTime",lastReadTime));
+        return success(record.getInt("counts"), "counts");
     }
 }

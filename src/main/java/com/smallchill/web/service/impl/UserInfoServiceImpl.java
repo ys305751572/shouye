@@ -254,7 +254,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
      */
     @Override
     public String findUsernameByUserId(Integer userId) {
-        String sql = "select username from user_info where user_id = #{userId}";
+        String sql = "select username from tb_user_info where user_id = #{userId}";
         UserInfo userInfo = this.findFirst(sql, Record.create().set("userId", userId));
         return userInfo.getUsername();
     }
