@@ -15,7 +15,7 @@
 	});
 	
 	function initGrid(){
-		var grid_url = ctx + "/${code}/list";
+		var grid_url = ctx + "/${code}/${list}";
 		var _colnames = [
 				"id",
 				"userId",
@@ -260,8 +260,13 @@
 			@ var _col=[
 			@	{name:"性别",index:"gender", type:"select_101"},
 			@	{name:"年龄",index:"ageId", type:"select_904"},
-			@	{name:"事业状态",index:"careerId", type:"selectId_905"},
-			@	{name:"行业",index:"domainId", type:"select1_906"},
+			@	{name:"事业状态",index:"carerrId_like", type:"selectId_905"},
+			@	{name:"省",index:"provinceCode", type:"getProvince"},
+			@	{name:"市",index:"cityCode", type:"getCity"},
+			@	{name:"行业",index:"domainPid_like", type:"getPid_906"},
+			@	{name:"领域",index:"domainid_like", type:"getCid_906"},
+			@	{name:"职业",index:"proPid_like", type:"getPid_910"},
+			@	{name:"专业",index:"proid_like", type:"getCid_910"},
 			@	{name:"组织类型",index:"groupType", type:"select_908"},
 			@	{name:"产品服务",index:"productType", type:"select_912"},
 			@	{name:"有无组织",index:"groupStatus", type:"select_916"},

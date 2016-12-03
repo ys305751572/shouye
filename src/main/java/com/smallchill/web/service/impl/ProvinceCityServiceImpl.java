@@ -32,9 +32,28 @@ public class ProvinceCityServiceImpl extends BaseService<ProvinceCity> implement
                                         "  parent_code AS parentCode\n" +
                                         "FROM\n" +
                                         "  tb_province_city \n" +
-                                        "WHERE parent_code = '0' ");
+                                        "WHERE parent_code = '0' AND code <> '0' ");
                     }
                 });
         return province;
+    }
+
+    @Override
+    public List<Map<String, Object>> city(){
+        List<Map<String, Object>> city = CacheKit.get(ConstCache.CITY_CACHE, "city_all",
+                new ILoader() {
+                    public Object load() {
+                        return Db.init().selectList(
+                                "SELECT \n" +
+                                        "  id AS id,\n" +
+                                        "  code AS code,\n" +
+                                        "  name AS name,\n" +
+                                        "  parent_code AS parentCode\n" +
+                                        "FROM\n" +
+                                        "  tb_province_city \n" +
+                                        "WHERE parent_code <> '0' ");
+                    }
+                });
+        return city;
     }
 }

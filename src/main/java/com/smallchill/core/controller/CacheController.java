@@ -15,11 +15,16 @@
  */
 package com.smallchill.core.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.smallchill.system.model.Dict;
 import com.smallchill.system.service.DictService;
+import com.smallchill.web.model.ProvinceCity;
+import com.smallchill.web.service.ProvinceCityService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +49,8 @@ public class CacheController extends BladeController {
 
 	@Autowired
 	DictService dictService;
+	@Autowired
+	ProvinceCityService provinceCityService;
 
 	public void index() {
 
@@ -387,50 +394,121 @@ public class CacheController extends BladeController {
 		return json(sb.toString());
 	}
 
-
 	/**
-	 * 字典父子关联 父类select
+	 * 省查询框
 	 * @return
      */
+	@RequestMapping("/getProvince")
 	@ResponseBody
-	@RequestMapping("/getSelect1")
-	public AjaxResult getSelect1() {
+	public AjaxResult province(){
 		final String code = getParameter("code");
 		final String num = getParameter("num");
-		Dict _dict = dictService.findFirstBy("code = #{code} AND pid= '0' ", Record.create().set("code", code));
-		List<Dict> _dictlist = dictService.findBy("pid = #{pid} ", Record.create().set("pid", _dict.getId()));
+		List<Map<String, Object>> provinces = provinceCityService.province();
 		StringBuilder sb = new StringBuilder();
-		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
-				+ num + "\">");
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"search_province\">");
 		sb.append("<option value></option>");
-		for(Dict d : _dictlist){
-			sb.append("<option value=\"" + d.getId() + "\">" + d.getName() + "</option>");
+		for (Map<String, Object> province : provinces) {
+			sb.append("<option value=\"" + province.get("code") + "\">" + province.get("name") + "</option>");
 		}
 		sb.append("</select>");
 		return json(sb.toString());
 	}
 
 	/**
-	 * 字典父子关联 子类select
+	 * 市查询框
 	 * @return
      */
+	@RequestMapping("/getCity")
 	@ResponseBody
-	@RequestMapping("/getSelect2")
-	public AjaxResult getSelect2() {
-		final String id = getParameter("id");
-		final String num = getParameter("num");
-		List<Dict> _dictlist = dictService.findBy("pid = #{pid} ", Record.create().set("pid", id));
+	public AjaxResult city(){
+		final String code = getParameter("val");
+		List<ProvinceCity> citys;
+ 		if(StringUtils.isNoneBlank(code)){
+			citys = provinceCityService.findBy("parent_code = #{code} ", Record.create().set("code",code));
+		}else {
+			citys = new ArrayList<>();
+		}
 		StringBuilder sb = new StringBuilder();
-		sb.append("<div id=\"child\">");
-		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"inputs"
-				+ num + "\">");
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"search_city\">");
 		sb.append("<option value></option>");
-		sb.append("</div>");
-		for(Dict d : _dictlist){
-			sb.append("<option value=\"" + d.getId() + "\">" + d.getName() + "</option>");
+		for (ProvinceCity city : citys) {
+			sb.append("<option value=\"" + city.getCode() + "\">" + city.getName() + "</option>");
 		}
 		sb.append("</select>");
 		return json(sb.toString());
 	}
+
+	/**
+	 * 行业OR职业 查询框
+	 * @return
+	 */
+	@RequestMapping("/getPid")
+	@ResponseBody
+	public AjaxResult getPid(){
+		final String code = getParameter("code");
+		List<Map<String, Object>> dicts = CacheKit.get(DICT_CACHE, "dict_pid"+code,
+				new ILoader() {
+					public Object load() {
+						return Db.init().selectList(
+								"SELECT \n" +
+								"  b.id AS id,\n" +
+								"  b.name AS name\n" +
+								"FROM\n" +
+								"  tfw_dict a \n" +
+								"  LEFT JOIN tfw_dict b \n" +
+								"    ON a.id = b.pid \n" +
+								"WHERE a.CODE = #{code} AND a.pid=0"
+						,Record.create().set("code",code));
+					}
+				});
+		StringBuilder sb = new StringBuilder();
+		String id = "";
+		if(Objects.equals(code, "906")){
+			id = "search_pid_domain";
+		}
+		if(Objects.equals(code, "910")){
+			id = "search_pid_professional";
+		}
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\""+id+"\">");
+		sb.append("<option value></option>");
+		for (Map<String, Object> dict : dicts) {
+			sb.append("<option value=\"" + dict.get("id") + "\">" + dict.get("name") + "</option>");
+		}
+		sb.append("</select>");
+		return json(sb.toString());
+	}
+
+	/**
+	 * 领域查询框
+	 * @return
+	 */
+	@RequestMapping("/getCid")
+	@ResponseBody
+	public AjaxResult getCid(){
+		final String code = getParameter("code");
+		final String pid = getParameter("val");
+		List<Dict> dicts;
+		if(StringUtils.isNoneBlank(pid)){
+			dicts = dictService.findBy("PID = #{PID} ", Record.create().set("PID",pid));
+		}else {
+			dicts = new ArrayList<>();
+		}
+		StringBuilder sb = new StringBuilder();
+		String id = "";
+		if(Objects.equals(code, "906")){
+			id = "search_domain";
+		}
+		if(Objects.equals(code, "910")){
+			id = "search_professional";
+		}
+		sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\""+id+"\">");
+		sb.append("<option value></option>");
+		for (Dict dict : dicts) {
+			sb.append("<option value=\"" + dict.getId() + "\">" + dict.getName() + "</option>");
+		}
+		sb.append("</select>");
+		return json(sb.toString());
+	}
+
 
 }

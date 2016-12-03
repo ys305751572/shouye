@@ -28,6 +28,7 @@ import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.system.meta.intercept.UserValidator;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
+import com.smallchill.web.service.GroupService;
 import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,8 @@ public class UserApi extends BaseController implements ConstCache {
     private MessageService messageService;
     @Autowired
     private VcodeService vcodeService;
-
+    @Autowired
+    private GroupService groupService;
 
     /**
      * 全局用户列表
@@ -175,7 +177,7 @@ public class UserApi extends BaseController implements ConstCache {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return success(userVo,"userinfo");
+        return success(userVo, "userinfo");
     }
 
     /**
@@ -209,8 +211,8 @@ public class UserApi extends BaseController implements ConstCache {
     @RequestMapping(value = "/blank")
     @ResponseBody
     @Before(UserBlankValidate.class)
-    public String blank(UserApproval ua) {
-        userApprovalService.userApprovalBlank(ua);
+    public String blank(UserApproval ua, String toUserIds) {
+        userApprovalService.userApprovalBlank(ua, toUserIds);
         return success();
     }
 
@@ -222,8 +224,8 @@ public class UserApi extends BaseController implements ConstCache {
     @RequestMapping(value = "/unblank")
     @ResponseBody
     @Before(UserBlankValidate.class)
-    public String unBlank(UserApproval ua, String userIds) {
-        userApprovalService.userApprovalUnBlank(ua, userIds);
+    public String unBlank(UserApproval ua, String toUserIds) {
+        userApprovalService.userApprovalUnBlank(ua, toUserIds);
         return success();
     }
 
@@ -576,6 +578,45 @@ public class UserApi extends BaseController implements ConstCache {
     }
 
     /**
+     * 组织后台-加入组织审核
+     *
+     * @param userId    当前用户ID
+     * @param groupId   组织ID
+     * @param toUserIds 目标用户ID
+     * @return result
+     */
+    @PostMapping(value = "/groupserver/join")
+    @ResponseBody
+    public String groupServerJoin(Integer userId, Integer groupId, String toUserIds, Integer status) {
+        try {
+            userInfoService.groupServerJoin(userId, groupId, toUserIds, status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success();
+    }
+
+    /**
+     * 组织后台-引荐审核
+     *
+     * @param userId 当前用户ID
+     * @param augIds 信息ID
+     * @return result
+     */
+    @PostMapping(value = "/groupserver/introduce")
+    @ResponseBody
+    public String groupServerIntroduce(Integer userId, Integer groupId, String augIds, Integer status) {
+        try {
+            userInfoService.groupServerIntroduce(userId, groupId, augIds, status);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success();
+    }
+
+
+    /**
      * 设置组织是否允许加入
      *
      * @param userId 当前用户ID
@@ -613,5 +654,16 @@ public class UserApi extends BaseController implements ConstCache {
         return success();
     }
 
-
+    /**
+     * 获取组织设置信息
+     *
+     * @param groupId 组织ID
+     * @return result
+     */
+    @PostMapping(value = "/groupserver/setting")
+    @ResponseBody
+    @Before(GroupUserValidate.class)
+    public String findGroupserverSetting(Integer groupId) {
+        return success(groupService.findGroupJoinSetting(groupId), "groupserverSetting");
+    }
 }

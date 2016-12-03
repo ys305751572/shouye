@@ -12,5 +12,7 @@ import java.util.Map;
  */
 public interface ProvinceCityService extends IService<ProvinceCity> {
 
-    public List<Map<String, Object>> province();
+    List<Map<String, Object>> province();
+
+    List<Map<String, Object>> city();
 }

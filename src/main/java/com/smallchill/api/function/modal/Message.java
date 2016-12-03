@@ -25,7 +25,7 @@ public class Message extends BaseModel {
     @Column(name = "to_id")
     private Integer toId;
     @Column(name = "label")
-    private String label;
+    private String label = "";
     @Column(name = "title")
     private String title;
     @Column(name = "content")

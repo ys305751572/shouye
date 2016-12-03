@@ -49,7 +49,9 @@ public class UserInfoController extends BaseController {
 	
 	@RequestMapping(KEY_MAIN)
 	public String index(ModelMap mm) {
+		String index = "list";
 		mm.put("code", CODE);
+		mm.put("list", index);
 		return BASE_PATH + "userInfo.html";
 	}
 

@@ -14,6 +14,6 @@ public class UserBlankValidate extends ApiValidator{
     protected void doValidate(Invocation inv) {
         validateRequired("fromUserId", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
         validateRequired("toUserIds", ErrorType.ERROR_CODE_PARAM_EXCEPTION);
-        validateContain("fromUserId", "toUserId", ",",ErrorType.ERROR_CODE_APP_MYSELF2);
+        validateContain("fromUserId", "toUserIds", ",",ErrorType.ERROR_CODE_APP_MYSELF2);
     }
 }

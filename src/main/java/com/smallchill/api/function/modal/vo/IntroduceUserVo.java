@@ -8,9 +8,19 @@ import com.smallchill.api.common.model.BaseVo;
  */
 public class IntroduceUserVo extends BaseVo {
 
+    private Integer id;
+
     private UserVo fromUserVo;
 
     private UserVo toUserVo;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public UserVo getFromUserVo() {
         return fromUserVo;

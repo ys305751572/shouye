@@ -53,6 +53,7 @@ import java.util.Map;
 public class GroupController extends BaseController {
 
     private static String LIST_SOURCE = "Group.list";
+    private static String USER_LIST_SOURCE = "UserInfo.list";
     private static String BASE_PATH = "/web/group/";
     private static String CODE = "group";
     private static String PERFIX = "tb_group";
@@ -71,6 +72,8 @@ public class GroupController extends BaseController {
     ProvinceCityService provinceCityService;
     @Autowired
     AttachService attachService;
+    @Autowired
+    UserInfoService userInfoService;
 
 //    @RequestMapping("/")
 //    public String index(ModelMap mm) {
@@ -80,14 +83,16 @@ public class GroupController extends BaseController {
 
     @RequestMapping(value = "/")
     public String groupIndex(ModelMap mm) {
+        String index = "list";
         mm.put("code", CODE);
+        mm.put("list", index);
         return BASE_PATH + "group_list.html";
     }
 
     @ResponseBody
     @RequestMapping(KEY_LIST)
     public Object list(HttpServletRequest request) {
-        JqGrid object = (JqGrid) paginate(LIST_SOURCE, new GroupIntercept());
+        JqGrid object = (JqGrid) paginate(LIST_SOURCE);
 
         Integer page = getParameterToInt("page", 1);
         Integer rows = groupService.findAll().size();
@@ -112,10 +117,6 @@ public class GroupController extends BaseController {
         }
         request.getSession().setAttribute("groupIds",ids);
         request.getSession().setAttribute("groupNum",list.size());
-
-        //查询结果的所有会员数
-
-        //查询结果的所有干事数
 
         return object;
     }
@@ -191,11 +192,47 @@ public class GroupController extends BaseController {
     }
 
 
-    //跳转该组织的会员页面(暂无)
+    //跳转该组织的会员页面
     @RequestMapping("/members"  + "/{id}")
     public String groupMembers(ModelMap mm,@PathVariable String id) {
+        Group group = groupService.findById(id);
+        ShiroKit.getSession().setAttribute("groupMembers",group);
+        String index = "membersList";
         mm.put("code", CODE);
-        return null;
+        mm.put("list", index);
+        return "/web/userInfo/userInfo.html";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/membersList")
+    public Object list() {
+        JqGrid grid = (JqGrid)paginate(USER_LIST_SOURCE,new GroupIntercept());
+        Integer page = getParameterToInt("page", 1);
+        Integer rows = userInfoService.findAll().size();
+        String where = getParameter("where", "");
+        String sidx = getParameter("sidx", "");
+        String sord = getParameter("sord", "");
+        String sort = getParameter("sort", "");
+        String order = getParameter("order", "");
+
+        if (StrKit.notBlank(sidx)) {
+            sort = sidx + " " + sord
+                    + (StrKit.notBlank(sort) ? ("," + sort) : "");
+        }
+
+        JqGrid grid1 = (JqGrid) GridManager.paginate(null, page, rows, LIST_SOURCE, where, sort, order, Cst.me().getDefaultPageFactory(), this);
+        List<Integer> ids = new ArrayList<>();
+        List<CaseInsensitiveHashMap> list = grid1.getRows();
+        //查询结果所有ID
+        for (CaseInsensitiveHashMap map : list) {
+            Integer id = (Integer) map.get("userId");
+            ids.add(id);
+        }
+
+        getRequest().getSession().setAttribute("userInfoIds",ids);
+        getRequest().getSession().setAttribute("userInfoNum",list.size());
+
+        return grid;
     }
 
 

@@ -8,6 +8,7 @@
     $(function(){
         initGrid();
         initMenuBtn("btns","${code}");
+        province();
     });
 
     function initGrid(){
@@ -80,7 +81,10 @@
                         return "公益机构";
                     }else if(cellvalue==5){
                         return "文化沙龙";
+                    }else {
+                        return "";
                     }
+
                 }
             },
             {name:"productType",index:"productType", width:120,
@@ -310,22 +314,47 @@
             btn: ['确定','取消'] //按钮
         }, function(){
             $.post(
-                    "${basePath}/${code}/removeUser",
-                    {id:id,status:status},
-                    function (data){
-                        if(data.code===0){
-                            $jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
-                            layer.msg('成功', {
-                                time: 1000 //1s后自动关闭
-                            });
-                        }else {
-                            layer.msg('错误', {
-                                time: 1000
-                            });
-                        }
-                    }, "json"
+                "${basePath}/${code}/removeUser",
+                {id:id,status:status},
+                function (data){
+                    if(data.code===0){
+                        $jqGrid.jqGrid("setGridParam").trigger("reloadGrid");
+                        layer.msg('成功', {
+                            time: 1000 //1s后自动关闭
+                        });
+                    }else {
+                        layer.msg('错误', {
+                            time: 1000
+                        });
+                    }
+                }, "json"
             );
         });
+    }
+
+    function province(){
+        $("#search_province").change(function(){
+            console.log($(this).val());
+            var code = $(this).val();
+            city(code);
+        })
+    }
+
+    function city(code){
+        $.post(
+            "${ctxPath}/provinceCity/city",
+            {code:code},
+            function (data) {
+                $("#search_city").empty();
+                var html = "<option value='0'>全部</option>";
+                for(var i=0;i<data.length;i++){
+                    var code = data[i].code;
+                    var name = data[i].name;
+                    html += "<option value='"+code+"'>"+name+"</option>";
+                }
+                $("#search_city").append(html);
+            },"json"
+        )
     }
 
 </script>
@@ -336,8 +365,20 @@
     <div class="col-xs-12 tb-grid">
         <!-- 配置查询 -->
         @ var _col=[
-        @			  {name:"加入方式",index:"approvalType", type:"select_925"},
-        @			  {name:"审核状态",index:"approvalStatus", type:"select_924"}
+        @			  {name:"性别",index:"gender", type:"select_101"},
+        @			  {name:"年龄",index:"ageIntervalId", type:"select_904"},
+        @			  {name:"加入方式",index:"joinType", type:"select_924"},
+        @			  {name:"行业类型",index:"groupType", type:"select_908"},
+        @			  {name:"事业状态",index:"carerrId_like", type:"select_905"},
+        @			  {name:"省",index:"provinceCode", type:"getProvince"},
+        @			  {name:"市",index:"cityCode", type:"getCity"},
+        @			  {name:"行业",index:"domainPid_like", type:"getPid_906"},
+        @			  {name:"领域",index:"domainid_like", type:"getCid_906"},
+        @			  {name:"职业",index:"proPid_like", type:"getPid_910"},
+        @			  {name:"专业",index:"proid_like", type:"getCid_910"},
+        @	          {name:"产品服务",index:"productType", type:"select_912"},
+        @	          {name:"会员类型",index:"vipType", type:"select_914"},
+        @			  {name:"审核状态",index:"approvalStatus", type:"select_925"}
         @		   ];
         @ include("/common/_function/_search.html",{"col":_col}){}
         <!-- 按钮组 -->
@@ -361,7 +402,7 @@
             <input type="checkbox" value="industryRanking" class="cbox" checked="checked"/>行业地位
             <input type="checkbox" value="qualification" class="cbox" checked="checked"/>资质
             <input type="checkbox" value="keyWord" class="cbox" checked="checked"/>个人关键字
-            <input type="checkbox" value="approvalType" class="cbox" checked="checked"/>加入方式
+            <input type="checkbox" value="joinType" class="cbox" checked="checked"/>加入方式
             <input type="checkbox" value="validateInfo" class="cbox" checked="checked"/>验证信息
             <input type="checkbox" value="approvalStatus" class="cbox" checked="checked"/>状态
             <input type="checkbox" value="createTime" class="cbox" checked="checked"/>申请时间

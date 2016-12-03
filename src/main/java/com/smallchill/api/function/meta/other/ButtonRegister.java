@@ -96,7 +96,7 @@ public class ButtonRegister implements ButtonConst {
             Button button = new Button();
             button.setType(apply_group_waiting);
             button.setIsAllowClick(UNALLOW_CLICK);
-            button.setName("等待组织引荐审核");
+            button.setName("等待审核");
             this.list.add(button);
         }
         return this;

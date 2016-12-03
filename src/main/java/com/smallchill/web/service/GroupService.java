@@ -3,6 +3,7 @@ package com.smallchill.web.service;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.core.base.service.IService;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.vo.GroupVo;
@@ -144,4 +145,11 @@ public interface GroupService extends IService<Group> {
      * @return groupvo
      */
     Groupvo findGroupWithGa(Integer groupId, Integer userId);
+
+    /**
+     * 查询组织加入设置
+     * @param groupId 组织ID
+     * @return record
+     */
+    Record findGroupJoinSetting(Integer groupId);
 }

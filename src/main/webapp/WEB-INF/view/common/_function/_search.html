@@ -39,7 +39,6 @@
     var isAutoPage = true;
     var size = $("#size").val();
     $(function () {
-
         //列隐藏
         $("#columns input").click(function () {
             var _this = $(this);
@@ -90,23 +89,40 @@
 //            console.log("-------------------");
 
             tags(data, val, text, key , 1);
-            if(num!=null){
-                $("#child").remove();
-                if(val!=""){
-                    console.log(2);
-                    $.post("${basePath}/cache/getSelect2", {id: val, num: num}, function (data) {
-                        if (data.code === 0) {
-                            $("#divinput" + num).parent().append(data.data);
-                        }
-                        var id = $(data.data).prop("id");
-                        select(id, key);
-                    }, "json");
-                }else{
-                    tags(id, val, "", key , 1);
-                }
+            if(data=="search_province"){
+                $("#search_city").empty();
+                $.post("${basePath}/cache/getCity", {val: val}, function (data) {
+                    if (data.code === 0) {
+                        $("#search_city").html(data.data);
+                    }
+                    var id = $(data.data).prop("id");
+                    select(id, "cityCode");
+                }, "json");
             }
 
+            if(data=="search_pid_domain"){
+                $("#search_domain").empty();
+                var cCode = 906;
+                $.post("${basePath}/cache/getCid", {val: val,code:cCode}, function (data) {
+                    if (data.code === 0) {
+                        $("#search_domain").html(data.data);
+                    }
+                    var id = $(data.data).prop("id");
+                    select(id, "domainid_like");
+                }, "json");
+            }
 
+            if(data=="search_pid_professional"){
+                $("#search_professional").empty();
+                var cCode = 910;
+                $.post("${basePath}/cache/getCid", {val: val,code:cCode}, function (data) {
+                    if (data.code === 0) {
+                        $("#search_professional").html(data.data);
+                    }
+                    var id = $(data.data).prop("id");
+                    select(id, "proid_like");
+                }, "json");
+            }
         });
     }
 
@@ -319,6 +335,45 @@
                 select(id, key);
             }, "json");
         }
+        else if (type == "getProvince") {
+            $.post("${basePath}/cache/getProvince", {num: num}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key);
+            }, "json");
+        }
+        else if (type == "getCity") {
+            $.post("${basePath}/cache/getCity", {num: num}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key);
+            }, "json");
+        }
+        else if (type.indexOf("getPid_") >=0) {
+            var pCode = type.replace("getPid_", "");
+            $.post("${basePath}/cache/getPid", {num: num,code:pCode}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key);
+            }, "json");
+        }
+        else if (type.indexOf("getCid_") >=0) {
+            var cCode = type.replace("getCid_", "");
+            $.post("${basePath}/cache/getCid", {num: num,code:cCode}, function (data) {
+                if (data.code === 0) {
+                    $("#divinput" + num).html(data.data);
+                }
+                var id = $(data.data).prop("id");
+                select(id, key);
+            }, "json");
+        }
+
 
         $("#hides" + num).val(key);
         $("#searchthis" + num).html(value);
@@ -339,5 +394,7 @@
             content: "${basePath}/ztree/open/" + type + "/" + index + "/" + name + "/0/radio/0"
         });
     }
+
+
 
 </script>

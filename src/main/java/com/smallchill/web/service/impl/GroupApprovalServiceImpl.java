@@ -202,7 +202,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             userGroup.setGroupId(groupApproval.getGroupId());
             userGroup.setUserId(groupApproval.getUserId());
             if (groupExtend != null) {
-                if (groupExtend.getCostStatus() == 1) {
+                if (groupExtend.getCostStatus() !=null &&  groupExtend.getCostStatus() == 1) {
                     Calendar calendar = Calendar.getInstance();
                     Date date = new Date(System.currentTimeMillis());
                     calendar.setTime(date);
@@ -217,6 +217,11 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             userGroup.setCreateTime(System.currentTimeMillis());
             userGroup.setJoinType(1); //会员
             userGroup.setType(1);   //主动加入
+
+            UserInfo userInfo = userInfoService.findByUserId(groupApproval.getUserId());
+            userInfo.setGroupStatus(1); //设置为已经加入机构
+
+            userInfoService.update(userInfo);
             userGroupService.save(userGroup);
             //发现消息
             messageService.sendMsgForUserAuditAgree(groupApproval.getGroupId(),

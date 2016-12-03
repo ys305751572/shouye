@@ -121,6 +121,7 @@
 			<label class="col-sm-2 control-label no-padding-right" >开户行所在省</label>
 			<div class="col-sm-3" >
 				<select name="banckProvince" id="banckProvince" class="form-control" required>
+					<option value="0">全部</option>
 					@for(x in province){
 					<option value="${x.code!}">${x.name!}</option>
 					@}
@@ -182,6 +183,7 @@
 			<label class="col-sm-2 control-label no-padding-right" >所在省</label>
 			<div class="col-sm-3">
 				<select name="province" id="province" class="form-control" required>
+					<option value="0">全部</option>
 					@for(x in province){
 						<option value="${x.code!}">${x.name!}</option>
 					@}
@@ -567,7 +569,7 @@
 				}else {
 					$("#bankCity").empty();;
 				}
-				var html = "";
+				var html = "<option value='0'>全部</option>";
 				for(var i=0;i<data.length;i++){
 					var code = data[i].code;
 					var name = data[i].name;

@@ -88,7 +88,7 @@ public interface UserApprovalService extends IService<UserApproval> {
      *
      * @param ua
      */
-    void userApprovalBlank(UserApproval ua);
+    void userApprovalBlank(UserApproval ua, String toUserIds);
 
     /**
      *

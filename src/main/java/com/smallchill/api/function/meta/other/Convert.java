@@ -92,6 +92,7 @@ public class Convert {
 
         introduceUserVo.setFromUserVo(fromUserVo);
         introduceUserVo.setToUserVo(toUserVo);
+        introduceUserVo.setId(record.getInt("id"));
         return introduceUserVo;
     }
 
