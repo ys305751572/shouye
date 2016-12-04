@@ -37,7 +37,7 @@ public class CommonApi extends BaseController {
     @ResponseBody
     public String sendVerificationCode(String mobile) {
         String code = LeomanKit.generateCode();
-        vcodeService.sendKX(code, mobile);
+        vcodeService.sendYP(code, mobile);
         ValidateCode code2 = new ValidateCode();
         code2.setCode(code);
         return success(code,"code");

@@ -1,20 +1,18 @@
 package com.smallchill.api.function.service.impl;
 
 import com.smallchill.api.common.exception.*;
-import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.function.meta.consts.StatusConst;
 import com.smallchill.api.function.service.PayService;
 import com.smallchill.api.system.model.PayConfig;
 import com.smallchill.common.pay.util.XMLUtil;
-import com.smallchill.core.modules.support.Conver;
 import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.CommonKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.web.model.FriendExpand;
 import com.smallchill.web.model.GroupApproval;
 import com.smallchill.web.model.Order;
-import com.smallchill.web.service.GroupApprovalService;
-import com.smallchill.web.service.GroupExtendService;
-import com.smallchill.web.service.OrderService;
+import com.smallchill.web.model.UserInfoExtend;
+import com.smallchill.web.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,12 +33,14 @@ public class PayServiceImpl implements PayService, StatusConst {
 
     @Autowired
     private GroupExtendService groupExtendService;
-
     @Autowired
     private GroupApprovalService groupApprovalService;
-
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private FriendExpandService friendExpandService;
+    @Autowired
+    private UserInfoExtendService userInfoExtendService;
 
     /**
      * 获取预支付款ID
@@ -99,13 +99,120 @@ public class PayServiceImpl implements PayService, StatusConst {
         return resultMap;
     }
 
+    /**
+     * 加入群-支付回调
+     * @param request
+     * @param response
+     */
+    @Transactional
     @Override
     public void joinGroupWxNotify(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> resultMap = parse(request);
         if (resultMap.get("result_code").equals("SUCCESS")) {
             // 成功
             String orderNo = resultMap.get("out_trade_no");
+            // 修改订单状态
+            // 修改入群申请信息状态
+            Order order = orderService.findByOrderNo(orderNo);
+            if (order != null && order.getStatus() == ORDER_STATUS_ERROR) {
+                orderService.setOrderSuccess(order);
+                groupApprovalService.setPaiedStatusSuccess(order.getGaId());
+            }
+        }
+    }
 
+    /**
+     * 增值服务--获取预支付款ID
+     * @param userId 当前用户ID
+     * @param type   增值类型 1: 感兴趣人数 2: 熟人人数
+     * @param number 增加数量
+     * @param money 金额
+     * @return result
+     */
+    @Transactional
+    @Override
+    public Map<String, Object> getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Integer money,
+                                                            HttpServletResponse response, HttpServletRequest request)
+            throws UserInfoExtendException {
+        FriendExpand fe = null;
+        int allCount = 0;
+        int userCount = 0;
+        int dbType = 0;
+        UserInfoExtend ue = userInfoExtendService.findByUserId(userId);
+        if (type == VALUE_ADD_SERVICE_TYPE_INTEREST) {
+            fe = friendExpandService.findInterestConfig();
+            allCount = fe.getNum();
+            userCount = ue.getInterestCount();
+            dbType = SQL_VALUE_ADD_SERVICE_TYPE_INTEREST;
+        }
+        else {
+            fe = friendExpandService.findAcquaintanceConfig();
+            allCount = fe.getNum();
+            userCount = ue.getAcquaintanceCount();
+            dbType = SQL_VALUE_ADD_SERVICE_TYPE_ACQUAINTANCE;
+        }
+        if ((number + userCount) > allCount) {
+            throw new UserInfoExtendException();
+        }
+        String orderNo = CommonKit.generateSn();
+        Map<String,Object> resultMap = PayConfig.config(request, response, orderNo,
+                Double.parseDouble(String.valueOf(money)), WEIXIN);
+        if (CollectionKit.isNotEmpty(resultMap)) {
+            Order order = new Order();
+            order.setUserId(userId);
+            order.setGroupId(0);
+            order.setGaId(0);
+            order.setOrderNo(orderNo);
+            order.setOrderAmount(Double.parseDouble(String.valueOf(money)));
+            order.setOrderType(dbType);
+            order.setCounts(number);
+            order.setStatus(ORDER_STATUS_ERROR);
+            order.setCreateTime(DateTimeKit.nowLong());
+            orderService.save(order);
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> getPrepayIdOfValueaddServiceInterest(Integer userId, Integer number, Integer money) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getPrepayIdOfValueaddServiceAcquaintance(Integer userId, Integer number, Integer money) {
+        return null;
+    }
+
+
+    /**
+     * 增值服务--微信回调
+     * @param request
+     * @param response
+     */
+    @Transactional
+    @Override
+    public void valueaddServiceWxNotify(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> resultMap = parse(request);
+        if (resultMap.get("result_code").equals("SUCCESS")) {
+            // 成功
+            String orderNo = resultMap.get("out_trade_no");
+            Order order = orderService.findByOrderNo(orderNo);
+            if (order != null && order.getStatus() == ORDER_STATUS_ERROR) {
+                // 修改订单状态
+                // 修改用户拓展信息数据
+                orderService.setOrderSuccess(order);
+
+                int interestCount = 0;
+                int acquaintanceCount = 0;
+                int type = order.getOrderType();
+                if (type == SQL_VALUE_ADD_SERVICE_TYPE_INTEREST) {
+                    interestCount = order.getCounts();
+                }
+                else if (type == SQL_VALUE_ADD_SERVICE_TYPE_ACQUAINTANCE){
+                    acquaintanceCount = order.getCounts();
+                }
+                userInfoExtendService.saveUserInfoExtend(order.getUserId(), interestCount, acquaintanceCount);
+            }
         }
     }
 

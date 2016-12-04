@@ -23,12 +23,12 @@ public class PayApi extends BaseController {
     @Autowired
     private PayService payService;
 
-    @PostMapping(value = "/prepayid/get")
+    @PostMapping(value = "/joingroup/prepayid/get")
     @ResponseBody
-    public String getPrepayId(Integer userId, Integer groupId, Integer cost, java.lang.String validateInfo,
+    public String getPrepayIdOfJoingroup(Integer userId, Integer groupId, Integer cost, java.lang.String validateInfo,
                               java.lang.String matchType) {
 
-        Map<String, Object> resultMap = null;
+        Map<String, Object> resultMap;
         try {
             resultMap = payService.getPrepayId(userId, groupId, cost, validateInfo, matchType, this.getResponse(), this.getRequest());
         } catch (GroupCostException e) {
@@ -45,8 +45,25 @@ public class PayApi extends BaseController {
         return success(resultMap, "prepayIdConfig");
     }
 
+    /**
+     * 加入群-支付回调
+     */
     @PostMapping(value = "/weixin/group/join/notify")
-    public void weixinNotify() {
-
+    public void weixinGroupJoinNotify() {
+        payService.joinGroupWxNotify(this.getRequest(), this.getResponse());
     }
+
+    /**
+     * 增值服务--获取预支付款ID
+     * @param userId 当前用户ID
+     * @param type   增值类型 1: 感兴趣人数 2: 熟人人数
+     * @param number 增加数量
+     * @param money 金额
+     * @return result
+     */
+    public String getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Integer money) {
+
+        return null;
+    }
+
 }

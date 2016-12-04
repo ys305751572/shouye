@@ -25,4 +25,10 @@ public interface StatusConst {
 
     String WEIXIN = "WEIXIN";
     String ALIPAY = "ALIPAY";
+
+    int VALUE_ADD_SERVICE_TYPE_INTEREST = 1;    // 感兴趣
+    int VALUE_ADD_SERVICE_TYPE_ACQUAINTANCE = 2; // 熟人
+
+    int SQL_VALUE_ADD_SERVICE_TYPE_INTEREST = 3;    // 感兴趣
+    int SQL_VALUE_ADD_SERVICE_TYPE_ACQUAINTANCE = 4; // 熟人
 }

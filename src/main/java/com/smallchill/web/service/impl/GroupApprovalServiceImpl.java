@@ -3,6 +3,7 @@ package com.smallchill.web.service.impl;
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInOthersBlankException;
+import com.smallchill.api.function.meta.consts.StatusConst;
 import com.smallchill.api.function.modal.vo.GroupApprovalVo;
 import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.service.MessageService;
@@ -31,7 +32,7 @@ import java.util.*;
  */
 @Service
 public class GroupApprovalServiceImpl extends BaseService<GroupApproval> implements
-        GroupApprovalService {
+        GroupApprovalService, StatusConst {
 
     @Autowired
     private GroupService groupService;
@@ -373,5 +374,14 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         groupApproval.setStatus(3);
         groupApproval.setThroughTime(DateTimeKit.nowLong());
         this.update(groupApproval);
+    }
+
+    /**
+     * 修改入群申请信息的支付状态
+     * @param gaId 申请信息ID
+     */
+    @Override
+    public void setPaiedStatusSuccess(int gaId) {
+        this.updateBy("paied = #{paied}", "id = #{gaId}", Record.create().set("paied", HAVE_PAY).set("gaId", gaId));
     }
 }

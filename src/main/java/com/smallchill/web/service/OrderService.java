@@ -8,4 +8,8 @@ import com.smallchill.web.model.Order;
  * on 2016/11/28.
  */
 public interface OrderService extends IService<Order> {
+
+    Order findByOrderNo(String orderNo);
+
+    void setOrderSuccess(Order order);
 }

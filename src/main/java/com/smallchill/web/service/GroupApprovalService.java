@@ -83,4 +83,10 @@ public interface GroupApprovalService extends IService<GroupApproval> {
      * @param userId 用户ID
      */
     void userAuditGroupRefuse(Integer groupId, Integer userId);
+
+    /**
+     * 修改入群申请信息的支付状态
+     * @param gaId
+     */
+    void setPaiedStatusSuccess(int gaId);
 }

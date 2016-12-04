@@ -35,11 +35,21 @@ public class Order extends BaseModel {
     //订单类型 1:入会费 2:年续费
     @Column(name = "order_type")
     private Integer orderType;
+    @Column(name = "counts")
+    private Integer counts;
     //订单状态: 1:成功 2:失败
     @Column(name = "status")
     private Integer status;
     @Column(name = "create_time")
     private Long createTime;
+
+    public Integer getCounts() {
+        return counts;
+    }
+
+    public void setCounts(Integer counts) {
+        this.counts = counts;
+    }
 
     public Integer getGaId() {
         return gaId;

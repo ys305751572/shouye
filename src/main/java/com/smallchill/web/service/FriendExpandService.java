@@ -10,4 +10,7 @@ import org.springframework.stereotype.Service;
  */
 public interface FriendExpandService extends IService<FriendExpand> {
 
+    FriendExpand findInterestConfig();
+
+    FriendExpand findAcquaintanceConfig();
 }
