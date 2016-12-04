@@ -2,12 +2,12 @@ package com.smallchill.web.service.impl;
 
 import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.common.exception.UserIsNotManagerException;
+import com.smallchill.api.function.meta.consts.StatusConst;
+import com.smallchill.api.function.meta.consts.TextConst;
 import com.smallchill.api.function.meta.other.ButtonRegister;
 import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.modal.*;
-import com.smallchill.api.function.modal.vo.IntroduceUserVo;
-import com.smallchill.api.function.modal.vo.UserExtendVo;
-import com.smallchill.api.function.modal.vo.UserVo;
+import com.smallchill.api.function.modal.vo.*;
 import com.smallchill.api.function.service.*;
 import com.smallchill.core.base.service.BaseService;
 import com.smallchill.core.plugins.dao.Blade;
@@ -39,7 +39,7 @@ import java.util.List;
  * 2016-10-18 09:47:31
  */
 @Service
-public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserInfoService {
+public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserInfoService, TextConst, StatusConst {
 
     @Autowired
     private UserDomainService userDomainService;
@@ -1060,6 +1060,46 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             }
         }
     }
+
+    /**
+     * 查询用户消费记录
+     * @param userId 当前用户ID
+     * @return ConsumptionRecordSuperVo
+     */
+    @Override
+    public ConsumptionRecordSuperVo findConsumptionRecordByUserId(Integer userId) {
+
+        String sql = Blade.dao().getScript("Order.findListByUserId").getSql();
+        List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));
+        List<ConsumptionRecordVo> consumptionRecordVos = new ArrayList<>();
+        double allMoney = 0;
+        for (Record record : list) {
+            ConsumptionRecordVo vo = new ConsumptionRecordVo();
+            int orderType = record.getInt("order_type");
+            if (orderType == 1 || orderType == 2) {
+                vo.setTitle(TITLE_CR_VIP);
+            }
+            else if (orderType == 3) {
+                vo.setTitle(TITLE_CR_INTEREST);
+            }
+            else if (orderType == 4){
+                vo.setTitle(TITLE_CR_ACQUAINTANCE);
+            }
+            vo.setCounts(record.getInt("counts"));
+            vo.setOrderNo(record.getStr("order_no"));
+            vo.setGroupName(record.getStr("groupName"));
+            vo.setMoney(Double.parseDouble(record.get("order_amount").toString()));
+            vo.setCreateTime(record.getLong("create_time"));
+            consumptionRecordVos.add(vo);
+
+            allMoney += Double.parseDouble(record.get("order_amount").toString());
+        }
+        ConsumptionRecordSuperVo superVo = new ConsumptionRecordSuperVo();
+        superVo.setList(consumptionRecordVos);
+        superVo.setMoney(allMoney);
+        return superVo;
+    }
+
 
     @Autowired
     private ScanService scanService;

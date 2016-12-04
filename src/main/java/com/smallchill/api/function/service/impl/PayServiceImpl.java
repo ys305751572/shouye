@@ -94,6 +94,7 @@ public class PayServiceImpl implements PayService, StatusConst {
             order.setOrderType(ORDER_TYPE_COST);
             order.setStatus(ORDER_STATUS_ERROR);
             order.setCreateTime(DateTimeKit.nowLong());
+            order.setCounts(1);
             orderService.saveRtId(order);
         }
         return resultMap;

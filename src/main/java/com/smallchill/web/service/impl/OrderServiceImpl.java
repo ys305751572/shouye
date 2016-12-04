@@ -7,6 +7,8 @@ import com.smallchill.web.model.Order;
 import com.smallchill.web.service.OrderService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by Administrator
  * on 2016/11/28.
@@ -28,5 +30,10 @@ public class OrderServiceImpl extends BaseService<Order> implements OrderService
     public void setOrderSuccess(Order order) {
         order.setStatus(ORDER_STATUS_SUCCESS);
         this.update(order);
+    }
+
+    @Override
+    public List<Order> findByUserId(Integer userId) {
+        return this.findBy("user_id = #{userId}", Record.create().set("userId", userId));
     }
 }

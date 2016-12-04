@@ -11,6 +11,7 @@ import com.smallchill.api.function.modal.GroupInterest;
 import com.smallchill.api.function.modal.Message;
 import com.smallchill.api.function.modal.UserFriendGrouping;
 import com.smallchill.api.function.modal.UserInterest;
+import com.smallchill.api.function.modal.vo.ConsumptionRecordSuperVo;
 import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.*;
@@ -665,5 +666,18 @@ public class UserApi extends BaseController implements ConstCache {
     @Before(GroupUserValidate.class)
     public String findGroupserverSetting(Integer groupId) {
         return success(groupService.findGroupJoinSetting(groupId), "groupserverSetting");
+    }
+
+    /**
+     * 消费记录
+     * @param userId
+     * @return
+     */
+    @PostMapping(value = "/consumption/list")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String consumptionList(Integer userId) {
+        ConsumptionRecordSuperVo vo = userInfoService.findConsumptionRecordByUserId(userId);
+        return success(vo);
     }
 }

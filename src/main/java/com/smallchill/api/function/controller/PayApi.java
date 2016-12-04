@@ -26,7 +26,7 @@ public class PayApi extends BaseController {
     @PostMapping(value = "/joingroup/prepayid/get")
     @ResponseBody
     public String getPrepayIdOfJoingroup(Integer userId, Integer groupId, Integer cost, java.lang.String validateInfo,
-                              java.lang.String matchType) {
+                                         java.lang.String matchType) {
 
         Map<String, Object> resultMap;
         try {
@@ -49,21 +49,35 @@ public class PayApi extends BaseController {
      * 加入群-支付回调
      */
     @PostMapping(value = "/weixin/group/join/notify")
-    public void weixinGroupJoinNotify() {
+    public void wxGroupJoinNotify() {
         payService.joinGroupWxNotify(this.getRequest(), this.getResponse());
     }
 
     /**
      * 增值服务--获取预支付款ID
+     *
      * @param userId 当前用户ID
      * @param type   增值类型 1: 感兴趣人数 2: 熟人人数
      * @param number 增加数量
-     * @param money 金额
+     * @param money  金额
      * @return result
      */
+    @PostMapping(value = "/valueadd/peepayid/get")
+    @ResponseBody
     public String getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Integer money) {
 
-        return null;
+        Map<String, Object> resultMap = null;
+        try {
+            resultMap = payService.getPrepayIdOfValueaddService(userId, type, number, money,
+                    this.getResponse(), this.getRequest());
+        } catch (UserInfoExtendException e) {
+            return fail(ErrorType.ERROR_CODE_APP_PAYERROR_REFUND_FAIL);
+        }
+        return success(resultMap, "prepayIdConfig");
     }
 
+    @PostMapping(value = "/weixin/valueadd/notify")
+    public void wxValueaddNotify() {
+        payService.valueaddServiceWxNotify(this.getRequest(), this.getResponse());
+    }
 }

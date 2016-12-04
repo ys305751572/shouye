@@ -2,6 +2,7 @@ package com.smallchill.web.service;
 
 import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.common.exception.UserIsNotManagerException;
+import com.smallchill.api.function.modal.vo.ConsumptionRecordSuperVo;
 import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.UserExtendVo;
 import com.smallchill.api.function.modal.vo.UserVo;
@@ -242,4 +243,11 @@ public interface UserInfoService extends IService<UserInfo> {
      * @param groupId 组织ID
      */
     void groupServerIntroduce(Integer userId, Integer groupId, String augIds, Integer status);
+
+    /**
+     * 查询用户消费记录
+     * @param userId 当前用户ID
+     * @return ConsumptionRecordSuperVo
+     */
+    ConsumptionRecordSuperVo findConsumptionRecordByUserId(Integer userId);
 }
