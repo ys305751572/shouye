@@ -30,6 +30,7 @@
 		<property name="unauthorizedUrl" value="/unauth" />
 		<property name="filterChainDefinitions">
 			<value>
+				/account/** = anon
 				/static/** = anon <!-- 不需要认证 -->
 				/api/** = anon <!-- 不需要认证 -->
 				/login = anon

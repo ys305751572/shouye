@@ -9,4 +9,6 @@ import com.smallchill.web.model.GroupBank;
  */
 public interface GroupBankService extends IService<GroupBank> {
 
+    void updateBank(String bankUserName,String bankAccout,String bankName,Integer province,Integer city,String branchName,Integer groupId);
+
 }

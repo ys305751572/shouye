@@ -156,14 +156,12 @@
 													<span class="input-group-addon">
 														<i class="fa fa-picture-o" style="width:15px;"></i>
 													</span>
-													<input type="text" name="verificationCode" id="verification_code" class="form-control" placeholder="验证码">
-													<span class="input-group-btn">
-														<input value="ddd" id="asd" height="34" style="border: 1px solid #ccc;border-left: 0;cursor: pointer;" />
-													</span>
+													<input type="text" name="verificationCode" id="verification_code" class="form-control" placeholder="验证码" >
 												</div>
 												<br>
-												<div class="clearfix">
-													<input type="button" class="width-100 pull-right btn btn-sm btn-primary" value="确定" onclick="checkPwd()"/>
+												<div class="clearfix" >
+													<input type="button" class="width-30 pull-left btn btn-sm btn-info" value="获取验证码" onclick="gain()"/>
+													<input type="button" class="width-60 pull-right btn btn-sm btn-primary" value="确定" onclick="checkPwd()"/>
 												</div>
 											</form>
 
@@ -196,12 +194,23 @@
 		<!-- inline scripts related to this page -->
 		<script type="text/javascript">
 
-			function return_login(){
-				console.log("草拟吗");
-//				$('#Retrieve-box').removeClass('visible');//hide others
-//				$("#login-box").addClass('visible');//show target
+			function gain(){
+				var mobile = $("#mobile").val();
+				$.post(
+						"${ctxPath}/account/gainCode",
+						{
+							mobile:mobile
+						},
+						function(data){
+							if (data.code === 0) {
 
-
+							} else {
+								layer.msg(data.message, {
+									time: 500
+								});
+							}
+						},"json"
+				)
 			}
 
 			function checkPwd(){
@@ -243,14 +252,15 @@
 						{
 							mobile:mobile,
 							pwd:pwd,
-							verificationCode:verification_code
+							code:verification_code
 						},
 						function(data){
 							if (data.code === 0) {
 								layer.msg(data.message, {
 									time: 500
 								},function(){
-									return_login();
+									$('#Retrieve-box').removeClass('visible');//hide others
+									$("#login-box").addClass('visible');//show target
 								});
 							} else {
 								layer.msg(data.message, {

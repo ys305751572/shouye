@@ -1,5 +1,6 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.GroupBank;
 import com.smallchill.web.service.GroupBankService;
 import org.springframework.stereotype.Service;
@@ -12,4 +13,15 @@ import com.smallchill.core.base.service.BaseService;
 @Service
 public class GroupBankServiceImpl extends BaseService<GroupBank> implements GroupBankService {
 
+    @Override
+    public void updateBank(String bankUserName, String bankAccout, String bankName, Integer province, Integer city, String branchName, Integer groupId) {
+        GroupBank groupBank = this.findFirstBy("group_id = #{groupId}", Record.create().set("groupId",groupId));
+        groupBank.setBankUserName(bankUserName);
+        groupBank.setBankAccout(bankAccout);
+        groupBank.setBankName(bankName);
+        groupBank.setProvince(province);
+        groupBank.setCity(city);
+        groupBank.setBranchName(branchName);
+        this.update(groupBank);
+    }
 }

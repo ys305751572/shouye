@@ -143,8 +143,11 @@
 
                 $.post("${basePath}/${code}/setGroup",{groupId:groupId,avaterId:avaterId,province:province, city:city, targat:JSON.stringify(targat), phones:JSON.stringify(phones)}, function(data){
                     if(data.code===0){
-                        layer_alert(data.message, "success");
-                        parent.layer.close(layerIndex);
+                        layer.msg(data.message, {
+                            time: 500
+                        },function(){
+                            parent.location.reload();
+                        });
                     }
                     else{
                         layer_alert(data.message, "error");

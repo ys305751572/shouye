@@ -21,7 +21,7 @@ import com.smallchill.core.toolbox.kit.StrKit;
 import com.smallchill.system.model.Attach;
 import com.smallchill.system.model.Dict;
 import com.smallchill.system.service.AttachService;
-import com.smallchill.web.meta.intercept.GroupIntercept;
+import com.smallchill.system.service.DictService;
 import com.smallchill.web.meta.task.SendTimeWork;
 import com.smallchill.web.model.*;
 import com.smallchill.web.model.vo.GroupVo;
@@ -73,6 +73,8 @@ public class GroupController extends BaseController {
     AttachService attachService;
     @Autowired
     UserInfoService userInfoService;
+    @Autowired
+    DictService dictService;
 
 //    @RequestMapping("/")
 //    public String index(ModelMap mm) {
@@ -304,9 +306,9 @@ public class GroupController extends BaseController {
             if(city==null || bankCity==null){
                 return error("省市不能为空");
             }
-            if(codeImage==null){
-                return error("组织代码证号扫描件不能为空");
-            }
+//            if(codeImage==null){
+//                return error("组织代码证号扫描件不能为空");
+//            }
             if(licenseImage==null){
                 return error("营业执照扫描件不能为空");
             }
@@ -319,13 +321,16 @@ public class GroupController extends BaseController {
 
             ProvinceCity _province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",province));
             ProvinceCity _city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",city));
-            Attach _codeImage = attachService.findById(codeImage);
+            Attach _codeImage = null;
+            if(codeImage!=null){
+                _codeImage = attachService.findById(codeImage);
+            }
             Attach _licenseImage = attachService.findById(licenseImage);
             Attach _avater = attachService.findById(avater);
             groupVo.setName(name);
-            groupVo.setCode(code);
+            groupVo.setCode(StringUtils.isNoneBlank(code)?code :"");
             groupVo.setCodeImage(_codeImage!=null?_codeImage.getUrl():"");
-            groupVo.setLicense(license);
+            groupVo.setLicense(StringUtils.isNoneBlank(license)?license :"");
             groupVo.setLicenseImage(_licenseImage!=null?_licenseImage.getUrl():"");
             groupVo.setArtificialPersonName(artificialPersonName);
             groupVo.setArtificialPersonIdcard(artificialPersonIdcard);
@@ -419,22 +424,28 @@ public class GroupController extends BaseController {
         GroupExtend groupExtend = new GroupExtend();
         GroupBank groupBank = new GroupBank();
         if(group!=null){
-            mm.put("group",groupService.findById(group.getId()));
+            group = groupService.findById(group.getId());
             groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
             groupBank = groupBankService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
         }else {
-            mm.put("group",new Group());
+            group = new Group();
         }
-        ProvinceCity province = provinceCityService.findById(groupBank.getProvince());
-        ProvinceCity city = provinceCityService.findById(groupBank.getCity());
+
+        ProvinceCity province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",groupBank.getProvince()));
+        ProvinceCity city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",groupBank.getCity()));
 
         String sql = "SELECT NAME FROM tfw_user WHERE id = #{id}";
         Record adminName = Db.init().selectOne(sql,Record.create().set("id",groupExtend.getCreateAdminId()));
 
+        Dict dict = dictService.findFirstBy("CODE = #{code} AND NUM = #{num}",Record.create().set("code","908").set("num",group.getType()));
+
         mm.put("province",province != null ? province.getName() : "无");
         mm.put("city",city != null ? city.getName() : "无");
         mm.put("adminName",adminName != null ? adminName.get("NAME") : "无");
+        mm.put("groupType",dict.getName());
 
+
+        mm.put("group",group);
         mm.put("groupExtend",groupExtend);
         mm.put("groupBank",groupBank);
         mm.put("code",CODE);

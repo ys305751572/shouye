@@ -2,22 +2,22 @@
 <!-- PAGE CONTENT BEGINS -->
 <link rel="stylesheet" media="screen" href="${basePath}/static/jquery-res/css/zzsc.css" />
 <link rel="stylesheet" media="screen" href="${basePath}/static/validate/common.css" />
-<!--<style>-->
-	<!--.but{-->
-		<!--width: 50px;-->
-		<!--height: 34px;-->
-		<!--background: #6fb3e0;-->
-		<!--font-weight: bold;-->
-		<!--color: white;-->
-		<!--border: 0 none;-->
-		<!--border-radius: 1px;-->
-		<!--cursor: pointer;-->
+<style>
+	.but{
+		width: 50px;
+		height: 34px;
+		background: #6fb3e0;
+		font-weight: bold;
+		color: white;
+		border: 0 none;
+		border-radius: 1px;
+		cursor: pointer;
 
-	<!--}-->
-	<!--.but:hover, .but:focus {-->
-		<!--box-shadow: 0 0 0 2px white, 0 0 0 3px #6fb3e0;-->
-	<!--}-->
-<!--</style>-->
+	}
+	.but:hover, .but:focus {
+		box-shadow: 0 0 0 2px white, 0 0 0 3px #6fb3e0;
+	}
+</style>
 <form data-url="${basePath}/group/save" method="post" class="form-horizontal" role="form"
 	  xmlns:blade="http://www.w3.org/1999/xhtml" id="msform">
 	<!-- fieldsets -->
@@ -32,7 +32,7 @@
 			</div>
 			<label class="col-sm-2 control-label no-padding-right" >组织代码证号</label>
 			<div class="col-sm-3">
-				<input type="text" name="code" id="code" value="" placeholder="" class="form-control" required/>
+				<input type="text" name="code" id="code" value="" placeholder="" class="form-control" />
 			</div>
 		</div>
 
@@ -53,7 +53,7 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" > 营业执照注册号 </label>
 			<div class="col-sm-3">
-				<input type="text" name="license" id="license" class="form-control"  value="" placeholder="" required/>
+				<input type="text" name="license" id="license" class="form-control"  value="" placeholder="" />
 			</div>
 		</div>
 
@@ -86,7 +86,10 @@
 		<div class="form-group">
 			<label class="col-sm-2 control-label no-padding-right" >短信验证码</label>
 			<div class="col-sm-3">
-				<input type="text" name="" value="" placeholder="暂无" class="form-control" required/>
+				<input type="text" name="verification_code" id="verification_code"  class="form-control" onblur="checkCode()" required/>
+			</div>
+			<div class="col-sm-1">
+				<input type="button" name="" class="but" style="width:110px;" value="获取验证码" onclick="gain(this)"/>
 			</div>
 		</div>
 
@@ -222,7 +225,7 @@
 			<label class="col-sm-2 control-label no-padding-right" ></label>
 		</div>
 
-		<input type="button" name="next" class="next action-button" value="下一步" />
+		<input type="button" name="next" class="next action-button" value="下一步" disabled="disabled" id="next" />
 	</fieldset>
 
 	<!--第二步-->
@@ -331,6 +334,66 @@
 <script src="${basePath}/static/validate/jquery-html5Validate-min.js"></script>
 
 <script type="text/javascript">
+
+	var wait=60;
+	function time(o) {
+		if (wait == 0) {
+			o.removeAttribute("disabled");
+			o.value="获取验证码";
+			wait = 60;
+		} else {
+			o.setAttribute("disabled", true);
+			o.value="重新发送(" + wait + ")";
+			wait--;
+			setTimeout(function() {
+						time(o)
+					},
+					1000)
+		}
+	}
+
+	function gain(event){
+		var mobile = $("#artificialPersonMobile").val();
+		$.post(
+				"${ctxPath}/account/gainCode",
+				{
+					mobile:mobile
+				},
+				function(data){
+					if (data.code === 0) {
+						time(event)
+					} else {
+						layer.msg(data.message, {
+							time: 500
+						});
+					}
+				},"json"
+		)
+	}
+
+	function checkCode(){
+		var mobile = $("#artificialPersonMobile").val();
+		var code = $("#verification_code").val();
+		$.post(
+			"${ctxPath}/account/checkCode",
+			{
+				mobile:mobile,
+				code:code
+			},
+			function(data){
+				if (data.code === 0) {
+					$("#next").attr("disabled",false);
+				} else {
+					layer.msg(data.message, {
+						time: 500
+					});
+				}
+
+			},"json"
+		)
+	}
+
+
 	function phoneAdd(){
 		var html = "";
 		html += " <div class='form-group'>																				";

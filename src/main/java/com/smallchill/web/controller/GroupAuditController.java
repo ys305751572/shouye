@@ -52,7 +52,7 @@ public class GroupAuditController extends BaseController {
     @ResponseBody
     @RequestMapping(KEY_LIST)
     public Object list() {
-        return paginate(LIST_SOURCE, new GroupIntercept());
+        return paginate(LIST_SOURCE);
     }
 
     //单元格内 修改备注

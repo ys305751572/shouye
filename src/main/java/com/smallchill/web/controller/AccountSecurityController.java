@@ -1,8 +1,10 @@
 package com.smallchill.web.controller;
 
+import com.smallchill.api.system.service.VcodeService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.common.vo.User;
 import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.LeomanKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.system.service.UserService;
@@ -13,6 +15,7 @@ import com.smallchill.web.model.ProvinceCity;
 import com.smallchill.web.service.GroupBankService;
 import com.smallchill.web.service.GroupExtendService;
 import com.smallchill.web.service.ProvinceCityService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -37,12 +40,12 @@ public class AccountSecurityController extends BaseController {
     UserService userService;
     @Autowired
     GroupExtendService groupExtendService;
-
     @Autowired
     GroupBankService groupBankService;
-
     @Autowired
     ProvinceCityService provinceCityService;
+    @Autowired
+    VcodeService vcodeService;
 
     @RequestMapping(value = "/")
     public String index(ModelMap mm){
@@ -69,23 +72,21 @@ public class AccountSecurityController extends BaseController {
 
     @RequestMapping(value = "/setPwd")
     @ResponseBody
-    public AjaxResult setPwd(String mobile,String pwd,String verificationCode){
-        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+    public AjaxResult setPwd(String mobile,String pwd,String code){
         try{
-            GroupExtend groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
-            if(!Objects.equals(groupExtend.getArtificialPersonMobile(),mobile)){
-                return error("手机号输入错误");
-            }
-            User user = userService.findFirstBy("account = #{account}", Record.create().set("account",mobile));
-            if(user==null){
-                return error("手机号不存在");
-            }
-            String salt = ShiroKit.getRandomSalt(5);
-            String pwdMd5 = ShiroKit.md5(pwd, salt);
-            user.setPassword(pwdMd5);
-            user.setSalt(salt);
-//            userService.update(user);
 
+            AjaxResult ajaxResult = this.checkCode(mobile,code);
+            if(ajaxResult.getCode()==1){
+                return ajaxResult;
+            }
+
+            GroupExtend groupExtend = groupExtendService.findFirstBy("artificial_person_mobile = #{artificialPersonMobile}",Record.create().set("artificialPersonMobile",mobile));
+            User user = userService.findFirstBy("account = #{account}", Record.create().set("account",mobile));
+            if(user==null || groupExtend==null){
+                return error("请使用组织手机号");
+            }
+
+            userService.updatePwd(user,groupExtend,pwd);
         }catch (RuntimeException e){
             e.printStackTrace();
             return error(UPDATE_FAIL_MSG);
@@ -93,7 +94,6 @@ public class AccountSecurityController extends BaseController {
         return success(UPDATE_SUCCESS_MSG);
 
     }
-
 
     /**
      * 重置手机
@@ -111,20 +111,12 @@ public class AccountSecurityController extends BaseController {
     @ResponseBody
     public AjaxResult setMobile(String mobile,String code){
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
-        String demoCode = "321";
         try{
-            if(!Objects.equals(demoCode, code)){
-                return error("验证码输入错误");
+            AjaxResult ajaxResult = this.checkCode(mobile,code);
+            if(ajaxResult.getCode()==1){
+                return ajaxResult;
             }
-
-            GroupExtend groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
-            String account = groupExtend.getArtificialPersonMobile();
-            User user = userService.findFirstBy("account = #{account}", Record.create().set("account",account));
-            user.setAccount(mobile);
-            groupExtend.setArtificialPersonMobile(mobile);
-
-//            groupExtendService.update(groupExtend);
-//            userService.update(user);
+            userService.updateMoile(group,mobile);
 
         }catch (RuntimeException e){
             e.printStackTrace();
@@ -156,15 +148,7 @@ public class AccountSecurityController extends BaseController {
     public AjaxResult setBank(String bankUserName,String bankAccout,String bankName,Integer province,Integer city,String branchName){
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         try{
-            GroupBank groupBank = groupBankService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
-            groupBank.setBankUserName(bankUserName);
-            groupBank.setBankAccout(bankAccout);
-            groupBank.setBankName(bankName);
-            groupBank.setProvince(province);
-            groupBank.setCity(city);
-            groupBank.setBranchName(branchName);
-
-//            groupBankService.update(groupBank);
+            groupBankService.updateBank(bankUserName,bankAccout,bankName,province,city,branchName,group.getId());
         }catch (RuntimeException e){
             e.printStackTrace();
             return error(UPDATE_FAIL_MSG);
@@ -175,34 +159,47 @@ public class AccountSecurityController extends BaseController {
 
 
 
-
-
-
-
     @RequestMapping(value = "/checkMobile")
     @ResponseBody
     public AjaxResult checkMobile(String mobile){
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        if(StringUtils.isBlank(mobile)){
+            return error("手机号不能为空");
+        }
         try{
             GroupExtend groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",Record.create().set("groupId",group.getId()));
             if(!Objects.equals(groupExtend.getArtificialPersonMobile(),mobile)){
                 return error("手机号输入错误");
             }
+
+            String code = LeomanKit.generateCode();
+            boolean index = vcodeService.sendYP(code,mobile);
+            System.out.print("------验证码------");
+            System.out.print(code);
+            System.out.print("------验证码------");
+            if(!index){
+                return error("发送失败");
+            }
+
         }catch (RuntimeException e){
             e.printStackTrace();
             return error("错误");
         }
         return success("");
-
     }
 
     @RequestMapping(value = "/checkCode")
     @ResponseBody
-    public AjaxResult checkCode(String code){
-        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
-        String demoCode = "123";
+    public AjaxResult checkCode(String mobile,String code){
         try{
-            if(!demoCode.equals(code)){
+            if(StringUtils.isBlank(mobile)){
+                return error("手机号不能为空");
+            }
+            if(StringUtils.isBlank(code)){
+                return error("验证码不能为空");
+            }
+            boolean index = vcodeService.validate(mobile,code);
+            if(!index){
                 return error("验证码输入错误");
             }
         }catch (RuntimeException e){
@@ -213,6 +210,33 @@ public class AccountSecurityController extends BaseController {
 
     }
 
+    @RequestMapping(value = "/gainCode")
+    @ResponseBody
+    public AjaxResult gainCode(String mobile){
+        if(StringUtils.isBlank(mobile)){
+            return error("手机号不能为空");
+        }
+        try{
 
+            User user = userService.findFirstBy("account = #{account}", Record.create().set("account",mobile));
+            if(user!=null){
+                return error("该手机号已被注册为组织账号");
+            }
+
+            String code = LeomanKit.generateCode();
+            boolean index = vcodeService.sendYP(code,mobile);
+            System.out.print("------验证码------");
+            System.out.print(code);
+            System.out.print("------验证码------");
+            if(!index){
+                return error("发送失败");
+            }
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error("错误");
+        }
+        return success("");
+
+    }
 
 }

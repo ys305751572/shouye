@@ -35,7 +35,7 @@
             <input type="text" id="verification_code" name="verification_code" value="" placeholder="" class="form-control" />
         </div>
         <div class="col-sm-1">
-            <input type="button" name="" class="but" value="获取" onclick="checkMobile()"/>
+            <input type="button" style="width:110px;" name="" id="btn" class="but" value="获取验证码" onclick="checkMobile(this)"/>
         </div>
     </div>
 
@@ -67,30 +67,42 @@
     <script type="text/javascript">
         var layerIndex = parent.layer.getFrameIndex(window.name);
 
-        function gain(){
+        function checkMobile(event){
+            var mobile = $("#mobile").val();
+            $.post(
+                "${ctxPath}/${code}/checkMobile",
+                {
+                    mobile:mobile
+                },
+                function(data){
+                    if (data.code === 0) {
+                        time(event);
+                    } else {
+                        layer.msg(data.message, {
+                            time: 500
+                        });
+                    }
+
+                },"json"
+            )
 
         }
 
-        function checkMobile(){
-            var mobile = $("#mobile").val();
-            $.post(
-                    "${ctxPath}/${code}/checkMobile",
-                    {
-                        mobile:mobile
-                    },
-                    function(data){
-                        if (data.code === 0) {
-                            //验证码
-                            gain();
-                        } else {
-                            layer.msg(data.message, {
-                                time: 500
-                            });
-                        }
-
-                    },"json"
-            )
-
+        var wait=60;
+        function time(o) {
+            if (wait == 0) {
+                o.removeAttribute("disabled");
+                o.value="获取验证码";
+                wait = 60;
+            } else {
+                o.setAttribute("disabled", true);
+                o.value="重新发送(" + wait + ")";
+                wait--;
+                setTimeout(function() {
+                            time(o)
+                        },
+                        1000)
+            }
         }
 
         function setPwd(){
@@ -101,6 +113,13 @@
 
             if(mobile == null || mobile == ""){
                 layer.msg('手机号不能为空', {
+                    time: 1000
+                });
+                return;
+            }
+
+            if(verification_code == null || verification_code == ""){
+                layer.msg('验证码不能为空', {
                     time: 1000
                 });
                 return;
@@ -120,12 +139,7 @@
                 return;
             }
 
-            if(verification_code == null || verification_code == ""){
-                layer.msg('验证码不能为空', {
-                    time: 1000
-                });
-                return;
-            }
+
 
             if(pwd1 != pwd){
                 layer.msg('两次密码不一样', {
@@ -139,7 +153,7 @@
                 {
                     mobile:mobile,
                     pwd:pwd,
-                    verificationCode:verification_code
+                    code:verification_code
                 },
                 function(data){
                     if (data.code === 0) {
