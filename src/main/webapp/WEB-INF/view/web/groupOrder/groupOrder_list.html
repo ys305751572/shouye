@@ -46,9 +46,13 @@
             {name:"status",index:"status", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
-                        return "交易成功";
-                    }else{
+                        return "审核中";
+                    }else if(cellvalue==2){
                         return "交易失败";
+                    }else if(cellvalue==3){
+                        return "交易成功";
+                    }else if(cellvalue==4){
+                        return "退款成功";
                     }
                 }
             }

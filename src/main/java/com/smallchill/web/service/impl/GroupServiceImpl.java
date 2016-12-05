@@ -84,6 +84,10 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         gg.setArtificialPersonIdcard(groupVo.getArtificialPersonIdcard());
         gg.setArtificialPersonMobile(groupVo.getArtificialPersonMobile());
         gg.setCreateAdminId(groupVo.getCreateAdminId()); //创建者ID
+        gg.setCostStatus(1);
+        gg.setCostType(1);
+        gg.setCost(0.00);
+        gg.setFreezeStatus(1);
         groupExtendService.save(gg);
     }
 
@@ -369,12 +373,9 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      */
     @Override
     public void updateNote(Integer id, String content) {
-        String set = "set audit_comment = ${content}";
-        String where = " group_id = #{groupId}";
-        Record record = Record.create();
-        record.put("groupId", id);
-        record.put("content", content);
-        updateBy(set, where, record);
+        Group group = this.findById(id);
+        group.setAuditComment(content);
+        this.update(group);
     }
 
     @Override

@@ -8,8 +8,8 @@ SELECT
     tfd.name AS gType,
     tg.type AS type,
     tg.targat AS targat,
-    tg.member_count AS memberCount,
-    tg.admin_count AS adminCount,
+    member.num AS memberCount,
+    admin.num AS adminCount,
     tge.cost AS cost,
     tge.cost_status AS costStaus,
     tg.activity_count AS activityCount,
@@ -23,6 +23,8 @@ FROM (SELECT * FROM tb_group WHERE audit_status = '3') tg
     LEFT JOIN (select num,name from tfw_dict where code=908) tfd ON tg.type = tfd.num
     LEFT JOIN tfw_user cUser ON tge.create_admin_id = cUser.ID
     LEFT JOIN tfw_user aUser ON tge.approval_admin_id = aUser.ID
+    LEFT JOIN (SELECT a.group_id AS group_id,COUNT(1) AS num FROM tb_user_group a LEFT JOIN tb_group b ON b.id = a.group_id WHERE a.vip_type = '1' GROUP BY a.group_id ) member ON member.group_id = tg.id
+    LEFT JOIN (SELECT a.group_id AS group_id,COUNT(1) AS num FROM tb_user_group a LEFT JOIN tb_group b ON b.id = a.group_id WHERE a.vip_type = '2' GROUP BY a.group_id ) admin ON admin.group_id = tg.id
 ORDER BY tg.id DESC
 
 audit

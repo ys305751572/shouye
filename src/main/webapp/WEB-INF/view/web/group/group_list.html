@@ -42,12 +42,28 @@
                     return "<img src='"+cellvalue+"' width='100' height='100'>"
                 }
             },
-            {name:"idcard",index:"idcard", width:220},
+            {name:"idcard",index:"idcard", width:300},
             {name:"gName",index:"gName", width:120},
             {name:"gType",index:"gType", width:100},
-            {name:"targat",index:"targat", width:100},
-            {name:"memberCount",index:"memberCount", width:100},
-            {name:"adminCount",index:"adminCount", width:100},
+            {name:"targat",index:"targat", width:300},
+            {name:"memberCount",index:"memberCount", width:100,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue==null){
+                        return "0";
+                    }else {
+                        return cellvalue;
+                    }
+                }
+            },
+            {name:"adminCount",index:"adminCount", width:100,
+                formatter: function(cellvalue, options, rowObject) {
+                    if(cellvalue==null){
+                        return "0";
+                    }else {
+                        return cellvalue;
+                    }
+                }
+            },
             {name:"costStaus",index:"costStaus", width:120,hidden:true},
             {name:"cost",index:"cost", width:120,
                 formatter: function(cellvalue, options, rowObject) {
@@ -63,7 +79,7 @@
             {formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
             {formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
             {formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
-            {name:"updateTime",index:"updateTime", width:120,
+            {name:"updateTime",index:"updateTime", width:150,
                 formatter: function(cellvalue, options, rowObject) {
                     if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
                         return "";

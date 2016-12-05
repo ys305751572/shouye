@@ -301,10 +301,16 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         group.setIsIntroduce(isIntroduce);
         group.setIndustryLimit(industryLimit);
         group.setDomainLimit(domainLimit);
-        ProvinceCity province = provinceCityService.findById(provinceLimit);
-        ProvinceCity city = provinceCityService.findById(cityLimit);
-        group.setProvinceLimit(province.getCode());
-        group.setCityLimit(city.getCode());
+        ProvinceCity province = null;
+        ProvinceCity city = null;
+        if(provinceLimit!=0){
+            province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",provinceLimit));
+        }
+        if(cityLimit!=0){
+            city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",cityLimit));
+        }
+        group.setProvinceLimit(province!=null?province.getCode():0);
+        group.setCityLimit(city!=null?city.getCode():0);
         group.setProfessionalLimit(professionalLimit);
         group.setZyLimit(zyLimit);
         groupService.update(group);

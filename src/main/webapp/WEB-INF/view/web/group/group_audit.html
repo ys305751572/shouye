@@ -34,9 +34,9 @@
                     return "<img src='"+cellvalue+"' width='100' height='100'>"
                 }
             },
-            {name:"idcard",index:"idcard", width:120},
-            {name:"gName",index:"gName", width:120},
-            {name:"targat",index:"targat", width:100},
+            {name:"idcard",index:"idcard", width:300},
+            {name:"gName",index:"gName", width:150},
+            {name:"targat",index:"targat", width:300},
             {name:"createName",index:"createName", width:120},
             {name:"approvalName",index:"approvalName", width:120,
                 formatter: function(cellvalue, options, rowObject) {
@@ -62,7 +62,7 @@
                 }
             },
             {name:"auditComment",index:"auditComment", width:120,editable: true,edittype:"text"},
-            {name:"updateTime",index:"updateTime", width:120,
+            {name:"updateTime",index:"updateTime", width:150,
                 formatter: function(cellvalue, options, rowObject) {
                     if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
                         return "";

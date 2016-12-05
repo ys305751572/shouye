@@ -139,7 +139,7 @@
                 {code:code},
                 function (data) {
                     $("#city_limit").empty();
-                    var html = "<option value=''>不限</option>";
+                    var html = "<option value='0'>不限</option>";
                     for(var i=0;i<data.length;i++){
                         var code = data[i].code;
                         var name = data[i].name;
