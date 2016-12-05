@@ -23,7 +23,8 @@ SELECT
   tui.zl AS seniority,
   tui.zy2 AS resources,
   tui.organization AS organization,
-  tui.org_type AS orgType,
+  org.name AS orgType,
+  org.num AS orgId,
   tui.product_type AS productType,
   tui.industry_ranking AS industryRanking,
   tui.qualification AS qualification,
@@ -57,8 +58,8 @@ tui.user_id = tug.user_id
   LEFT JOIN (SELECT a.user_id userId,a.career_id carerrId,b.name NAME FROM tb_userinfo_career a LEFT JOIN tfw_dict b ON a.career_id = b.ID) tuc ON tug.user_id = tuc.userId
   LEFT JOIN tb_userinfo_domain tud ON tui.user_id = tud.user_id
   LEFT JOIN tb_userinfo_professional tup ON tui.user_id = tup.user_id
-  LEFT JOIN (SELECT id,num,name FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id =
-tfd.id
+  LEFT JOIN (SELECT id,num,name FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id = tfd.id
+  LEFT JOIN (SELECT id,num,NAME FROM tfw_dict WHERE CODE=907) org ON tui.org_type = org.id
 GROUP BY tui.user_id
 
 listPage
