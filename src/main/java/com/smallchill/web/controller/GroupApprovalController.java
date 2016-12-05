@@ -109,7 +109,7 @@ public class GroupApprovalController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/permission_setting")
-    public AjaxResult permissionSetting(Integer permissionsType,Integer isJoin,Integer isIntroduce,Integer costType,Integer cost,Integer sexLimit,Integer industryLimit,Integer domainLimit,Integer provinceLimit,Integer cityLimit,Integer professionalLimit,Integer zyLimit) {
+    public AjaxResult permissionSetting(Integer permissionsType,Integer isJoin,Integer isIntroduce,Integer costType,Double cost,Integer sexLimit,Integer industryLimit,Integer domainLimit,Integer provinceLimit,Integer cityLimit,Integer professionalLimit,Integer zyLimit) {
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         if(group==null){
             return error("错误:未找到组织");

@@ -542,9 +542,9 @@ public class GroupController extends BaseController {
             groupService.update(group);
         }catch (RuntimeException e){
             e.printStackTrace();
-            return error(SAVE_FAIL_MSG);
+            return error(UPDATE_FAIL_MSG);
         }
-        return success(SAVE_SUCCESS_MSG);
+        return success(UPDATE_SUCCESS_MSG);
     }
 
     /**

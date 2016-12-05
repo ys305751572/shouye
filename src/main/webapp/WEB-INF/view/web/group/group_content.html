@@ -102,9 +102,11 @@
 				}
 				$.post("${basePath}/${code}/contentSave",{groupId:groupId , title:title, content:content, isOpen:isOpen, status:status}, function(data){
 					if(data.code===0){
-						layer_alert(data.message, "success");
-						parent.layer.close(layerIndex);
-						parent.location.reload();
+						layer.msg(data.message, {
+							time: 500
+						},function(){
+							parent.location.reload();
+						});
 					}
 					else{
 						layer_alert(data.message, "error");

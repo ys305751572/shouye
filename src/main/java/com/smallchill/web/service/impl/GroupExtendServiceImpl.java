@@ -16,7 +16,7 @@ import com.smallchill.core.base.service.BaseService;
 public class GroupExtendServiceImpl extends BaseService<GroupExtend> implements GroupExtendService {
 
     @Override
-    public Integer getCost(Integer groupId) {
+    public Double getCost(Integer groupId) {
         String sql = "select cost from tb_group_extend where group_id = #{groupId}";
         GroupExtend ge = this.findFirst(sql, Record.create().set("groupId", groupId));
         return ge.getCost();

@@ -9,5 +9,5 @@ import com.smallchill.web.model.GroupExtend;
  */
 public interface GroupExtendService extends IService<GroupExtend>{
 
-    Integer getCost(Integer groupId);
+    Double getCost(Integer groupId);
 }

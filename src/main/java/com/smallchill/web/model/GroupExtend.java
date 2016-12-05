@@ -51,18 +51,18 @@ public class GroupExtend extends BaseModel {
     @Column(name = "create_admin_id")
     private Integer createAdminId;
     @Column(name = "cost")
-    private Integer cost = 0;
+    private Double cost = 0.00;
     @Column(name = "cost_status")
     private Integer costStatus;
     //1:年费 2:永久
     @Column(name = "cost_type")
     private Integer costType;
 
-    public Integer getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(Integer cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 

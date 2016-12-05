@@ -58,7 +58,7 @@ public class PayServiceImpl implements PayService, StatusConst {
             throws GroupCostException, UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException,
             GroupLimitException {
 
-        Integer realCost = groupExtendService.getCost(groupId);
+        Double realCost = groupExtendService.getCost(groupId);
         if (realCost != null && !cost.equals(realCost)) {
             throw new GroupCostException();
         }

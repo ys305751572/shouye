@@ -245,7 +245,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     @Override
     @Transactional
     public void permissionSetting(Group group, Integer permissionsType, Integer isJoin, Integer
-            isIntroduce, Integer costType, Integer cost, Integer sexLimit, Integer industryLimit, Integer
+            isIntroduce, Integer costType, Double cost, Integer sexLimit, Integer industryLimit, Integer
                                           domainLimit, Integer provinceLimit, Integer cityLimit, Integer professionalLimit, Integer
                                           zyLimit) {
         GroupExtend groupExtend = null;

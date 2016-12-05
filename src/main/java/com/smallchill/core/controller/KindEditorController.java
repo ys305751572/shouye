@@ -15,8 +15,9 @@
  */
 package com.smallchill.core.controller;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,8 @@ import com.smallchill.core.toolbox.kit.PathKit;
 @Controller
 @RequestMapping("/kindeditor")
 public class KindEditorController extends BladeController {
+
+    static String PATH = "E:\\projects\\shouye\\src\\main\\webapp\\image\\";
 
     @ResponseBody
     @RequestMapping("/upload_json")
@@ -133,8 +136,41 @@ public class KindEditorController extends BladeController {
     public void renderFile(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
         Map<String, Object> file = Db.init().findById("TFW_ATTACH", id);
         String url = file.get("URL").toString();
-        File f = new File((Cst.me().isRemoteMode() ? "" : PathKit.getWebRootPath()) + url);
-//        File f = new File(url);
+        String path = "";
+        try {
+            path = download(url, System.currentTimeMillis()+"");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        File f = new File((Cst.me().isRemoteMode() ? "" : PathKit.getWebRootPath()) + url);
+        File f = new File(path);
         FileRender.init(request, response, f).render();
     }
+
+    public static String download(String urlString, String filename) throws Exception {
+
+        // 构造URL
+        URL url = new URL(urlString);
+        // 打开连接
+        URLConnection con = url.openConnection();
+        // 输入流
+        InputStream is = con.getInputStream();
+        // 1K的数据缓冲
+        byte[] bs = new byte[1024];
+        // 读取到的数据长度
+        int len;
+        // 输出的文件流
+        OutputStream os = new FileOutputStream(PATH+filename);
+        // 开始读取
+        while ((len = is.read(bs)) != -1) {
+            os.write(bs, 0, len);
+        }
+        // 完毕，关闭所有链接
+        os.close();
+        is.close();
+
+        return PATH+filename;
+
+    }
+
 }
