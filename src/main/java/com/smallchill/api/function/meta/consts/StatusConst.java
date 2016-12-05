@@ -22,6 +22,12 @@ public interface StatusConst {
 
     int ORDER_STATUS_SUCCESS = 1; // 订单状态-成功
     int ORDER_STATUS_ERROR = 2; //  订单状态-失败
+    int ORDER_STATUS_REFUSE_SUCCESS = 4; // 退款成功
+    int ORDER_STATUS_REFUSE_ERROR = 5; // 退款失败
+
+    int flow_enter = 2; // 收入
+    int flow_exit = 1; // 支出
+
 
     String WEIXIN = "WEIXIN";
     String ALIPAY = "ALIPAY";

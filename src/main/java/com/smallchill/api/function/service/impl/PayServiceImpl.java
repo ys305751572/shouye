@@ -108,6 +108,7 @@ public class PayServiceImpl implements PayService, StatusConst {
             order.setStatus(ORDER_STATUS_ERROR);
             order.setCreateTime(DateTimeKit.nowLong());
             order.setCounts(1);
+            order.setFlow(flow_exit);
             orderService.saveRtId(order);
         }
         return resultMap;
@@ -190,6 +191,7 @@ public class PayServiceImpl implements PayService, StatusConst {
             order.setCounts(number);
             order.setStatus(ORDER_STATUS_ERROR);
             order.setCreateTime(DateTimeKit.nowLong());
+            order.setFlow(flow_exit);
             orderService.save(order);
         }
         return resultMap;
@@ -266,7 +268,10 @@ public class PayServiceImpl implements PayService, StatusConst {
             refundService.save(refund);
             if ("SUCCESS".equals(getMap.get("return_code")) && "SUCCESS".equals(getMap.get("return_msg"))) {
                 // 正确
-                orderService.setOrderSuccess(order);
+                orderService.setOrderRefuseSuccess(order);
+            }
+            else {
+                orderService.setOrderRefuseRefuse(order);
             }
         } catch (Exception e) {
             e.printStackTrace();

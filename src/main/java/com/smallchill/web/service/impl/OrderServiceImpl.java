@@ -39,6 +39,20 @@ public class OrderServiceImpl extends BaseService<Order> implements OrderService
     }
 
     @Override
+    public void setOrderRefuseSuccess(Order order) {
+        order.setStatus(ORDER_STATUS_REFUSE_SUCCESS);
+        order.setFlow(flow_enter);
+        this.update(order);
+    }
+
+    @Override
+    public void setOrderRefuseRefuse(Order order) {
+        order.setStatus(ORDER_STATUS_REFUSE_ERROR);
+        this.update(order);
+    }
+
+
+    @Override
     public List<Order> findByUserId(Integer userId) {
         return this.findBy("user_id = #{userId}", Record.create().set("userId", userId));
     }
