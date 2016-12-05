@@ -239,7 +239,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             //发现消息
             messageService.sendMsgForUserAuditAgree(groupApproval.getGroupId(),
                     groupApproval.getUserId());
-
+            Order order = orderService.findByGaId(groupApproval.getId());
+            orderService.setOrderAgree(order);
         } else if (status == 3) {
             //第三个参数为订单号(暂时没有)
             Order order = orderService.findByGaId(groupApproval.getId());

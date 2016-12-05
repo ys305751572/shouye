@@ -47,16 +47,19 @@ public class UserInfoExtendServiceImpl extends BaseService<UserInfoExtend> imple
     @Override
     public void saveUserInfoExtend(Integer userId, int interestCount, int acquaintanceCount) {
         // tb_user_info_extend表中对每个userid只保存一次，如果表中存在该用户ID数据则update，没有则insert
-        UserInfoExtend fe = this.findFirstBy("user_id #{userId}", Record.create().set("userId", userId));
+        UserInfoExtend fe = this.findFirstBy("user_id = #{userId}", Record.create().set("userId", userId));
         if (fe == null) {
             fe = new UserInfoExtend();
             fe.setInterestCount(interestCount + INTEREST_COUNTS);
             fe.setAcquaintanceCount(acquaintanceCount + ACQUAINTANCE_COUNTS);
+            fe.setUserId(userId);
+            this.save(fe);
         }
         else {
             fe.setInterestCount(fe.getInterestCount() + interestCount);
             fe.setAcquaintanceCount(fe.getAcquaintanceCount() + acquaintanceCount);
+            this.update(fe);
         }
-        this.save(fe);
+
     }
 }

@@ -51,6 +51,12 @@ public class OrderServiceImpl extends BaseService<Order> implements OrderService
         this.update(order);
     }
 
+    @Override
+    public void setOrderAgree(Order order) {
+        order.setStatus(3);
+        this.update(order);
+    }
+
 
     @Override
     public List<Order> findByUserId(Integer userId) {

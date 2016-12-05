@@ -80,7 +80,7 @@ public class PayServiceImpl implements PayService, StatusConst {
         Double c = Double.parseDouble(realCost.toString());
 
 
-        Map<String, Object> resultMap = PayConfig.config(request, response, orderNo, c, WEIXIN);
+        Map<String, Object> resultMap = PayConfig.config(request, response, orderNo, c, WEIXIN, PayConfig.NOTIFY_URL_WEIXIN_GROUP_JOIN);
         if (CollectionKit.isNotEmpty(resultMap)) {
             GroupApproval ga = new GroupApproval();
             ga.setUserId(userId);
@@ -108,6 +108,7 @@ public class PayServiceImpl implements PayService, StatusConst {
             order.setStatus(ORDER_STATUS_ERROR);
             order.setCreateTime(DateTimeKit.nowLong());
             order.setCounts(1);
+            order.setPlatform(1);
             order.setFlow(flow_exit);
             orderService.saveRtId(order);
         }
@@ -179,7 +180,7 @@ public class PayServiceImpl implements PayService, StatusConst {
 
         String orderNo = CommonKit.generateSn();
         Map<String, Object> resultMap = PayConfig.config(request, response, orderNo,
-                Double.parseDouble(String.valueOf(money)), WEIXIN);
+                Double.parseDouble(String.valueOf(money)), WEIXIN, PayConfig.NOTIFY_URL_WEIXIN_VALUEADD);
         if (CollectionKit.isNotEmpty(resultMap)) {
             Order order = new Order();
             order.setUserId(userId);
@@ -192,6 +193,7 @@ public class PayServiceImpl implements PayService, StatusConst {
             order.setStatus(ORDER_STATUS_ERROR);
             order.setCreateTime(DateTimeKit.nowLong());
             order.setFlow(flow_exit);
+            order.setPlatform(1);
             orderService.save(order);
         }
         return resultMap;
@@ -266,7 +268,7 @@ public class PayServiceImpl implements PayService, StatusConst {
             refund.setOrderNo(order.getOrderNo());
             refund.setRefundType(ORDER_TYPE_COST);
             refundService.save(refund);
-            if ("SUCCESS".equals(getMap.get("return_code")) && "SUCCESS".equals(getMap.get("return_msg"))) {
+            if ("SUCCESS".equals(getMap.get("return_code"))) {
                 // 正确
                 orderService.setOrderRefuseSuccess(order);
             }

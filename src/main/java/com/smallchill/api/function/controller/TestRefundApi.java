@@ -53,7 +53,7 @@ public class TestRefundApi extends BaseController {
     @PostMapping(value = "/getPrepayId")
     @ResponseBody
     public String getPrepayId() {
-        Map<String, Object> resultMap = PayConfig.config(this.getRequest(), this.getResponse(), CommonKit.generateSn(), 1.0, "WEIXIN");
+        Map<String, Object> resultMap = PayConfig.config(this.getRequest(), this.getResponse(), CommonKit.generateSn(), 1.0, "WEIXIN",null);
         for (Map.Entry<String, Object> entity : resultMap.entrySet()) {
             System.out.println("key:" + entity.getKey() + "==== value:" + entity.getValue());
         }

@@ -795,7 +795,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     public List<Record> findCustomGrouping(Integer userId) {
         String sql = "SELECT COUNT(ufgm.`friend_id`) counts,ufg.`id`,IFNULL(ufg.`name`, '') `name` FROM `tb_user_friend_grouping` ufg \n" +
                 "LEFT JOIN `tb_user_friend_grouping_member` ufgm ON ufg.id = ufgm.`ufg_id` \n" +
-                "WHERE ufg.`user_id` = 20 GROUP BY ufg.`id`";
+                "WHERE ufg.`user_id` = #{userId} GROUP BY ufg.`id`";
         return Db.init().selectList(sql, Record.create().set("userId", userId));
     }
 
@@ -1091,8 +1091,9 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             vo.setMoney(Double.parseDouble(record.get("order_amount").toString()));
             vo.setCreateTime(record.getLong("create_time"));
             vo.setStatus(record.getInt("status"));
+            vo.setFlow(record.getInt("flow"));
             consumptionRecordVos.add(vo);
-
+            
             allMoney += Double.parseDouble(record.get("order_amount").toString());
         }
         ConsumptionRecordSuperVo superVo = new ConsumptionRecordSuperVo();

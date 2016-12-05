@@ -21,6 +21,10 @@ public interface OrderService extends IService<Order> {
 
     void setOrderRefuseRefuse(Order order);
 
+    void setOrderAgree(Order order);
+
     List<Order> findByUserId(Integer userId);
+
+
 
 }

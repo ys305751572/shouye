@@ -296,7 +296,7 @@ LEFT JOIN tb_user_friend uf
 ON uf.`friend_id` = ufgm.`friend_id`
 LEFT JOIN tb_user_info ui
 ON ui.`user_id` = ufgm.`friend_id`
-WHERE ufgm.`ufg_id` = #{groupingId}
+WHERE ufgm.`ufg_id` = #{groupingId} group by ui.user_id
 
 findCareerList
 ==============

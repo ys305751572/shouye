@@ -41,9 +41,23 @@ public class ConsumptionRecordVo extends BaseVo{
     private Integer status;
 
     /**
+     * 支入支出状态
+     * 1:支出 2:收入
+     */
+    private Integer flow;
+
+    /**
      * 创建时间
      */
     private Long createTime;
+
+    public Integer getFlow() {
+        return flow;
+    }
+
+    public void setFlow(Integer flow) {
+        this.flow = flow;
+    }
 
     public Integer getStatus() {
         return status;
