@@ -1018,8 +1018,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     /**
      * 组织后台-加入组织审核
      *
-     * @param userId   当前用户ID
-     * @param groupId  组织ID
+     * @param userId    当前用户ID
+     * @param groupId   组织ID
      * @param toUserIds 目标用户ID
      */
     @Override
@@ -1043,7 +1043,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     /**
      * 组织后台-引荐审核
      *
-     * @param userId   当前用户ID
+     * @param userId 当前用户ID
      * @param augIds 申请记录ID
      */
     @Override
@@ -1056,13 +1056,14 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             }
             String[] augIdss = augIds.split(",");
             for (String augId : augIdss) {
-                augService.updateStatus(Integer.parseInt(augId),status);
+                augService.updateStatus(Integer.parseInt(augId), status);
             }
         }
     }
 
     /**
      * 查询用户消费记录
+     *
      * @param userId 当前用户ID
      * @return ConsumptionRecordSuperVo
      */
@@ -1078,11 +1079,9 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             int orderType = record.getInt("order_type");
             if (orderType == 1 || orderType == 2) {
                 vo.setTitle(TITLE_CR_VIP);
-            }
-            else if (orderType == 3) {
+            } else if (orderType == 3) {
                 vo.setTitle(TITLE_CR_INTEREST);
-            }
-            else if (orderType == 4){
+            } else if (orderType == 4) {
                 vo.setTitle(TITLE_CR_ACQUAINTANCE);
             }
             vo.setCounts(record.getInt("counts"));
@@ -1092,9 +1091,12 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             vo.setCreateTime(record.getLong("create_time"));
             vo.setStatus(record.getInt("status"));
             vo.setFlow(record.getInt("flow"));
+            int flag = 1;
+            if (vo.getFlow() == 1) {
+                flag = -1;
+            }
             consumptionRecordVos.add(vo);
-            
-            allMoney += Double.parseDouble(record.get("order_amount").toString());
+            allMoney += (Double.parseDouble(record.get("order_amount").toString()) * flag);
         }
         ConsumptionRecordSuperVo superVo = new ConsumptionRecordSuperVo();
         superVo.setList(consumptionRecordVos);
