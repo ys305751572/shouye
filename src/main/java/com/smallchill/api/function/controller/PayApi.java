@@ -25,7 +25,7 @@ public class PayApi extends BaseController {
 
     @PostMapping(value = "/joingroup/prepayid/get")
     @ResponseBody
-    public String getPrepayIdOfJoingroup(Integer userId, Integer groupId, Integer cost, java.lang.String validateInfo,
+    public String getPrepayIdOfJoingroup(Integer userId, Integer groupId, Double cost, java.lang.String validateInfo,
                                          java.lang.String matchType) {
 
         Map<String, Object> resultMap;
@@ -64,14 +64,16 @@ public class PayApi extends BaseController {
      */
     @PostMapping(value = "/valueadd/peepayid/get")
     @ResponseBody
-    public String getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Integer money) {
+    public String getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Double money) {
 
         Map<String, Object> resultMap = null;
         try {
             resultMap = payService.getPrepayIdOfValueaddService(userId, type, number, money,
                     this.getResponse(), this.getRequest());
         } catch (UserInfoExtendException e) {
-            return fail(ErrorType.ERROR_CODE_APP_PAYERROR_REFUND_FAIL);
+            return fail(ErrorType.ERROR_CODE_APP_USERINFO_EXTEND_FAIL);
+        } catch (FriendExtendPriceException e) {
+            return fail(ErrorType.ERROR_CODE_APP_USERINFO_EXTEND_PRICE_FAIL);
         }
         return success(resultMap, "prepayIdConfig");
     }

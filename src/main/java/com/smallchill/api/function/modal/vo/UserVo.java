@@ -64,6 +64,16 @@ public class UserVo extends BaseVo implements Serializable {
     private String qualification;
     private String industryRanking;
 
+    private String shareUrl;
+
+    public String getShareUrl() {
+        return shareUrl;
+    }
+
+    public void setShareUrl(String shareUrl) {
+        this.shareUrl = shareUrl;
+    }
+
     public String getQualification() {
         return qualification;
     }

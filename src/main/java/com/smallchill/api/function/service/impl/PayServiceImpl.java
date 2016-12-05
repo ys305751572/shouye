@@ -53,7 +53,7 @@ public class PayServiceImpl implements PayService, StatusConst {
      */
     @Transactional
     @Override
-    public Map<String, Object> getPrepayId(Integer userId, Integer groupId, Integer cost, String validateInfo,
+    public Map<String, Object> getPrepayId(Integer userId, Integer groupId, Double cost, String validateInfo,
                                            String matchType, HttpServletResponse response, HttpServletRequest request)
             throws GroupCostException, UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException,
             GroupLimitException {
@@ -132,29 +132,36 @@ public class PayServiceImpl implements PayService, StatusConst {
      */
     @Transactional
     @Override
-    public Map<String, Object> getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Integer money,
+    public Map<String, Object> getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Double money,
                                                             HttpServletResponse response, HttpServletRequest request)
-            throws UserInfoExtendException {
+            throws UserInfoExtendException, FriendExtendPriceException {
         FriendExpand fe = null;
         int allCount = 0;
         int userCount = 0;
         int dbType = 0;
+        double unitPrice = 0;
         UserInfoExtend ue = userInfoExtendService.findByUserId(userId);
         if (type == VALUE_ADD_SERVICE_TYPE_INTEREST) {
             fe = friendExpandService.findInterestConfig();
             allCount = fe.getNum();
             userCount = ue.getInterestCount();
             dbType = SQL_VALUE_ADD_SERVICE_TYPE_INTEREST;
+            unitPrice = fe.getAmount();
         }
         else {
             fe = friendExpandService.findAcquaintanceConfig();
             allCount = fe.getNum();
             userCount = ue.getAcquaintanceCount();
             dbType = SQL_VALUE_ADD_SERVICE_TYPE_ACQUAINTANCE;
+            unitPrice = fe.getAmount();
         }
         if ((number + userCount) > allCount) {
             throw new UserInfoExtendException();
         }
+        if ((number * unitPrice) != money) {
+            throw new FriendExtendPriceException();
+        }
+
         String orderNo = CommonKit.generateSn();
         Map<String,Object> resultMap = PayConfig.config(request, response, orderNo,
                 Double.parseDouble(String.valueOf(money)), WEIXIN);

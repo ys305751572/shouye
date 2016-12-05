@@ -4,6 +4,8 @@ import com.smallchill.core.base.service.IService;
 import com.smallchill.web.model.FriendExpand;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by shilong
  * on 2016/12/01.

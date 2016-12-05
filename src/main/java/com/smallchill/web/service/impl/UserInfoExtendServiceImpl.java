@@ -1,5 +1,6 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.function.meta.consts.SystemConst;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.UserInfoExtend;
 import com.smallchill.web.service.FriendExpandService;
@@ -15,7 +16,7 @@ import com.smallchill.core.base.service.BaseService;
  * 2016-12-04 12:08:17
  */
 @Service
-public class UserInfoExtendServiceImpl extends BaseService<UserInfoExtend> implements UserInfoExtendService {
+public class UserInfoExtendServiceImpl extends BaseService<UserInfoExtend> implements UserInfoExtendService, SystemConst {
 
     @Autowired
     private FriendExpandService friendExpandService;
@@ -27,7 +28,7 @@ public class UserInfoExtendServiceImpl extends BaseService<UserInfoExtend> imple
      */
     @Override
     public UserInfoExtend findByUserId(Integer userId) {
-        UserInfoExtend fe = this.findFirstBy("user_id #{userId}", Record.create().set("userId", userId));
+        UserInfoExtend fe = this.findFirstBy("user_id = #{userId}", Record.create().set("userId", userId));
         if (fe == null) {
             fe = new UserInfoExtend();
             fe.setUserId(userId);
@@ -49,8 +50,8 @@ public class UserInfoExtendServiceImpl extends BaseService<UserInfoExtend> imple
         UserInfoExtend fe = this.findFirstBy("user_id #{userId}", Record.create().set("userId", userId));
         if (fe == null) {
             fe = new UserInfoExtend();
-            fe.setInterestCount(interestCount);
-            fe.setAcquaintanceCount(acquaintanceCount);
+            fe.setInterestCount(interestCount + INTEREST_COUNTS);
+            fe.setAcquaintanceCount(acquaintanceCount + ACQUAINTANCE_COUNTS);
         }
         else {
             fe.setInterestCount(fe.getInterestCount() + interestCount);

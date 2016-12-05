@@ -12,14 +12,14 @@ import java.util.Map;
  */
 public interface PayService {
 
-    Map<String, Object> getPrepayId(Integer userId, Integer groupId, Integer cost, String validateInfo,
+    Map<String, Object> getPrepayId(Integer userId, Integer groupId, Double cost, String validateInfo,
                                     String matchType, HttpServletResponse response, HttpServletRequest request)
     throws GroupCostException, UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException, GroupLimitException;
 
     void joinGroupWxNotify(HttpServletRequest request, HttpServletResponse response);
 
-    Map<String, Object> getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Integer money,
-                                                     HttpServletResponse response, HttpServletRequest request) throws UserInfoExtendException;
+    Map<String, Object> getPrepayIdOfValueaddService(Integer userId, Integer type, Integer number, Double money,
+                                                     HttpServletResponse response, HttpServletRequest request) throws UserInfoExtendException, FriendExtendPriceException;
 
     Map<String, Object> getPrepayIdOfValueaddServiceInterest(Integer userId, Integer number, Integer money);
 

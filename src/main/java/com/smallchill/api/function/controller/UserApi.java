@@ -155,6 +155,7 @@ public class UserApi extends BaseController implements ConstCache {
         try {
             record = userInfoService.findUserInfoDetail(userId);
             userVo = Convert.recordToVo(record);
+            userVo.setShareUrl("/api/share/userinfindex");
             userVo.setUserExtendVo(userInfoService.findUserExtendVo(record));
         } catch (Exception e) {
             e.printStackTrace();

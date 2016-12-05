@@ -34,6 +34,7 @@ public enum ErrorType {
 
     ERROR_CODE_APP_CANNOT_JOIN_GROUP_FAIL("您不符合加入组织要求", 6001),
     ERROR_CODE_APP_USERINFO_EXTEND_FAIL("添加人数超出上限", 7001),
+    ERROR_CODE_APP_USERINFO_EXTEND_PRICE_FAIL("传入金额有误", 7001),
     ERROR_CODE_APP_PAYERROR_REFUND_FAIL("退款失败", 9001);
 
     private String name;
