@@ -1090,6 +1090,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             vo.setGroupName(record.getStr("groupName"));
             vo.setMoney(Double.parseDouble(record.get("order_amount").toString()));
             vo.setCreateTime(record.getLong("create_time"));
+            vo.setStatus(record.getInt("status"));
             consumptionRecordVos.add(vo);
 
             allMoney += Double.parseDouble(record.get("order_amount").toString());

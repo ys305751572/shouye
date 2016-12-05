@@ -35,9 +35,23 @@ public class ConsumptionRecordVo extends BaseVo{
     private Double money;
 
     /**
+     * 订单状态
+     * 1:未审核 2:失败 4:退款成功 5:退款失败
+     */
+    private Integer status;
+
+    /**
      * 创建时间
      */
     private Long createTime;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Integer getId() {
         return id;
