@@ -149,8 +149,8 @@
 
         function setPoundage(){
             var rate = $("#rate").val();
-            var num = $("#poundageAmount").val();
-            var amount = $("#poundageNum").val();
+            var amount = $("#poundageAmount").val();
+            var num = $("#poundageNum").val();
             $.post(
                 "${ctxPath}/${code}/poundageSave",
                 {
@@ -159,11 +159,10 @@
                     rate:rate
                 },
                 function(data){
-                    console.log(data);
                     if(data.code===0){
                         $("#rate").val(rate);
-                        $("#poundageAmount").val(num);
-                        $("#poundageNum").val(amount);
+                        $("#poundageAmount").val(amount);
+                        $("#poundageNum").val(num);
                         layer_alert(data.message, "success");
                     }else {
                         layer_alert(data.message, "error");
@@ -174,7 +173,6 @@
         }
 
         $(function(){
-
 
 
         });
