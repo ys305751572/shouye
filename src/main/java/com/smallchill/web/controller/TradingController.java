@@ -9,6 +9,7 @@ import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.support.BladePage;
 import com.smallchill.web.meta.intercept.GroupIntercept;
+import com.smallchill.web.meta.intercept.OrderIntercept;
 import com.smallchill.web.model.GroupExtend;
 import com.smallchill.web.model.Trading;
 import com.smallchill.web.service.TradingService;
@@ -31,8 +32,7 @@ import java.util.Map;
 @RequestMapping(value = "/trading")
 public class TradingController extends BaseController {
     private static String CODE = "trading";
-    private static String PERFIX = "tb_trading";
-    private static String LIST_SOURCE = "Trading.list";
+    private static String LIST_SOURCE = "Order.groupOrderList";
     private static String BASE_PATH = "/web/trading/";
 
     @Autowired

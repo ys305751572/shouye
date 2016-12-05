@@ -28,22 +28,22 @@
         var _colmodel=[
             {name:"id",index:"id", width:80,hidden:true},
             {name:"orderNo",index:"orderNo", width:120},
-            {name:"t_type",index:"t_type", width:220,
+            {name:"orderType",index:"orderType", width:220,
                 formatter: function(cellvalue, options, rowObject) {
                     //1:会员费 2:报名费 3:熟人上限 4:感兴趣上限(对人)
-                    if(cellvalue==1) {
+                    if(cellvalue==1 || cellvalue==2) {
                         return "会员费";
-                    }else if(cellvalue==2) {
-                        return "报名费";
                     }else if(cellvalue==3) {
-                        return "熟人上限";
-                    }else {
                         return "感兴趣上限(对人)";
+                    }else if(cellvalue==4){
+                        return "熟人上限";
+                    }else if(cellvalue==5){
+                        return "报名费";
                     }
                 }
             },
-            {name:"num",index:"num", width:100},
-            {name:"amount",index:"amount", width:120,
+            {name:"counts",index:"counts", width:100},
+            {name:"orderAmount",index:"orderAmount", width:120,
                 formatter: function(cellvalue, options, rowObject) {
                     var flow = rowObject.flow;
                     if(flow==1){
@@ -75,7 +75,7 @@
             },
             {name:"mobile",index:"mobile", width:120},
             {name:"createTime",index:"createTime", width:140},
-            {name:"t_status",index:"t_status", width:120,
+            {name:"status",index:"status", width:120,
                 formatter: function(cellvalue, options, rowObject) {
                     //状态 1:交易成功 2:审核中 3:进行中 4:扣款失败 5:退款成功 6:等待退款 7:退款失败
                     switch(cellvalue){
