@@ -6,6 +6,7 @@ import com.smallchill.api.function.modal.vo.IntroduceUserVo;
 import com.smallchill.api.function.modal.vo.SearchResult;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.MapKit;
 import com.smallchill.web.model.Refund;
 import com.smallchill.web.model.UserInfo;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.CaseInsensitiveMap;
@@ -220,10 +221,27 @@ public class Convert {
      * @param resultMap
      * @return
      */
-    public static Refund resultMapToRefund(Map<String,Object> resultMap) {
-
-
-        return new Refund();
+    public static Refund resultMapToRefund(Map<String,String> resultMap) {
+        Refund refund = new Refund();
+        if ("SUCCESS".equals(resultMap.get("return_code")) && "SUCCESS".equals(resultMap.get("return_msg"))) {
+            refund.setResultCode(resultMap.get("result_code"));
+            refund.setOrderNo(resultMap.get("out_trade_no"));
+            refund.setOutTradeNo(resultMap.get("out_trade_no"));
+            refund.setTransactionId(resultMap.get("transaction_id"));
+            refund.setOut_refund_no(resultMap.get("out_refund_no"));
+            refund.setRefundId(resultMap.get("refund_id"));
+            refund.setRefundChannel(resultMap.get("refund_channel"));
+            refund.setRefundFee(Integer.parseInt(resultMap.get("refund_fee")));
+            refund.setSettlementRefundFee(Integer.parseInt(resultMap.get("settlement_refund_fee")));
+            refund.setTotalFee(Integer.parseInt(resultMap.get("total_fee")));
+            refund.setSettlementTotalFee(Integer.parseInt(resultMap.get("settlement_total_fee")));
+            refund.setCashFee(Integer.parseInt(resultMap.get("cash_fee")));
+        }
+        else {
+            refund.setErrCode(resultMap.get("err_code"));
+            refund.setErrCodeDes(resultMap.get("err_code_des"));
+        }
+        return refund;
     }
     public static int NOT_FRINED = 2000; // 未结识
     public static int FRIEND = 2001; // 已结识

@@ -7,6 +7,7 @@ import com.smallchill.api.function.meta.consts.StatusConst;
 import com.smallchill.api.function.modal.vo.GroupApprovalVo;
 import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.service.MessageService;
+import com.smallchill.api.function.service.PayService;
 import com.smallchill.api.function.service.UserDomainService;
 import com.smallchill.api.function.service.UserprofessionalService;
 import com.smallchill.core.plugins.dao.Db;
@@ -21,7 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -46,6 +51,10 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     private MessageService messageService;
     @Autowired
     private ProvinceCityService provinceCityService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private PayService payService;
 
     /**
      * 是否已经申请
@@ -193,6 +202,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     @Override
     @Transactional
     public void updateStatus(Integer id, Integer status) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         GroupApproval groupApproval = this.findById(id);
         if (status == 2) {
             //批准通过的时间
@@ -231,11 +242,15 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
         } else if (status == 3) {
             //第三个参数为订单号(暂时没有)
+            Order order = orderService.findByGaId(groupApproval.getId());
+            payService.refund(id, request, response);
             messageService.sendMsgForUserAuditRefuse(groupApproval.getGroupId(),
-                    groupApproval.getUserId(), null);
+                    groupApproval.getUserId(), order.getOrderNo());
         } else if (status == 4) {
+            Order order = orderService.findByGaId(groupApproval.getId());
+            payService.refund(id, request, response);
             messageService.sendMsgForUserAuditBlank(groupApproval.getGroupId(),
-                    groupApproval.getUserId(), null);
+                    groupApproval.getUserId(), order.getOrderNo());
         }
 
         groupApproval.setStatus(status);

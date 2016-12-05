@@ -18,12 +18,18 @@ public class OrderServiceImpl extends BaseService<Order> implements OrderService
 
     /**
      * 根据订单号查询订单信息
+     *
      * @param orderNo 订单号
      * @return order
      */
     @Override
     public Order findByOrderNo(String orderNo) {
         return this.findFirstBy("order_no = #{orderNo}", Record.create().set("orderNo", orderNo));
+    }
+
+    @Override
+    public Order findByGaId(Integer gaid) {
+        return this.findFirstBy("ga_id = #{gaId}", Record.create().set("gaId", gaid));
     }
 
     @Override

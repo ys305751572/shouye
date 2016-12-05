@@ -13,6 +13,8 @@ public interface OrderService extends IService<Order> {
 
     Order findByOrderNo(String orderNo);
 
+    Order findByGaId(Integer gaid);
+
     void setOrderSuccess(Order order);
 
     List<Order> findByUserId(Integer userId);

@@ -29,21 +29,21 @@ public class VcodeServiceImpl implements VcodeService {
 
     @Override
     public Boolean sendYP(String code, String... mobiles) {
-        String ENCODING = "UTF-8";
-        //设置模板ID，如使用1号模板:【#company#】您的验证码是#code#
-        long tpl_id = 1;
-        try {
-            //设置对应的模板变量值
-            String tpl_value = URLEncoder.encode("#code#",ENCODING) +"="
-                    + URLEncoder.encode(code, ENCODING) + "&"
-                    + URLEncoder.encode("#company#",ENCODING) + "="
-                    + URLEncoder.encode("云片网",ENCODING);
-            for (String mobile : mobiles) {
-                System.out.println(YPUtil.tplSendSms(YPUtil.apikey, tpl_id, tpl_value, mobile));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        String ENCODING = "UTF-8";
+//        //设置模板ID，如使用1号模板:【#company#】您的验证码是#code#
+//        long tpl_id = 1;
+//        try {
+//            //设置对应的模板变量值
+//            String tpl_value = URLEncoder.encode("#code#",ENCODING) +"="
+//                    + URLEncoder.encode(code, ENCODING) + "&"
+//                    + URLEncoder.encode("#company#",ENCODING) + "="
+//                    + URLEncoder.encode("云片网",ENCODING);
+//            for (String mobile : mobiles) {
+//                System.out.println(YPUtil.tplSendSms(YPUtil.apikey, tpl_id, tpl_value, mobile));
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         putCache(code, mobiles);
         return true;
     }

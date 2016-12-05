@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -42,39 +43,7 @@ public class TestRefundApi extends BaseController {
     @PostMapping(value = "/refund")
     @ResponseBody
     public String refund() {
-        //获得当前目录
-//        String path = this.getRequest().getSession().getServletContext().getRealPath("/");
-        String path = "D:\\10016225.p12";
-        LOGGER.info("path:" + path);
-
-        Date now = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");//可以方便地修改日期格式
-        String outRefundNo = "NO" + dateFormat.format(now);
-
-        //获得退款的传入参数
-        String transactionID = "4008202001201609012791655620";
-        String outTradeNo = "20160901141024";
-        Integer totalFee = 1;
-        Integer refundFee = totalFee;
-
-        RefundReqData refundReqData = new RefundReqData(transactionID, outTradeNo, outRefundNo, totalFee, refundFee);
-        String info = MobiMessage.RefundReqData2xml(refundReqData).replaceAll("__", "_");
-        LOGGER.info("info:" + info);
-        try {
-            RefundRequest refundRequest = new RefundRequest();
-            String result = refundRequest.httpsRequest(ConstantUtil.REFUNDEURL, info, path);
-            LOGGER.info("result:" + result);
-            Map<String, String> getMap = MobiMessage.parseXml(new String(result.getBytes(), "utf-8"));
-            if ("SUCCESS".equals(getMap.get("return_code")) && "SUCCESS".equals(getMap.get("return_msg"))) {
-                return success();
-            } else {
-                //返回错误描述
-                return fail(ErrorType.ERROR_CODE_APP_PAYERROR_REFUND_FAIL);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return fail();
-        }
+      return success();
     }
 
     /**

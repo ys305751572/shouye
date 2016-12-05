@@ -2,8 +2,12 @@ package com.smallchill.api.function.controller;
 
 import com.smallchill.api.common.exception.*;
 import com.smallchill.api.common.model.ErrorType;
+import com.smallchill.api.function.meta.validate.UserIdValidate;
 import com.smallchill.api.function.service.PayService;
 import com.smallchill.common.base.BaseController;
+import com.smallchill.core.annotation.Before;
+import com.smallchill.web.model.Order;
+import com.smallchill.web.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +26,8 @@ public class PayApi extends BaseController {
 
     @Autowired
     private PayService payService;
+    @Autowired
+    private OrderService orderService;
 
     @PostMapping(value = "/joingroup/prepayid/get")
     @ResponseBody
@@ -81,5 +87,17 @@ public class PayApi extends BaseController {
     @PostMapping(value = "/weixin/valueadd/notify")
     public void wxValueaddNotify() {
         payService.valueaddServiceWxNotify(this.getRequest(), this.getResponse());
+    }
+
+    @PostMapping(value = "/refund")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String refund(String orderNo) {
+        Order order = orderService.findByOrderNo(orderNo);
+        if (order == null) {
+            return fail();
+        }
+        payService.refund(order.getGaId(), this.getRequest(), this.getResponse());
+        return success();
     }
 }

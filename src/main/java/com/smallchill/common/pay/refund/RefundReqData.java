@@ -17,13 +17,12 @@ public class RefundReqData {
     private String appid = "";
     private String mch_id = "";
     private String nonce_str = "";
-    private String sign = "";
-    private String transaction_id = "";
+    private String op_user_id = "";
     private String out_trade_no = "";
     private String out_refund_no = "";
-    private String total_fee = "0";
     private String refund_fee = "0";
-    private String op_user_id = "";
+    private String total_fee = "0";
+    private String sign = "";
 
     /**
      * 请求退款服务
@@ -40,7 +39,6 @@ public class RefundReqData {
         //微信支付分配的商户号ID（开通公众号的微信支付功能之后可以获取到）
         setMch_id(ConstantUtil.PARTNER);
         //transaction_id是微信系统为每一笔支付交易分配的订单号，通过这个订单号可以标识这笔交易，它由支付订单API支付成功时返回的数据里面获取到。
-        setTransaction_id(transactionID);
         //商户系统自己生成的唯一的订单号
         setOut_trade_no(outTradeNo);
         setOut_refund_no(outRefundNo);
@@ -55,12 +53,12 @@ public class RefundReqData {
         parameters.put("appid", appid);
         parameters.put("mch_id", mch_id);
         parameters.put("nonce_str", nonce_str);
-        parameters.put("transaction_id", transaction_id);
-        parameters.put("out_trade_no", out_trade_no);
-        parameters.put("out_refund_no", out_refund_no);
-        parameters.put("total_fee", total_fee);
-        parameters.put("refund_fee", refund_fee);
+
         parameters.put("op_user_id", op_user_id);
+        parameters.put("out_refund_no", out_refund_no);
+        parameters.put("out_trade_no", out_trade_no);
+        parameters.put("refund_fee", refund_fee);
+        parameters.put("total_fee", total_fee);
         String sign = DictionarySort.createSign(parameters);
         setSign(sign);  //把签名数据设置到Sign这个属性中
     }
@@ -95,14 +93,6 @@ public class RefundReqData {
 
     public void setSign(String sign) {
         this.sign = sign;
-    }
-
-    public String getTransaction_id() {
-        return transaction_id;
-    }
-
-    public void setTransaction_id(String transaction_id) {
-        this.transaction_id = transaction_id;
     }
 
     public String getOut_trade_no() {
