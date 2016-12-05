@@ -37,11 +37,31 @@ public class Order extends BaseModel {
     private Integer orderType;
     @Column(name = "counts")
     private Integer counts;
-    //订单状态: 1:成功 2:失败
+    //订单状态: 1:未审核 2:失败 3:交易成功 4:退款成功 5:退款失败
     @Column(name = "status")
     private Integer status;
     @Column(name = "create_time")
     private Long createTime;
+    @Column(name = "flow")
+    private Integer flow;
+    @Column(name = "platform")
+    private Integer platform;
+
+    public Integer getFlow() {
+        return flow;
+    }
+
+    public void setFlow(Integer flow) {
+        this.flow = flow;
+    }
+
+    public Integer getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Integer platform) {
+        this.platform = platform;
+    }
 
     public Integer getCounts() {
         return counts;
