@@ -215,7 +215,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             userGroup.setGroupId(groupApproval.getGroupId());
             userGroup.setUserId(groupApproval.getUserId());
             if (groupExtend != null) {
-                if (groupExtend.getCostStatus() !=null &&  groupExtend.getCostStatus() == 1) {
+                if (groupExtend.getCostStatus() != null && groupExtend.getCostStatus() == 1) {
                     Calendar calendar = Calendar.getInstance();
                     Date date = new Date(System.currentTimeMillis());
                     calendar.setTime(date);
@@ -240,18 +240,24 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             messageService.sendMsgForUserAuditAgree(groupApproval.getGroupId(),
                     groupApproval.getUserId());
             Order order = orderService.findByGaId(groupApproval.getId());
-            orderService.setOrderAgree(order);
+            if (order != null) {
+                orderService.setOrderAgree(order);
+            }
         } else if (status == 3) {
             //第三个参数为订单号(暂时没有)
             Order order = orderService.findByGaId(groupApproval.getId());
-            payService.refund(id, request, response);
+            if (order != null) {
+                payService.refund(id, request, response);
+            }
             messageService.sendMsgForUserAuditRefuse(groupApproval.getGroupId(),
-                    groupApproval.getUserId(), order.getOrderNo());
+                    groupApproval.getUserId(), order != null ? order.getOrderNo() : "");
         } else if (status == 4) {
             Order order = orderService.findByGaId(groupApproval.getId());
-            payService.refund(id, request, response);
+            if (order != null) {
+                payService.refund(id, request, response);
+            }
             messageService.sendMsgForUserAuditBlank(groupApproval.getGroupId(),
-                    groupApproval.getUserId(), order.getOrderNo());
+                    groupApproval.getUserId(), order != null ? order.getOrderNo() : "");
         }
 
         groupApproval.setStatus(status);
@@ -319,14 +325,14 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         group.setDomainLimit(domainLimit);
         ProvinceCity province = null;
         ProvinceCity city = null;
-        if(provinceLimit!=0){
-            province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",provinceLimit));
+        if (provinceLimit != 0) {
+            province = provinceCityService.findFirstBy("code = #{code}", Record.create().set("code", provinceLimit));
         }
-        if(cityLimit!=0){
-            city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",cityLimit));
+        if (cityLimit != 0) {
+            city = provinceCityService.findFirstBy("code = #{code}", Record.create().set("code", cityLimit));
         }
-        group.setProvinceLimit(province!=null?province.getCode():0);
-        group.setCityLimit(city!=null?city.getCode():0);
+        group.setProvinceLimit(province != null ? province.getCode() : 0);
+        group.setCityLimit(city != null ? city.getCode() : 0);
         group.setProfessionalLimit(professionalLimit);
         group.setZyLimit(zyLimit);
         groupService.update(group);
@@ -400,6 +406,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     /**
      * 修改入群申请信息的支付状态
+     *
      * @param gaId 申请信息ID
      */
     @Override
