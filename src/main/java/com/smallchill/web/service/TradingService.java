@@ -4,6 +4,7 @@ package com.smallchill.web.service;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.web.model.Trading;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,4 +14,8 @@ import java.util.Map;
 public interface TradingService extends IService<Trading> {
 
     Map<String,Double> week();
+
+    List yearMonth(String date, Integer type);
+
+    List day(Long date);
 }

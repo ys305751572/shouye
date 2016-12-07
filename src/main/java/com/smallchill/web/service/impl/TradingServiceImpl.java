@@ -29,6 +29,7 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
         Long start = TimeUtil.getTimesnight() - 7L * 86400000L;
         Long end = TimeUtil.getTimesnight();
         String sql = "SELECT id AS id, date_time AS dataTime, create_time AS createTime, SUM(amount) AS amount FROM tb_trading WHERE flow = '2' AND create_time>=#{start} AND create_time<#{end} GROUP BY date_time ORDER BY create_time";
+
 //        Record record = Record.create();
 //        record.put("start", start);
 //        record.put("end", end);
@@ -48,4 +49,47 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
         return doubleMap;
 
     }
+
+    @Override
+    public List yearMonth(String date,Integer type){
+        String query = "%m";
+        String where = "%Y";
+        if(type==1){
+            //根据月查询
+            query = "%d";
+            where = "%m";
+        }
+        String sql = "SELECT\n" +
+                "  SUM(order_amount) ,\n" +
+                "  DATE_FORMAT(FROM_UNIXTIME(create_time / 1000),'"+query+"') t\n" +
+                "FROM\n" +
+                "  tb_order\n" +
+                "  WHERE flow = '1' \n" +
+                "AND DATE_FORMAT(FROM_UNIXTIME(create_time / 1000),'"+where+"') = #{date}\n" +
+                "AND status='1' OR status='3' \n" +
+                "  GROUP BY t";
+
+        List list = Db.init().selectList(sql,Record.create().set("date",date));
+        return list;
+    }
+
+    @Override
+    public List day(Long date){
+        // 7 14 30
+        Long start = TimeUtil.getTimesnight() - (date * 86400000L);
+        Long end = TimeUtil.getTimesnight();
+        String sql = "SELECT\n" +
+                "  SUM(order_amount) ,\n" +
+                "  DATE_FORMAT(FROM_UNIXTIME(create_time / 1000),'%m-%d') t\n" +
+                "FROM\n" +
+                "  tb_order\n" +
+                "  WHERE flow = '1' \n" +
+                "AND create_time>=#{start} AND create_time< #{end}\n" +
+                "AND status='1' OR status='3' \n" +
+                "  GROUP BY t";
+        List list = Db.init().selectList(sql,Record.create().set("start",start).set("end",end));
+        return list ;
+    }
+
+
 }
