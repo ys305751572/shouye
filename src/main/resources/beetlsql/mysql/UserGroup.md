@@ -8,6 +8,8 @@ SELECT
   tui.username AS userName,
   tui.gender AS gender,
   tui.age AS age,
+  tui.age_interval_id AS ageIntervalId,
+  tfd.num AS ageId,
   tui.province_id AS provinceCode,
   tui.city_id AS cityCode,
   tui.province_city AS provinceCity,
@@ -47,5 +49,6 @@ FROM tb_user_group tug
   LEFT JOIN (SELECT a.user_id userId,a.career_id carerrId,b.name NAME FROM tb_userinfo_career a LEFT JOIN tfw_dict b ON a.career_id = b.ID) tucr ON tug.user_id = tucr.userId
   LEFT JOIN tb_userinfo_domain tud ON tug.user_id = tud.user_id
   LEFT JOIN tb_userinfo_professional tup ON tup.user_id = tud.user_id
+  LEFT JOIN (SELECT id,num,NAME FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id = tfd.id
 GROUP BY tug.id
 ORDER BY tug.id DESC

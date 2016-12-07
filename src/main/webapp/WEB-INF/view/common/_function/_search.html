@@ -264,15 +264,6 @@
                 var id = $(data.data).prop("id");
                 select(id, key);
             }, "json");
-        }else if (type.indexOf("select1_") >= 0) {
-            var code1 = type.replace("select1_", "");
-            $.post("${basePath}/cache/getSelect1", {code: code1, num: num}, function (data) {
-                if (data.code === 0) {
-                    $("#divinput" + num).html(data.data);
-                }
-                var id = $(data.data).prop("id");
-                select(id, key,num);
-            }, "json");
         }else if (type.indexOf("selectId_") >= 0) {
             var code2 = type.replace("selectId_", "");
             $.post("${basePath}/cache/getSelectId", {code: code2, num: num}, function (data) {
