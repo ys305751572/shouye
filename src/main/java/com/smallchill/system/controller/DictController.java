@@ -113,6 +113,7 @@ public class DictController extends BaseController implements ConstErrorMsg {
         boolean temp = Blade.create(Dict.class).save(dict);
         if (temp) {
             CacheKit.removeAll(DICT_CACHE);
+            CacheKit.removeAll(DIY_CACHE);
             return success(SAVE_SUCCESS_MSG);
         } else {
             return error(SAVE_FAIL_MSG);
@@ -131,6 +132,7 @@ public class DictController extends BaseController implements ConstErrorMsg {
         boolean temp = Blade.create(Dict.class).update(dict);
         if (temp) {
             CacheKit.removeAll(DICT_CACHE);
+            CacheKit.removeAll(DIY_CACHE);
             return success(UPDATE_SUCCESS_MSG);
         } else {
             return error(UPDATE_FAIL_MSG);

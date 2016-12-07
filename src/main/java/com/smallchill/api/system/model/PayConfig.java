@@ -17,11 +17,11 @@ public class PayConfig {
 
 //    public final static String NOTIFY_URL_WEIXIN = "http://121.40.63.108:8081/app/pay/weixiNotify";
 //    public final static String NOTIFY_URL_ALIPAY = "http://121.40.63.108:8081/app/pay/alipayNotify";
-      public final static String NOTIFY_URL_WEIXIN_GROUP_JOIN = "http://31a86dcb.ittun.com/blade/api/pay/weixin/group/join/notify";
-      public final static String NOTIFY_URL_WEIXIN_VALUEADD = "http://31a86dcb.ittun.com/blade/api/pay/weixin/valueadd/notify";
+//      public final static String NOTIFY_URL_WEIXIN_GROUP_JOIN = "http://31a86dcb.ittun.com/blade/api/pay/weixin/group/join/notify";
+//      public final static String NOTIFY_URL_WEIXIN_VALUEADD = "http://31a86dcb.ittun.com/blade/api/pay/weixin/valueadd/notify";
 
-//    public final static String NOTIFY_URL_WEIXIN_GROUP_JOIN = "http://120.24.212.99:8080/blade/api/pay/weixin/group/join/notify";
-//    public final static String NOTIFY_URL_WEIXIN_VALUEADD = "http://120.24.212.99:8080/blade/api/pay/weixin/valueadd/notify";
+    public final static String NOTIFY_URL_WEIXIN_GROUP_JOIN = "http://120.24.212.99:8080/blade/api/pay/weixin/group/join/notify";
+    public final static String NOTIFY_URL_WEIXIN_VALUEADD = "http://120.24.212.99:8080/blade/api/pay/weixin/valueadd/notify";
 
     /**
      * @param request
