@@ -47,8 +47,6 @@ import com.smallchill.core.toolbox.kit.PathKit;
 @RequestMapping("/kindeditor")
 public class KindEditorController extends BladeController {
 
-    static String PATH = "E:\\projects\\shouye\\src\\main\\webapp\\image\\";
-
     @ResponseBody
     @RequestMapping("/upload_json")
     public Record upload_json(@RequestParam("imgFile") MultipartFile file) {
@@ -138,7 +136,7 @@ public class KindEditorController extends BladeController {
         String url = file.get("URL").toString();
         String path = "";
         try {
-            path = download(url, System.currentTimeMillis()+"");
+            path = download(url, System.currentTimeMillis()+"",request);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -147,7 +145,10 @@ public class KindEditorController extends BladeController {
         FileRender.init(request, response, f).render();
     }
 
-    public static String download(String urlString, String filename) throws Exception {
+    public static String download(String urlString, String filename,HttpServletRequest request) throws Exception {
+
+        String path = request.getSession().getServletContext().getRealPath("/");
+        path = path + File.separator + "image" + File.separator ;
 
         // 构造URL
         URL url = new URL(urlString);
@@ -160,7 +161,7 @@ public class KindEditorController extends BladeController {
         // 读取到的数据长度
         int len;
         // 输出的文件流
-        OutputStream os = new FileOutputStream(PATH+filename);
+        OutputStream os = new FileOutputStream(path+filename);
         // 开始读取
         while ((len = is.read(bs)) != -1) {
             os.write(bs, 0, len);
@@ -169,7 +170,7 @@ public class KindEditorController extends BladeController {
         os.close();
         is.close();
 
-        return PATH+filename;
+        return path+filename;
 
     }
 
