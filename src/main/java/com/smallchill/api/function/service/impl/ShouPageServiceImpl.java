@@ -416,7 +416,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
                 "    g.city,\n" +
                 "    g.type,\n" +
                 "    g.province_city provinceCity,\n" +
-                "    g.member_count memberCount,\n" +
+                "   (select count(*) from tb_user_group ug where ug.group_id = g.id) memberCount,\n" +
                 "    g.targat,\n" +
                 "    ga.user_id userId,\n" +
                 "    ga.validate_info info,\n" +

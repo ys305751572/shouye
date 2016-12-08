@@ -41,10 +41,10 @@ public class GroupApiIntercept2 extends ApiQueryIntercept{
         List<String> list2 = new ArrayList<>();
         for (String key : list) {
             if (StringUtils.isNotBlank(key)) {
-                String[] keys = key.split("/");
+                String[] keys = key.split("\\|");
                 for (String key2 : keys) {
                     if (StringUtils.isNotBlank(key2)) {
-                        list2.add(key2);
+                        list2.add(key2.trim());
                     }
                 }
             }
@@ -65,7 +65,9 @@ public class GroupApiIntercept2 extends ApiQueryIntercept{
         BladePage bladePage = (BladePage) ac.getObject();
         List<Map> list = bladePage.getRows();
         for (Map record : list) {
-            if (record.get("status") == null || Integer.parseInt(record.get("status").toString()) != 1) {
+            if (record.get("status") == null || Integer.parseInt(record.get("status").toString()) == 1
+                    || Integer.parseInt(record.get("status").toString()) == 3
+                    || Integer.parseInt(record.get("status").toString()) == 4) {
                 record.put("isjoin", 0);
             } else {
                 record.put("isjoin", 1);

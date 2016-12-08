@@ -1,0 +1,242 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+img{
+    border:0;
+}
+ol, ul ,li{list-style: none;} 
+html,body{width: 100%;height:auto;font-size: 14px;font-family: "Microsoft YaHei";background-color: rgb(242,242,242);overflow-x:hidden ;}
+button{
+    font-family: "Microsoft YaHei";
+}
+
+/*手页*/
+.top{
+    width:7.1rem;
+    height:auto;
+    min-height:2.2rem;
+    background: #FFFFFF;
+    box-shadow: 0px 2px 0px 0px #E7EBF0;
+    padding:0.2rem;
+}
+.top:after{
+    content:'';
+    width:0;
+    height:0;
+    display: block;
+    clear:both;
+}
+.use-left,.use-right{
+    float: left;
+    
+}
+.use-left{
+    width:1.44rem;
+    height:auto ;
+    margin-left: 0.2rem;
+    margin-top: 0.2rem;
+}
+.use-left img{
+    width:1.44rem;
+    height:auto ;
+}
+.use-right{
+    width:5rem;
+    height:auto ;
+    margin-left: 0.3rem;
+    margin-top: 0.1rem;
+    position: relative;
+}
+.use-top{
+    font-size: 0.26rem;
+    color: #406070;
+}
+.use-top span{
+    font-size: 0.34rem;
+    color: #383F6A;
+    display:inline-block;
+    border-right: 2px solid  #C4C8CE;
+    padding-right: 10px;
+    margin-right: 8px;
+}
+.use-ing{
+    width:1.6rem;
+    height:0.34rem;
+    border-radius: 16px;
+    background:#B8C2C8;
+    position: absolute;
+    right: 0rem;
+    top: 0.06rem;
+}
+.use-ing span{
+    width:60%;
+    height:0.34rem;
+    border-radius: 16px;
+    background:#4A293B;
+    display:inline-block;
+    font-size: 0.24rem;
+    text-align: center;
+    line-height: 0.34rem;
+    color:#fff;
+    position: absolute;
+    top:0;
+    left:0;
+}
+
+.use-c{
+    font-size: 0.24rem;
+    color: #406070;
+    margin: 2px 0;
+}
+.use-c span{
+    width:0.22rem;
+    height:0.31rem;
+    display:inline-block;
+    margin-right: 0.1rem;
+    position: relative;
+    top: 4px;
+}
+.use-map{
+    background:url('../images/use-map.png') no-repeat;
+    background-size: 100% auto;
+}
+.use-hy{
+    background:url('../images/use-hy.png') no-repeat;
+    background-size: 100% auto;
+}
+.use-bq{
+    background:url('../images/use-bq.png') no-repeat;
+    background-size: 100% auto;
+}
+.use-lo{
+    background:url('../images/use-lo.png') no-repeat;
+    background-size: 100% auto;
+}
+.use-bottom{
+    height:0.5rem;
+    position: relative;
+}
+.use-button{
+    margin:0.2rem auto 0;
+    width:3.2rem;
+}
+.use-button button{
+    border: 1px solid #383F6A;
+    border-radius: 6px;
+    background:#fff;
+    height:0.5rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+    color: #383F6A;
+}
+.use-bottom span{
+    width:0.6rem;
+    height:0.4rem;
+    position: absolute;
+    right:0.2rem;
+    top: 0;
+    display:inline-block;
+    border-left: 2px solid  #C4C8CE;
+}
+.use-bottom span img{
+    width:0.4rem;
+    height:auto;
+    margin-left: 10px;
+}
+.container{
+    width:7.5rem;
+    height:auto;
+    margin-top: 0.2rem;
+}
+.container-top{
+    width:7.5rem;
+    height:1.3rem;
+    position:relative;
+}
+.c-top-t{
+    width:2.2rem;
+    height:1.3rem;
+    background:url('../images/c-top-t.png') no-repeat;
+    background-size: 100% auto; 
+    position:absolute;
+    color:#383F6A;
+    top: 0;
+}
+.c-top-t-active{
+    background:url('../images/c-top-t-active.png') no-repeat;
+    background-size: 100% auto; 
+    z-index: 5;
+    color:#fff!important;
+}
+.c-top-t:nth-child(1){
+    left:0;
+    z-index: 5;
+}
+.c-top-t:nth-child(2){
+    left:1.54rem;
+    z-index: 4;
+}
+.c-top-t:nth-child(3){
+    left:3.08rem;
+     z-index: 3;
+}
+.c-top-t:nth-child(4){
+    left:4.62rem;
+     z-index: 2;
+}
+.c-top-t:nth-child(5){
+    left:6.17rem;
+     z-index: 1;
+}
+.c-top-t span{
+    font-size: 0.3rem;
+    transform: rotate(52deg);
+    position: absolute;
+    top: 0.5rem;
+    left: 0.4rem;
+}
+.c-contain{
+    width:7.5rem;
+    height:auto;
+    min-height: 8rem;
+    background-color: #fff;
+    margin-top: 2px;
+}
+.c-contain p{
+    font-size: 0.3rem;
+    color:#383F6A;
+    padding: 0.26rem;
+    text-align: justify;
+}
+.fixed-bottom{
+    width:7.5rem;
+    height:1.24rem;
+    background-color: #fff;
+    position: fixed;
+    border-top: 1px solid #E7E9F1;
+    bottom:0;
+    left:0;
+}
+.fixed-logo{
+    width:2.18rem;
+    height:0.8rem;
+    position:absolute;
+    left:0.2rem;
+    top: 0.22rem;
+    background: url('../images/fixed-logo.png') no-repeat;
+    background-size: 100% auto;
+}
+.fixed-bottom span{
+    height:0.56rem;
+    background: #213A59;
+    border-radius: 10px;
+    padding:0 0.2rem;
+    color:#fff;
+    font-size: 0.24rem;
+    line-height: 0.56rem;
+    display:inline-block;
+    position:absolute;
+    right:0.2rem;
+    top: 0.34rem;
+}

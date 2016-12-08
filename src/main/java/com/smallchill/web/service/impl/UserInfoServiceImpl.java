@@ -81,6 +81,13 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         String domain = userInfo.getDomain();
         String pro = userInfo.getProfessional();
         String career = userInfo.getCareer();
+        String provinceCity = userInfo.getProvinceCity();
+        if (StringUtils.isNotBlank(provinceCity)) {
+            String[] citys = provinceCity.split("-");
+            if (citys.length == 2) {
+                userInfo.setProvinceCity(citys[1]);
+            }
+        }
         int per = per(userInfo);
         userInfo.setPer(per);
         domainAndProfessional(userInfo);
@@ -267,7 +274,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     public UserExtendVo findUserExtendVo(Record record) {
         UserExtendVo userExtendVo = new UserExtendVo();
         StringBuffer userDesc = new StringBuffer();
-        userDesc.append(record.getInt("gender") == 1 ? "男" : "女");
+        userDesc.append(record.getInt("gender") == 2 ? "男" : "女");
         userDesc.append("<br>");
         userDesc.append(record.getStr("age"));
         userDesc.append("<br>");
