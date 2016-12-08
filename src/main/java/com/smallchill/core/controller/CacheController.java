@@ -386,7 +386,7 @@ public class CacheController extends BladeController {
 	public AjaxResult getSelectId() {
 		final String code = getParameter("code");
 		final String num = getParameter("num");
-		List<Map<String, Object>> dict = CacheKit.get(DICT_CACHE, "dict_common_" + code,
+		List<Map<String, Object>> dict = CacheKit.get(DICT_CACHE, "dict_common_id_" + code,
 				new ILoader() {
 					public Object load() {
 						return Db.init().selectList("select id as ID,pId as PID,name as TEXT from  TFW_DICT where code=#{code} and num>0", Record.create().set("code", code));

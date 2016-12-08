@@ -108,9 +108,9 @@ public class GroupApi extends BaseController {
                 "LEFT JOIN tb_group_approval ga ON g.`id` = ga.`group_id` AND ga.`user_id` = #{userId} LEFT JOIN tb_interest_group ig ON g.`id` = ig.`group_id` " +
                 "AND ig.`user_id`= #{userId} WHERE g.id = #{groupId} ";
         Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId).set("userId", userId));
-        List<Record> list = Convert.recordToGroupDetail(record);
         Integer status = record.get("status") == null ? null : (Integer) record.get("status");
         Integer istatus = record.get("istatus") == null ? null : (Integer) record.get("istatus");
+        List<Record> list = Convert.recordToGroupDetail(record,status);
         List<Button> btnList = GroupBtnRegister.create().registerBtns(status, istatus);
 
         String telphone = record.getStr("telphone");

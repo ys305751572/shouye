@@ -11,6 +11,7 @@ import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.core.toolbox.grid.GridManager;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import com.smallchill.core.toolbox.kit.StrKit;
@@ -191,6 +192,7 @@ public class UserGroupController extends BaseController {
             return error(SAVE_FAIL_MSG);
         }
     }
+
 
     @ResponseBody
     @RequestMapping("/user_classification_del")

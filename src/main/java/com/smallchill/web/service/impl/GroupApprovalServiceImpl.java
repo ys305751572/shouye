@@ -55,6 +55,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     private OrderService orderService;
     @Autowired
     private PayService payService;
+    @Autowired
+    private ClassificationService classificationService;
 
     /**
      * 是否已经申请
@@ -243,6 +245,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             if (order != null) {
                 orderService.setOrderAgree(order);
             }
+            classificationService.userClassificationAddForGroupAgree(groupApproval.getGroupId(), groupApproval.getMatchType());
         } else if (status == 3) {
             //第三个参数为订单号(暂时没有)
             Order order = orderService.findByGaId(groupApproval.getId());

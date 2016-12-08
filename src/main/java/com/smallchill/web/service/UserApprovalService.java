@@ -39,7 +39,7 @@ public interface UserApprovalService extends IService<UserApproval> {
      * 2.通过活动临时群
      * 3.通过查看交集
      */
-    void toGroup(UserApproval ua) throws UserInOthersBlankException, UserHasApprovalException, UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException;
+    void toGroup(UserApproval ua, String toUserIds) throws UserInOthersBlankException, UserHasApprovalException, UsernotFriendException, BothUserHasApprovalException, UserHasFriendException, UserInMyBlankException;
 
     /**
      * 组织审核同意

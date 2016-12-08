@@ -53,8 +53,11 @@ public class UserApiIntercept extends ApiQueryIntercept {
             } else if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 1)) {
                 record.put("status", Convert.FRIEND);
             }
-
-
+            String organization = "";
+            if (record.get("org_is_open") != null &&  Integer.parseInt(record.get("org_is_open").toString()) == 1) {
+                organization = (String) record.get("organization");
+            }
+            record.put("organization", organization);
             String keyWord = record.get("keyWord").toString();
             if (StringUtils.isNotBlank(keyWord)) {
                 keyWord = keyWord.replaceAll("\\|", "\\/");

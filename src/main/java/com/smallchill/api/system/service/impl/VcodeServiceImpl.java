@@ -42,13 +42,13 @@ public class VcodeServiceImpl implements VcodeService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        try {
-//            for (String mobile : mobiles) {
-//                System.out.println(YPUtil.sendSms(YPUtil.apikey, code, mobile));
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+////        try {
+////            for (String mobile : mobiles) {
+////                System.out.println(YPUtil.sendSms(YPUtil.apikey, code, mobile));
+////            }
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
         putCache(code, mobiles);
         return true;
     }

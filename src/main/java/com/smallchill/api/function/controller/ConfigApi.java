@@ -46,7 +46,7 @@ public class ConfigApi extends BaseController{
 //                        List<Record> list = Db.init().selectList(sql, Record.create().set("code", code));
 
                         List<Dict> list = Blade.dao().select("Dict.list2", Dict.class, Record.create().set("code", code));
-                        Map<Integer,Dict> dictMap = new HashMap<>();
+                        LinkedHashMap<Integer,Dict> dictMap = new LinkedHashMap<>();
                         if (list != null && list.size() > 1) {
                             Dict root = list.get(0);
                             int rootId = root.getId();

@@ -10,8 +10,17 @@ public class UserExtendVo extends BaseVo{
 
     private String desc;
     private String org;
+    private String orgName;
     private String career;
     private String school;
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
 
     public String getDesc() {
         return desc;

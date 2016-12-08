@@ -229,12 +229,10 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         }
         record.set("status", ua == null ? null : ua.getStatus());
         Convert.setUserVoStatus(vo, record, userId);
-
+        vo.setUserExtendVo(findUserExtendVo(record));
         if (groupId != null) {
             saveGroupUserRecord(userId, toUserId, groupId);
         }
-
-        vo.setUserExtendVo(findUserExtendVo(record));
         return vo;
     }
 
@@ -273,31 +271,69 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     @Override
     public UserExtendVo findUserExtendVo(Record record) {
         UserExtendVo userExtendVo = new UserExtendVo();
+        String where = "user_id = #{userId}";
+        Record paramsRecord = Record.create().set("userId", record.getInt("userId"));
+        List<UserProfessional> professionalList = userprofessionalService.findBy(where, paramsRecord);
+        StringBuffer professional = new StringBuffer();
+        for (UserProfessional upf : professionalList) {
+            if (StringUtils.isNotBlank(upf.getLevel())) {
+                professional.append("[");
+                professional.append(upf.getLevel());
+                professional.append("]");
+            }
+            professional.append(upf.getProName());
+            professional.append("+");
+        }
+
         StringBuffer userDesc = new StringBuffer();
         userDesc.append(record.getInt("gender") == 2 ? "男" : "女");
         userDesc.append("<br>");
         userDesc.append(record.getStr("age"));
         userDesc.append("<br>");
-        userDesc.append(StringUtils.isNotBlank(record.getStr("professional")) ? record.getStr("professional").replace("/", "+") : "");
-        userDesc.append("<br>");
-        userDesc.append("[专业]").append(record.getStr("zy"));
-        userDesc.append("<br>");
-        userDesc.append("[擅长]").append(record.getStr("sc"));
-        userDesc.append("<br>");
-        userDesc.append("[资历]").append(record.getStr("zl"));
-        userDesc.append("<br>");
-        userDesc.append("[资源]").append(record.getStr("zy2"));
-        userDesc.append("<br><hr>");
-        userDesc.append("个人介绍");
-        userDesc.append("<br>");
+        if (StringUtils.isNotBlank(professional)) {
+            userDesc.append(professional.substring(0, professional.length() - 1));
+            userDesc.append("<br>");
+        }
+        if (StringUtils.isNotBlank(record.getStr("zy"))) {
+            userDesc.append("[专业]").append(record.getStr("zy"));
+            userDesc.append("<br>");
+        }
+        if (StringUtils.isNotBlank(record.getStr("sc"))) {
+            userDesc.append("[擅长]").append(record.getStr("sc"));
+            userDesc.append("<br>");
+        }
+        if (StringUtils.isNotBlank(record.getStr("zl"))) {
+            userDesc.append("[资历]").append(record.getStr("zl"));
+            userDesc.append("<br>");
+        }
+        if (StringUtils.isNotBlank(record.getStr("zy2"))) {
+            userDesc.append("[资源]").append(record.getStr("zy2"));
+            userDesc.append("<br>");
+        }
+        userDesc.append("<hr>");
         userDesc.append(record.getStr("desc"));
         userExtendVo.setDesc(userDesc.toString());
+        int productType = record.getInt("product_type");
+        String productServiceName = record.getStr("product_service_name");
+
+
 
         String orgTypeName = record.getStr("orgTypeName");
         String org = record.getStr("organization");
-        userExtendVo.setOrg(new StringBuffer().append("(").append(orgTypeName)
-                .append(")").append(org).toString());
-        userExtendVo.setCareer(StringUtils.isNotBlank(record.getStr("career")) ? record.getStr("career").replace("|", "+") : "");
+        userExtendVo.setOrgName(orgTypeName);
+
+        StringBuffer product = new StringBuffer().append("(").append(productType == 1 ? "产品" : "服务")
+                .append(")").append(productServiceName);
+        product.append("<br>");
+        if (StringUtils.isNotBlank(record.getStr("industry_ranking"))) {
+            product.append(record.getStr("industry_ranking"));
+            product.append("<br>");
+        }
+        if (StringUtils.isNotBlank(record.getStr("qualification"))) {
+            product.append(record.getStr("qualification"));
+        }
+        userExtendVo.setOrg(product.toString());
+        userExtendVo.setCareer(StringUtils.isNotBlank(record.getStr("career")) ? record.getStr("career").replace("|", "<br>") : "");
         userExtendVo.setSchool(StringUtils.isNotBlank(record.getStr("school")) ? record.getStr("school").replace("|", "<br>") : "");
         return userExtendVo;
     }

@@ -2,6 +2,7 @@ package com.smallchill.api.function.meta.intercept;
 
 import com.smallchill.core.aop.AopContext;
 import com.smallchill.core.meta.ApiQueryIntercept;
+import com.smallchill.core.toolbox.kit.MapKit;
 import com.smallchill.core.toolbox.support.BladePage;
 import com.smallchill.web.model.UserInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +73,7 @@ public class GroupApiIntercept2 extends ApiQueryIntercept{
             } else {
                 record.put("isjoin", 1);
             }
+            record.put("targat", MapKit.getStr(record, "targat").replace("\\|", "\\/"));
             record.remove("status");
             record.remove("city");
             record.remove("province");

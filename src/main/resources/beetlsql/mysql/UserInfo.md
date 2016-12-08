@@ -81,6 +81,7 @@ select
     ua.status,
     ua.from_user_id,
     ua.to_user_id,
+    ui.org_is_open,
     @if(!isEmpty(groupId)) {
         ug.group_id groupId,
     @}

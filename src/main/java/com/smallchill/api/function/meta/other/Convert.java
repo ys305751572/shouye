@@ -32,7 +32,13 @@ public class Convert {
         String keyWord = (String) record.get("keyWord");
         keyWord = keyWord.replaceAll("\\|", "\\/");
         String professional = (String) record.get("professional");
-        String organization = (String) record.get("organization");
+        if (StringUtils.isNotBlank(professional)) {
+            professional = professional.split("/")[0];
+        }
+        String organization = "";
+        if (record.getInt("org_is_open") == 1) {
+             organization = (String) record.get("organization");
+        }
         Integer per = record.getInt("per");
         UserVo userVo = new UserVo(id, username, city, domain, keyWord, organization, professional, "");
         userVo.setPer(per);
@@ -120,13 +126,20 @@ public class Convert {
      * @param record record
      * @return list
      */
-    public static List<Record> recordToGroupDetail(Record record) {
+    public static List<Record> recordToGroupDetail(Record record,Integer gaStatus) {
         List<Record> list = new ArrayList<>();
         int[] index = new int[]{1, 2, 3};
         for (int _i : index) {
             Object isOpen = record.get("is_open" + _i);
             Record record1 = Record.create();
-            list.add(record1.set("title", record.get("title" + _i)).set("content", (isOpen != null && Integer.parseInt(isOpen.toString()) == 1) ? record.get("content" + _i) : "加入组织成为会员才可查看该信息"));
+            String content;
+            if (isOpen != null && Integer.parseInt(isOpen.toString()) == 2 && (gaStatus == null || gaStatus != 2)) {
+                content = "加入组织成为会员才可查看该信息";
+            }
+            else {
+                content = record.getStr("content" + _i);
+            }
+            list.add(record1.set("title", record.get("title" + _i)).set("content", content));
         }
         list.add(Record.create().set("title", "最近活动").set("content", "敬请期待"));
         list.add(Record.create().set("title", "机构日报").set("content", "敬请期待"));
@@ -197,6 +210,7 @@ public class Convert {
             if (vo.getStatus() == null) {
                 type = NOT_FRINED;
             }
+            vo.setUsername(hiddenRealUsername(record.getStr("username")));
         } else {
             int status = Integer.parseInt(record.get("status").toString());
             if (status == 1) {
@@ -207,10 +221,12 @@ public class Convert {
                 } else if (userId == toUserId) {
                     type = NOT_PROCESS_FROM_USER_ID;
                 }
+                vo.setUsername(hiddenRealUsername(record.getStr("username")));
             } else if (status == 2) {
                 type = FRIEND;
             } else if (status == 3) {
                 type = PASS;
+                vo.setUsername(hiddenRealUsername(record.getStr("username")));
             }
         }
         vo.setStatus(type == null ? NOT_FRINED : type);
@@ -243,6 +259,22 @@ public class Convert {
         }
         return refund;
     }
+
+    /**
+     * 非好友隐藏真实名字
+     * @param username 用户名
+     * @return hiddenUsername
+     */
+    public static String hiddenRealUsername(String username) {
+        if (StringUtils.isBlank(username)) {
+            return "";
+        }
+        if (username.contains("·")) {
+            return username.split("·")[0] + "**";
+        }
+        return username.substring(0,1) + "**";
+    }
+
     public static int NOT_FRINED = 2000; // 未结识
     public static int FRIEND = 2001; // 已结识
     public static int NOT_PROCESS_FROM_USER_ID = 2002; // 显示忽略 结识按钮
