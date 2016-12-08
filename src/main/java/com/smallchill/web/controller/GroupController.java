@@ -319,7 +319,6 @@ public class GroupController extends BaseController {
                 return error("组织类型不能为空");
             }
 
-            ProvinceCity _province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",province));
             ProvinceCity _city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",city));
             Attach _codeImage = null;
             if(codeImage!=null){
@@ -348,7 +347,7 @@ public class GroupController extends BaseController {
             groupVo.setType(type);
             Integer adminId = (Integer) ShiroKit.getUser().getId();
             groupVo.setCreateAdminId(adminId);
-            groupVo.setProvinceCity(_province.getName()+"-"+_city.getName());
+            groupVo.setProvinceCity(_city.getName());
             groupVo.setProvince(province);
             groupVo.setCity(city);
             groupVo.setTitle1(title1);
@@ -477,13 +476,12 @@ public class GroupController extends BaseController {
         try{
             Group group = groupService.findById(groupId);
             Attach attach = attachService.findById(avaterId);
-            ProvinceCity _province = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",province));
             ProvinceCity _city = provinceCityService.findFirstBy("code = #{code}",Record.create().set("code",city));
 
             group.setAvater(attach!=null?attach.getUrl():"");
             group.setProvince(province);
             group.setCity(city);
-            group.setProvinceCity(_province.getName()+"-"+_city.getName());
+            group.setProvinceCity(_city.getName());
 
             if(StringUtils.isNotBlank(targat)){
                 String[] targats = JsonKit.parse(targat,String[].class);
