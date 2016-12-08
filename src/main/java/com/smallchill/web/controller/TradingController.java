@@ -8,6 +8,7 @@ import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.support.BladePage;
 import com.smallchill.web.meta.intercept.GroupIntercept;
 import com.smallchill.web.meta.intercept.OrderIntercept;
@@ -21,10 +22,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 交易流水-交易
@@ -61,10 +60,10 @@ public class TradingController extends BaseController {
 
     @RequestMapping(value = "/yearMonth")
     @ResponseBody
-    public List yearMonth(String date,Integer type){
+    public List yearMonth(String val,Integer type){
         List list = new ArrayList();
         try{
-            list =  tradingService.yearMonth(date,type);
+            list =  tradingService.yearMonth(val,type);
         }catch (RuntimeException e){
             e.printStackTrace();
         }
@@ -97,7 +96,7 @@ public class TradingController extends BaseController {
                         "  GROUP BY t \n" +
                         "  ORDER BY t";
                 List<Record> list = Db.init().selectList(sql);
-                sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"scope_list\">");
+                sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"scope_list\" onchange=\"yearMonth(this,'1')\"> ");
                 sb.append("<option value></option>");
                 for(Record record:list){
                     sb.append("<option value=\"" +  record.get("t") + "\">" +  record.get("t") + "</option>");
@@ -105,10 +104,17 @@ public class TradingController extends BaseController {
                 sb.append("</select>");
             }
             else if(type==2){    //月
-                sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"scope_list\">");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+                long lcc_time = Long.valueOf(DateTimeKit.nowLong());
+                String re_StrTime = sdf.format(new Date(lcc_time));
+                sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"scope_list\" onchange=\"yearMonth(this,'2')\" >");
                 sb.append("<option value></option>");
                 for (int i=1;i<13;i++) {
-                    sb.append("<option value=\"" + i + "\">" + i + "</option>");
+                    String y="";
+                    if(i<10){
+                        y = "0";
+                    }
+                    sb.append("<option value=\"" +re_StrTime+"-"+ y + i + "\">" + i + "</option>");
                 }
                 sb.append("</select>");
             }

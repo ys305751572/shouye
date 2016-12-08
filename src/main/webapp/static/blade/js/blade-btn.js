@@ -575,7 +575,6 @@ var exwhere;
 // 根据模块code生成  每个工具条上面的 btn
 function initMenuBtn(obj, code) {
     $.post(ctx + "/cache/getBtn", { code: code }, function (data) {
-        console.log(data);
         if (data.code === 0) {
             toolbar = obj;
             btnjsons = data.data;

@@ -24,7 +24,7 @@
     <div class="form-group" style="width: 1355px;height:80px;">
             <label class="col-sm-1 control-label no-padding-right" > 日期选择 </label>
             <div class="col-sm-3">
-                <select name="statistical" id="statistical" class="form-control" >
+                <select name="statistical" id="statistical" class="form-control" onchange="scope(this)">
                     <option value=""></option>
                     <option value="1">年统计</option>
                     <option value="2">月统计</option>
@@ -38,11 +38,19 @@
                 </select>
             </div>
     </div>
+
+    <div class="form-group" style="width: 1355px;height:80px;">
+            <label class="col-sm-1 control-label no-padding-right" > asd </label>
+            <div class="col-sm-3">
+                <button onclick="asd()">测试</button>
+            </div>
+    </div>
 </div>
 <div id="main" style="width: 1355px;height:555px;"></div>
 
 <script type="text/javascript">
-    function scope(type){
+    function scope(data){
+        var type = $(data).val();
         $.post("${basePath}/${code}/scope", {type: type}, function (data) {
             if (data.code === 0) {
                 $("#select_list").html(data.data);
@@ -51,104 +59,109 @@
     }
 
     $(function(){
-
-        $("#statistical").change(function(){
-            var type = $(this).val();
-            console.log(type);
-            scope(type);
-        });
-
-        $("#scope_list").change(function(){
-            var type = $(this).val();
-            console.log("id=");
-            console.log(type);
-        });
-
     });
 
     // 基于准备好的dom，初始化echarts实例
-//    var myChart = echarts.init(document.getElementById('main'));
+    var myChart = echarts.init(document.getElementById('main'));
 
-//    $.post(
-//            "${ctxPath}/trading/yearMonth",
-//            {},
-//            "json"
-//    ).done(function (data) {
-//        console.log(data);
-//        var list = JSON.parse(data);
-//        console.log(list);
-//        var a =[],val=[];
-//        var myJson = eval("(" + data + ")");
-//        console.log(myJson);
-//        for(var x in myJson){
-//            console.log(myJson[x].key);
-//        }
-//
-//
-//        myJson.forEach(function (value, key) {
-//            a.put(key);
-//            val.put(value)
-//        });
-//
-//        // 使用刚指定的配置项和数据显示图表。
-//        myChart.setOption({
-//            tooltip: {
-//                trigger: 'axis'
-//            },
-//            toolbox: {
-//                feature: {
-//                    dataView: {show: true, readOnly: false},
-//                    magicType: {show: true, type: ['line', 'bar']},
-//                    restore: {show: true},
-//                    saveAsImage: {show: true}
-//                }
-//            },
-//            legend: {
-//                data:['累积量','增长率']
-//            },
-//            xAxis: [
-//                {
-//                    type: 'category',
-//                    data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
-//                }
-//            ],
-//            yAxis: [
-//                {
-//                    type: 'value',
-//                    name: '水量',
-//                    min: 0,
-//                    max: 250,
-//                    interval: 50,
-//                    axisLabel: {
-//                        formatter: '{value} ml'
-//                    }
-//                },
-//                {
-//                    type: 'value',
-//                    name: '温度',
-//                    min: 0,
-//                    max: 25,
-//                    interval: 5,
-//                    axisLabel: {
-//                        formatter: '{value} °C'
-//                    }
-//                }
-//            ],
-//            series: [
-//                {
-//                    name:'累积量',
-//                    type:'bar',
-//                    data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
-//                },
-//                {
-//                    name:'增长率',
-//                    type:'line',
-//                    yAxisIndex: 1,
-//                    data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
-//                }
-//            ]
-//        });
-//    });
+    function yearMonth(data,type){
+        var val = $(data).val();
+        console.log(val);
+        console.log(type);
+        console.log('--------------------------------------------');
+
+        $.post(
+                "${ctxPath}/${code}/yearMonth",
+                {val:val,type:type},
+                "json"
+        ).done(function (data) {
+            console.log(data);
+            var list = JSON.parse(data);
+            console.log("list---");
+            console.log(list);
+            var time =[],amount=[];
+//            var myJson = eval("(" + data + ")");
+//            console.log("myJson---");
+//            console.log(myJson);
+//            for(var x in myJson){
+//                console.log("myJson[x]----------------------");
+//                console.log(myJson[x].t);
+//                console.log(myJson[x].amount);
+//            }
+            console.log("list[i]------------------------");
+            for(var i=0;i<list.length;i++){
+                time.push(list[i].t);
+                amount.push(list[i].amount);
+            }
+
+            console.log(time);
+            console.log(amount);
+
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption({
+                tooltip: {
+                    trigger: 'axis'
+                },
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                legend: {
+                    data:['累积量','增长率']
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '水量',
+                        min: 0,
+                        max: 250,
+                        interval: 50,
+                        axisLabel: {
+                            formatter: '{value} ml'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '温度',
+                        min: 0,
+                        max: 25,
+                        interval: 5,
+                        axisLabel: {
+                            formatter: '{value} °C'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name:'累积量',
+                        type:'bar',
+                        data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                    },
+                    {
+                        name:'增长率',
+                        type:'line',
+                        yAxisIndex: 1,
+                        data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+                    }
+                ]
+            });
+        });
+
+    }
+
+
+
 
 </script>
 </body>

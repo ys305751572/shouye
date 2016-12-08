@@ -54,13 +54,13 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
     public List yearMonth(String date,Integer type){
         String query = "%m";
         String where = "%Y";
-        if(type==1){
+        if(type==2){
             //根据月查询
             query = "%d";
-            where = "%m";
+            where = "%Y-%m";
         }
         String sql = "SELECT\n" +
-                "  SUM(order_amount) ,\n" +
+                "  SUM(order_amount) AS amount,\n" +
                 "  DATE_FORMAT(FROM_UNIXTIME(create_time / 1000),'"+query+"') t\n" +
                 "FROM\n" +
                 "  tb_order\n" +
@@ -79,7 +79,7 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
         Long start = TimeUtil.getTimesnight() - (date * 86400000L);
         Long end = TimeUtil.getTimesnight();
         String sql = "SELECT\n" +
-                "  SUM(order_amount) ,\n" +
+                "  SUM(order_amount) AS amount,\n" +
                 "  DATE_FORMAT(FROM_UNIXTIME(create_time / 1000),'%m-%d') t\n" +
                 "FROM\n" +
                 "  tb_order\n" +
