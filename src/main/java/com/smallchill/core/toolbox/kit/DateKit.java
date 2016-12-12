@@ -397,4 +397,19 @@ public class DateKit {
 		System.out.println(getBeforMonth(0));
 	}
 
+	/**
+	 * 获取当月天数
+	 * @param date 当前日期
+	 * @return 天数
+     */
+	public static int getMonthDay(Date date) {
+
+		Calendar c = Calendar.getInstance();
+
+		c.setTime(date);
+
+		return c.getActualMaximum(Calendar.DAY_OF_MONTH)+1;
+
+	}
+
 }

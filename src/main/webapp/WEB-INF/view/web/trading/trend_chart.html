@@ -39,12 +39,6 @@
             </div>
     </div>
 
-    <div class="form-group" style="width: 1355px;height:80px;">
-            <label class="col-sm-1 control-label no-padding-right" > asd </label>
-            <div class="col-sm-3">
-                <button onclick="asd()">测试</button>
-            </div>
-    </div>
 </div>
 <div id="main" style="width: 1355px;height:555px;"></div>
 
@@ -59,44 +53,56 @@
     }
 
     $(function(){
+        yearMonth(null,1)
     });
 
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
 
     function yearMonth(data,type){
-        var val = $(data).val();
+        var val;
+        if(data==null){
+            var oDate = new Date(); //实例一个时间对象；
+           //获取系统的年；
+            val = oDate.getFullYear();
+        }else {
+            val = $(data).val();
+        }
+
         console.log(val);
         console.log(type);
         console.log('--------------------------------------------');
 
+        var url = "";
+        if(type==3){
+            url = "${ctxPath}/${code}/day";
+        }else {
+            url = "${ctxPath}/${code}/yearMonth"
+        }
+
         $.post(
-                "${ctxPath}/${code}/yearMonth",
-                {val:val,type:type},
-                "json"
+            url,
+            {val:val,type:type},
+            "json"
         ).done(function (data) {
-            console.log(data);
             var list = JSON.parse(data);
-            console.log("list---");
-            console.log(list);
             var time =[],amount=[];
-//            var myJson = eval("(" + data + ")");
-//            console.log("myJson---");
-//            console.log(myJson);
-//            for(var x in myJson){
-//                console.log("myJson[x]----------------------");
-//                console.log(myJson[x].t);
-//                console.log(myJson[x].amount);
-//            }
-            console.log("list[i]------------------------");
+
             for(var i=0;i<list.length;i++){
-                time.push(list[i].t);
-                amount.push(list[i].amount);
+                for(var key in list[i]){
+                    if(key=="key"){
+                        time.push(list[i][key]);
+                    }else {
+                        amount.push(list[i][key]);
+                    }
+                }
             }
 
-            console.log(time);
-            console.log(amount);
-
+//            for(var key in list){
+//                console.log("属性：" + key + ",值："+ list[key]);
+//                time.push(key);
+//                amount.push(list[key]);
+//            }
 
             // 使用刚指定的配置项和数据显示图表。
             myChart.setOption({
@@ -117,28 +123,26 @@
                 xAxis: [
                     {
                         type: 'category',
-                        data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+                        data: time
                     }
                 ],
                 yAxis: [
                     {
                         type: 'value',
-                        name: '水量',
+                        name: 'x',
                         min: 0,
-                        max: 250,
-                        interval: 50,
+                        interval: 0,
                         axisLabel: {
-                            formatter: '{value} ml'
+                            formatter: '{value} 元'
                         }
                     },
                     {
                         type: 'value',
-                        name: '温度',
+                        name: 'y',
                         min: 0,
-                        max: 25,
-                        interval: 5,
+                        interval: 0,
                         axisLabel: {
-                            formatter: '{value} °C'
+                            formatter: '{value}'
                         }
                     }
                 ],
@@ -146,7 +150,7 @@
                     {
                         name:'累积量',
                         type:'bar',
-                        data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                        data:amount
                     },
                     {
                         name:'增长率',
@@ -159,6 +163,8 @@
         });
 
     }
+
+
 
 
 

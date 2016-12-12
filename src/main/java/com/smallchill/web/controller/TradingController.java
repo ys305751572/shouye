@@ -61,6 +61,7 @@ public class TradingController extends BaseController {
     @RequestMapping(value = "/yearMonth")
     @ResponseBody
     public List yearMonth(String val,Integer type){
+        Map<String,Object> map = new TreeMap<>();
         List list = new ArrayList();
         try{
             list =  tradingService.yearMonth(val,type);
@@ -72,10 +73,10 @@ public class TradingController extends BaseController {
 
     @RequestMapping(value = "/day")
     @ResponseBody
-    public List day(Long date){
+    public List day(Long val){
         List list = new ArrayList();
         try{
-            list =  tradingService.day(date);
+            list =  tradingService.day(val);
         }catch (RuntimeException e){
             e.printStackTrace();
         }
@@ -87,7 +88,12 @@ public class TradingController extends BaseController {
     public AjaxResult scope(Integer type){
         StringBuilder sb = new StringBuilder();
         try{
-            if(type==1){    //年
+            if(type==null){
+                sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"scope_list\">");
+                sb.append("<option value></option>");
+                sb.append("</select>");
+            }
+            else if(type==1){    //年
                 String sql = "SELECT\n" +
                         "  DATE_FORMAT(FROM_UNIXTIME(create_time / 1000),'%Y') t\n" +
                         "FROM\n" +
@@ -119,16 +125,11 @@ public class TradingController extends BaseController {
                 sb.append("</select>");
             }
             else if(type==3){    //日
-                sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"scope_list\">");
+                sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"scope_list\" onchange=\"yearMonth(this,'3')\" >");
                 sb.append("<option value></option>");
                 sb.append("<option value=\"7\">7天</option>");
                 sb.append("<option value=\"14\">14天</option>");
                 sb.append("<option value=\"30\">30天</option>");
-                sb.append("</select>");
-            }
-            else { //null
-                sb.append("<select class=\"form-control\" style=\"margin:0 10px 0 -3px;cursor:pointer;width:auto;\" id=\"scope_list\">");
-                sb.append("<option value></option>");
                 sb.append("</select>");
             }
 
