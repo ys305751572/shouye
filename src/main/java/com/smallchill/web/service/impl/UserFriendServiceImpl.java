@@ -2,12 +2,14 @@ package com.smallchill.web.service.impl;
 
 import com.smallchill.api.function.meta.other.Convert;
 import com.smallchill.api.function.modal.vo.UserVo;
+import com.smallchill.api.function.service.UserFriendGroupingService;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserFriend;
+import com.smallchill.web.service.AugService;
 import com.smallchill.web.service.UserApprovalService;
 import com.smallchill.web.service.UserFriendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,11 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
 
     @Autowired
     private UserApprovalService userApprovalService;
+
+    @Autowired
+    private AugService augService;
+    @Autowired
+    private UserFriendGroupingService userFriendGroupingService;
 
     @Override
     public void proessFriend(UserFriend uf) {
@@ -69,6 +76,38 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
         ua.setFromUserId(uf.getUserId());
         ua.setToUserId(uf.getFriendId());
         userApprovalService.resetStatus(ua);
+        delAug(uf.getFriendId(), uf.getUserId());
+        delAcquaintancesLabel(uf.getUserId(), uf.getFriendId());
+        userFriendGroupingService.deleteMemberForDelFriend(uf.getUserId(), uf.getFriendId());
+    }
+
+    /**
+     * 删除熟人标签
+     * @param userId q当前用户ID
+     */
+    public void delAcquaintancesLabel(Integer userId, Integer friendId) {
+        List<UserFriend> list = this.findBy("(user_id = #{userId} and friend_id = #{friendId}) or (user_id = #{friendId} and friend_id = #{userId})" +
+                " and label LIKE CONCAT('%','熟人','%') ",
+                Record.create().set("userId", userId).set("friendId", friendId));
+        for (UserFriend uf : list) {
+            uf.setLabel(uf.getLabel() != null ? uf.getLabel().replace("熟人","") : "");
+            this.update(uf);
+        }
+    }
+
+    /**
+     * 删除同组织标签
+     * @param userId 当前用户ID
+     */
+    @Override
+    public void delGroupLabel(Integer userId, Integer groupId) {
+        String sql = "SELECT * FROM tb_user_friend uf LEFT JOIN tb_user_group ug ON uf.`friend_id` = ug.`user_id`" +
+                " AND ug.`group_id` = #{groupId} WHERE uf.`user_id` = #{userId} AND uf.`label` LIKE CONCAT('%','同组织','%')";
+        List<UserFriend> ufList = this.find(sql, Record.create().set("userId", userId).set("groupId", groupId));
+        for (UserFriend uf : ufList) {
+            uf.setLabel(uf.getLabel() != null ? uf.getLabel().replace("同组织","") : "");
+            this.update(uf);
+        }
     }
 
     /**
@@ -84,9 +123,10 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
         List<UserApproval> uaList = userApprovalService.findByFromUserIdAndToUserIdTwoWay(uf.getUserId(), uf.getFriendId());
         List<UserFriend> ufList = this.findBy("(user_id = #{userId} and friend_id = #{friendId}) or (user_id = #{friendId} and friend_id = #{userId})",
                 Record.create().set("userId", uf.getUserId()).set("friendId", uf.getFriendId()));
-
         updateUaListStatus(uaList);
         updateUfListStatus(ufList);
+        delAug(uf.getFriendId(), uf.getUserId());
+        delAcquaintancesLabel(uf.getUserId(), uf.getFriendId());
     }
 
     private void updateUfListStatus(List<UserFriend> ufList) {
@@ -102,6 +142,7 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
         if (CollectionKit.isNotEmpty(uaList)) {
             for (UserApproval ua : uaList) {
                 ua.setType(1);
+                ua.setStatus(2);
                 userApprovalService.update(ua);
             }
         }
@@ -196,5 +237,11 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
             voList.add(vo);
         }
         return voList;
+    }
+
+    @Override
+    public void delAug(Integer fromUserId, Integer toUserId) {
+        augService.deleteBy("(from_user_id = #{fromUserId} and to_user_id = #{toUserId}) OR (from_user_id = #{toUserId} and to_user_id = #{fromUserId})",
+                Record.create().set("fromUserId", fromUserId).set("toUserId", toUserId));
     }
 }

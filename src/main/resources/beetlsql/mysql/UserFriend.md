@@ -38,5 +38,5 @@ FROM tb_user_approval ua2 RIGHT JOIN
    WHERE ui.`user_id` != 31 AND ua.`type` = 2 AND ua.`status` = 2)
    
   AS b ON (ua2.`from_user_id` = b.user_id OR ua2.`to_user_id` = b.user_id) AND (ua2.`from_user_id` = #{userId} OR ua2.to_user_id = #{userId})
-  WHERE b.user_id != #{userId} group by b.user_id
+  WHERE b.user_id != #{userId} and user_id != #{toUserId} group by b.user_id
   

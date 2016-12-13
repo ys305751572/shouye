@@ -53,6 +53,6 @@ public class UserApprovalTest extends BaseJunit4Test{
         ua.setFromUserId(6);
         ua.setToUserId(5);
         ua.setStatus(1);
-        userApprovalService.userApprovalAgree(ua);
+//        userApprovalService.userApprovalAgree(ua);
     }
 }

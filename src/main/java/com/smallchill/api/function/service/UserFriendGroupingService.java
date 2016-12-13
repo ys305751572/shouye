@@ -9,4 +9,5 @@ import com.smallchill.core.base.service.IService;
  */
 public interface UserFriendGroupingService extends IService<UserFriendGrouping>{
 
+    void deleteMemberForDelFriend(Integer userId, Integer friendId);
 }

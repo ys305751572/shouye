@@ -241,6 +241,9 @@ public class UserApi extends BaseController implements ConstCache {
     @ResponseBody
     @Before(UserInterestValidate.class)
     public String userInterest(Integer userId, String toUserIds) {
+        if (userInfoService.isOverInterestNum(userId)) {
+            return fail(ErrorType.ERROR_CODE_OVER_INTREST_MAX_NUM);
+        }
         try {
             userInfoService.interest(userId, toUserIds);
         } catch (Exception e) {
@@ -282,6 +285,10 @@ public class UserApi extends BaseController implements ConstCache {
     @ResponseBody
     @Before(GroupJoinValidator.class)
     public String groupInterest(GroupInterest gi) {
+        if (userInfoService.isOverInterestNum(gi.getUserId())) {
+            return fail(ErrorType.ERROR_CODE_OVER_INTREST_MAX_NUM);
+        }
+
         String where = "user_id = #{userId} and group_id = #{groupId}";
         Record record = Record.create().set("userId", gi.getUserId()).set("groupId", gi.getGroupId());
 

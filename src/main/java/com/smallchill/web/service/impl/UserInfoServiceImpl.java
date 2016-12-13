@@ -3,6 +3,7 @@ package com.smallchill.web.service.impl;
 import com.smallchill.api.common.exception.UserExitsException;
 import com.smallchill.api.common.exception.UserIsNotManagerException;
 import com.smallchill.api.function.meta.consts.StatusConst;
+import com.smallchill.api.function.meta.consts.SystemConst;
 import com.smallchill.api.function.meta.consts.TextConst;
 import com.smallchill.api.function.meta.other.ButtonRegister;
 import com.smallchill.api.function.meta.other.Convert;
@@ -19,10 +20,7 @@ import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.NetKit;
 import com.smallchill.platform.model.UserLogin;
 import com.smallchill.platform.service.UserLoginService;
-import com.smallchill.web.model.Aug;
-import com.smallchill.web.model.UserApproval;
-import com.smallchill.web.model.UserInfo;
-import com.smallchill.web.model.UserinfoCareer;
+import com.smallchill.web.model.*;
 import com.smallchill.web.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +37,7 @@ import java.util.List;
  * 2016-10-18 09:47:31
  */
 @Service
-public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserInfoService, TextConst, StatusConst {
+public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserInfoService, TextConst, StatusConst, SystemConst {
 
     @Autowired
     private UserDomainService userDomainService;
@@ -52,10 +50,12 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     @Autowired
     private UserApprovalService userApprovalService;
-
+    @Autowired
+    private UserFriendService userFriendService;
     @Autowired
     private UserInterestService userInterestService;
-
+    @Autowired
+    private GroupInterestService groupInterestService;
     @Autowired
     private GroupUserRecordService groupUserRecordService;
 
@@ -73,7 +73,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     private UserCareerService userCareerService;
     @Autowired
     private AugService augService;
-
+    @Autowired
+    private UserInfoExtendService userInfoExtendService;
     @Transactional
     @Override
     public UserInfo updateUserInfo(UserInfo userInfo, HttpServletRequest request) throws UserExitsException {
@@ -228,6 +229,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             vo.setStatus(Convert.UN_INTEREST);
         }
         record.set("status", ua == null ? null : ua.getStatus());
+        record.set("type", ua == null ? null : ua.getType());
         Convert.setUserVoStatus(vo, record, userId);
         vo.setUserExtendVo(findUserExtendVo(record));
         if (groupId != null) {
@@ -315,7 +317,6 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         userExtendVo.setDesc(userDesc.toString());
         int productType = record.getInt("product_type");
         String productServiceName = record.getStr("product_service_name");
-
 
 
         String orgTypeName = record.getStr("orgTypeName");
@@ -933,12 +934,15 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         return userVo;
     }
 
+    @Transactional
     @Override
     public void updateMobile(String mobile, Integer userId) throws UserExitsException {
         UserInfo userInfo = this.findFirstBy("mobile = #{mobile}", Record.create().set("mobile", mobile));
         if (userInfo != null)
             throw new UserExitsException();
-        this.updateBy("mobile = #{mobile}", "user_id = #{userId}", Record.create().set("mobile", mobile).set("userId", userId));
+        Record record = Record.create().set("mobile", mobile).set("userId", userId);
+        this.updateBy("mobile = #{mobile}", "user_id = #{userId}", record);
+        userLoginService.updateBy("login_username = #{mobile}", "id = #{userId}", record);
     }
 
     /**
@@ -1145,6 +1149,40 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         superVo.setList(consumptionRecordVos);
         superVo.setMoney(allMoney);
         return superVo;
+    }
+
+    /**
+     * 是否达到用户感兴趣人数上限
+     * @param userId 当前用户ID
+     * @return boolean
+     */
+    @Override
+    public boolean isOverInterestNum(Integer userId) {
+        UserInfoExtend userInfoExtend = userInfoExtendService.findByUserId(userId);
+        if (userInfoExtend.getId() == null) userInfoExtend.setInterestCount(INTEREST_COUNTS);
+        return userInfoExtend.getInterestCount() <= findUserAndGroupInterestNumByUserId(userId);
+    }
+
+    public int findUserAndGroupInterestNumByUserId(Integer userId) {
+        int usercount = userInterestService.count("user_id = #{userId} and status = 0", Record.create().set("userId", userId));
+        int groupcount = groupInterestService.count("user_id = #{userId} and status = 0", Record.create().set("userId", userId));
+        return (usercount + groupcount);
+    }
+
+    public int findAcquaintancesNumByUserId(Integer userId) {
+        return userFriendService.count("user_id = #{userId} and type = 2 and status = 0", Record.create().set("userId", userId));
+    }
+
+    /**
+     * 是否达到用户熟人人数上限
+     * @param userId 当前用户ID
+     * @return boolean
+     */
+    @Override
+    public boolean isOverAcquaintances(Integer userId) {
+        UserInfoExtend userInfoExtend = userInfoExtendService.findByUserId(userId);
+        if (userInfoExtend.getId() == null) userInfoExtend.setAcquaintanceCount(ACQUAINTANCE_COUNTS);
+        return userInfoExtend.getAcquaintanceCount() <= findAcquaintancesNumByUserId(userId);
     }
 
 

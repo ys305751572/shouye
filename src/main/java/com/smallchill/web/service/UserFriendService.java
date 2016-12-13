@@ -33,6 +33,8 @@ public interface UserFriendService extends IService<UserFriend> {
      */
     void delFriend(UserFriend uf);
 
+
+    void delGroupLabel(Integer userId, Integer groupId);
     /**
      * 删除熟人
      * @param uf
@@ -74,4 +76,11 @@ public interface UserFriendService extends IService<UserFriend> {
      * @return uservos
      */
     List<UserVo> findAcquaintancesByUserId(Integer userId, Integer toUserId);
+
+    /**
+     * 删除组织审核记录
+     * @param fromUserId
+     * @param toUserId
+     */
+    void delAug(Integer fromUserId, Integer toUserId);
 }

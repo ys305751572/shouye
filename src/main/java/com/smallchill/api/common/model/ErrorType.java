@@ -20,6 +20,8 @@ public enum ErrorType {
     ERROR_CODE_USERHASJOIN("您已加入过该组织,请不要重复加入", 3001),
     ERROR_CODE_USERHASAPPROVAL("您已发送过申请,请耐心等待", 3002),
     ERROR_CODE_USERINBLANK("您已被该群加入黑名单,无法加入", 3003),
+    ERROR_CODE_OVER_INTREST_MAX_NUM("您已达到感兴趣人数上限", 3004),
+    ERROR_CODE_OVER_ACQUAINTANCES_MAX_NUM("您已达到熟人人数上限", 3005),
 
     ERROR_CODE_APP_USERHASJOIN("您已经跟该用户为好友关系", 4001),
     ERROR_CODE_APP_USERHASAPPROVAL("尚有未处理的请求，无法重复提交", 4002),

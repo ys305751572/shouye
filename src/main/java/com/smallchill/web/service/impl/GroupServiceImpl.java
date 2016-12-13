@@ -44,6 +44,8 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     private GroupApprovalService groupApprovalService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private UserFriendService userFriendService;
 
     /**
      * 新建组织
@@ -406,6 +408,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         Record record = Record.create().set("groupId", groupId).set("userId", userId);
         userGroupService.deleteBy(where, record);
         groupApprovalService.deleteBy(where, record);
+        userFriendService.delGroupLabel(userId, groupId);
     }
 
     @Override

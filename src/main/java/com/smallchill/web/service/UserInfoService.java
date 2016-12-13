@@ -250,4 +250,18 @@ public interface UserInfoService extends IService<UserInfo> {
      * @return ConsumptionRecordSuperVo
      */
     ConsumptionRecordSuperVo findConsumptionRecordByUserId(Integer userId);
+
+    /**
+     * 是否达到用户感兴趣人数上限
+     * @param userId 当前用户ID
+     * @return boolean
+     */
+    boolean isOverInterestNum(Integer userId);
+
+    /**
+     * 是否达到用户熟人人数上限
+     * @param userId 当前用户ID
+     * @return boolean
+     */
+    boolean isOverAcquaintances(Integer userId);
 }

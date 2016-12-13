@@ -37,7 +37,7 @@ public class Convert {
         }
         String organization = "";
         if (record.getInt("org_is_open") == 1) {
-             organization = (String) record.get("organization");
+            organization = (String) record.get("organization");
         }
         Integer per = record.getInt("per");
         UserVo userVo = new UserVo(id, username, city, domain, keyWord, organization, professional, "");
@@ -126,7 +126,7 @@ public class Convert {
      * @param record record
      * @return list
      */
-    public static List<Record> recordToGroupDetail(Record record,Integer gaStatus) {
+    public static List<Record> recordToGroupDetail(Record record, Integer gaStatus) {
         List<Record> list = new ArrayList<>();
         int[] index = new int[]{1, 2, 3};
         for (int _i : index) {
@@ -135,8 +135,7 @@ public class Convert {
             String content;
             if (isOpen != null && Integer.parseInt(isOpen.toString()) == 2 && (gaStatus == null || gaStatus != 2)) {
                 content = "加入组织成为会员才可查看该信息";
-            }
-            else {
+            } else {
                 content = record.getStr("content" + _i);
             }
             list.add(record1.set("title", record.get("title" + _i)).set("content", content));
@@ -221,7 +220,9 @@ public class Convert {
                 } else if (userId == toUserId) {
                     type = NOT_PROCESS_FROM_USER_ID;
                 }
-                vo.setUsername(hiddenRealUsername(record.getStr("username")));
+                if (record.getInt("type") != 2) {
+                    vo.setUsername(hiddenRealUsername(record.getStr("username")));
+                }
             } else if (status == 2) {
                 type = FRIEND;
             } else if (status == 3) {
@@ -234,10 +235,11 @@ public class Convert {
 
     /**
      * 退款返回map,转换为refund实体类
+     *
      * @param resultMap
      * @return
      */
-    public static Refund resultMapToRefund(Map<String,String> resultMap) {
+    public static Refund resultMapToRefund(Map<String, String> resultMap) {
         Refund refund = new Refund();
         if ("SUCCESS".equals(resultMap.get("return_code")) && "SUCCESS".equals(resultMap.get("return_msg"))) {
             refund.setResultCode(resultMap.get("result_code"));
@@ -252,8 +254,7 @@ public class Convert {
             refund.setTotalFee(Integer.parseInt(resultMap.get("total_fee")));
             refund.setSettlementTotalFee(Integer.parseInt(resultMap.get("settlement_total_fee")));
             refund.setCashFee(Integer.parseInt(resultMap.get("cash_fee")));
-        }
-        else {
+        } else {
             refund.setErrCode(resultMap.get("err_code"));
             refund.setErrCodeDes(resultMap.get("err_code_des"));
         }
@@ -262,6 +263,7 @@ public class Convert {
 
     /**
      * 非好友隐藏真实名字
+     *
      * @param username 用户名
      * @return hiddenUsername
      */
@@ -272,7 +274,7 @@ public class Convert {
         if (username.contains("·")) {
             return username.split("·")[0] + "**";
         }
-        return username.substring(0,1) + "**";
+        return username.substring(0, 1) + "**";
     }
 
     public static int NOT_FRINED = 2000; // 未结识

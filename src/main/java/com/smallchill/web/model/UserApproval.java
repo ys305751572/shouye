@@ -29,6 +29,9 @@ public class UserApproval extends BaseModel {
     @Column(name = "introduce_user_id")
     private Integer introduceUserId;
 
+    @Column(name = "friend_id")
+    private Integer friendId = 0;
+
     @Column(name = "validate_info")
     private String validateInfo = "";
     @Column(name = "status")
@@ -38,6 +41,14 @@ public class UserApproval extends BaseModel {
 
     @Column(name = "create_time")
     private Long createTime;
+
+    public Integer getFriendId() {
+        return friendId;
+    }
+
+    public void setFriendId(Integer friendId) {
+        this.friendId = friendId;
+    }
 
     public Integer getType() {
         return type;

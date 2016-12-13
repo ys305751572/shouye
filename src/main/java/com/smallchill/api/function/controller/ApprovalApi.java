@@ -90,9 +90,8 @@ public class ApprovalApi extends BaseController {
                 // 拒绝
                 userApprovalService.userApprovalRefuse(userApproval);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return fail();
+        } catch (UserOverAccNumException e) {
+            return fail(ErrorType.ERROR_CODE_OVER_ACQUAINTANCES_MAX_NUM);
         }
         return success();
     }
@@ -121,6 +120,8 @@ public class ApprovalApi extends BaseController {
             return fail(ErrorType.ERROR_CODE_APP_USERINMYBLANK);
         } catch (UserHasFriendException e) {
             return fail(ErrorType.ERROR_CODE_APP_USERHASJOIN);
+        } catch (UserOverAccNumException e) {
+            return fail(ErrorType.ERROR_CODE_OVER_ACQUAINTANCES_MAX_NUM);
         }
         return success();
     }

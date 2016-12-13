@@ -272,7 +272,7 @@ LEFT JOIN
 tb_user_info ui2
 ON
 ua.`to_user_id` = ui2.`user_id`
-WHERE ua.`group_id` = #{groupId}
+WHERE ua.`group_id` = #{groupId} and ua.status = 1
 
 findUserListByGroupig
 =====================

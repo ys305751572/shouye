@@ -74,7 +74,7 @@ public interface UserApprovalService extends IService<UserApproval> {
      *
      * @param ua
      */
-    void userApprovalAgree(UserApproval ua);
+    void userApprovalAgree(UserApproval ua) throws UserOverAccNumException;
 
     /**
      * 用户审核拒绝
@@ -149,5 +149,5 @@ public interface UserApprovalService extends IService<UserApproval> {
      * 对我感兴趣用户-（同意，忽略）
      * @param ua 申请信息
      */
-    void auditOfInterest(UserApproval ua) throws BothUserHasApprovalException, UserInOthersBlankException, UserHasApprovalException, UsernotFriendException, UserInMyBlankException, UserHasFriendException;
+    void auditOfInterest(UserApproval ua) throws BothUserHasApprovalException, UserInOthersBlankException, UserHasApprovalException, UsernotFriendException, UserInMyBlankException, UserHasFriendException, UserOverAccNumException;
 }

@@ -42,7 +42,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String USER_BASE_INFO_SQL = " ui.user_id userId,ui.username,IFNULL(ui.avater,'') as avater ,ui.province_city provinceCity,ui.domain,ui.key_word keyWord,ui.organization,ui.professional,ui.per ";
 
-    private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.status,ua.from_user_id,ua.to_user_id " +
+    private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.group_id, ua.friend_id,ua.status,ua.from_user_id,ua.to_user_id " +
             "from tb_user_approval ua join tb_user_info ui";
 
     private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.to_user_id = ui.user_id where i.user_id = #{userId} and i.status = 0";
@@ -52,11 +52,11 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + " from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId} and i.status = 0";
 
     private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i left join tb_user_info ui on i.user_id = ui.user_id "
-            + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` and ua.to_user_id = #{userId} where i.to_user_id = #{userId} and (ua.`status` != 4 OR ua.`status` IS NULL)";
+            + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` and ua.to_user_id = #{userId} where i.to_user_id = #{userId} and (ua.`status` != 4 OR ua.`status` IS NULL) group by i.user_id";
 
     private String SQL_MY_GROUP = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
 
-    private String NEW_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_user_approval ua WHERE (ua.`from_user_id` = #{userId} OR ua.`to_user_id` = #{userId}) " +
+    private String NEW_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_user_approval ua WHERE (ua.`to_user_id` = #{userId}) " +
             "AND (ua.`status` = 1 OR ua.`create_time` > #{lastTime}) AND ua.type = 1";
     // 感兴趣的用户
     private String INTEREST_USER_COUNT_SQL = "SELECT COUNT(*) as count FROM tb_interest_user iu WHERE iu.create_time > #{lastTime} AND iu.user_id = #{userId}";
@@ -111,13 +111,16 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             sql += " RIGHT JOIN tb_userinfo_domain ud ON (ui.user_id = ud.user_id AND ud.domain_id = #{domain}) ";
             _r.set("domain", domainId);
         }
-
-        where.append(" 1 = 1");
+        if (grouping != null && grouping > 3) {
+            where.append(" right join tb_user_friend_grouping_member ufgm on ui.user_id = ufgm.friend_id and ufgm.ufg_id = #{ufgId}");
+            _r.set("ufgId", grouping);
+        }
+        where.append(" where 1 = 1");
         if (city != null) {
             where.append(" and ui.city_id = #{city} ");
             _r.set("city", city);
         }
-        if (grouping != null) {
+        if (grouping != null && grouping <=3 && grouping >= 4) {
             String groupingStr = "";
             switch (grouping) {
                 case 1:
@@ -129,8 +132,10 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
                 case 3:
                     groupingStr = "同组织";
             }
-            where.append(" and uf.label like concat('%',#{grouping},'%')");
-            _r.set("grouping", groupingStr);
+            if (grouping >= 1 && grouping <= 3 ) {
+                where.append(" and uf.label like concat('%',#{grouping},'%')");
+                _r.set("grouping", groupingStr);
+            }
         }
         if (StringUtils.isNotBlank(keyWord)) {
             where.append(" and (ui.username LIKE concat('%', #{keyWord},'%') or ui.key_word LIKE concat('%', #{keyWord}, '%'))");
@@ -139,7 +144,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         where.append(" and uf.user_id = #{userId}");
 
 
-        List<Record> friends = Db.init().selectList(sql, where.toString(), _r);
+        List<Record> friends = Db.init().selectList(sql + where.toString(), _r);
         List<UserVo> voList = new ArrayList<>();
         for (Record record : friends) {
             UserVo userVo = Convert.recordToVo(record);
@@ -217,16 +222,14 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         ult.setNewTime(DateTimeKit.nowLong());
         this.updateUserLastReadTime(userId, ult);
 
-
         Map<String, List<UserVo>> resultMap = new HashMap<>();
-        resultMap.put("list0", new ArrayList<UserVo>()); // 自荐
-        resultMap.put("list1", new ArrayList<UserVo>()); // 引荐
+        resultMap.put("list0", new ArrayList<UserVo>()); // 引荐
+        resultMap.put("list1", new ArrayList<UserVo>()); // 自荐
         resultMap.put("list2", new ArrayList<UserVo>()); // 推荐
 
         // 查询当前用户所有申请请求
         List<Record> list0 = listNew0(userId);
         listAdd2Map(list0, resultMap, userId);
-
         return resultMap;
     }
 
@@ -259,7 +262,8 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
                 // 自荐
                 String validateInfo = record.get("username") == null ? "" : record.get("username").toString() + ":" + record.get("validate_info");
                 vo.setValidateInfo(validateInfo);
-                vo.setInfo("");
+                vo.setInfo("来自共同熟人引荐/扫码结识/多人结识");
+                vo.setOrganization(record.getStr("username"));
                 voList1.add(vo);
             } else if (introduceUserId != 0 && groupId == 0) {
                 // 推荐
@@ -268,12 +272,14 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
                 String validateInfo = username == null ? "" : username + ":" + record.get("validate_info");
                 vo.setValidateInfo(validateInfo);
                 vo.setInfo("来自您的朋友" + username);
+                vo.setOrganization(username);
             } else {
                 // 引荐
                 String validateInfo = record.get("username") == null ? "" : record.get("username").toString() + ":" + record.get("validate_info");
                 vo.setValidateInfo(validateInfo);
                 String name = groupService.findNameById(groupId);
                 vo.setInfo("已通过" + name + "审核");
+                vo.setOrganization(name);
                 voList0.add(vo);
             }
         }
@@ -377,11 +383,14 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         }
 
         String sql2 = sql + " on (ui.`user_id` = ua.`from_user_id` OR ui.`user_id` = ua.`to_user_id` ) AND (ua.`from_user_id` = #{userId} OR ua.`to_user_id` = #{userId}) ";
-        String where = "ui.`user_id` != #{userId} and ua.type = 2 and (ua.status = 2 or ua.status = 1)";
+        String where = "ui.`user_id` != #{userId} and ua.type = 2 and (ua.status = 2 or ua.status = 1) ORDER BY ua.status,ua.create_time desc";
         List<Record> list = Db.init().selectList(sql2, where, Record.create().set("userId", userId));
         List<UserVo> voList = new ArrayList<>();
         UserVo vo;
         for (Record record : list) {
+            if (record.getInt("from_user_id") == userId && record.getInt("status") == 1) {
+                continue;
+            }
             vo = Convert.recordToVo(record);
             Convert.setUserVoStatus(vo, record, userId);
             voList.add(vo);
