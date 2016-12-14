@@ -27,9 +27,11 @@ import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.support.BladePage;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.GroupApproval;
+import com.smallchill.web.model.Order;
 import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.GroupApprovalService;
 import com.smallchill.web.service.GroupService;
+import com.smallchill.web.service.OrderService;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +56,8 @@ public class GroupApi extends BaseController {
     private GroupApprovalService groupApprovalService;
     @Autowired
     private UserInfoService userInfoService;
-
+    @Autowired
+    private OrderService orderService;
     @Autowired
     private GroupService groupService;
 
@@ -104,15 +107,32 @@ public class GroupApi extends BaseController {
     @ResponseBody
     @Before(GroupJoinValidator.class)
     public String detail(Integer groupId, Integer userId) {
-        String sql = "SELECT telphone, title1,content1,is_open1,title2,content2,is_open2,title3,content3,is_open3,ga.`status`,ig.`status` AS istatus FROM tb_group g " +
+        String sql = "SELECT ga.id as gaId,ga.through_time, telphone, title1,content1,is_open1,title2,content2,is_open2,title3,content3,is_open3,ga.`status`,ig.`status` AS istatus FROM tb_group g " +
                 "LEFT JOIN tb_group_approval ga ON g.`id` = ga.`group_id` AND ga.`user_id` = #{userId} LEFT JOIN tb_interest_group ig ON g.`id` = ig.`group_id` " +
                 "AND ig.`user_id`= #{userId} WHERE g.id = #{groupId} ";
         Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId).set("userId", userId));
         Integer status = record.get("status") == null ? null : (Integer) record.get("status");
         Integer istatus = record.get("istatus") == null ? null : (Integer) record.get("istatus");
         List<Record> list = Convert.recordToGroupDetail(record,status);
-        List<Button> btnList = GroupBtnRegister.create().registerBtns(status, istatus);
 
+        if (status != null && status == 3 && groupApprovalService.isOverRefuseMaxTime(record.getLong("through_time"), record.getInt("gaId"))) {
+            // 判断拒绝时间是否超过72小时
+            status = null;
+        }
+        if (status != null && status == 1) {
+            Order order = orderService.findByGaId(record.getInt("gaId"));
+            if (order == null) {
+                return fail(ErrorType.ERROR_CODE_APP_USERHASAPPROVAL);
+            }
+            else {
+                if (order.getStatus() == 2) {
+                    orderService.delete(order.getId());
+                    groupApprovalService.delete(record.getInt("gaId"));
+                    status = null;
+                }
+            }
+        }
+        List<Button> btnList = GroupBtnRegister.create().registerBtns(status, istatus);
         String telphone = record.getStr("telphone");
         List<String> telList = new ArrayList<>();
         if (status == null || status == 1 || status == 3 || status == 4) {

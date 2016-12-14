@@ -206,6 +206,6 @@ public class MessageServiceImpl extends BaseService<Message> implements MessageS
      */
     @Override
     public List<Message> findByUserId(Integer userId) {
-        return this.findBy("to_id = #{userId}", Record.create().set("userId", userId));
+        return this.findBy("to_id = #{userId} order by create_time desc", Record.create().set("userId", userId));
     }
 }

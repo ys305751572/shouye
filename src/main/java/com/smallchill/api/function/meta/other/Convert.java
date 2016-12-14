@@ -119,7 +119,14 @@ public class Convert {
         String target = record.get("targat") == null ? "" : record.get("targat").toString();
         Integer memebers = Integer.parseInt(record.get("memberCount").toString());
         String city = record.get("provinceCity") == null ? "" : record.get("provinceCity").toString();
-        return new Groupvo(id, name, avater, target, memebers, city);
+
+        int isJoin = 0;
+        if (record.get("status") != null && Integer.parseInt(record.get("status").toString()) == 2) {
+            isJoin = 1;
+        }
+        Groupvo groupvo =  new Groupvo(id, name, avater, target, memebers, city);
+        groupvo.setIsjoin(isJoin);
+        return groupvo;
     }
 
     /**
@@ -141,7 +148,7 @@ public class Convert {
             list.add(record1.set("title", record.get("title" + _i)).set("content", content));
         }
         list.add(Record.create().set("title", "最近活动").set("content", "敬请期待"));
-        list.add(Record.create().set("title", "机构日报").set("content", "敬请期待"));
+        list.add(Record.create().set("title", "组织日报").set("content", "敬请期待"));
         return list;
     }
 

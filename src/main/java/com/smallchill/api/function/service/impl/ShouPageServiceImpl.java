@@ -49,7 +49,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String GROUP_BASE_INFO_SQL = " g.id,g.name,IFNULL(g.avater,'') as avater,g.province,g.city,g.type,g.province_city provinceCity,g.member_count memberCount,g.targat ";
 
-    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + " from tb_interest_group i join tb_group g on i.group_id = g.id where i.user_id = #{userId} and i.status = 0";
+    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + ",ga.status from tb_interest_group i join tb_group g on i.group_id = g.id LEFT JOIN tb_group_approval ga ON i.`group_id` = ga.`group_id` AND ga.`user_id` = #{userId} where i.user_id = #{userId} and i.status = 0";
 
     private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i left join tb_user_info ui on i.user_id = ui.user_id "
             + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` and ua.to_user_id = #{userId} where i.to_user_id = #{userId} and (ua.`status` != 4 OR ua.`status` IS NULL) group by i.user_id";

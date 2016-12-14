@@ -89,4 +89,11 @@ public interface GroupApprovalService extends IService<GroupApproval> {
      * @param gaId
      */
     void setPaiedStatusSuccess(int gaId);
+
+    /**
+     * 判断拒绝申请信息是否已经超过72小时
+     * @param throughTime 处理时间
+     * @return boolean
+     */
+    boolean isOverRefuseMaxTime(Long throughTime, Integer gaId);
 }

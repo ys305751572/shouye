@@ -64,25 +64,36 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
      * @param ga 申请信息
      * @return 结果
      */
+    @Transactional
     public boolean isApprival(GroupApproval ga) throws UserHasApprovalException,
             UserHasJoinGroupException, UserInOthersBlankException {
-        String sql = "select status from tb_group_approval where group_id = #{groupId} and  user_id = #{userId}";
+        String sql = "select id,status from tb_group_approval where group_id = #{groupId} and  user_id = #{userId}";
         Record record = Record.create();
         record.put("groupId", ga.getGroupId());
         record.put("userId", ga.getUserId());
         GroupApproval groupApproval = this.findFirst(sql, record);
         if (groupApproval == null) return false;
-        if (groupApproval.getStatus() == 2) {
-            groupService.audit(ga.getGroupId(), ga.getUserId(), 0);
+        if (groupApproval.getStatus() == 3) {
+            groupService.audit(ga.getGroupId(), ga.getUserId(), 1);
             return true;
         }
-        if (groupApproval.getStatus() == 0) {
-            throw new UserHasApprovalException();
+        if (groupApproval.getStatus() == 1) {
+            Order order = orderService.findByGaId(groupApproval.getId());
+            if (order == null) {
+                throw new UserHasApprovalException();
+            }
+            else {
+                if (order.getStatus() == 2) {
+                    orderService.delete(order.getId());
+                    this.delete(groupApproval.getId());
+                    return false;
+                }
+            }
         }
-        if (groupApproval.getStatus() == 1 || groupApproval.getStatus() == 4) {
+        if (groupApproval.getStatus() == 2 ) {
             throw new UserHasJoinGroupException();
         }
-        if (groupApproval.getStatus() == 3) {
+        if (groupApproval.getStatus() == 4) {
             throw new UserInOthersBlankException();
         }
         return false;
@@ -208,8 +219,6 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         GroupApproval groupApproval = this.findById(id);
         if (status == 2) {
-            //批准通过的时间
-            groupApproval.setThroughTime(DateTimeKit.nowLong());
             //新增一条会员组织关系
             GroupExtend groupExtend = groupExtendService.findFirstBy("group_id = #{groupId}",
                     Record.create().set("groupId", groupApproval.getGroupId()));
@@ -262,7 +271,8 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             messageService.sendMsgForUserAuditBlank(groupApproval.getGroupId(),
                     groupApproval.getUserId(), order != null ? order.getOrderNo() : "");
         }
-
+        // 处理时间
+        groupApproval.setThroughTime(DateTimeKit.nowLong());
         groupApproval.setStatus(status);
         this.update(groupApproval);
     }
@@ -415,5 +425,16 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
     @Override
     public void setPaiedStatusSuccess(int gaId) {
         this.updateBy("paied = #{paied}", "id = #{gaId}", Record.create().set("paied", HAVE_PAY).set("gaId", gaId));
+    }
+
+    @Override
+    public boolean isOverRefuseMaxTime(Long throughTime, Integer gaId) {
+        long nowTime = DateTimeKit.nowLong();
+        final int LIMIT_TIME = 1000 * 3600 * 72; // 72小时后解封
+        if ((nowTime - throughTime) < LIMIT_TIME) {
+            return false;
+        }
+        this.delete(gaId);
+        return true;
     }
 }

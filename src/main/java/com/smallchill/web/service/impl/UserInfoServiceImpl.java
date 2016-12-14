@@ -893,8 +893,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
      */
     @Override
     public Record intersection(Integer userId, Integer toUserId) {
-        String sql = "SELECT uf.`friend_id` FROM tb_user_friend uf " +
-                "WHERE uf.`user_id` = #{userId} AND uf.`friend_id` IN (SELECT uf2.`friend_id` FROM tb_user_friend uf2 WHERE uf2.`user_id` = #{toUserId})";
+        String sql = "SELECT uf.friend_id FROM tb_user_friend uf INNER JOIN tb_user_friend uf2 ON uf.`friend_id` = uf2.`friend_id` " +
+                "AND uf2.`user_id` = #{toUserId} WHERE uf.`user_id` = #{userId} group by uf.friend_id";
         List<Record> recordList = Db.init().selectList(sql, Record.create().set("userId", userId).set("toUserId", toUserId));
         String sql2 = "select ui.user_id userId, ui.username FROM tb_user_info ui where ui.user_id in (#{ids})";
         StringBuffer ids = new StringBuffer();
@@ -907,8 +907,8 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         } else {
             userList = new ArrayList<>();
         }
-        String sql3 = "SELECT ug.group_id FROM tb_user_group ug WHERE ug.`user_id` = #{toUserId} AND ug.`group_id` " +
-                "IN (SELECT ug2.group_id FROM tb_user_group ug2 WHERE ug2.`user_id` = #{userId})\n";
+        String sql3 = "SELECT ug.group_id FROM tb_user_group ug inner join tb_user_group ug2 on ug.`group_id` = ug2.`group_id`" +
+                " and ug2.`user_id` = #{toUserId} WHERE ug.`user_id` = #{userId} group by ug.`group_id`";
         List<Record> groupRecordList = Db.init().selectList(sql3, Record.create().set("userId", userId).set("toUserId", toUserId));
         StringBuffer ids2 = new StringBuffer();
         for (Record record : groupRecordList) {
