@@ -85,8 +85,10 @@
             {val:val,type:type},
             "json"
         ).done(function (data) {
-            var list = JSON.parse(data);
-            var time =[],amount=[];
+            var dataList = JSON.parse(data);
+            var list = dataList[0];
+            var list1 = dataList[1];
+            var time =[],amount=[],growth=[];
 
             for(var i=0;i<list.length;i++){
                 for(var key in list[i]){
@@ -96,7 +98,15 @@
                         amount.push(list[i][key]);
                     }
                 }
+                for(var key in list1[i]){
+                    if(key!="key"){
+                        growth.push(list1[i][key]);
+                    }
+                }
             }
+            console.log("---------------------------");
+            console.log(growth);
+
 
 //            for(var key in list){
 //                console.log("属性：" + key + ",值："+ list[key]);
@@ -139,10 +149,11 @@
                     {
                         type: 'value',
                         name: 'y',
-                        min: 0,
-                        interval: 0,
+                        min: -1000,
+                        max: 1000,
+                        interval: 100,
                         axisLabel: {
-                            formatter: '{value}'
+                            formatter: '{value} %'
                         }
                     }
                 ],
@@ -156,7 +167,7 @@
                         name:'增长率',
                         type:'line',
                         yAxisIndex: 1,
-                        data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+                        data:growth
                     }
                 ]
             });

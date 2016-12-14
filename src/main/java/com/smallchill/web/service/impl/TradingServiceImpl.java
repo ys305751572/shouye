@@ -4,15 +4,10 @@ import com.smallchill.common.pay.util.TimeUtil;
 import com.smallchill.core.base.service.BaseService;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
-import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.DateKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
-import com.smallchill.core.toolbox.support.BladePage;
 import com.smallchill.web.model.Trading;
-import com.smallchill.web.service.GroupLoadService;
 import com.smallchill.web.service.TradingService;
-import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,6 +18,11 @@ import java.util.*;
  */
 @Service
 public class TradingServiceImpl extends BaseService<Trading> implements TradingService {
+
+
+    public Double totalTurnover(){
+        return null;
+    }
 
     @Override
     public List yearMonth(String date,Integer type){
@@ -45,7 +45,10 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
 
         List<Record> list = Db.init().selectList(sql,Record.create().set("date",date));
         List list1 = new ArrayList();
+        List list2 = new ArrayList();
+        List returnList = new ArrayList();
 
+        Map<String, Object> map2 = new TreeMap<>();
         Map<String,Object> map = new TreeMap<>();
         //年
         if(type==1){
@@ -55,6 +58,7 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
                     y = "0";
                 }
                 map.put(y+i,0.00);
+                map2.put(y+i,0.00);
             }
         }
         //月
@@ -67,28 +71,48 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
                     y = "0";
                 }
                 map.put(y+i,0.00);
+                map2.put(y+i,0.00);
             }
         }
 
         for(Record record :list){
-                String time = (String) record.get("t");
-                Double amount = (Double) record.get("amount");
-                if(map.get(time)!=null){
-                    map.put(time,amount);
-                }else {
-                    map.put(time,0.00);
-                }
+            String time = (String) record.get("t");
+            Double amount = (Double) record.get("amount");
+            if(map.get(time)!=null){
+                map.put(time,amount);
+            }else {
+                map.put(time,0.00);
             }
+        }
 
+        Double amount1 = 0.00;
         for(Map.Entry<String, Object> entry:map.entrySet()){
             list1.add(entry);
+            Double amount = Double.parseDouble(this.round((Double) entry.getValue()));
+            Double a ;
+            if(amount1==0.00){
+                a = 0.00;
+            }else {
+                a = Double.parseDouble(this.round((amount - amount1)/amount1));
+                a = Double.parseDouble(this.round(a*100));
+            }
+            map2.put(entry.getKey(),a);
+
+            amount1 = amount;
 //            System.out.println(entry.getKey()+"--->"+entry.getValue());
         }
-        return list1;
+
+        for (Map.Entry<String, Object> entry : map2.entrySet()) {
+            list2.add(entry);
+        }
+        returnList.add(list1);
+        returnList.add(list2);
+
+        return returnList;
     }
 
     @Override
-    public List day(Long date){
+    public List day(Long date) {
         // 7 14 30
         Long start = TimeUtil.getTimesnight() - (date * 86400000L);
         Long end = TimeUtil.getTimesnight();
@@ -102,37 +126,58 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
                 "AND create_time>=#{start} AND create_time< #{end}\n" +
                 "AND status='1' OR status='3' \n" +
                 "  GROUP BY t";
-        List<Record> list = Db.init().selectList(sql,Record.create().set("start",start).set("end",end));
+        List<Record> list = Db.init().selectList(sql, Record.create().set("start", start).set("end", end));
 
         Date beginDate = DateTimeKit.date(start);
         Date endDate = DateTimeKit.date(TimeUtil.getTimesmorning());
-        List<Date> dateList = getDatesBetweenTwoDate(beginDate,endDate);
+        List<Date> dateList = getDatesBetweenTwoDate(beginDate, endDate);
 
-        Map<String,Object> map = new TreeMap<>();
+        Map<String, Object> map1 = new TreeMap<>();
+        Map<String, Object> map2 = new TreeMap<>();
         List list1 = new ArrayList();
+        List list2 = new ArrayList();
+        List returnList = new ArrayList();
 
-        for(Date d : dateList){
-            String formatDate = DateTimeKit.format(d,"MM-dd");
-            map.put(formatDate,0.00);
+        for (Date d : dateList) {
+            String formatDate = DateTimeKit.format(d, "MM-dd");
+            map1.put(formatDate, 0.00);
+            map2.put(formatDate, 0.00);
         }
 
-        for(Record record :list){
+        for (Record record : list) {
             String time = (String) record.get("t");
             Double amount = (Double) record.get("amount");
-            if(map.get(time)!=null){
-                map.put(time,amount);
-            }else {
-                map.put(time,0.00);
+            if (map1.get(time) != null) {
+                map1.put(time, amount);
+            } else {
+                map1.put(time, 0.00);
             }
         }
 
-        for(Map.Entry<String, Object> entry:map.entrySet()){
+        Double amount1 = 0.00;
+        for (Map.Entry<String, Object> entry : map1.entrySet()) {
             list1.add(entry);
-//            System.out.println(entry.getKey()+"--->"+entry.getValue());
+            Double amount = Double.parseDouble(this.round((Double) entry.getValue()));
+            Double a ;
+            if(amount1==0.00){
+                a = 0.00;
+            }else {
+                a = Double.parseDouble(this.round((amount - amount1)/amount1));
+                a = Double.parseDouble(this.round(a*100));
+            }
+            map2.put(entry.getKey(),a);
+
+            amount1 = amount;
         }
 
-        return list1 ;
-    }
+        for (Map.Entry<String, Object> entry : map2.entrySet()) {
+            list2.add(entry);
+        }
+        returnList.add(list1);
+        returnList.add(list2);
+
+            return returnList;
+        }
 
     public static List<Date> getDatesBetweenTwoDate(Date beginDate, Date endDate) {
         List<Date> lDate = new ArrayList<Date>();
@@ -154,5 +199,11 @@ public class TradingServiceImpl extends BaseService<Trading> implements TradingS
         lDate.add(endDate);// 把结束时间加入集合
         return lDate;
     }
+
+    public String round(double value){
+//        return Math.round(value*100)/100.0;
+        return new java.text.DecimalFormat("0.00").format(value);
+    }
+
 
 }
