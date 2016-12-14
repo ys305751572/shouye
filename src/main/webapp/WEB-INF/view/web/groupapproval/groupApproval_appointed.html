@@ -26,7 +26,7 @@
 		var _colnames=[
 			"序号",
 			"用户ID",
-			"名称",
+			"名字",
 			"手机",
 			"类型",
 			"操作"
@@ -69,7 +69,7 @@
 	function appointedSave(data){
 		var num = "${num}";
 		if(num==5 && data==0){
-			layer.msg("最多只能设置5个干部", {
+			layer.msg("最多只能设置5个干事", {
 				time: 1000
 			});
 			return;
@@ -77,11 +77,11 @@
 		var id,str,status;
 		if(data==0){
 			id = $("#mobile").val();
-			str = '确定将该用户设置为干部吗？';
+			str = '确定将该用户设置为干事吗？';
 			status = 2;
 		}else {
 			id = data;
-			str = '确定取消该干部吗？';
+			str = '确定取消该干事吗？';
 			status = 1;
 		}
 		layer.confirm(str, {

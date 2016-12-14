@@ -17,5 +17,7 @@ public interface UserGroupService extends IService<UserGroup> {
 
     List findInvitationUser();
 
+    List findMembers(String mobile);
+
 
 }

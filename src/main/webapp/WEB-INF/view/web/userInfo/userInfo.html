@@ -67,9 +67,9 @@
 			{name:"userName", index:"userName", width:120},
 			{name:"gender", index:"gender", width:120,
 				formatter: function (cellvalue, options, rowObject) {
-					if(cellvalue == 1 ){
+					if(cellvalue == 2 ){
 						return "男";
-					}else{
+					}else if(cellvalue == 3 ){
 						return "女";
 					}
 				}
@@ -77,9 +77,42 @@
 			{name:"age", index:"age", width:120},
 			{name:"provinceCity", index:"provinceCity", width:120},
 			{name:"school", index:"school", width:170},
-			{name:"career", index:"career", width:300},
-			{name:"domain", index:"domain", width:300},
-			{name:"professional", index:"professional", width:300},
+			{name:"career", index:"career", width:150,
+				formatter: function (cellvalue, options, rowObject) {
+					var re = "";
+					if(cellvalue!=null){
+						var keyWord = cellvalue.split(",");
+						for(var i=0;i<keyWord.length;i++){
+							re += "<p>"+keyWord[i]+"</p>";
+						}
+					}
+					return re;
+				}
+			},
+			{name:"domain", index:"domain", width:150,
+				formatter: function (cellvalue, options, rowObject) {
+					var re = "";
+					if(cellvalue!=null){
+						var keyWord = cellvalue.split(",");
+						for(var i=0;i<keyWord.length;i++){
+							re += "<p>"+keyWord[i]+"</p>";
+						}
+					}
+					return re;
+				}
+			},
+			{name:"professional", index:"professional", width:150,
+				formatter: function (cellvalue, options, rowObject) {
+					var re = "";
+					if(cellvalue!=null){
+						var keyWord = cellvalue.split(",");
+						for(var i=0;i<keyWord.length;i++){
+							re += "<p>"+keyWord[i]+"</p>";
+						}
+					}
+					return re;
+				}
+			},
 			{name:"proficient", index:"proficient", width:120},
 			{name:"adept", index:"adept", width:120},
 			{name:"seniority", index:"seniority", width:120},
@@ -96,8 +129,30 @@
 				}
 			},
 			{name:"industryRanking", index:"industryRanking", width:120},
-			{name:"qualification", index:"qualification", width:120},
-			{name:"keyWord", index:"keyWord", width:300},
+			{name:"qualification", index:"qualification", width:120,
+				formatter: function (cellvalue, options, rowObject) {
+					var re = "";
+					if(cellvalue!=null){
+						var keyWord = cellvalue.split("|");
+						for(var i=0;i<keyWord.length;i++){
+							re += "<p>"+keyWord[i]+"</p>";
+						}
+					}
+					return re;
+				}
+			},
+			{name:"keyWord", index:"keyWord", width:150,
+				formatter: function (cellvalue, options, rowObject) {
+					var re = "";
+					if(cellvalue!=null){
+						var keyWord = cellvalue.split("|");
+						for(var i=0;i<keyWord.length;i++){
+							re += "<p>"+keyWord[i]+"</p>";
+						}
+					}
+					return re;
+				}
+			},
 			{name:"groupName", index:"groupName", width:120},
 			{name:"vipType", index:"vipType", width:120,
 				formatter: function (cellvalue, options, rowObject) {
@@ -123,9 +178,9 @@
 			{name:"activitySignNum", index:"activitySignNum", width:120},
 			{name:"activityParticipate", index:"activityParticipate", width:120},
 			{name:"contentNum", index:"contentNum", width:120},
-			{formatter: function(cellvalue, options, rowObject) {return "暂无字段"}},
+			{formatter: function(cellvalue, options, rowObject) {return " "}},
 			{name:"mobile", index:"mobile", width:120},
-			{name:"createTime", index:"createTime", width:120,
+			{name:"createTime", index:"createTime", width:170,
 				formatter: function(cellvalue, options, rowObject) {
 					if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
 						return "";
@@ -135,7 +190,7 @@
 
 				}
 			},
-			{name:"lastLoginTime", index:"lastLoginTime", width:120,
+			{name:"lastLoginTime", index:"lastLoginTime", width:170,
 				formatter: function(cellvalue, options, rowObject) {
 					if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
 						return "";
@@ -321,4 +376,6 @@
 	
 	<!-- 引入所需的js -->
 	@include("/common/_listscript.html"){}
+<link rel="stylesheet" href="${basePath}/static/zTree/css/zTreeStyle/zTreeStyle.css" />
+<script src="${basePath}/static/zTree/js/jquery.ztree.core.js" type="text/javascript" ></script>
 @}

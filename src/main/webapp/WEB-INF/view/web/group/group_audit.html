@@ -36,7 +36,18 @@
             },
             {name:"idcard",index:"idcard", width:300},
             {name:"gName",index:"gName", width:150},
-            {name:"targat",index:"targat", width:300},
+            {name:"targat",index:"targat", width:170,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split("|");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
             {name:"createName",index:"createName", width:120},
             {name:"approvalName",index:"approvalName", width:120,
                 formatter: function(cellvalue, options, rowObject) {
@@ -62,7 +73,7 @@
                 }
             },
             {name:"auditComment",index:"auditComment", width:120,editable: true,edittype:"text"},
-            {name:"updateTime",index:"updateTime", width:150,
+            {name:"updateTime",index:"updateTime", width:200,
                 formatter: function(cellvalue, options, rowObject) {
                     if(cellvalue=='' || cellvalue==null || cellvalue=='undefind'){
                         return "";

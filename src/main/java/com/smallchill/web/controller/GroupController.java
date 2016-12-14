@@ -128,8 +128,8 @@ public class GroupController extends BaseController {
         mm.put("code", CODE);
         mm.put("idCard", LeomanKit.generateUUID());
         List<Map<String, Object>> province = provinceCityService.province();
-        List groupType = Db.init().selectList("SELECT * FROM tfw_dict WHERE CODE='908'");
-        mm.put("groupType", groupType);
+        List<Dict> dicts = dictService.findBy("CODE = #{CODE} AND PID <> '0' ",Record.create().set("CODE","908"));
+        mm.put("groupType", dicts);
         mm.put("province", province);
         return BASE_PATH + "group_add.html";
     }
@@ -436,12 +436,12 @@ public class GroupController extends BaseController {
         String sql = "SELECT NAME FROM tfw_user WHERE id = #{id}";
         Record adminName = Db.init().selectOne(sql,Record.create().set("id",groupExtend.getCreateAdminId()));
 
-        Dict dict = dictService.findFirstBy("CODE = #{code} AND NUM = #{num}",Record.create().set("code","908").set("num",group.getType()));
+        Dict dict = dictService.findFirstBy("CODE = #{code} AND ID = #{id}",Record.create().set("code","908").set("id",group.getType()));
 
         mm.put("province",province != null ? province.getName() : "无");
         mm.put("city",city != null ? city.getName() : "无");
         mm.put("adminName",adminName != null ? adminName.get("NAME") : "无");
-        mm.put("groupType",dict.getName());
+        mm.put("groupType",dict!=null ? dict.getName() : "无");
 
 
         mm.put("group",group);
@@ -460,9 +460,12 @@ public class GroupController extends BaseController {
         Group group = groupService.findById(groupId);
         mm.put("group",group);
         mm.put("code",CODE);
+
         if(status==0){
             List<Map<String, Object>> province = provinceCityService.province();
             mm.put("province",province);
+            List<Dict> dicts = dictService.findBy("CODE = #{CODE} AND PID <> '0' ",Record.create().set("CODE","908"));
+            mm.put("groupType", dicts);
             return BASE_PATH +"group_modify.html";
         }else {
             mm.put("status",status);
@@ -550,6 +553,7 @@ public class GroupController extends BaseController {
      */
     @RequestMapping(value = "qrcode")
     public String qrcode(ModelMap mm,Integer groupId){
+        mm.put("time",DateTimeKit.nowLong());
         mm.put("groupId",groupId);
         return BASE_PATH +"group_qrcode.html";
     }

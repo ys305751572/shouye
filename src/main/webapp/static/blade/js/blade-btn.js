@@ -70,6 +70,32 @@ var exwhere;
         console.log(ids);
         console.log(rowData);
 
+        //批量同意
+        if (this.alias == "agreed") {
+            if (rows == 0) {
+                layer_alert('请选择一条数据!', "warn");
+                return;
+            }
+            var url=this.url;
+            layer.confirm('是否批量同意结识', {
+                icon: 3,
+                btn: ['确定', '取消'] //按钮
+            }, function () {
+                $.post(url, { ids: ids }, function (data) {
+                    if (data.code === 0) {
+                        layer_alert(data.message, "success");
+                    }
+                    else {
+                        layer_post(data);
+                    }
+                }, "json");
+
+            }, function () {
+                //layer.msg('已取消');
+            });
+            return;
+        }
+
         //关键字发布类型
         if (this.alias == "release" ) {
             this.open(this.url);

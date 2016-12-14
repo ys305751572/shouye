@@ -387,17 +387,30 @@ public class UserGroupController extends BaseController {
 
     @RequestMapping(value = "/add_userName")
     @ResponseBody
-    public AjaxResult addUserName(Integer userId){
-        UserInfo userInfo = userInfoService.findByUserId(userId);
+    public AjaxResult addUserName(String mobile){
+//        UserInfo userInfo = userInfoService.findByUserId(userId);
+        List uglist = userGroupService.findMembers(mobile);
+        List galist = groupApprovalService.findMembersApproval(mobile);
         try{
-            if(userInfo==null){
-                return error("没有找到用户");
+
+            if(!uglist.isEmpty()){
+                return error("该用户已经是会员");
             }
+
+            if(!galist.isEmpty()){
+                return error("该用户已经申请加入组织");
+            }
+
+            UserInfo userInfo = userInfoService.findFirstBy("mobile = #{mobile}",Record.create().set("mobile",mobile));
+            if(userInfo==null){
+                return error("该用户不存在");
+            }
+            String success = userInfo.getUserId()+"|"+ userInfo.getUsername();
+            return success(success);
         }catch (RuntimeException e){
             e.printStackTrace();
             return error("添加失败");
         }
-        return success(userInfo.getUsername());
 
     }
 

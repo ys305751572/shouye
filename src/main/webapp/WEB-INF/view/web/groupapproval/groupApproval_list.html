@@ -26,8 +26,8 @@
             "擅长",
             "资历",
             "资源",
-            "组织名称",
-            "组织类型",
+            "单位名称",
+            "单位类型",
             "产品服务",
             "行业地位",
             "资质",
@@ -44,9 +44,9 @@
             {name:"userName",index:"userName", width:120},
             {name:"gender",index:"gender", width:120,
                 formatter: function (cellvalue, options, rowObject) {
-                    if(cellvalue==1){
+                    if(cellvalue==2){
                         return "男";
-                    }else {
+                    }else if(cellvalue==3){
                         return "女";
                     }
                 }
@@ -54,32 +54,48 @@
             {name:"age",index:"age", width:100},
             {name:"provinceCity",index:"provinceCity", width:100},
             {name:"school",index:"school", width:200},
-            {name:"career",index:"career", width:200},
-            {name:"domain",index:"domain", width:200},
-            {name:"professional",index:"professional", width:200},
+            {name:"career",index:"career", width:200,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split("|");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
+            {name:"domain",index:"domain", width:200,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split("/");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
+            {name:"professional",index:"professional", width:200,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split("/");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
             {name:"zy",index:"zy", width:140},
             {name:"sc",index:"sc", width:120},
             {name:"zl",index:"zl", width:120},
             {name:"zy2",index:"zy2", width:120},
-            {name:"groupName",index:"groupName", width:120},
-            {name:"groupType",index:"groupType", width:120,
-                formatter: function (cellvalue, options, rowObject) {
-                    if(cellvalue==1){
-                        return "行业协会";
-                    }else if(cellvalue==2){
-                        return "校友会";
-                    }else if(cellvalue==3){
-                        return "兴趣组织";
-                    }else if(cellvalue==4){
-                        return "公益机构";
-                    }else if(cellvalue==5){
-                        return "文化沙龙";
-                    }else {
-                        return "无";
-                    }
-
-                }
-            },
+            {name:"organization",index:"organization", width:220},
+            {name:"orgName",index:"orgName", width:120},
             {name:"productType",index:"productType", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
@@ -91,8 +107,30 @@
                 }
             },
             {name:"industryRanking",index:"industryRanking", width:120},
-            {name:"qualification",index:"qualification", width:220},
-            {name:"keyWord",index:"keyWord", width:220},
+            {name:"qualification",index:"qualification", width:220,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split("|");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
+            {name:"keyWord",index:"keyWord", width:170,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split("|");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
             {name:"approvalType",index:"approvalType", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
@@ -102,7 +140,20 @@
                     }
                 }
             },
-            {name:"validateInfo",index:"validateInfo", width:220},
+            {name:"validateInfo",index:"validateInfo", width:220,
+                formatter: function (cellvalue, options, rowObject) {
+                    var matchType = rowObject.matchType;
+                    var paied;
+                    if(rowObject.paied==1){
+                        paied = "未缴纳";
+                    }else {
+                        paied = "已缴纳";
+                    }
+                    return "<p style='color: #00be67'>"+matchType+"</p>" +
+                            "<p>"+cellvalue+"</p>" +
+                            "<p style='color: #00b3ee'>["+paied+"]</p>"
+                }
+            },
             {name:"approvalStatus",index:"approvalStatus", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
@@ -138,9 +189,9 @@
 
                     if(type==1){
                         if (status == "1") {
-                            return  approval + "&nbsp;" + refused + "&nbsp;" + shielding ;
+                            return  approval + "&nbsp;" + refused ;
                         } else if(status == "4"){
-                            return removeShielding;
+//                            return removeShielding;
                         }else {
                             return "/";
                         }
@@ -241,8 +292,8 @@
             <input type="checkbox" value="sc" class="cbox" checked="checked"/>擅长
             <input type="checkbox" value="zl" class="cbox" checked="checked"/>资历
             <input type="checkbox" value="zy2" class="cbox" checked="checked"/>资源
-            <input type="checkbox" value="groupName" class="cbox" checked="checked"/>组织名称
-            <input type="checkbox" value="groupType" class="cbox" checked="checked"/>组织类型
+            <input type="checkbox" value="organization" class="cbox" checked="checked"/>单位名称
+            <input type="checkbox" value="orgName" class="cbox" checked="checked"/>单位类型
             <input type="checkbox" value="productType" class="cbox" checked="checked"/>产品服务
             <input type="checkbox" value="industryRanking" class="cbox" checked="checked"/>行业地位
             <input type="checkbox" value="qualification" class="cbox" checked="checked"/>资质

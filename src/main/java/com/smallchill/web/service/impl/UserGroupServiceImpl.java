@@ -60,4 +60,18 @@ public class UserGroupServiceImpl extends BaseService<UserGroup> implements User
         List list = Db.init().selectList(sql,Record.create().set("groupId",group.getId()));
         return list;
     }
+
+
+    public List findMembers(String mobile){
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        String sql = "SELECT \n" +
+                "  * \n" +
+                "FROM\n" +
+                "  tb_user_group a\n" +
+                "  LEFT JOIN tb_user_info b ON a.user_id = b.user_id\n" +
+                "WHERE a.group_id = #{groupId}\n" +
+                "AND b.mobile = #{mobile}";
+        List list = Db.init().selectList(sql,Record.create().set("groupId",group.getId()).set("mobile",mobile));
+        return list;
+    }
 }

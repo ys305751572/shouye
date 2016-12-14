@@ -18,4 +18,7 @@ public interface DictService extends IService<Dict> {
 
     List findChild(Integer id);
 
+    //父行业
+    List findFather(String code);
+
 }

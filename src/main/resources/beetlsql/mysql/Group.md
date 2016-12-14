@@ -20,7 +20,7 @@ SELECT
     tge.freeze_status AS freezeStatus
 FROM (SELECT * FROM tb_group WHERE audit_status = '3') tg
     LEFT JOIN tb_group_extend tge ON tg.id = tge.group_id
-    LEFT JOIN (select num,name from tfw_dict where code=908) tfd ON tg.type = tfd.num
+    LEFT JOIN (select id,num,name from tfw_dict where code=908) tfd ON tg.type = tfd.id
     LEFT JOIN tfw_user cUser ON tge.create_admin_id = cUser.ID
     LEFT JOIN tfw_user aUser ON tge.approval_admin_id = aUser.ID
     LEFT JOIN (SELECT a.group_id AS group_id,COUNT(1) AS num FROM tb_user_group a LEFT JOIN tb_group b ON b.id = a.group_id WHERE a.vip_type = '1' GROUP BY a.group_id ) member ON member.group_id = tg.id

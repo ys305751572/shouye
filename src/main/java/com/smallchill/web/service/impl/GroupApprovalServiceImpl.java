@@ -437,4 +437,24 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         this.delete(gaId);
         return true;
     }
+
+
+    /**
+     * 用户是否已经申请加入
+     * @param mobile
+     * @return
+     */
+    public List findMembersApproval(String mobile){
+        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        String sql = "SELECT \n" +
+                "  * \n" +
+                "FROM\n" +
+                "  tb_group_approval a\n" +
+                "  LEFT JOIN tb_user_info b ON a.user_id = b.user_id\n" +
+                "WHERE a.group_id = #{groupId}\n" +
+                "AND b.mobile = #{mobile}";
+        List list = Db.init().selectList(sql,Record.create().set("groupId",group.getId()).set("mobile",mobile));
+        return list;
+    }
+
 }

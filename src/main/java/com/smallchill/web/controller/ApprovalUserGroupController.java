@@ -3,12 +3,14 @@ package com.smallchill.web.controller;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
 import com.smallchill.web.meta.intercept.GroupAdminIntercept;
+import com.smallchill.web.model.Aug;
 import com.smallchill.web.service.AugService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -62,6 +64,26 @@ public class ApprovalUserGroupController extends BaseController {
         }
         try{
             augService.updateStatus(id,status);
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return error(UPDATE_FAIL_MSG);
+        }
+        return success(UPDATE_SUCCESS_MSG);
+
+    }
+    /**
+     *修改审核状态
+     */
+    @RequestMapping(value = "/agreed")
+    @ResponseBody
+    public AjaxResult agreed(@RequestParam String ids) {
+
+        try{
+            String [] idArr = ids.split(",");
+            for(String id : idArr){
+                Aug aug = augService.findById(id);
+                aug.setStatus(2);
+            }
         }catch (RuntimeException e){
             e.printStackTrace();
             return error(UPDATE_FAIL_MSG);

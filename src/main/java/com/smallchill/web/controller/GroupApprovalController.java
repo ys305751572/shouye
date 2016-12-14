@@ -90,7 +90,7 @@ public class GroupApprovalController extends BaseController {
         mm.put("code", CODE);
 
         //行业
-        List domains = dictService.findDomains();
+        List domains = dictService.findFather("906");
         mm.put("domains", domains);
 
         //省
@@ -98,7 +98,7 @@ public class GroupApprovalController extends BaseController {
         mm.put("province", province);
 
         //职业
-        List professional = dictService.findProfessional();
+        List professional = dictService.findFather("910");
         mm.put("professional", professional);
 
         return BASE_PATH + "groupApproval_permissions.html";

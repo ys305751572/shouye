@@ -30,9 +30,19 @@
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" > 组织名称 </label>
         <div class="col-sm-3">
-            <input type="text" name="name" id="name" placeholder="" value="${group.name}" disabled/>
+            <input type="text" name="name" id="name" value="${group.name}" disabled/>
+        </div>
+
+        <label class="col-sm-2 control-label no-padding-right" > 组织类型 </label>
+        <div class="col-sm-3">
+            <select name="groupType" id="groupType" class="form-control" >
+                @for(x in groupType){
+                <option value="${x.id!}">${x.name!}</option>
+                @}
+            </select>
         </div>
     </div>
+
 
     <div class="form-group">
         <label class="col-sm-2 control-label no-padding-right" >所在省</label>
@@ -205,6 +215,13 @@
             var provinceId = "${group.province}";
             $("#province option").each(function(){
                 if(provinceId == $(this).val()){
+                    $(this).attr("selected","selected");
+                }
+            });
+
+            var groupType = "${group.type}"
+            $("#groupType option").each(function(){
+                if(groupType == $(this).val()){
                     $(this).attr("selected","selected");
                 }
             });

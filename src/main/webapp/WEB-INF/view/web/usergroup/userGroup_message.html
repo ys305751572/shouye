@@ -19,12 +19,13 @@
 	</div>
 
 	<div class="form-group">
-		<label class="col-sm-2 control-label no-padding-right" > 标题 </label>
+		<label class="col-sm-2 control-label no-padding-right" > 已发送次数 </label>
 
 		<div class="col-sm-8">
-			<input type="text" name="title" id="title" placeholder="" class="form-control" />
+			<input type="text" name="flag" id="flag" placeholder="" value="" class="form-control" disabled="disabled"/>
 		</div>
 	</div>
+
 	<div class="form-group">
 		<label class="col-sm-2 control-label no-padding-right" > 内容 </label>
 
@@ -56,18 +57,18 @@
 		var userInfoNum = "${userInfoNum}";
 		var flag = "${flag}";
 
+		$("#flag").val(flag);
+
 		$(function(){
-
-
 			if(userInfoNum==0){
 				$("#name").val(userName);
 			}else {
-				$("#name").val(userInfoNum+" 个");
+				$("#name").val(userInfoNum+" 人");
 			}
 
 			if(flag>=3){
 				$("#btn_save").attr("disabled",true);
-				$("#name").val("发送次数已达上限!");
+				$("#name").val("本日发送次数已达上限!");
 			}
 
 
@@ -76,10 +77,9 @@
 			});
 
 			$("#btn_save").bind("click",function(){
-				var title = $("#title").val();
 				var content = $("#content").val();
 
-				$.post("${basePath}/${code}/send_message",{userId:userId , title:title, content:content}, function(data){
+				$.post("${basePath}/${code}/send_message",{userId:userId , content:content}, function(data){
 					if(data.code===0){
 						layer_alert(data.message, "success");
 						parent.layer.close(layerIndex);

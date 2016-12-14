@@ -40,7 +40,10 @@ SELECT
   GROUP_CONCAT(DISTINCT(tud.p_id)) AS domainPid,
   GROUP_CONCAT(DISTINCT(tup.pro_id)) AS proid,
   GROUP_CONCAT(DISTINCT(tup.p_id)) AS proPid,
-  GROUP_CONCAT(DISTINCT(tucr.carerrId)) AS carerrId
+  GROUP_CONCAT(DISTINCT(tucr.carerrId)) AS carerrId,
+  tui.organization AS organization,
+  org.name AS orgName,
+  org.num AS orgId
 FROM tb_user_group tug
   LEFT JOIN tb_group tg ON tug.group_id = tg.id
   LEFT JOIN tb_user_info tui ON tui.user_id = tug.user_id
@@ -50,5 +53,6 @@ FROM tb_user_group tug
   LEFT JOIN tb_userinfo_domain tud ON tug.user_id = tud.user_id
   LEFT JOIN tb_userinfo_professional tup ON tup.user_id = tud.user_id
   LEFT JOIN (SELECT id,num,NAME FROM tfw_dict WHERE CODE=904) tfd ON tui.age_interval_id = tfd.id
+  LEFT JOIN (SELECT id,num,NAME FROM tfw_dict WHERE CODE=907) org ON tui.org_type = org.id
 GROUP BY tug.id
 ORDER BY tug.id DESC

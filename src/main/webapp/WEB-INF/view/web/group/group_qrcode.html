@@ -7,6 +7,7 @@
             // 二维码对象
             var qrcode;
             var groupId = '${groupId}';
+            var time = '${time}';
             var size = 280;
 
             // 清除上一次的二维码
@@ -20,7 +21,7 @@
                 height : size
             });
 
-            qrcode.makeCode(groupId);
+            qrcode.makeCode("1,"+groupId+","+time);
         }
     </script>
 </head>

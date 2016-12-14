@@ -543,10 +543,10 @@ public class BeetlExt {
 		rightsb.append("		<i class=\"ace-icon fa fa-refresh\" style=\"width:15px;\"></i> ");
 		rightsb.append("		<span style=\"font-size:12px; font-family:Verdana;color:#777;padding-left:5px;  \">刷新</span>");
 		rightsb.append("	</li>");
-		rightsb.append("	<li id=\"rightMenu_excel\"> ");
-		rightsb.append("		<i class=\"ace-icon fa fa-file-excel-o\" style=\"width:15px;\"></i> ");
-		rightsb.append("		<span style=\"font-size:12px; font-family:Verdana;color:#777;padding-left:5px; \">导出 excel</span>");
-		rightsb.append("	</li>");
+//		rightsb.append("	<li id=\"rightMenu_excel\"> ");
+//		rightsb.append("		<i class=\"ace-icon fa fa-file-excel-o\" style=\"width:15px;\"></i> ");
+//		rightsb.append("		<span style=\"font-size:12px; font-family:Verdana;color:#777;padding-left:5px; \">导出 excel</span>");
+//		rightsb.append("	</li>");
 		rightsb.append("</ul>");
 		return rightsb.toString();
 	}

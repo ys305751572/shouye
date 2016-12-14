@@ -30,8 +30,8 @@
             "擅长",
             "资历",
             "资源",
-            "组织名称",
-            "组织类型",
+            "单位名称",
+            "单位类型",
             "产品服务",
             "行业地位",
             "资质",
@@ -51,9 +51,9 @@
             {name:"userName",index:"userName", width:120},
             {name:"gender",index:"gender", width:120,
                 formatter: function (cellvalue, options, rowObject) {
-                    if(cellvalue==1){
+                    if(cellvalue==2){
                         return "男";
-                    }else {
+                    }else if(cellvalue==3){
                         return "女";
                     }
                 }
@@ -61,32 +61,48 @@
             {name:"age",index:"age", width:100},
             {name:"provinceCity",index:"provinceCity", width:100},
             {name:"school",index:"school", width:200},
-            {name:"career",index:"career", width:200},
-            {name:"domain",index:"domain", width:200},
-            {name:"professional",index:"professional", width:200},
+            {name:"career",index:"career", width:200,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split(",");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
+            {name:"domain",index:"domain", width:200,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split(",");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
+            {name:"professional",index:"professional", width:200,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split(",");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
             {name:"zy",index:"zy", width:140},
             {name:"sc",index:"sc", width:120},
             {name:"zl",index:"zl", width:120},
             {name:"zy2",index:"zy2", width:120},
-            {name:"groupName",index:"groupName", width:120},
-            {name:"groupType",index:"groupType", width:120,
-                formatter: function (cellvalue, options, rowObject) {
-                    if(cellvalue==1){
-                        return "行业协会";
-                    }else if(cellvalue==2){
-                        return "校友会";
-                    }else if(cellvalue==3){
-                        return "兴趣组织";
-                    }else if(cellvalue==4){
-                        return "公益机构";
-                    }else if(cellvalue==5){
-                        return "文化沙龙";
-                    }else {
-                        return "";
-                    }
-
-                }
-            },
+            {name:"organization",index:"organization", width:220},
+            {name:"orgName",index:"orgName", width:220},
             {name:"productType",index:"productType", width:120,
                 formatter: function (cellvalue, options, rowObject) {
                     if(cellvalue==1){
@@ -98,8 +114,30 @@
                 }
             },
             {name:"industryRanking",index:"industryRanking", width:120},
-            {name:"qualification",index:"qualification", width:220},
-            {name:"keyWord",index:"keyWord", width:120},
+            {name:"qualification",index:"qualification", width:200,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split("|");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
+            {name:"keyWord",index:"keyWord", width:120,
+                formatter: function (cellvalue, options, rowObject) {
+                    var re = "";
+                    if(cellvalue!=null){
+                        var keyWord = cellvalue.split("|");
+                        for(var i=0;i<keyWord.length;i++){
+                            re += "<p>"+keyWord[i]+"</p>";
+                        }
+                    }
+                    return re;
+                }
+            },
             {name:"mobile",index:"mobile", width:120},
             {name:"createTime",index:"createTime", width:120},
             {name:"vipEndTime",index:"vipEndTime", width:120,
@@ -143,24 +181,28 @@
                     var cellvalues = cellvalue+"";
                     var a = cellvalues.split(",");
                     var cev = "";
-                    var index=0;
                     for(var j=0;j<a.length;j++){
                         if(a[j] != "undefined"){
-                            if(j<3){
+//                            if(j<3){
+                                cev +="<p>";
                                 cev += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + a[j];
                                 cev += "	<span class='o_close' data-percent='' onclick=\"user_classification_del('"+a[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
                                 cev += "</div>   ";
-                            }else{
-                                cev += "<div class='col-sm-3 input-group hid' style='display: none;float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0;'>" + a[j];
-                                cev += "	<span class='o_close' data-percent='' onclick=\"user_classification_del('"+a[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
-                                cev += "</div>   ";
-
-                                if((j+1)==a.length){
-                                    cev += "<div class='col-sm-3 input-group' style='float:left'>";
-                                    cev += "<button onclick='hid(this)'>更多</button>";
-                                    cev += "</div>   ";
-                                }
-                            }
+                                cev +="</p>";
+//                            }else{
+//                                cev += "<div class='hid'>"
+//                                cev += "<div class='col-sm-3 input-group ' style='display: none;float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0;'>" + a[j];
+//                                cev += "	<span class='o_close' data-percent='' onclick=\"user_classification_del('"+a[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+//                                cev += "</div>   ";
+//
+//                                if((j+1)==a.length){
+//                                    cev +="<p>";
+//                                    cev += "<div class='col-sm-3 input-group' style='float:left'>";
+//                                    cev += "<button onclick='hid(this)'>更多</button>";
+//                                    cev += "</div>   ";
+//                                    cev +="</p>";
+//                                }
+//                            }
 
                         }
 
@@ -172,7 +214,7 @@
                 formatter: function(cellvalue, options, rowObject) {
                     var userId = rowObject.userId;
                     var html = "";
-                    html += "<select style='float: right' id='group_select1' onchange='user_tag_add(this,"+userId+")'>";
+                    html += "<select style='float: right;' id='group_select1' onchange='user_tag_add(this,"+userId+")'>";
                     html += "<option></option>";
                     for(var i=0;i< list2.length;i++){
                         html += "<option value='"+list2[i].id+"' >"+list2[i].tag+"</option>";
@@ -182,23 +224,27 @@
                     var cellvalues = cellvalue+"";
                     var a1 = cellvalues.split(",");
                     var cev1 = "";
-                    var index1=0;
                     for(var j=0;j<a1.length;j++){
                         if(a1[j] != "undefined"){
-                            if(j<3){
+//                            if(j<3){
+                                cev1 +="<p>";
                                 cev1 += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + a1[j];
                                 cev1 += "	<span class='o_close' data-percent='' onclick=\"user_tag_del('"+a1[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
                                 cev1 += "</div>   ";
-                            }else{                                cev1 += "<div class='col-sm-3 input-group hid' style='display: none;float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0;'>" + a1[j];
-                                cev1 += "	<span class='o_close' data-percent='' onclick=\"user_tag_del('"+a1[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
-                                cev1 += "</div>   ";
-
-                                if((j+1)==a1.length){
-                                    cev1 += "<div class='col-sm-3 input-group' style='float:left'>";
-                                    cev1 += "<button onclick='hid(this)'>更多</button>";
-                                    cev1 += "</div>   ";
-                                }
-                            }
+                                cev1 +="</p>";
+//                            }else{
+//                                cev1 += "<div class='col-sm-3 input-group hid' style='display: none;float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0;'>" + a1[j];
+//                                cev1 += "	<span class='o_close' data-percent='' onclick=\"user_tag_del('"+a1[j]+"',"+userId+")\" style='cursor: pointer;color: #ccc;margin: 0 5px auto'>x</span>	";
+//                                cev1 += "</div>   ";
+//
+//                                if((j+1)==a1.length){
+//                                    cev1 +="<p>";
+//                                    cev1 += "<div class='col-sm-3 input-group' style='float:left'>";
+//                                    cev1 += "<button onclick='hid(this)'>更多</button>";
+//                                    cev1 += "</div>   ";
+//                                    cev1 +="</p>";
+//                                }
+//                            }
 
                         }
 
@@ -212,8 +258,8 @@
                 formatter: function (cellvalue, options, rowObject) {
                     var id = rowObject.userId;
 
-                    var remove = "<button title='移除组织' class='btn btn-primary btn-circle edit' onclick=\"remove(\'" + id + "\')\">" +
-                            "<i class='fa fa-circle'></i> 移除组织</button>";
+                    var remove = "<button title='移出组织' class='btn btn-primary btn-circle edit' onclick=\"remove(\'" + id + "\')\">" +
+                            "<i class='fa fa-circle'></i> 移出组织</button>";
                     return remove;
                 }
             }
@@ -368,7 +414,7 @@
         @			  {name:"性别",index:"gender", type:"select_101"},
         @			  {name:"年龄",index:"ageId", type:"select_904"},
         @			  {name:"加入方式",index:"joinType", type:"select_924"},
-        @			  {name:"行业类型",index:"groupType", type:"select_908"},
+        @			  {name:"单位类型",index:"orgId", type:"select_907"},
         @			  {name:"事业状态",index:"carerrId_like", type:"select_905"},
         @			  {name:"省",index:"provinceCode", type:"getProvince"},
         @			  {name:"市",index:"cityCode", type:"getCity"},
@@ -398,8 +444,8 @@
             <input type="checkbox" value="sc" class="cbox" checked="checked"/>擅长
             <input type="checkbox" value="zl" class="cbox" checked="checked"/>资历
             <input type="checkbox" value="zy2" class="cbox" checked="checked"/>资源
-            <input type="checkbox" value="groupName" class="cbox" checked="checked"/>组织名称
-            <input type="checkbox" value="groupType" class="cbox" checked="checked"/>组织类型
+            <input type="checkbox" value="organization" class="cbox" checked="checked"/>单位名称
+            <input type="checkbox" value="orgName" class="cbox" checked="checked"/>单位类型
             <input type="checkbox" value="productType" class="cbox" checked="checked"/>产品服务
             <input type="checkbox" value="industryRanking" class="cbox" checked="checked"/>行业地位
             <input type="checkbox" value="qualification" class="cbox" checked="checked"/>资质
