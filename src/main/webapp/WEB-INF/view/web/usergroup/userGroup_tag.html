@@ -19,6 +19,13 @@
 		</div>
 	</div>
 
+	<div class="form-group">
+		<label class="col-sm-2 control-label no-padding-right" >  </label>
+		<div class="col-sm-1">
+			<input type="checkbox" name="type" id="type" style="height:20px;width: 20px; margin-top: 7px;" /> 申请加入时以上述标记验证身份
+		</div>
+	</div>
+
 	<div class="clearfix form-actions center" style="margin-top:15px;margin-bottom:5px;">
 		<div class="col-md-offset-1 col-md-10">
 			<button class="btn btn-info" type="button" id="btn_save">
@@ -44,6 +51,12 @@
 			var a = '${tagList}';
 			var b = JSON.parse(a);
 			console.log(b);
+
+			var type = b[0].type;
+			if(type==1){
+				$("#type").attr("checked",true);
+			}
+
 			for(var i=0;i< b.length;i++){
 				var html = "";
 				html += "<div class='col-sm-3 input-group' style='float:left;background: #666;color: white;position: relative;font-size: 15px;width: auto;text-indent: 10px;margin:0 5px 5px 0'>" + b[i].tag;
@@ -55,7 +68,7 @@
 			}
 
 		});
-		
+
 		function grouping(data){
 			var val = $(data).parent().find("input").eq(0).val();
 			var index = false;
@@ -127,14 +140,22 @@
 				}
 			});
 
-			if(vals == ""){
+/*			if(vals == ""){
 				return;
+			}*/
+			var type;
+			if($('#type').is(':checked')){
+				type = 1;
+			}else {
+				type = 2;
 			}
+
 			console.log("start---");
 
 			$.ajax({
 				"url": "${basePath}/${code}/tag_save",
 				"data": {
+					type : type,
 					vals : JSON.stringify(vals)
 				},
 				"dataType": "json",

@@ -49,8 +49,7 @@ public class AugServiceImpl extends BaseService<Aug> implements AugService {
     }
 
     @Override
-    public List loadOne(Integer userId) {
-        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+    public List loadOne(Integer id) {
         String sql = "SELECT\n" +
                 "  tua.id AS id,\n" +
                 "  tua.from_user_id AS fromUserId,\n" +
@@ -83,9 +82,9 @@ public class AugServiceImpl extends BaseService<Aug> implements AugService {
                 "LEFT JOIN tb_user_group tug ON tua.group_id = tug.group_id AND tua.to_user_id = tug.user_id\n" +
                 "LEFT JOIN tb_group tg ON tua.group_id = tg.id\n" +
                 "LEFT JOIN tb_user_info tui ON tui.user_id = tua.to_user_id\n" +
-                "WHERE tua.group_id = #{groupId} AND tua.to_user_id = #{userId}";
+                "WHERE tua.id = #{id}";
 
-        List list = Db.init().selectList(sql, Record.create().set("groupId",group.getId()).set("userId",userId));
+        List list = Db.init().selectList(sql, Record.create().set("id",id));
         return list;
     }
 }

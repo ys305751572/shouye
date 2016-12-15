@@ -19,7 +19,7 @@ public interface AugService extends IService<Aug>{
      */
     void updateStatus(Integer id, Integer status);
 
-    List loadOne(Integer userId);
+    List loadOne(Integer id);
 
 
 }

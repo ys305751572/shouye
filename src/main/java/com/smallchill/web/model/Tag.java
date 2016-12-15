@@ -25,6 +25,9 @@ public class Tag extends BaseModel {
     @Column(name = "tag")
     private String tag;
 
+    @Column(name = "type")
+    private Integer type;
+
     public Integer getId() {
         return id;
     }
@@ -47,5 +50,13 @@ public class Tag extends BaseModel {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

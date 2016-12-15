@@ -202,7 +202,7 @@
             forceFit : true,
             colNames:_colnames,
             colModel:_colmodel,
-            jsonReader:{id:"toUserId"},
+            jsonReader:{id:"id"},
             pager : pager_selector,
             postData: {sort: "id", order: "desc"},
 
@@ -394,6 +394,8 @@
         @			  {name:"审核状态",index:"approvalStatus", type:"select_925"}
         @		   ];
         @ include("/common/_function/_search.html",{"col":_col}){}
+        <!-- 按钮 -->
+        <div class="welljq well-sm" id="btns"></div>
         <div class="welljq well-sm" id="columns">
             <input type="checkbox" value="userName" class="cbox" checked="checked" disabled="disabled"/>名字
             <input type="checkbox" value="gender" class="cbox" checked="checked"/>性别
@@ -418,6 +420,7 @@
             <input type="checkbox" value="approvalStatus" class="cbox" checked="checked"/>状态
             <input type="checkbox" value="createTime" class="cbox" checked="checked"/>申请时间
         </div>
+
         <!-- grid -->
         <table id="grid-table"></table>
         <!-- 分页 -->

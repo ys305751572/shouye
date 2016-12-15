@@ -70,18 +70,28 @@ var exwhere;
         console.log(ids);
         console.log(rowData);
 
-        //批量同意
-        if (this.alias == "agreed") {
+        //批量
+        if (this.alias == "agreed" || this.alias == "refused") {
+            var type;
+            var str = "";
+            if(this.alias == "agreed"){
+                type = 2;
+                str = "是否批量批准引荐申请";
+            }else if(this.alias == "refused"){
+                type = 3;
+                str = "是否批量拒接引荐申请"
+            }
+
             if (rows == 0) {
                 layer_alert('请选择一条数据!', "warn");
                 return;
             }
             var url=this.url;
-            layer.confirm('是否批量同意结识', {
+            layer.confirm(str, {
                 icon: 3,
                 btn: ['确定', '取消'] //按钮
             }, function () {
-                $.post(url, { ids: ids }, function (data) {
+                $.post(url, { ids: ids,type:type }, function (data) {
                     if (data.code === 0) {
                         layer_alert(data.message, "success");
                     }

@@ -25,6 +25,9 @@ public class Classification extends BaseModel {
     @Column(name = "classification")
     private String classification;
 
+    @Column(name = "type")
+    private Integer type;
+
     public Integer getGroupId() {
         return groupId;
     }
@@ -47,5 +50,13 @@ public class Classification extends BaseModel {
 
     public void setClassification(String classification) {
         this.classification = classification;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

@@ -139,24 +139,14 @@ public class UserGroupController extends BaseController {
 
     @ResponseBody
     @RequestMapping("/classification_save")
-    public AjaxResult classification_save(String vals) {
-        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
-        String[] ss = JsonKit.parse(vals,String[].class);
-        boolean index = true;
-        for(String s : ss){
-            Classification classification = new Classification();
-            classification.setClassification(s);
-            classification.setGroupId(group.getId());
-            boolean temp = classificationService.save(classification);
-            if(!temp){
-                index = false;
-            }
-        }
-        if (index) {
-            return success(SAVE_SUCCESS_MSG);
-        } else {
+    public AjaxResult classification_save(String vals,Integer type) {
+        try{
+            classificationService.classification_save(vals, type);
+        }catch (Exception e){
+            e.printStackTrace();
             return error(SAVE_FAIL_MSG);
         }
+        return success(SAVE_SUCCESS_MSG);
     }
 
     @ResponseBody
@@ -221,24 +211,14 @@ public class UserGroupController extends BaseController {
 
     @ResponseBody
     @RequestMapping("/tag_save")
-    public AjaxResult tag_save(String vals) {
-        Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
-        String[] ss = JsonKit.parse(vals,String[].class);
-        boolean index = true;
-        for(String s : ss){
-            Tag tag = new Tag();
-            tag.setTag(s);
-            tag.setGroupId(group.getId());
-            boolean temp = tagService.save(tag);
-            if(!temp){
-                index = false;
-            }
-        }
-        if (index) {
-            return success(SAVE_SUCCESS_MSG);
-        } else {
+    public AjaxResult tag_save(String vals,Integer type) {
+        try{
+            tagService.tag_save(vals,type);
+        }catch (Exception e){
+            e.printStackTrace();
             return error(SAVE_FAIL_MSG);
         }
+        return success(SAVE_SUCCESS_MSG);
     }
 
     @ResponseBody

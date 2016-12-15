@@ -45,10 +45,10 @@ public class ApprovalUserGroupController extends BaseController {
         return object;
     }
 
-    @RequestMapping("/loadToUserId" + "/{userId}")
+    @RequestMapping("/loadToUserId" + "/{id}")
     @ResponseBody
-    public Object loadOne(@PathVariable Integer userId){
-        List list = augService.loadOne(userId);
+    public Object loadOne(@PathVariable Integer id){
+        List list = augService.loadOne(id);
         return list;
     }
 
@@ -71,19 +71,28 @@ public class ApprovalUserGroupController extends BaseController {
         return success(UPDATE_SUCCESS_MSG);
 
     }
+
     /**
-     *修改审核状态
+     *批量
      */
-    @RequestMapping(value = "/agreed")
+    @RequestMapping(value = "/batchUpdateStatus")
     @ResponseBody
-    public AjaxResult agreed(@RequestParam String ids) {
+    public AjaxResult agreed(@RequestParam String ids , @RequestParam Integer type) {
 
         try{
             String [] idArr = ids.split(",");
             for(String id : idArr){
                 Aug aug = augService.findById(id);
-                aug.setStatus(2);
+                if(aug.getStatus()!=1){
+                    return error("请确认选择用户都是未处理状态");
+                }
             }
+
+            for(String id : idArr){
+                Aug aug = augService.findById(id);
+                augService.updateStatus(aug.getId(),type);
+            }
+
         }catch (RuntimeException e){
             e.printStackTrace();
             return error(UPDATE_FAIL_MSG);
@@ -91,6 +100,5 @@ public class ApprovalUserGroupController extends BaseController {
         return success(UPDATE_SUCCESS_MSG);
 
     }
-
 
 }
