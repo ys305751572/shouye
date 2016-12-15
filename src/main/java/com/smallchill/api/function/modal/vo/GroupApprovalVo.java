@@ -1,6 +1,7 @@
 package com.smallchill.api.function.modal.vo;
 
 import com.smallchill.api.common.model.BaseVo;
+import com.smallchill.core.toolbox.Record;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class GroupApprovalVo extends BaseVo {
 
-    private List<String> target;
+    private List<Record> target;
     private BigDecimal money;
     private Integer costType; //  收费方式  1:年费 2:永久
     private Integer costStatus; // 会费状态 1:免费 2:收费
@@ -32,11 +33,11 @@ public class GroupApprovalVo extends BaseVo {
         this.costType = costType;
     }
 
-    public List<String> getTarget() {
+    public List<Record> getTarget() {
         return target;
     }
 
-    public void setTarget(List<String> target) {
+    public void setTarget(List<Record> target) {
         this.target = target;
     }
 

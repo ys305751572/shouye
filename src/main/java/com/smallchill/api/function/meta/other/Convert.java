@@ -1,5 +1,6 @@
 package com.smallchill.api.function.meta.other;
 
+import com.smallchill.api.function.meta.consts.TextConst;
 import com.smallchill.api.function.modal.Button;
 import com.smallchill.api.function.modal.vo.Groupvo;
 import com.smallchill.api.function.modal.vo.IntroduceUserVo;
@@ -21,7 +22,7 @@ import java.util.Map;
  * record转换对应的vo
  * Created by yesong on 2016/11/2 0002.
  */
-public class Convert {
+public class Convert implements TextConst{
 
 
     public static UserVo recordToVo(Record record) {
@@ -35,10 +36,7 @@ public class Convert {
         if (StringUtils.isNotBlank(professional)) {
             professional = professional.split("/")[0];
         }
-        String organization = "";
-        if (record.getInt("org_is_open") == 1) {
-            organization = (String) record.get("organization");
-        }
+        String organization = (String) record.get("organization");
         Integer per = record.getInt("per");
         UserVo userVo = new UserVo(id, username, city, domain, keyWord, organization, professional, "");
         userVo.setPer(per);
@@ -212,9 +210,13 @@ public class Convert {
      */
     public static void setUserVoStatus(UserVo vo, Record record, Integer userId) {
         Integer type = vo.getStatus();
+        int orgIsOpen = record.getInt("org_is_open");
         if (record.get("status") == null) {
             if (vo.getStatus() == null) {
                 type = NOT_FRINED;
+                if (orgIsOpen == 2) {
+                    vo.setOrganization(ORG_TEXT);
+                }
             }
             vo.setUsername(hiddenRealUsername(record.getStr("username")));
         } else {
@@ -227,6 +229,9 @@ public class Convert {
                 } else if (userId == toUserId) {
                     type = NOT_PROCESS_FROM_USER_ID;
                 }
+                if (orgIsOpen == 2) {
+                    vo.setOrganization(ORG_TEXT);
+                }
                 if (record.getInt("type") != 2) {
                     vo.setUsername(hiddenRealUsername(record.getStr("username")));
                 }
@@ -235,6 +240,14 @@ public class Convert {
             } else if (status == 3) {
                 type = PASS;
                 vo.setUsername(hiddenRealUsername(record.getStr("username")));
+                if (orgIsOpen == 2) {
+                    vo.setOrganization(ORG_TEXT);
+                }
+            } else {
+                vo.setUsername(hiddenRealUsername(record.getStr("username")));
+                if (orgIsOpen == 2) {
+                    vo.setOrganization(ORG_TEXT);
+                }
             }
         }
         vo.setStatus(type == null ? NOT_FRINED : type);

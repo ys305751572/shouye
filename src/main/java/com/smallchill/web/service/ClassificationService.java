@@ -9,7 +9,7 @@ import com.smallchill.web.model.UserClassification;
  */
 public interface ClassificationService extends IService<Classification> {
 
-    void userClassificationAddForGroupAgree(int groupId, String classification);
+    void userClassificationAddForGroupAgree(Integer groupId, Integer userId, Integer matchType, Integer targetType);
 
     void classification_save(String vals,Integer type);
 }

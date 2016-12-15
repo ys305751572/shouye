@@ -214,13 +214,13 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
         List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId).set("toUserId", toUserId));
         List<UserVo> voList = new ArrayList<>();
         UserVo vo;
-        int type = 0;
+        int type = 2000;
         for (Record record : list) {
             vo = Convert.recordToVo(record);
             Integer fromUserId = record.getInt("from_user_id");
             Integer toUserId2 = record.getInt("to_user_id");
             Integer status = record.get("status") == null ? null : Integer.parseInt(record.get("status").toString());
-            if (status != null && status == 0) {
+            if (status != null && status == 1) {
                 if (fromUserId == userId) {
                     // 等待对方审核
                     type = Convert.NOT_PROCESS_TO_USER_ID;
@@ -228,9 +228,9 @@ public class UserFriendServiceImpl extends BaseService<UserFriend> implements Us
                     // 等待己方审核
                     type = Convert.NOT_PROCESS_FROM_USER_ID;
                 }
-            } else if (status != null && status == 1) {
+            } else if (status != null && status == 2) {
                 type = Convert.FRIEND;
-            } else if (status != null && (status == 2 || status == 4)) {
+            } else if (status != null && (status == 3 || status == 5)) {
                 type = Convert.PASS;
             }
             vo.setStatus(type);

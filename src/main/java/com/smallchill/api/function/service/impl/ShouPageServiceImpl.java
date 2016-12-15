@@ -45,14 +45,19 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.group_id, ua.friend_id,ua.status,ua.from_user_id,ua.to_user_id " +
             "from tb_user_approval ua join tb_user_info ui";
 
-    private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.to_user_id = ui.user_id where i.user_id = #{userId} and i.status = 0";
+    private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.to_user_id = ui.user_id " +
+            "left join tb_user_approval ua on \n" +
+            "(ua.from_user_id = i.`to_user_id` and ua.to_user_id = #{userId}) or (ua.from_user_id = #{userId} and ua.to_user_id = i.`to_user_id`) \n" +
+            "and ua.`status` != 2 \n" +
+            "WHERE i.user_id = #{userId} AND i.status = 0 and ua.`status` IS NOT NULL GROUP BY ui.`user_id`";
 
     private String GROUP_BASE_INFO_SQL = " g.id,g.name,IFNULL(g.avater,'') as avater,g.province,g.city,g.type,g.province_city provinceCity,g.member_count memberCount,g.targat ";
 
-    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + ",ga.status from tb_interest_group i join tb_group g on i.group_id = g.id LEFT JOIN tb_group_approval ga ON i.`group_id` = ga.`group_id` AND ga.`user_id` = #{userId} where i.user_id = #{userId} and i.status = 0";
+    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + ",ga.status from tb_interest_group i join tb_group g on i.group_id = g.id LEFT JOIN tb_group_approval ga ON i.`group_id` = ga.`group_id` AND ga.`user_id` = #{userId} where i.user_id = #{userId} and i.status = 1";
 
     private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i left join tb_user_info ui on i.user_id = ui.user_id "
-            + " LEFT JOIN tb_user_approval ua ON ui.`user_id` = ua.`from_user_id` and ua.to_user_id = #{userId} where i.to_user_id = #{userId} and (ua.`status` != 4 OR ua.`status` IS NULL) group by i.user_id";
+            + " LEFT JOIN tb_user_approval ua ON (ua.`from_user_id` = ui.`user_id`  AND ua.to_user_id = #{userId}) OR (ua.`from_user_id` = #{userId} \n" +
+            " AND ua.`to_user_id` = ui.`user_id` ) where i.to_user_id = #{userId} and (ua.`status` != 4 OR ua.`status` IS NULL) AND (ua.`status` != 2 OR ua.`status` IS NULL) group by i.user_id";
 
     private String SQL_MY_GROUP = "select * from tb_group_approval ga join tb_group g on ga.group_id = g.id where g.user_id = #{userId} and (g.status = 1 or g.status = 0)";
 
@@ -120,7 +125,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             where.append(" and ui.city_id = #{city} ");
             _r.set("city", city);
         }
-        if (grouping != null && grouping <=3 && grouping >= 4) {
+        if (grouping != null && grouping <=3) {
             String groupingStr = "";
             switch (grouping) {
                 case 1:

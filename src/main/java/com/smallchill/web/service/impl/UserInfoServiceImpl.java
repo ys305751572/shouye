@@ -122,7 +122,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             for (String c : careerss) {
                 if (StringUtils.isNotBlank(c)) {
                     String[] cc = c.split(",");
-                    nameBuffer.append(cc[1]);
+                    nameBuffer.append(cc[1]).append("/");
                     ids.add(Integer.parseInt(cc[0]));
                 }
             }
@@ -334,7 +334,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             product.append(record.getStr("qualification"));
         }
         userExtendVo.setOrg(product.toString());
-        userExtendVo.setCareer(StringUtils.isNotBlank(record.getStr("career")) ? record.getStr("career").replace("|", "<br>") : "");
+        userExtendVo.setCareer(StringUtils.isNotBlank(record.getStr("career")) ? record.getStr("career").replace("/", "<br>") : "");
         userExtendVo.setSchool(StringUtils.isNotBlank(record.getStr("school")) ? record.getStr("school").replace("|", "<br>") : "");
         return userExtendVo;
     }
@@ -588,6 +588,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         if (userinfo.getOrgType() != null && StringUtils.isNotBlank(userinfo.getOrganization())) {
             _info.setOrgType(userinfo.getOrgType());
             _info.setOrganization(userinfo.getOrganization());
+            _info.setOrgIsOpen(userinfo.getOrgIsOpen());
         }
         if (StringUtils.isNotBlank(userinfo.getProductService()) && userinfo.getProductType() != null) {
             _info.setProductType(userinfo.getProductType());

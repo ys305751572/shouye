@@ -5,6 +5,7 @@ import com.smallchill.core.aop.AopContext;
 import com.smallchill.core.meta.ApiQueryIntercept;
 import com.smallchill.core.meta.PageIntercept;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.MapKit;
 import com.smallchill.core.toolbox.support.BladePage;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,25 +35,36 @@ public class UserApiIntercept extends ApiQueryIntercept {
 
         for (Map record : list) {
             Object istatus = record.get("istatus");
+            int type;
             if (istatus != null && Integer.parseInt(istatus.toString()) == 0) {
-                record.put("status", Convert.INTEREST);
+                type = Convert.INTEREST;
             }
             else {
-                record.put("status", Convert.NOT_FRINED);
+                type = Convert.NOT_FRINED;
             }
             Object statusObj = record.get("status");
-            if (statusObj == null) record.put("status", Convert.NOT_FRINED);
-            if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 0)) {
+            if (statusObj == null) {
+                type = Convert.NOT_FRINED;
+                record.put("username", Convert.hiddenRealUsername(MapKit.getStr(record, "username")));
+            }
+            if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 1)) {
                 int fromUserId = (int) record.get("from_user_id");
                 if (fromUserId == userId) {
-                    record.put("status", Convert.NOT_PROCESS_TO_USER_ID);
+                    type = Convert.NOT_PROCESS_TO_USER_ID;
                 }
                 else {
-                    record.put("status", Convert.NOT_PROCESS_FROM_USER_ID);
+                    type = Convert.NOT_PROCESS_FROM_USER_ID;
                 }
-            } else if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 1)) {
-                record.put("status", Convert.FRIEND);
+                if (MapKit.getInt(record, "type") != 2) {
+                    record.put("username", Convert.hiddenRealUsername(MapKit.getStr(record, "username")));
+                }
+            } else if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 2)) {
+                type = Convert.FRIEND;
             }
+            if (type == Convert.INTEREST || type == Convert.NOT_FRINED) {
+                record.put("username", Convert.hiddenRealUsername(MapKit.getStr(record, "username")));
+            }
+            record.put("status", type);
             String organization = "";
             if (record.get("org_is_open") != null &&  Integer.parseInt(record.get("org_is_open").toString()) == 1) {
                 organization = (String) record.get("organization");

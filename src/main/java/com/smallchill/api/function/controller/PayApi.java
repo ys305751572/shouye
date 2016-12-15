@@ -32,11 +32,11 @@ public class PayApi extends BaseController {
     @PostMapping(value = "/joingroup/prepayid/get")
     @ResponseBody
     public String getPrepayIdOfJoingroup(Integer userId, Integer groupId, Double cost, java.lang.String validateInfo,
-                                         java.lang.String matchType) {
+                                         Integer matchType, Integer targetType) {
 
         Map<String, Object> resultMap;
         try {
-            resultMap = payService.getPrepayId(userId, groupId, cost, validateInfo, matchType, this.getResponse(), this.getRequest());
+            resultMap = payService.getPrepayId(userId, groupId, cost, validateInfo, matchType, targetType, this.getResponse(), this.getRequest());
         } catch (GroupCostException e) {
             return fail(ErrorType.ERROR_CODE_APP_CANNOT_JOIN_GROUP_FAIL);
         } catch (UserHasApprovalException e) {

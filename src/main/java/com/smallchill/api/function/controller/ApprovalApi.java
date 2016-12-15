@@ -48,7 +48,7 @@ public class ApprovalApi extends BaseController {
             if (ua.getGroupId() != null) {
                 userApprovalService.toGroup(ua,toUserIds);
             } else if (ua.getIntroduceUserId() != null) {
-                userApprovalService.toUserTwoWay(ua, validateInfo2);
+                userApprovalService.toUserTwoWay(ua, toUserIds, validateInfo2);
             } else {
                 userApprovalService.toUserOneWay(ua, toUserIds);
             }

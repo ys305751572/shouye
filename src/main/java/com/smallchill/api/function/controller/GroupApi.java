@@ -121,16 +121,16 @@ public class GroupApi extends BaseController {
         }
         if (status != null && status == 1) {
             Order order = orderService.findByGaId(record.getInt("gaId"));
-            if (order == null) {
-                return fail(ErrorType.ERROR_CODE_APP_USERHASAPPROVAL);
-            }
-            else {
+//            if (order == null) {
+//                return fail(ErrorType.ERROR_CODE_APP_USERHASAPPROVAL);
+//            }
+//            else {
                 if (order.getStatus() == 2) {
                     orderService.delete(order.getId());
                     groupApprovalService.delete(record.getInt("gaId"));
                     status = null;
                 }
-            }
+//            }
         }
         List<Button> btnList = GroupBtnRegister.create().registerBtns(status, istatus);
         String telphone = record.getStr("telphone");
@@ -158,7 +158,7 @@ public class GroupApi extends BaseController {
     @RequestMapping(value = "/join")
     @ResponseBody
     @Before(GroupJoinValidator.class)
-    public String join(GroupApproval ga) {
+    public String join(GroupApproval ga, Integer targetType) {
 
         // 判断用户是否满足组织的加入限制条件
         if (!groupApprovalService.isMeetConditions(ga.getUserId(), ga.getGroupId())) {

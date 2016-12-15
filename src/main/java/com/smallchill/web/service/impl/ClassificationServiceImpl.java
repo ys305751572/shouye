@@ -5,12 +5,11 @@ import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.JsonKit;
-import com.smallchill.web.model.Classification;
-import com.smallchill.web.model.Group;
-import com.smallchill.web.model.Tag;
-import com.smallchill.web.model.UserClassification;
+import com.smallchill.web.model.*;
 import com.smallchill.web.service.ClassificationService;
 import com.smallchill.web.service.TagService;
+import com.smallchill.web.service.UserClassificationService;
+import com.smallchill.web.service.UserTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,16 +25,28 @@ public class ClassificationServiceImpl extends BaseService<Classification> imple
 
     @Autowired
     TagService tagService;
+    @Autowired
+    private UserClassificationService userClassificationService;
+    @Autowired
+    private UserTagService userTagService;
 
-    public void userClassificationAddForGroupAgree(int groupId, String classification) {
-        UserClassification userClassification = new UserClassification();
-        List<Classification> uc = this.findBy("classification = #{classification} and group_id = #{groupId}",
-                Record.create().set("classification", classification).set("groupId", groupId));
-        if (CollectionKit.isEmpty(uc)) {
-            Classification classification1 = new Classification();
-            classification1.setGroupId(groupId);
-            classification1.setClassification(classification);
-            this.save(classification1);
+    @Override
+    public void userClassificationAddForGroupAgree(Integer groupId, Integer userId,Integer matchType, Integer targetType) {
+        if (targetType == 1) {
+            // class
+            userClassificationService.deleteByGroupIdAndUserId(groupId, userId);
+            UserClassification uc = new UserClassification();
+            uc.setClassificationId(matchType);
+            uc.setUserId(userId);
+            userClassificationService.save(uc);
+        }
+        else {
+            // tag
+            userTagService.deleteByGroupIdAndUserId(groupId, userId);
+            UserTag userTag = new UserTag();
+            userTag.setTagId(matchType);
+            userTag.setUserId(userId);
+            userTagService.save(userTag);
         }
     }
 

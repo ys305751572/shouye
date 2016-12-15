@@ -240,7 +240,7 @@ public class Record extends HashMap<String, Object> {
 	 * @return 字段值
 	 */
 	public Long getLong(String attr) {
-		return Conver.toLong(get(attr), null);
+		return Conver.toLong(get(attr), 0L);
 	}
 	
 	/**

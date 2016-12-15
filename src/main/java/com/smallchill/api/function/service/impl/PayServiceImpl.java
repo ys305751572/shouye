@@ -67,7 +67,7 @@ public class PayServiceImpl implements PayService, StatusConst {
     @Transactional
     @Override
     public Map<String, Object> getPrepayId(Integer userId, Integer groupId, Double cost, String validateInfo,
-                                           String matchType, HttpServletResponse response, HttpServletRequest request)
+                                           Integer matchType, Integer targetType, HttpServletResponse response, HttpServletRequest request)
             throws GroupCostException, UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException,
             GroupLimitException {
 

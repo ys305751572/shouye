@@ -7,7 +7,7 @@ package com.smallchill.api.function.meta.consts;
 public interface SystemConst {
 
     //  系统默认感兴趣人员数量
-    int INTEREST_COUNTS = 5;
+    int INTEREST_COUNTS = 100;
     //  系统默认熟人数量
-    int ACQUAINTANCE_COUNTS = 5;
+    int ACQUAINTANCE_COUNTS = 100;
 }

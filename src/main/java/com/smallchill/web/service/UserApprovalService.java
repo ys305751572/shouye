@@ -31,7 +31,7 @@ public interface UserApprovalService extends IService<UserApproval> {
      * 同时发送给接收用户和发送用户
      * 1.引荐
      */
-    void toUserTwoWay(UserApproval ua, String validateInfo2) throws UserInOthersBlankException, UserHasFriendException, UsernotFriendException, BothUserHasApprovalException, UserHasApprovalException, UserInMyBlankException;
+    void toUserTwoWay(UserApproval ua, String toUserIds, String validateInfo2) throws UserInOthersBlankException, UserHasFriendException, UsernotFriendException, BothUserHasApprovalException, UserHasApprovalException, UserInMyBlankException;
 
     /**
      * 发送审核申请给组织
@@ -91,7 +91,6 @@ public interface UserApprovalService extends IService<UserApproval> {
     void userApprovalBlank(UserApproval ua, String toUserIds);
 
     /**
-     *
      * @param fromUserId
      * @param toUserId
      * @return
@@ -147,6 +146,7 @@ public interface UserApprovalService extends IService<UserApproval> {
 
     /**
      * 对我感兴趣用户-（同意，忽略）
+     *
      * @param ua 申请信息
      */
     void auditOfInterest(UserApproval ua) throws BothUserHasApprovalException, UserInOthersBlankException, UserHasApprovalException, UsernotFriendException, UserInMyBlankException, UserHasFriendException, UserOverAccNumException;

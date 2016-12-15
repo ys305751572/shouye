@@ -254,7 +254,7 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
             if (order != null) {
                 orderService.setOrderAgree(order);
             }
-            classificationService.userClassificationAddForGroupAgree(groupApproval.getGroupId(), groupApproval.getMatchType());
+            classificationService.userClassificationAddForGroupAgree(groupApproval.getGroupId(), groupApproval.getUserId(),groupApproval.getMatchType(), groupApproval.getTargetType());
         } else if (status == 3) {
             //第三个参数为订单号(暂时没有)
             Order order = orderService.findByGaId(groupApproval.getId());
@@ -359,18 +359,11 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         String target = record.getStr("targat");
         BigDecimal cost = record.get("cost") == null ? BigDecimal.valueOf(0) :
                 BigDecimal.valueOf(Double.parseDouble(record.get("cost").toString()));
-        List<String> targets = new ArrayList<>();
-        if (StringUtils.isNotBlank(target)) {
-            String[] targetss = target.split("\\|");
-            for (String t : targetss) {
-                if (StringUtils.isNotBlank(t)) {
-                    targets.add(t);
-                }
-            }
-        }
+
+        List<Record> targets = groupService.findGroupTarget(groupId);
         GroupApprovalVo vo = new GroupApprovalVo();
         vo.setMoney(cost);
-        vo.setTarget(targets);
+        vo.setTarget(targets == null ? new ArrayList<Record>() : targets);
         vo.setCostStatus(record.getInt("cost_status"));
         vo.setCostType(record.getInt("cost_type"));
         return vo;

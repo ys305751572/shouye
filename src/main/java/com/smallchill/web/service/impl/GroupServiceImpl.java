@@ -10,6 +10,7 @@ import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.LeomanKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.GroupBank;
@@ -430,6 +431,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
 
     /**
      * 查询组织加入设置
+     *
      * @param groupId 组织ID
      * @return record
      */
@@ -437,5 +439,44 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
     public Record findGroupJoinSetting(Integer groupId) {
         String sql = "select is_join isJoin, is_introduce isIntroduce from tb_group where id = #{groupId}";
         return Db.init().selectOne(sql, Record.create().set("groupId", groupId));
+    }
+
+    /**
+     * 查询组织标签列表
+     *
+     * @param groupId 组织ID
+     * @return list
+     */
+    @Override
+    public List<Record> findGroupTarget(Integer groupId) {
+        List<Record> list = findClassification(groupId);
+        if (CollectionKit.isNotEmpty(list)) {
+            return list;
+        }
+        else {
+            return findTag(groupId);
+        }
+    }
+
+    /**
+     * 查询分组列表
+     *
+     * @param groupId 组织ID
+     * @return list
+     */
+    public List<Record> findClassification(Integer groupId) {
+        String sql = "select id,classification as name,1 as type from tb_classification where group_id = #{groupId} and type = 1";
+        return Db.init().selectList(sql, Record.create().set("groupId", groupId));
+    }
+
+    /**
+     * 查询标记列表
+     *
+     * @param groupId 组织ID
+     * @return list
+     */
+    public List<Record> findTag(Integer groupId) {
+        String sql = "select id, tag as name,2 as type from tb_tag where group_id = #{groupId} and type = 1";
+        return Db.init().selectList(sql, Record.create().set("groupId", groupId));
     }
 }

@@ -30,7 +30,9 @@ public class GroupApproval extends BaseModel {
     @Column(name = "paied")
     private Integer paied = 1;
     @Column(name = "match_type")
-    private String matchType;
+    private Integer matchType;
+    @Column(name = "target_type")
+    private Integer targetType;
     @Column(name = "validate_info")
     private String validateInfo;
     @Column(name = "through_time")
@@ -38,11 +40,19 @@ public class GroupApproval extends BaseModel {
     @Column(name = "create_time")
     private Long createTime = DateTimeKit.nowLong();
 
-    public String getMatchType() {
+    public Integer getTargetType() {
+        return targetType;
+    }
+
+    public void setTargetType(Integer targetType) {
+        this.targetType = targetType;
+    }
+
+    public Integer getMatchType() {
         return matchType;
     }
 
-    public void setMatchType(String matchType) {
+    public void setMatchType(Integer matchType) {
         this.matchType = matchType;
     }
 

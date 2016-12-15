@@ -152,4 +152,11 @@ public interface GroupService extends IService<Group> {
      * @return record
      */
     Record findGroupJoinSetting(Integer groupId);
+
+    /**
+     * 查询组织标签列表
+     * @param groupId 组织ID
+     * @return list
+     */
+    List<Record> findGroupTarget(Integer groupId);
 }

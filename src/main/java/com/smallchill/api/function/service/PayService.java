@@ -13,7 +13,7 @@ import java.util.Map;
 public interface PayService {
 
     Map<String, Object> getPrepayId(Integer userId, Integer groupId, Double cost, String validateInfo,
-                                    String matchType, HttpServletResponse response, HttpServletRequest request)
+                                    Integer matchType, Integer targetType, HttpServletResponse response, HttpServletRequest request)
             throws GroupCostException, UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException, GroupLimitException;
 
     void joinGroupWxNotify(HttpServletRequest request, HttpServletResponse response);
