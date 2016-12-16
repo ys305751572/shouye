@@ -129,6 +129,7 @@ button{
     padding-left: 0.2rem;
     padding-right: 0.2rem;
     color: #383F6A;
+    outline: none;
 }
 .use-bottom span{
     width:0.6rem;
@@ -202,6 +203,9 @@ button{
     min-height: 8rem;
     background-color: #fff;
     margin-top: 2px;
+}
+.dis-none{
+    display:none;
 }
 .c-contain p{
     font-size: 0.3rem;

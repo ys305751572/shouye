@@ -89,7 +89,7 @@ public class FriendsApi extends BaseController {
     public String myFriendList(Integer userId, String keyWord) {
         List<UserVo> userVos;
         try {
-            userVos = shoupageService.friends(userId, null, null, null, keyWord);
+            userVos = shoupageService.friends(userId, null, null, null, keyWord, null);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();

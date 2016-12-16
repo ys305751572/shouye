@@ -21,30 +21,49 @@
         </div>
         <span style="clear:both;display: block;"></span>
         <div class="use-bottom">
-            <div class="use-button" style="width:1.6rem;">
-                <button>结识对方</button>
+            <div class="use-button"  style="width:1.6rem;">
+                <button id="jsdf">结识对方</button>
             </div>
-            <span><img src="${basePath}/static/share/images/phone.png" alt="" /></span>
+            <span id="iphone-call"><img src="${basePath}/static/share/images/phone.png" alt="" /></span>
         </div>
     </div>
     <div class="container">
         <div class="container-top">
             <div class="c-top-t c-top-t-active"><span>个   人</span></div>
-            <div class="c-top-t"><span>组   织</span></div>
+            <div class="c-top-t"><span>${userVo.userExtendVo.orgName}</span></div>
             <div class="c-top-t"><span>事业状态</span></div>
             <div class="c-top-t"><span>教   育</span></div>
             <div class="c-top-t"><span>发   布</span></div>
         </div>
-        <div class="c-contain">
+        <div class="c-contain" id="c-contain-one">
             <p>
-                ${userVo.desc}
+                ${userVo.userExtendVo.desc}
+            </p>
+        </div>
+        <div class="c-contain dis-none" id="c-contain-two">
+            <p>
+                ${userVo.userExtendVo.org}
+            </p>
+        </div>
+        <div class="c-contain dis-none" id="c-contain-three">
+            <p>
+                ${userVo.userExtendVo.org}
+            </p>
+        </div>
+        <div class="c-contain dis-none" id="c-contain-four">
+            <p>
+                ${userVo.userExtendVo.school}
+            </p>
+        </div>
+        <div class="c-contain dis-none" id="c-contain-five">
+            <p>
+                敬请期待
             </p>
         </div>
     </div>
-    
     <div class="fixed-bottom">
         <div class="fixed-logo"></div>
-        <span>立即下载</span>
+        <span id="downaload">立即下载</span>
     </div>
     <script type="text/javascript" src="${basePath}/static/share/js/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="${basePath}/static/share/js/index.js"></script>

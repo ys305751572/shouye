@@ -13,6 +13,7 @@ import com.smallchill.api.function.modal.UserFriendGrouping;
 import com.smallchill.api.function.modal.UserInterest;
 import com.smallchill.api.function.modal.vo.ConsumptionRecordSuperVo;
 import com.smallchill.api.function.modal.vo.IntroduceUserVo;
+import com.smallchill.api.function.modal.vo.ShouPageVo;
 import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.*;
 import com.smallchill.api.system.service.VcodeService;
@@ -66,6 +67,8 @@ public class UserApi extends BaseController implements ConstCache {
     private VcodeService vcodeService;
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private ShoupageService shoupageService;
 
     /**
      * 全局用户列表
@@ -267,7 +270,7 @@ public class UserApi extends BaseController implements ConstCache {
         String where = "user_id = #{userId} and to_user_id = #{toUserId}";
         Record record = Record.create().set("userId", ui.getUserId()).set("toUserId", ui.getToUserId());
         try {
-            userInterestService.updateBy("status = 1", where, record);
+            userInterestService.deleteBy(where, record);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
@@ -319,7 +322,7 @@ public class UserApi extends BaseController implements ConstCache {
         String where = "user_id = #{userId} and group_id = #{groupId}";
         Record record = Record.create().set("userId", gi.getUserId()).set("groupId", gi.getGroupId());
         try {
-            groupInterestService.updateBy("status = 1", where, record);
+            groupInterestService.deleteBy(where, record);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
@@ -338,13 +341,16 @@ public class UserApi extends BaseController implements ConstCache {
     @Before(GroupPageValidator.class)
     public String grouping(Integer userId) {
         List<Record> record;
+        ShouPageVo vo = null;
         try {
+            vo = shoupageService.index(userId, null, null, null, null);
             record = userInfoService.findIndexGrouping(userId);
+            vo.getGroupings().addAll(record);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
         }
-        return success(record);
+        return success(vo.getGroupings());
     }
 
     /**
@@ -398,9 +404,10 @@ public class UserApi extends BaseController implements ConstCache {
             if (groupingId != null) {
                 list = userInfoService.findUserListByGroupingId(groupingId);
             } else {
-                list = userInfoService.findUserListByDefaultId(userId, defaultId);
+//                list = userInfoService.findUserListByDefaultId(userId, defaultId);
+                ShouPageVo vo = shoupageService.index(userId, null, null, defaultId, null);
+                list = vo.getList();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
@@ -678,6 +685,7 @@ public class UserApi extends BaseController implements ConstCache {
 
     /**
      * 消费记录
+     *
      * @param userId
      * @return
      */

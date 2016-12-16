@@ -852,10 +852,9 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
      */
     @Override
     public List<Record> findIndexGrouping(Integer userId) {
-        List<Record> defaultRecords = findDefaultGrouping(userId);
+//        List<Record> defaultRecords = findDefaultGrouping(userId);
         List<Record> customRecods = findCustomGrouping(userId);
-        defaultRecords.addAll(customRecods);
-        return defaultRecords;
+        return customRecods;
     }
 
     /**
@@ -895,7 +894,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     @Override
     public Record intersection(Integer userId, Integer toUserId) {
         String sql = "SELECT uf.friend_id FROM tb_user_friend uf INNER JOIN tb_user_friend uf2 ON uf.`friend_id` = uf2.`friend_id` " +
-                "AND uf2.`user_id` = #{toUserId} WHERE uf.`user_id` = #{userId} group by uf.friend_id";
+                "AND uf2.`user_id` = #{toUserId} WHERE uf.`user_id` = #{userId} and uf.type = 2 group by uf.friend_id";
         List<Record> recordList = Db.init().selectList(sql, Record.create().set("userId", userId).set("toUserId", toUserId));
         String sql2 = "select ui.user_id userId, ui.username FROM tb_user_info ui where ui.user_id in (#{ids})";
         StringBuffer ids = new StringBuffer();

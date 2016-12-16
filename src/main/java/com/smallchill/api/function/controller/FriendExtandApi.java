@@ -54,11 +54,11 @@ public class FriendExtandApi extends BaseController implements SystemConst{
             userAcquaintanceCount = ACQUAINTANCE_COUNTS;
         }
         else {
-            userInterestCount = userInfoExtend.getInterestCount();
-            userAcquaintanceCount = userInfoExtend.getAcquaintanceCount();
+            userInterestCount = userInfoExtend.getInterestCount() + INTEREST_COUNTS;
+            userAcquaintanceCount = userInfoExtend.getAcquaintanceCount() + ACQUAINTANCE_COUNTS;
         }
-        vo.setUserInterestCount(userInterestCount);
-        vo.setUserAcquaintanceCount(userAcquaintanceCount);
+        vo.setUserInterestCount(userInterestCount >= sysConfigI.getNum() ? sysConfigI.getNum() : userInterestCount);
+        vo.setUserAcquaintanceCount(userAcquaintanceCount >= sysConfigA.getNum() ? sysConfigA.getNum() : userAcquaintanceCount);
         vo.setSystemInterestCount(sysConfigI.getNum() + INTEREST_COUNTS);
         vo.setSystemAcquaintanceCount(sysConfigA.getNum() + ACQUAINTANCE_COUNTS);
         vo.setUserRemainInterestCount(sysConfigI.getNum() + INTEREST_COUNTS - userInterestCount);

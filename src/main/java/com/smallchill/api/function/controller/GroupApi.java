@@ -125,7 +125,7 @@ public class GroupApi extends BaseController {
 //                return fail(ErrorType.ERROR_CODE_APP_USERHASAPPROVAL);
 //            }
 //            else {
-                if (order.getStatus() == 2) {
+                if (order != null && order.getStatus() == 2) {
                     orderService.delete(order.getId());
                     groupApprovalService.delete(record.getInt("gaId"));
                     status = null;

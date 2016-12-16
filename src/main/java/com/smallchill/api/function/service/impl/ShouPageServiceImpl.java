@@ -12,10 +12,8 @@ import com.smallchill.core.modules.support.Conver;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
-import com.smallchill.core.toolbox.kit.CacheKit;
-import com.smallchill.core.toolbox.kit.DateKit;
-import com.smallchill.core.toolbox.kit.DateTimeKit;
-import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.core.toolbox.kit.*;
+import com.smallchill.web.model.UserInfo;
 import com.smallchill.web.service.GroupService;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +51,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String GROUP_BASE_INFO_SQL = " g.id,g.name,IFNULL(g.avater,'') as avater,g.province,g.city,g.type,g.province_city provinceCity,g.member_count memberCount,g.targat ";
 
-    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + ",ga.status from tb_interest_group i join tb_group g on i.group_id = g.id LEFT JOIN tb_group_approval ga ON i.`group_id` = ga.`group_id` AND ga.`user_id` = #{userId} where i.user_id = #{userId} and i.status = 1";
+    private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + ",ga.status from tb_interest_group i join tb_group g on i.group_id = g.id LEFT JOIN tb_group_approval ga ON i.`group_id` = ga.`group_id` AND ga.`user_id` = #{userId} where i.user_id = #{userId} and i.status = 0";
 
     private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i left join tb_user_info ui on i.user_id = ui.user_id "
             + " LEFT JOIN tb_user_approval ua ON (ua.`from_user_id` = ui.`user_id`  AND ua.to_user_id = #{userId}) OR (ua.`from_user_id` = #{userId} \n" +
@@ -95,8 +93,9 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         if (userLastReadTime == null) {
             userLastReadTime = new UserLastReadTime();
         }
-        List<UserVo> voList = friends(userId, domainId, city, grouping, keyWord);
+
         ShouPageVo shouPageVo = new ShouPageVo();
+        List<UserVo> voList = friends(userId, domainId, city, grouping, keyWord, shouPageVo);
 
         shouPageVo.setNewCount(countNew(userId, userLastReadTime.getNewTime()));
         shouPageVo.setAcquaintancesCount(countAcquaintances(userId, userLastReadTime.getAcquaintances()));
@@ -108,7 +107,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     }
 
     @Override
-    public List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord) {
+    public List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord, ShouPageVo shouPageVo) {
         String sql = Blade.dao().getScript("UserFriend.list").getSql();
         StringBuffer where = new StringBuffer("");
         Record _r = Record.create().set("userId", userId);
@@ -125,31 +124,17 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             where.append(" and ui.city_id = #{city} ");
             _r.set("city", city);
         }
-        if (grouping != null && grouping <=3) {
-            String groupingStr = "";
-            switch (grouping) {
-                case 1:
-                    groupingStr = "熟人";
-                    break;
-                case 2:
-                    groupingStr = "校友";
-                    break;
-                case 3:
-                    groupingStr = "同组织";
-            }
-            if (grouping >= 1 && grouping <= 3 ) {
-                where.append(" and uf.label like concat('%',#{grouping},'%')");
-                _r.set("grouping", groupingStr);
-            }
-        }
         if (StringUtils.isNotBlank(keyWord)) {
             where.append(" and (ui.username LIKE concat('%', #{keyWord},'%') or ui.key_word LIKE concat('%', #{keyWord}, '%'))");
             _r.set("keyWord", keyWord);
         }
         where.append(" and uf.user_id = #{userId}");
 
-
         List<Record> friends = Db.init().selectList(sql + where.toString(), _r);
+        List<Record> includeRecordList = lables(friends, userId, shouPageVo, grouping);
+        if (grouping != null && grouping <= 3) {
+            friends = includeRecordList;
+        }
         List<UserVo> voList = new ArrayList<>();
         for (Record record : friends) {
             UserVo userVo = Convert.recordToVo(record);
@@ -159,6 +144,129 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             voList.add(userVo);
         }
         return voList;
+    }
+
+    /**
+     * 设置标签
+     *
+     * @param friends
+     */
+    public List<Record> lables(List<Record> friends, Integer userId, ShouPageVo shouPageVo, Integer grouping) {
+        List<UserVo> acqList = listAcquaintances(userId, null);
+        List<Integer> sameGroupUserList = findSameGroupUserId(userId, friends);
+        UserInfo userInfo = userInfoService.findByUserId(userId);
+
+        List<Record> includeRecordList = new ArrayList<>();
+        int acqCount = 0;
+        int schoolCount = 0;
+        int groupCount = 0;
+        for (Record record : friends) {
+            // 判断是否同组织
+            // 判断是否同校
+            // 判断是否熟人
+            if (isSameGroup(record.getInt("usereId"), sameGroupUserList)) {
+                ++groupCount;
+                if(StringUtils.isNotBlank(record.getStr("label"))) {
+                    record.set("label", record.getStr("label") + "|同组织");
+                }
+                else {
+                    record.set("label", "同组织");
+                }
+                if (grouping != null && grouping == 3) {
+                    includeRecordList.add(record);
+                }
+            }
+            if (isSameSchool(userInfo.getSchool(),record.getStr("school"))) {
+                ++schoolCount;
+                if(StringUtils.isNotBlank(record.getStr("label"))) {
+                    record.set("label", record.getStr("label") + "|同校");
+                }
+                else {
+                    record.set("label", "同校");
+                }
+                if (grouping != null && grouping == 2) {
+                    includeRecordList.add(record);
+                }
+            }
+            if (isAcq(record.getInt("userId"), acqList)) {
+                ++acqCount;
+                if(StringUtils.isNotBlank(record.getStr("label"))) {
+                    record.set("label", record.getStr("label") + "|熟人");
+                }
+                else {
+                    record.set("label", "熟人");
+                }
+                if (grouping != null && grouping == 1) {
+                    includeRecordList.add(record);
+                }
+            }
+        }
+
+        List<Record> recordList = new ArrayList<Record>();
+        recordList.add(Record.create().set("name", "熟人").set("counts", acqCount));
+        recordList.add(Record.create().set("name", "同校").set("counts", schoolCount));
+        recordList.add(Record.create().set("name", "同组织").set("counts", groupCount));
+        if (shouPageVo != null) {
+            shouPageVo.setGroupings(recordList);
+        }
+        return includeRecordList;
+    }
+
+    public boolean isSameGroup(int userId, List<Integer> sameGroupUserList) {
+        return CollectionKit.isNotEmpty(sameGroupUserList) && sameGroupUserList.contains(userId);
+    }
+
+    public boolean isSameSchool(String userSchool, String friendSchool) {
+        if (StringUtils.isBlank(userSchool)) return false;
+        if (StringUtils.isBlank(friendSchool)) return false;
+        String[] userSchools = userSchool.split("\\|");
+        String[] friendSchools = friendSchool.split("\\|");
+        boolean flag = false;
+        for (String uString : userSchools) {
+            for (String fSchool : friendSchools) {
+                if (StringUtils.isNotBlank(uString) && StringUtils.isNotBlank(fSchool) && uString.equals(fSchool)) {
+                    flag = true;
+                }
+            }
+        }
+        return StringUtils.isNotBlank(userSchool) && StringUtils.isNotBlank(friendSchool) && flag;
+    }
+
+    public boolean isAcq(int userId, List<UserVo> acqlist) {
+        return CollectionKit.isNotEmpty(acqlist) && containsAcq(userId, acqlist);
+    }
+
+    public boolean containsAcq(int userId,List<UserVo> acqlist) {
+        for (UserVo userVo : acqlist) {
+            if (userId == userVo.getUserId())
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * 查询与当前用户在同一组织的用户
+     *
+     * @param userId
+     * @return
+     */
+    public List<Integer> findSameGroupUserId(Integer userId, List<Record> friends) {
+        String sql = "SELECT ug.`user_id` FROM tb_user_group ug \n" +
+                "WHERE ug.user_id IN (#{userIds}) AND ug.`group_id` \n" +
+                "IN (SELECT ug2.`group_id` FROM tb_user_group ug2 WHERE ug2.`user_id` = #{userId})";
+        StringBuffer buffer = new StringBuffer();
+        if (CollectionKit.isEmpty(friends)) {
+            return new ArrayList<>();
+        }
+        for (Record record : friends) {
+            buffer.append(record.getInt("userId")).append(",");
+        }
+        List<Integer> userIds = new ArrayList<>();
+        List<Record> recordList = Db.init().selectList(sql, Record.create().set("userIds", buffer.substring(0, buffer.length() - 1)).set("userId", userId));
+        for (Record record : recordList) {
+            userIds.add(record.getInt("userId"));
+        }
+        return userIds;
     }
 
     @Override

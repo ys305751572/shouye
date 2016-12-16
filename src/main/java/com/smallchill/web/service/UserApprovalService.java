@@ -140,7 +140,7 @@ public interface UserApprovalService extends IService<UserApproval> {
      */
     void auditRefuseByIntroduce(UserApproval ua);
 
-    UserApproval getUserByFromUserIdAndToUserIdApprovalOfTowWay(Integer userId, Integer distUserId);
+    List<UserApproval> getUserByFromUserIdAndToUserIdApprovalOfTowWay(Integer userId, Integer distUserId);
 
     UserApproval getUserByFromUserIdAndToUserIdApprovalOfOneWay(Integer userId, Integer distUserId);
 

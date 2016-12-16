@@ -17,7 +17,7 @@ public interface ShoupageService {
 
     ShouPageVo index(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord);
 
-    List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord);
+    List<UserVo> friends(Integer userId, Integer domainId, Integer city, Integer grouping, String keyWord,ShouPageVo shouPageVo);
 
     int countNew(Integer userId, Long date);
 

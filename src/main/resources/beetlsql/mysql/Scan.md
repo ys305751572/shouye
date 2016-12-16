@@ -35,7 +35,7 @@ FROM
     )
   LEFT JOIN tb_user_info ui
     ON (SS.user_id = ui.`user_id`)
-WHERE SS.juli < 50
+WHERE SS.juli < 5000
   AND SS.user_id != #{userId}
 ORDER BY SS.juli ASC
 

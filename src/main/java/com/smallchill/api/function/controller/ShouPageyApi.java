@@ -65,7 +65,7 @@ public class ShouPageyApi extends BaseController implements ConstCache, ConstSho
 
         ShouPageVo vo = shoupageService.index(userid, domainid, cityid, groupingid, keyWord);
         List<Record> list = userInfoService.findIndexGrouping(userId);
-        vo.setGroupings(list);
+        vo.getGroupings().addAll(list);
         return success(vo, "shoupage");
     }
 
