@@ -46,7 +46,7 @@ public class UserApiIntercept extends ApiQueryIntercept {
             if (statusObj == null) {
                 type = Convert.NOT_FRINED;
                 record.put("username", Convert.hiddenRealUsername(MapKit.getStr(record, "username")));
-            }
+        }
             if (statusObj != null && (Integer.parseInt(statusObj.toString()) == 1)) {
                 int fromUserId = (int) record.get("from_user_id");
                 if (fromUserId == userId) {

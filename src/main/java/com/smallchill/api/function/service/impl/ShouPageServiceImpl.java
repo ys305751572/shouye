@@ -40,7 +40,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String USER_BASE_INFO_SQL = " ui.user_id userId,ui.username,IFNULL(ui.avater,'') as avater ,ui.province_city provinceCity,ui.domain,ui.key_word keyWord,ui.organization,ui.professional,ui.per ";
 
-    private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.group_id, ua.friend_id,ua.status,ua.from_user_id,ua.to_user_id " +
+    private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.introduce_user_id_process,ua.group_id, ua.friend_id,ua.status,ua.from_user_id,ua.to_user_id " +
             "from tb_user_approval ua join tb_user_info ui";
 
     private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.to_user_id = ui.user_id " +
@@ -166,22 +166,20 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             // 判断是否熟人
             if (isSameGroup(record.getInt("usereId"), sameGroupUserList)) {
                 ++groupCount;
-                if(StringUtils.isNotBlank(record.getStr("label"))) {
+                if (StringUtils.isNotBlank(record.getStr("label"))) {
                     record.set("label", record.getStr("label") + "|同组织");
-                }
-                else {
+                } else {
                     record.set("label", "同组织");
                 }
                 if (grouping != null && grouping == 3) {
                     includeRecordList.add(record);
                 }
             }
-            if (isSameSchool(userInfo.getSchool(),record.getStr("school"))) {
+            if (isSameSchool(userInfo.getSchool(), record.getStr("school"))) {
                 ++schoolCount;
-                if(StringUtils.isNotBlank(record.getStr("label"))) {
+                if (StringUtils.isNotBlank(record.getStr("label"))) {
                     record.set("label", record.getStr("label") + "|同校");
-                }
-                else {
+                } else {
                     record.set("label", "同校");
                 }
                 if (grouping != null && grouping == 2) {
@@ -190,10 +188,9 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
             }
             if (isAcq(record.getInt("userId"), acqList)) {
                 ++acqCount;
-                if(StringUtils.isNotBlank(record.getStr("label"))) {
+                if (StringUtils.isNotBlank(record.getStr("label"))) {
                     record.set("label", record.getStr("label") + "|熟人");
-                }
-                else {
+                } else {
                     record.set("label", "熟人");
                 }
                 if (grouping != null && grouping == 1) {
@@ -236,7 +233,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         return CollectionKit.isNotEmpty(acqlist) && containsAcq(userId, acqlist);
     }
 
-    public boolean containsAcq(int userId,List<UserVo> acqlist) {
+    public boolean containsAcq(int userId, List<UserVo> acqlist) {
         for (UserVo userVo : acqlist) {
             if (userId == userVo.getUserId())
                 return true;
@@ -354,6 +351,16 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
      */
     private List<Record> listNew0(Integer userId) {
         String where = " on ui.user_id = ua.from_user_id where ua.to_user_id = #{userId} and ua.type = 1";
+        List<Record> list =  Db.init().selectList(sql + where, Record.create().set("userId", userId));
+        List<Record> list2 = listNew1(userId);
+        if (CollectionKit.isNotEmpty(list2)) {
+            list.addAll(list2);
+        }
+        return list;
+    }
+
+    private List<Record> listNew1(Integer userId) {
+        String where = " on ui.user_id = ua.to_user_id where ua.from_user_id = #{userId} and ua.type = 1 and ua.introduce_user_id != 0";
         return Db.init().selectList(sql + where, Record.create().set("userId", userId));
     }
 
@@ -442,7 +449,10 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
         }
 
         for (Record user : userList) {
-            uservos.add(Convert.recordToVo(user));
+            UserVo userVo = Convert.recordToVo(user);
+            String username = Convert.hiddenRealUsername(user.getStr("username"));
+            userVo.setUsername(username);
+            uservos.add(userVo);
         }
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("uservos", uservos);
@@ -550,7 +560,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
                 "    tb_group_approval ga\n" +
                 "ON\n" +
                 "    (g.id = ga.group_id AND (ga.`status` = 2 OR (ga.`status` = 1 AND ga.`type` = 2)))" +
-                " WHERE ga.user_id = #{userId}";
+                " WHERE ga.user_id = #{userId} order by ga.type desc, ga.create_time desc";
 
         List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));
         List<Groupvo> groupvos = new ArrayList<>();

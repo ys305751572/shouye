@@ -65,7 +65,7 @@ window.onload = function(){
     });
 }
 function toDownLoadPage () {
-    window.location.href = "http://a.app.qq.com/o/simple.jsp?pkgname=com.liumai.yiciyuan";
+    window.location.href = "http://a.app.qq.com/o/simple.jsp?pkgname=com.leoman.shouye";
 }
 
 function textIng(){

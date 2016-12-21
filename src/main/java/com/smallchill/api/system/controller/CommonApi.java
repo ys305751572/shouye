@@ -6,6 +6,7 @@ import com.smallchill.api.system.model.ValidateCode;
 import com.smallchill.api.system.service.VcodeService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.toolbox.LeomanKit;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.UploadKit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -56,6 +57,7 @@ public class CommonApi extends BaseController {
             return fail(ErrorType.ERROR_CODE_AVATER_EXCEPTION);
         }
         StringMap map = UploadKit.upload(UploadKit.changeFile(file));
-        return success(UploadKit.domain + map.get("key"),"url");
+        String url = UploadKit.domain + map.get("key");
+        return success(url,"url");
     }
 }

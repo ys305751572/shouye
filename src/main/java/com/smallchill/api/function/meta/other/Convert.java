@@ -11,10 +11,12 @@ import com.smallchill.core.toolbox.kit.MapKit;
 import com.smallchill.web.model.Refund;
 import com.smallchill.web.model.UserInfo;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.CaseInsensitiveMap;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +24,7 @@ import java.util.Map;
  * record转换对应的vo
  * Created by yesong on 2016/11/2 0002.
  */
-public class Convert implements TextConst{
+public class Convert implements TextConst {
 
 
     public static UserVo recordToVo(Record record) {
@@ -122,7 +124,7 @@ public class Convert implements TextConst{
         if (record.get("status") != null && Integer.parseInt(record.get("status").toString()) == 2) {
             isJoin = 1;
         }
-        Groupvo groupvo =  new Groupvo(id, name, avater, target, memebers, city);
+        Groupvo groupvo = new Groupvo(id, name, avater, target, memebers, city);
         groupvo.setIsjoin(isJoin);
         return groupvo;
     }
@@ -180,6 +182,7 @@ public class Convert implements TextConst{
                 } else {
                     map.put("status", 2);
                 }
+
             }
         }
     }
@@ -221,13 +224,50 @@ public class Convert implements TextConst{
             vo.setUsername(hiddenRealUsername(record.getStr("username")));
         } else {
             int status = Integer.parseInt(record.get("status").toString());
+
             if (status == 1) {
                 int fromUserId = record.getInt("from_user_id");
                 int toUserId = record.getInt("to_user_id");
                 if (userId == fromUserId) {
-                    type = NOT_PROCESS_TO_USER_ID;
+                    if (record.getInt("introduce_user_id") != 0) {
+                        String processUserIds = record.getStr("introduce_user_id_process");
+                        if (StringUtils.isNotBlank(processUserIds)) {
+                            String[] ss = processUserIds.split(",");
+                            List<String> ids = Arrays.asList(ss);
+                            if (ids.contains(String.valueOf(userId))) {
+                                type = NOT_PROCESS_TO_USER_ID;
+                            }
+                            else {
+                                type = NOT_PROCESS_FROM_USER_ID;
+                            }
+                         }
+                        else {
+                            type = NOT_PROCESS_FROM_USER_ID;
+                        }
+                    }
+                    else {
+                        type = NOT_PROCESS_TO_USER_ID;
+                    }
                 } else if (userId == toUserId) {
-                    type = NOT_PROCESS_FROM_USER_ID;
+                    if (record.getInt("introduce_user_id") != 0) {
+                        String processUserIds = record.getStr("introduce_user_id_process");
+                        if (StringUtils.isNotBlank(processUserIds)) {
+                            String[] ss = processUserIds.split(",");
+                            List<String> ids = Arrays.asList(ss);
+                            if (ids.contains(String.valueOf(userId))) {
+                                type = NOT_PROCESS_TO_USER_ID;
+                            }
+                            else {
+                                type = NOT_PROCESS_FROM_USER_ID;
+                            }
+                        }
+                        else {
+                            type = NOT_PROCESS_FROM_USER_ID;
+                        }
+                    }
+                    else {
+                        type = NOT_PROCESS_FROM_USER_ID;
+                    }
                 }
                 if (orgIsOpen == 2) {
                     vo.setOrganization(ORG_TEXT);

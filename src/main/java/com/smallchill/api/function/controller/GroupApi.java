@@ -34,6 +34,7 @@ import com.smallchill.web.service.GroupService;
 import com.smallchill.web.service.OrderService;
 import com.smallchill.web.service.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
+import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -113,7 +114,7 @@ public class GroupApi extends BaseController {
         Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId).set("userId", userId));
         Integer status = record.get("status") == null ? null : (Integer) record.get("status");
         Integer istatus = record.get("istatus") == null ? null : (Integer) record.get("istatus");
-        List<Record> list = Convert.recordToGroupDetail(record,status);
+        List<Record> list = Convert.recordToGroupDetail(record, status);
 
         if (status != null && status == 3 && groupApprovalService.isOverRefuseMaxTime(record.getLong("through_time"), record.getInt("gaId"))) {
             // 判断拒绝时间是否超过72小时
@@ -125,11 +126,11 @@ public class GroupApi extends BaseController {
 //                return fail(ErrorType.ERROR_CODE_APP_USERHASAPPROVAL);
 //            }
 //            else {
-                if (order != null && order.getStatus() == 2) {
-                    orderService.delete(order.getId());
-                    groupApprovalService.delete(record.getInt("gaId"));
-                    status = null;
-                }
+            if (order != null && order.getStatus() == 2) {
+                orderService.delete(order.getId());
+                groupApprovalService.delete(record.getInt("gaId"));
+                status = null;
+            }
 //            }
         }
         List<Button> btnList = GroupBtnRegister.create().registerBtns(status, istatus);
@@ -271,6 +272,15 @@ public class GroupApi extends BaseController {
         BladePage page2 = Db.init().paginate(sql, Map.class, Record.create().set("keyWord", keyWord).set("userId", userId), page, size);
         JqGrid jqGrid = new JqGrid(page2.getRows(), page2.getTotal(), page2.getPage(), page2.getRecords());
         Convert.recordToSearchResult(jqGrid.getRows());
+
+        for (Object obj : jqGrid.getRows()) {
+            CaseInsensitiveHashMap map = (CaseInsensitiveHashMap) obj;
+            if (map.get("type") != null && Integer.parseInt(map.get("type").toString()) == 1 &&
+                    Integer.parseInt(map.get("status").toString()) == 1 &&
+                    Integer.parseInt(map.get("id").toString()) != userId) {
+                map.put("name", Convert.hiddenRealUsername(map.get("name").toString()));
+            }
+        }
         return success(jqGrid);
     }
 

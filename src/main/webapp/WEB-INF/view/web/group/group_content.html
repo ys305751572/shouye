@@ -80,7 +80,7 @@
 				content = '${group.content3}';
 				isOpen = "${group.isOpen3}";
 			}
-			if(isOpen==1){
+			if(isOpen==2){
 				$("#isOpen").attr('checked','checked');
 			}
 			$("#title").val(title);
@@ -96,9 +96,9 @@
 				var title = $("#title").val();
 				var content = $("#content").val();
 				if($('#isOpen').is(':checked')){
-					isOpen = 1;
-				}else {
 					isOpen = 2;
+				}else {
+					isOpen = 1;
 				}
 				$.post("${basePath}/${code}/contentSave",{groupId:groupId , title:title, content:content, isOpen:isOpen, status:status}, function(data){
 					if(data.code===0){

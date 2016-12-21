@@ -307,3 +307,38 @@ uc.`id`,uc.`career_id` careerId, uc.`user_id` userId, d.`NAME` `name`
 FROM tb_userinfo_career uc
 LEFT JOIN tfw_dict d ON uc.`career_id` = d.`ID`
 WHERE uc.`user_id` = #{userId}
+
+updateUserInfo
+==============
+update `tb_user_info` set 
+	`user_id`= #{userId},
+	`username`= #{username},
+	`avater`= #{avater},
+	`mobile`= #{mobile},
+	`gender`= #{gender},
+	`age`= #{age},
+	`birthday`= #{birthday},
+	`age_interval_id`= #{ageIntervalId},
+	`province_id`= #{provinceId},
+	`city_id`= #{cityId},
+	`province_city`= #{provinceCity},
+	`school`= #{school},
+	`career`= #{domain},
+	`domain`= #{professional},
+	`professional`= #{professionalLevel},
+	`product_type`= #{productType},
+	`product_service_name`= #{productService},
+	`org_type`= #{orgType},
+	`organization`= #{organization},
+	`zy`= #{zy},
+	`sc`= #{sc},
+	`zy2`=#{zy2},
+	`industry_ranking`= #{industryRanking},
+	`qualification`=#{qualification},
+	`org_is_open`= #{orgIsOpen},
+	`key_word`= #{keyWord},
+	`group_status`= #{groupStatus},
+	`desc`= #{desc},
+	`per`=#{per},
+	`create_time`=#{createTime}
+ where 1=1 and `id`= #{id}

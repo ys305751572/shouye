@@ -28,7 +28,8 @@ public class UserApproval extends BaseModel {
 
     @Column(name = "introduce_user_id")
     private Integer introduceUserId;
-
+    @Column(name = "introduce_user_id_process")
+    private String introduceUserIdProcess;
     @Column(name = "friend_id")
     private Integer friendId = 0;
 
@@ -41,6 +42,14 @@ public class UserApproval extends BaseModel {
 
     @Column(name = "create_time")
     private Long createTime;
+
+    public String getIntroduceUserIdProcess() {
+        return introduceUserIdProcess;
+    }
+
+    public void setIntroduceUserIdProcess(String introduceUserIdProcess) {
+        this.introduceUserIdProcess = introduceUserIdProcess;
+    }
 
     public Integer getFriendId() {
         return friendId;

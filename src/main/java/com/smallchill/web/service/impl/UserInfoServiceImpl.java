@@ -173,10 +173,10 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         userVo.setOrgType(record.getInt("org_type"));
         userVo.setProductType(record.getInt("product_type"));
         userVo.setProductServiceName(record.getStr("product_service_name"));
-        userVo.setZy(record.getStr("zy"));
-        userVo.setZy2(record.getStr("zy2"));
-        userVo.setSc(record.getStr("sc"));
-        userVo.setZl(record.getStr("zl"));
+        userVo.setZy(record.getStr("zy").trim());
+        userVo.setZy2(record.getStr("zy2").trim());
+        userVo.setSc(record.getStr("sc").trim());
+        userVo.setZl(record.getStr("zl").trim());
         userVo.setIndustryRanking(record.getStr("industry_ranking"));
         userVo.setQualification(record.getStr("qualification"));
         // 查询用户事业状态
@@ -395,7 +395,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             String professionalLevel = userInfo.getProfessionalLevel();
             String[] professionallevels = null;
             if (StringUtils.isNotBlank(professionalLevel)) {
-                professionallevels = userInfo.getProfessionalLevel().split("\\+");
+                professionallevels = userInfo.getProfessionalLevel().split("\\+", -1);
             }
             for (int i = 0; i < professionals.length; i++) {
                 String c = professionals[i];
@@ -555,26 +555,38 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
      */
     private void _update(UserInfo userinfo) {
         UserInfo _info = this.findByUserId(userinfo.getUserId());
+        Record record = Record.create().set("id", _info.getId());
         if (StringUtils.isNotBlank(userinfo.getUsername())) {
             _info.setUsername(userinfo.getUsername());
+            record.set("username", _info.getUsername());
         }
         if (StringUtils.isNotBlank(userinfo.getAvater())) {
             _info.setAvater(userinfo.getAvater());
+            record.set("avater", userinfo.getAvater());
         }
         if (userinfo.getAgeIntervalId() != null) {
             _info.setAgeIntervalId(userinfo.getAgeIntervalId());
             _info.setAge(userinfo.getAge());
+
+            record.set("ageIntervalId",userinfo.getAgeIntervalId());
+            record.set("age", userinfo.getAge());
         }
         if (userinfo.getGender() != null) {
             _info.setGender(userinfo.getGender());
+            record.set("gender", userinfo.getGender());
         }
         if (userinfo.getProvinceId() != null && userinfo.getCityId() != null) {
             _info.setProvinceId(userinfo.getProvinceId());
             _info.setCityId(userinfo.getCityId());
             _info.setProvinceCity(userinfo.getProvinceCity());
+
+            record.set("provinceId", userinfo.getProvinceId());
+            record.set("cityId", userinfo.getCityId());
+            record.set("provinceCity", userinfo.getProvinceCity());
         }
         if (StringUtils.isNotBlank(userinfo.getSchool())) {
             _info.setSchool(userinfo.getSchool());
+            record.set("school", userinfo.getSchool());
         }
         if (StringUtils.isNotBlank(userinfo.getMobile())) {
 
@@ -617,7 +629,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             _info.setDesc(userinfo.getDesc());
         }
         _info.setPer(userinfo.getPer());
-        this.update(_info);
+        this.updateEveryCol(_info);
     }
 
     /**
@@ -1160,7 +1172,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     public boolean isOverInterestNum(Integer userId) {
         UserInfoExtend userInfoExtend = userInfoExtendService.findByUserId(userId);
         if (userInfoExtend.getId() == null) userInfoExtend.setInterestCount(INTEREST_COUNTS);
-        return userInfoExtend.getInterestCount() <= findUserAndGroupInterestNumByUserId(userId);
+        return userInfoExtend.getInterestCount() + INTEREST_COUNTS <= findUserAndGroupInterestNumByUserId(userId);
     }
 
     public int findUserAndGroupInterestNumByUserId(Integer userId) {
@@ -1182,7 +1194,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     public boolean isOverAcquaintances(Integer userId) {
         UserInfoExtend userInfoExtend = userInfoExtendService.findByUserId(userId);
         if (userInfoExtend.getId() == null) userInfoExtend.setAcquaintanceCount(ACQUAINTANCE_COUNTS);
-        return userInfoExtend.getAcquaintanceCount() <= findAcquaintancesNumByUserId(userId);
+        return userInfoExtend.getAcquaintanceCount() + ACQUAINTANCE_COUNTS <= findAcquaintancesNumByUserId(userId);
     }
 
 
