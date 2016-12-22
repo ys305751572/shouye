@@ -77,13 +77,11 @@ public class YPUtil {
 
         /**************** 使用指定模板接口发短信(不推荐，建议使用智能匹配模板接口) *****************/
         //设置模板ID，如使用1号模板:【#company#】您的验证码是#code#
-        long tpl_id = 1;
+        long tpl_id = 1645810;
         //设置对应的模板变量值
 
         String tpl_value = URLEncoder.encode("#code#",ENCODING) +"="
-                + URLEncoder.encode("1234", ENCODING) + "&"
-                + URLEncoder.encode("#company#",ENCODING) + "="
-                + URLEncoder.encode("云片网",ENCODING);
+                + URLEncoder.encode("123456", ENCODING);
         //模板发送的调用示例
         System.out.println(tpl_value);
         System.out.println(YPUtil.tplSendSms(apikey, tpl_id, tpl_value, mobile));

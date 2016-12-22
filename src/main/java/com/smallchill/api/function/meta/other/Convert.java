@@ -221,6 +221,11 @@ public class Convert implements TextConst {
                     vo.setOrganization(ORG_TEXT);
                 }
             }
+            else {
+                if (orgIsOpen == 2) {
+                    vo.setOrganization(ORG_TEXT);
+                }
+            }
             vo.setUsername(hiddenRealUsername(record.getStr("username")));
         } else {
             int status = Integer.parseInt(record.get("status").toString());

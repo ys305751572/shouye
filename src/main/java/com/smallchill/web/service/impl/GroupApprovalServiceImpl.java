@@ -404,10 +404,10 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
 
     @Override
     public void userAuditGroupRefuse(Integer groupId, Integer userId) {
-        GroupApproval groupApproval = this.findFirstBy("group_id = #{groupId} and user_id = # {userId}", Record.create().set("groupId", groupId).set("userId", userId));
+        GroupApproval groupApproval = this.findFirstBy("group_id = #{groupId} and user_id = #{userId}", Record.create().set("groupId", groupId).set("userId", userId));
         groupApproval.setStatus(3);
         groupApproval.setThroughTime(DateTimeKit.nowLong());
-        this.update(groupApproval);
+        this.updateEveryCol(groupApproval);
     }
 
     /**
