@@ -149,7 +149,10 @@ public class KindEditorController extends BladeController {
 
         String path = request.getSession().getServletContext().getRealPath("/");
         path = path + File.separator + "image" + File.separator ;
-
+        File file = new File(path);
+        if (!file.exists() && !file.isDirectory()) {
+            file.mkdir();
+        }
         // 构造URL
         URL url = new URL(urlString);
         // 打开连接
