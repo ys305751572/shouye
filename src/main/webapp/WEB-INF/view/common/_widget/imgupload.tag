@@ -70,11 +70,11 @@
 						}
 						$("#_${x.index!}_IMG").attr("src", data.data.URL);
 					}
-					else{
-						layer.alert("加载图片失败", {
-							icon : 7
-						});
-					}
+//					else{
+//						layer.alert("加载图片失败", {
+//							icon : 7
+//						});
+//					}
 					
 				}, "json");
 			}
