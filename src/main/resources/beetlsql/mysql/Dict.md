@@ -9,11 +9,16 @@ select ID,pId as PID,name as TEXT from  TFW_DICT
 list2
 =====
 select
-    ID,
-    PID,
-    CODE,
-    NAME,
-    NUM
+    d.ID,
+    d.PID,
+    d.CODE,
+    d.NAME,
+    d.NUM,
+    IFNULL(at.URL,"") AS URL
 from
-    TFW_DICT 
-where code = #{code} order by num
+    TFW_DICT d
+LEFT JOIN
+    tfw_attach at
+ON 
+    d.path = at.id
+where d.code = #{code} order by num

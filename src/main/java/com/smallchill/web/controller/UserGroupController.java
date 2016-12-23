@@ -377,7 +377,7 @@ public class UserGroupController extends BaseController {
                 return error("该用户已经是会员");
             }
 
-            if(!galist.isEmpty()){
+            if(!galist.isEmpty() && isCan(galist)){
                 return error("该用户已经申请加入组织");
             }
 
@@ -394,5 +394,14 @@ public class UserGroupController extends BaseController {
 
     }
 
-
+    private boolean isCan(List galist) {
+        for (Object obj : galist) {
+            Record ga = (Record) obj;
+            if (ga.getInt("status") == 3) {
+                groupApprovalService.delete(ga.getInt("id"));
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -124,9 +124,9 @@ public class DictController extends BaseController implements ConstErrorMsg {
     @RequestMapping(KEY_UPDATE)
     public AjaxResult update() {
         Dict dict = mapping(PERFIX, Dict.class);
-        if(dict.getPid() == null && codeIsExist(dict.getCode())) {
-            return error(CODE_EXIST);
-        }
+//        if(dict.getId() == null && dict.getPid() == null && codeIsExist(dict.getCode())) {
+//            return error(CODE_EXIST);
+//        }
         dict.setVersion(getParameterToInt("VERSION", 0) + 1);
         dict.setPid(dict.getPid() == null ? 0 : dict.getPid());
         boolean temp = Blade.create(Dict.class).update(dict);

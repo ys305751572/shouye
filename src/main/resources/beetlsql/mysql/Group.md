@@ -77,7 +77,7 @@ LEFT JOIN
     tb_group_approval ga
 ON
     (g.id = ga.group_id AND ga.user_id = #{userId})
-LEFT JOIN tb_group_load gl ON g.`id` = gl.`group_id` ORDER BY gl.`id` IS NULL,gl.id,g.`id` DESC
+LEFT JOIN tb_group_load gl ON g.`id` = gl.`group_id` where 1 = 1 AND (g.permissions_type = 1 OR ga.`status` = 2) ORDER BY gl.`id` IS NULL,gl.id,g.`id` DESC
 groupDetailWithUa
 =======================
 SELECT

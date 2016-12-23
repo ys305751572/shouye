@@ -39,7 +39,7 @@ public class ConfigApi extends BaseController{
     @ResponseBody
     @Before(CodeValidate.class)
     public String selectCode(final String code) {
-        List<Map<Integer,Dict>> dict = CacheKit.get(DICT_CACHE, "dict_common_" + code,
+        List<Map<Integer,Dict>> dict = CacheKit.get(DICT_CACHE, "dict_common_api" + code,
                 new ILoader() {
                     public Object load() {
 //                        String sql = Blade.dao().getScript("Dict.list2").getSql();

@@ -27,6 +27,7 @@ import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.CacheKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.platform.service.UserLoginService;
 import com.smallchill.system.meta.intercept.UserValidator;
 import com.smallchill.web.model.UserApproval;
 import com.smallchill.web.model.UserInfo;
@@ -55,6 +56,8 @@ public class UserApi extends BaseController implements ConstCache {
 
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private UserLoginService userLoginService;
     @Autowired
     private UserApprovalService userApprovalService;
     @Autowired
@@ -542,7 +545,7 @@ public class UserApi extends BaseController implements ConstCache {
     @ResponseBody
     @Before(VcodeValidate.class)
     public String updateBindMobile(String mobile, String code, Integer userId) {
-        if (vcodeService.validate(mobile, code)) {
+        if (!userLoginService.userIfExtis(mobile)) {
             try {
                 userInfoService.updateMobile(mobile, userId);
             } catch (UserExitsException e) {

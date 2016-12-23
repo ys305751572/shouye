@@ -16,7 +16,7 @@ import java.util.List;
 public class LocalServiceImpl implements LocalSerivce {
 
     @Override
-    public void upload(Integer userId, Double lat, Double lon) {
+    public void upload(Integer userId, Double lon, Double lat) {
         String sql = "select * from tb_user_local ul where ul.user_id = #{userId}";
         Record record = Db.init().selectOne(sql, Record.create().set("userId", userId));
         if (record == null) {

@@ -75,6 +75,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     private AugService augService;
     @Autowired
     private UserInfoExtendService userInfoExtendService;
+
     @Transactional
     @Override
     public UserInfo updateUserInfo(UserInfo userInfo, HttpServletRequest request) throws UserExitsException {
@@ -334,7 +335,12 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             product.append(record.getStr("qualification"));
         }
         userExtendVo.setOrg(product.toString());
-        userExtendVo.setCareer(StringUtils.isNotBlank(record.getStr("career")) ? record.getStr("career").replace("/", "<br>") : "");
+        String str = "退休/半退休";
+        String career = record.getStr("career");
+        if (StringUtils.isNotBlank(career) && career.contains(str)) {
+            career = career.replace(str, "=");
+        }
+        userExtendVo.setCareer(StringUtils.isNotBlank(career) ? career.replace("/", "<br>").replace("=", str) : "");
         userExtendVo.setSchool(StringUtils.isNotBlank(record.getStr("school")) ? record.getStr("school").replace("|", "<br>") : "");
         return userExtendVo;
     }
@@ -568,7 +574,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
             _info.setAgeIntervalId(userinfo.getAgeIntervalId());
             _info.setAge(userinfo.getAge());
 
-            record.set("ageIntervalId",userinfo.getAgeIntervalId());
+            record.set("ageIntervalId", userinfo.getAgeIntervalId());
             record.set("age", userinfo.getAge());
         }
         if (userinfo.getGender() != null) {
@@ -905,33 +911,50 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
      */
     @Override
     public Record intersection(Integer userId, Integer toUserId) {
+
+        List<Record> userList;
+        List<Record> groupList;
         String sql = "SELECT uf.friend_id FROM tb_user_friend uf INNER JOIN tb_user_friend uf2 ON uf.`friend_id` = uf2.`friend_id` " +
                 "AND uf2.`user_id` = #{toUserId} WHERE uf.`user_id` = #{userId} and uf.type = 2 group by uf.friend_id";
         List<Record> recordList = Db.init().selectList(sql, Record.create().set("userId", userId).set("toUserId", toUserId));
-        String sql2 = "select ui.user_id userId, ui.username FROM tb_user_info ui where ui.user_id in (#{ids})";
-        StringBuffer ids = new StringBuffer();
-        for (Record record : recordList) {
-            ids.append(record.getStr("friend_id")).append(",");
-        }
-        List<Record> userList;
-        if (ids.length() > 0) {
-            userList = Db.init().selectList(sql2, Record.create().set("ids", ids.substring(0, ids.length() - 1)));
-        } else {
+        String sql2 = "select ui.user_id userId, ui.username FROM tb_user_info ui where ui.user_id in (";
+
+        if (CollectionKit.isEmpty(recordList)) {
             userList = new ArrayList<>();
+        } else {
+            StringBuffer sql2Buffer = new StringBuffer(sql2);
+            Record recordUser = Record.create();
+            for (int i = 0; i < recordList.size(); i++) {
+                sql2Buffer.append("#{id" + i + "}");
+                if (i != (recordList.size() - 1)) {
+                    sql2Buffer.append(",");
+                }
+                recordUser.set("id" + i, recordList.get(i).getStr("friend_id"));
+            }
+            sql2Buffer.append(")");
+            userList = Db.init().selectList(sql2Buffer.toString(), recordUser);
         }
+
+        // =======================================共同组织================================================
         String sql3 = "SELECT ug.group_id FROM tb_user_group ug inner join tb_user_group ug2 on ug.`group_id` = ug2.`group_id`" +
                 " and ug2.`user_id` = #{toUserId} WHERE ug.`user_id` = #{userId} group by ug.`group_id`";
         List<Record> groupRecordList = Db.init().selectList(sql3, Record.create().set("userId", userId).set("toUserId", toUserId));
-        StringBuffer ids2 = new StringBuffer();
-        for (Record record : groupRecordList) {
-            ids2.append(record.getStr("group_id")).append(",");
-        }
-        String sql4 = "SELECT id,`name` FROM tb_group WHERE id IN (#{ids2})";
-        List<Record> groupList;
-        if (ids2.length() > 0) {
-            groupList = Db.init().selectList(sql4, Record.create().set("ids2", ids2.substring(0, ids2.length() - 1)));
-        } else {
+
+        if (CollectionKit.isEmpty(groupRecordList)) {
             groupList = new ArrayList<>();
+        } else {
+            String sql4 = "SELECT id,`name` FROM tb_group WHERE id IN (";
+            StringBuffer sql3Buffer = new StringBuffer(sql4);
+            Record recordGroup = Record.create();
+            for (int i = 0; i < groupRecordList.size(); i++) {
+                sql3Buffer.append("#{id" + i + "}");
+                if (i != (groupRecordList.size() - 1)) {
+                    sql3Buffer.append(",");
+                }
+                recordGroup.set("id" + i, groupRecordList.get(i).getStr("group_id"));
+            }
+            sql3Buffer.append(")");
+            groupList = Db.init().selectList(sql3Buffer.toString(), recordGroup);
         }
         Record record = Record.create();
         return record.set("uservos", userList).set("groupvos", groupList);
@@ -1165,6 +1188,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     /**
      * 是否达到用户感兴趣人数上限
+     *
      * @param userId 当前用户ID
      * @return boolean
      */
@@ -1187,6 +1211,7 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
 
     /**
      * 是否达到用户熟人人数上限
+     *
      * @param userId 当前用户ID
      * @return boolean
      */

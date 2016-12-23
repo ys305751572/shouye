@@ -3,6 +3,8 @@ list
 SELECT
   SS.juli,
   ua.`status`,
+  ua.`from_user_id`,
+  ua.`to_user_id`,
   ui.user_id userId,
   ui.username,
   IFNULL(ui.avater, '') AS avater,

@@ -32,21 +32,23 @@ public class ClassificationServiceImpl extends BaseService<Classification> imple
 
     @Override
     public void userClassificationAddForGroupAgree(Integer groupId, Integer userId,Integer matchType, Integer targetType) {
-        if (targetType == 1) {
-            // class
-            userClassificationService.deleteByGroupIdAndUserId(groupId, userId);
-            UserClassification uc = new UserClassification();
-            uc.setClassificationId(matchType);
-            uc.setUserId(userId);
-            userClassificationService.save(uc);
-        }
-        else {
-            // tag
-            userTagService.deleteByGroupIdAndUserId(groupId, userId);
-            UserTag userTag = new UserTag();
-            userTag.setTagId(matchType);
-            userTag.setUserId(userId);
-            userTagService.save(userTag);
+        if (targetType != null) {
+            if (targetType == 1) {
+                // class
+                userClassificationService.deleteByGroupIdAndUserId(groupId, userId);
+                UserClassification uc = new UserClassification();
+                uc.setClassificationId(matchType);
+                uc.setUserId(userId);
+                userClassificationService.save(uc);
+            }
+            else {
+                // tag
+                userTagService.deleteByGroupIdAndUserId(groupId, userId);
+                UserTag userTag = new UserTag();
+                userTag.setTagId(matchType);
+                userTag.setUserId(userId);
+                userTagService.save(userTag);
+            }
         }
     }
 

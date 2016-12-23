@@ -260,6 +260,7 @@ public class GroupApi extends BaseController {
                 "\t(g.id = ug.group_id AND ug.user_id = #{userId})\n" +
                 "WHERE\n" +
                 "\t1 = 1\n" +
+                "\tAND (g.permissions_type = 1 or ga.status = 2)\n" +
                 "  AND (\n" +
                 "\tg.`name` LIKE CONCAT('%',#{keyWord},'%') OR g.`targat` LIKE CONCAT('%',#{keyWord},'%')\n" +
                 "  )\n" +
