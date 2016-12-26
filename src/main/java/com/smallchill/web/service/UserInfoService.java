@@ -22,6 +22,8 @@ public interface UserInfoService extends IService<UserInfo> {
 
     UserInfo findByUserId(int userId);
 
+    List<UserInfo> findByUserIds(List<Integer> userIds);
+
     List<Record> findByParmas(Record params);
 
     Record findUserInfoDetail(Integer userId);

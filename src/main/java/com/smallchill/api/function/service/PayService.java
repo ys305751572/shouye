@@ -14,7 +14,7 @@ public interface PayService {
 
     Map<String, Object> getPrepayId(Integer userId, Integer groupId, Double cost, String validateInfo,
                                     Integer matchType, Integer targetType, HttpServletResponse response, HttpServletRequest request)
-            throws GroupCostException, UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException, GroupLimitException;
+            throws GroupCostException, UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException, GroupLimitException, GroupCloseJoinException;
 
     void joinGroupWxNotify(HttpServletRequest request, HttpServletResponse response);
 
@@ -28,4 +28,9 @@ public interface PayService {
     void valueaddServiceWxNotify(HttpServletRequest request, HttpServletResponse response);
 
     void refund(Integer gaId, HttpServletRequest request, HttpServletResponse response);
+
+    Map<String, Object> createRenewalOrder(Integer userId, Integer groupId, Double cost, HttpServletRequest request,
+                                           HttpServletResponse response) throws GroupCostException;
+
+    void wxRenewalNotify(HttpServletRequest request, HttpServletResponse response);
 }

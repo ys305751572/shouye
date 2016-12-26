@@ -19,10 +19,12 @@ public class PayConfig {
 //    public final static String NOTIFY_URL_ALIPAY = "http://121.40.63.108:8081/app/pay/alipayNotify";
 //      public final static String NOTIFY_URL_WEIXIN_GROUP_JOIN = "http://31a86dcb.ittun.com/blade/api/pay/weixin/group/join/notify";
 //      public final static String NOTIFY_URL_WEIXIN_VALUEADD = "http://31a86dcb.ittun.com/blade/api/pay/weixin/valueadd/notify";
+//    public static final String IP = "100939f3.ittun.com"; // 测试
+    public static final String IP = "120.24.212.99:8080"; // 正式
 
-    public final static String NOTIFY_URL_WEIXIN_GROUP_JOIN = "http://120.24.212.99:8080/blade/api/pay/weixin/group/join/notify";
-    public final static String NOTIFY_URL_WEIXIN_VALUEADD = "http://120.24.212.99:8080/blade/api/pay/weixin/valueadd/notify";
-
+    public final static String NOTIFY_URL_WEIXIN_GROUP_JOIN = "http://"+ IP +"/blade/api/pay/weixin/group/join/notify";
+    public final static String NOTIFY_URL_WEIXIN_VALUEADD = "http://" + IP + "/blade/api/pay/weixin/valueadd/notify";
+    public final static String NOTIFY_URL_WEIXIN_RENEWAL = "http://"+ IP +"/blade/api/pay/weixin/renewal/notify";
     /**
      * @param request
      * @param response
@@ -33,7 +35,7 @@ public class PayConfig {
      */
     public static Map<String, Object> config(HttpServletRequest request, HttpServletResponse response, String sn, Double totalFee, String payWay, String notify) {
         Map<String, Object> params = new HashMap<String, Object>();
-        int totelFee = 1;
+//        int totelFee = 1;
         if ("ALIPAY".equals(payWay)) {
             // 支付宝
 //            params.put("sn", sn);
@@ -44,8 +46,8 @@ public class PayConfig {
 //            params.put("url", NOTIFY_URL_ALIPAY);
         } else {
             // 微信
-            String prepayid = null; //预支付款ID
-            request.setAttribute("fee", totelFee);
+            String prepayid = ""; //预支付款ID
+            request.setAttribute("fee", Double.valueOf(totalFee * 100).intValue());
             request.setAttribute("sn", sn);
             request.setAttribute("prepayid", prepayid);
             params = PayRequest.pay(request, response, notify);

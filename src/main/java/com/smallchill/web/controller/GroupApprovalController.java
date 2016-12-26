@@ -5,10 +5,13 @@ import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.support.BladePage;
 import com.smallchill.system.service.DictService;
 import com.smallchill.web.meta.intercept.GroupAdminIntercept;
 import com.smallchill.web.model.*;
 import com.smallchill.web.service.*;
+import org.beetl.sql.core.kit.CaseInsensitiveHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -53,8 +56,35 @@ public class GroupApprovalController extends BaseController {
     @ResponseBody
     @RequestMapping(KEY_LIST)
     public Object loadList() {
-        Object object = paginate(LIST_SOURCE,new GroupAdminIntercept());
+        JqGrid object = (JqGrid) paginate(LIST_SOURCE,new GroupAdminIntercept());
+        matchType(object);
         return object;
+    }
+
+    private void matchType(JqGrid bladePage) {
+        Collection<CaseInsensitiveHashMap> list = bladePage.getRows();
+        for (CaseInsensitiveHashMap map : list) {
+            Object targetType = map.get("targetType");
+            Object matchType = map.get("matchType");
+            int userId = Integer.parseInt(map.get("userId").toString());
+            int groupId = Integer.parseInt(map.get("groupId").toString());
+            if (targetType != null && Integer.parseInt(targetType.toString()) == 1) {
+                // 查询分组名字
+                String sql = "select c.`classification` from tb_user_classification uc " +
+                        "left join tb_classification c on uc.`classification_id` = c.`id`" +
+                        " where c.`group_id` = #{groupId} and uc.`user_id` = #{userId} and uc.`classification_id` = #{matchType} order by uc.`id` desc";
+                Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId).set("userId", userId).set("matchType", Integer.parseInt(matchType.toString())));
+                map.put("matchTypeString",record == null ? "" : record.getStr("classification"));
+            } else if (targetType != null && Integer.parseInt(targetType.toString()) == 2) {
+                // 查询标记名字
+                String sql = "SELECT t.`tag` FROM tb_user_tag ut LEFT JOIN tb_tag t ON ut.`tag_id` = t.`id` " +
+                        "WHERE ut.`user_id` = #{userId} AND t.`group_id` = #{groupId} and ut.`tag_id` = #{matchType} ORDER BY ut.`id` DESC";
+                Record record = Db.init().selectOne(sql, Record.create().set("groupId", groupId).set("userId", userId).set("matchType", Integer.parseInt(matchType.toString())));
+                map.put("matchTypeString", record == null ?  "" : record.getStr("tag"));
+            } else {
+                map.put("matchTypeString","");
+            }
+        }
     }
 
     /**

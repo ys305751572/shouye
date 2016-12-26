@@ -52,8 +52,8 @@
 	<script type="text/javascript">
 
 		var layerIndex = parent.layer.getFrameIndex(window.name);
-		var userName = "${userInfo.username}";
-		var userId = "${userInfo.userId}";
+		var userName = "${username}";
+		var userId = "${userId}";
 		var userInfoNum = "${userInfoNum}";
 		var flag = "${flag}";
 
@@ -78,7 +78,6 @@
 
 			$("#btn_save").bind("click",function(){
 				var content = $("#content").val();
-
 				$.post("${basePath}/${code}/send_message",{userId:userId , content:content}, function(data){
 					if(data.code===0){
 						layer_alert(data.message, "success");

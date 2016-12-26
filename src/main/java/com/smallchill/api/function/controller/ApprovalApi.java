@@ -64,6 +64,8 @@ public class ApprovalApi extends BaseController {
             return fail(ErrorType.ERROR_CODE_APP_USERHASJOIN);
         } catch (UserInMyBlankException e) {
             return fail(ErrorType.ERROR_CODE_APP_USERINMYBLANK);
+        } catch (GroupCloseIntroduceException e) {
+            return fail(ErrorType.ERROR_CODE_APP_GROUP_CLOSE_INTRODUCE_FAIL);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();

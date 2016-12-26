@@ -54,6 +54,8 @@ public class PayServiceImpl implements PayService, StatusConst {
     private UserInfoExtendService userInfoExtendService;
     @Autowired
     private RefundService refundService;
+    @Autowired
+    private UserGroupService userGroupService;
 
     /**
      * 获取预支付款ID
@@ -69,7 +71,7 @@ public class PayServiceImpl implements PayService, StatusConst {
     public Map<String, Object> getPrepayId(Integer userId, Integer groupId, Double cost, String validateInfo,
                                            Integer matchType, Integer targetType, HttpServletResponse response, HttpServletRequest request)
             throws GroupCostException, UserHasApprovalException, UserHasJoinGroupException, UserInOthersBlankException,
-            GroupLimitException {
+            GroupLimitException, GroupCloseJoinException {
 
         Double realCost = groupExtendService.getCost(groupId);
         if (realCost != null && !cost.equals(realCost)) {
@@ -271,8 +273,7 @@ public class PayServiceImpl implements PayService, StatusConst {
             if ("SUCCESS".equals(getMap.get("return_code"))) {
                 // 正确
                 orderService.setOrderRefuseSuccess(order);
-            }
-            else {
+            } else {
                 orderService.setOrderRefuseRefuse(order);
             }
         } catch (Exception e) {
@@ -298,5 +299,60 @@ public class PayServiceImpl implements PayService, StatusConst {
             e.printStackTrace();
         }
         return resultMap;
+    }
+
+    /**
+     * 创建续费订单
+     *
+     * @param userId   用户ID
+     * @param groupId  组织ID
+     * @param cost     年费
+     * @param request  request
+     * @param response response
+     */
+    public Map<String, Object> createRenewalOrder(Integer userId, Integer groupId, Double cost, HttpServletRequest request,
+                                   HttpServletResponse response) throws GroupCostException {
+        Double realCost = groupExtendService.getCost(groupId);
+        if (realCost != null && !cost.equals(realCost)) {
+            throw new GroupCostException();
+        }
+        if (realCost == null) return null;
+        String orderNo = CommonKit.generateSn();
+        Double c = Double.parseDouble(realCost.toString());
+
+        Map<String, Object> resultMap = PayConfig.config(request, response, orderNo, c, WEIXIN, PayConfig.NOTIFY_URL_WEIXIN_RENEWAL);
+        if (CollectionKit.isNotEmpty(resultMap)) {
+            Order order = new Order();
+            order.setGroupId(groupId);
+            order.setUserId(userId);
+            order.setGaId(0);
+            order.setOrderNo(orderNo);
+            order.setOrderAmount(c);
+            order.setOrderType(ORDER_TYPE_COST_RENEWAL);
+            order.setStatus(ORDER_STATUS_ERROR);
+            order.setCreateTime(DateTimeKit.nowLong());
+            order.setCounts(1);
+            order.setPlatform(1);
+            order.setFlow(flow_exit);
+            orderService.saveRtId(order);
+        }
+        return resultMap;
+    }
+
+    @Override
+    public void wxRenewalNotify(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> resultMap = parse(request);
+        if (resultMap.get("result_code").equals("SUCCESS")) {
+            // 成功
+            String orderNo = resultMap.get("out_trade_no");
+            Order order = orderService.findByOrderNo(orderNo);
+            if (order != null && order.getStatus() == ORDER_STATUS_ERROR) {
+                // 修改订单状态
+                // 修改用户拓展信息数据
+                orderService.setOrderSuccess(order);
+                // 修改会员过期时间
+                userGroupService.renewal(order.getUserId(), order.getGroupId());
+            }
+        }
     }
 }

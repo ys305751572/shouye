@@ -144,6 +144,22 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
     }
 
     @Override
+    public List<UserInfo> findByUserIds(List<Integer> userIds) {
+        String where = "where user_id in (";
+        StringBuffer buffer = new StringBuffer(where);
+        Record record = Record.create();
+        for (int i = 0; i < userIds.size(); i++) {
+            buffer.append("#{userId").append(i).append("}");
+            record.set("userId" + i, userIds.get(i));
+            if (i != userIds.size() - 1) {
+                buffer.append(",");
+            }
+        }
+        buffer.append(")");
+        return this.findBy(buffer.toString(), record);
+    }
+
+    @Override
     public List<Record> findByParmas(Record params) {
         String sql = Blade.dao().getScript("UserInfo.listPage").getSql();
         return Db.init().selectList(sql, params);

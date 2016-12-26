@@ -142,12 +142,12 @@
             },
             {name:"validateInfo",index:"validateInfo", width:220,
                 formatter: function (cellvalue, options, rowObject) {
-                    var matchType = rowObject.matchType;
+                    var matchType = rowObject.matchTypeString;
                     var paied;
-                    if(rowObject.paied==1){
-                        paied = "未缴纳";
+                    if(rowObject.paied == 1 && rowObject.ostatus != null && rowObject.ostatus == 2){
+                        paied = "";
                     }else {
-                        paied = "已缴纳";
+                        paied = "缴纳待审";
                     }
                     return "<p style='color: #00be67'>"+matchType+"</p>" +
                             "<p>"+cellvalue+"</p>" +

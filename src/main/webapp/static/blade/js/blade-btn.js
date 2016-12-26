@@ -156,10 +156,10 @@ var exwhere;
 
         //发送消息按钮
         if (this.alias == "message") {
-            if (rows > 1) {
-                layer_alert('只能选择一条数据!', "warn");
-                return;
-            }
+            //if (rows > 1) {
+            //    layer_alert('只能选择一条数据!', "warn");
+            //    return;
+            //}
             var url = this.url;
             this.open(url + split + ids, ids);
             return;

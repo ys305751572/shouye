@@ -19,6 +19,7 @@ public interface StatusConst {
     int INVITATION = 2; // 邀请
 
     int ORDER_TYPE_COST = 1; // 年费
+    int ORDER_TYPE_COST_RENEWAL = 2;// 会费续费
 
     int ORDER_STATUS_SUCCESS = 1; // 订单状态-成功
     int ORDER_STATUS_ERROR = 2; //  订单状态-失败

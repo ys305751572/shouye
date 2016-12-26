@@ -1,5 +1,6 @@
 package com.smallchill.web.service;
 
+import com.smallchill.api.common.exception.GroupCloseJoinException;
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInOthersBlankException;
@@ -22,7 +23,8 @@ public interface GroupApprovalService extends IService<GroupApproval> {
      * @param userId 当前用户id
      * @param groupId 组织ID
      */
-    boolean isMeetConditions(Integer userId, Integer groupId);
+    boolean isMeetConditions(Integer userId, Integer groupId) throws GroupCloseJoinException;
+
 
     /**
      * 加入组织

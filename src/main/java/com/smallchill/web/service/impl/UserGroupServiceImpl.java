@@ -3,6 +3,7 @@ package com.smallchill.web.service.impl;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.shiro.ShiroKit;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.Group;
 import com.smallchill.web.model.GroupApproval;
 import com.smallchill.web.model.UserApproval;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -73,5 +75,18 @@ public class UserGroupServiceImpl extends BaseService<UserGroup> implements User
                 "AND b.mobile = #{mobile}";
         List list = Db.init().selectList(sql,Record.create().set("groupId",group.getId()).set("mobile",mobile));
         return list;
+    }
+
+    @Override
+    public void renewal(Integer userId, Integer groupId) {
+        UserGroup ug = findByUserIdAndGroupId(userId, groupId);
+        ug.setVipEndTime(DateTimeKit.offsiteYear(new Date(ug.getVipEndTime()),1).getTime());
+        this.update(ug);
+    }
+
+    @Override
+    public UserGroup findByUserIdAndGroupId(Integer userId, Integer groupId) {
+        Record record = Record.create().set("userId", userId).set("groupId", groupId);
+        return this.findFirstBy("user_id = #{userId} and group_id = #{groupId}", record);
     }
 }

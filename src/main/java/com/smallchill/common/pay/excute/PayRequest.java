@@ -35,7 +35,7 @@ public class PayRequest {
         if (!"".equals(token)) {
             prepayReqHandler.setParameter("appid", ConstantUtil.APP_ID);
 
-            prepayReqHandler.setParameter("body", "签约支付");
+            prepayReqHandler.setParameter("body", "支付");
             prepayReqHandler.setParameter("device_info", ConstantUtil.DEVICE_INFO);
             prepayReqHandler.setParameter("fee_type", "CNY");
             prepayReqHandler.setParameter("mch_id", ConstantUtil.PARTNER);

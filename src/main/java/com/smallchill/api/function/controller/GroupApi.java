@@ -1,5 +1,6 @@
 package com.smallchill.api.function.controller;
 
+import com.smallchill.api.common.exception.GroupCloseJoinException;
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInOthersBlankException;
@@ -162,8 +163,12 @@ public class GroupApi extends BaseController {
     public String join(GroupApproval ga, Integer targetType) {
 
         // 判断用户是否满足组织的加入限制条件
-        if (!groupApprovalService.isMeetConditions(ga.getUserId(), ga.getGroupId())) {
-            return fail(ErrorType.ERROR_CODE_APP_CANNOT_JOIN_GROUP_FAIL);
+        try {
+            if (!groupApprovalService.isMeetConditions(ga.getUserId(), ga.getGroupId())) {
+                return fail(ErrorType.ERROR_CODE_APP_CANNOT_JOIN_GROUP_FAIL);
+            }
+        } catch (GroupCloseJoinException e) {
+            return fail(ErrorType.ERROR_CODE_APP_GROUP_CLOSE_JOIN_FAIL);
         }
         try {
             groupApprovalService.join(ga);
@@ -260,7 +265,7 @@ public class GroupApi extends BaseController {
                 "\t(g.id = ug.group_id AND ug.user_id = #{userId})\n" +
                 "WHERE\n" +
                 "\t1 = 1\n" +
-                "\tAND (g.permissions_type = 1 or ga.status = 2)\n" +
+                "\tAND (g.permissions_type = 1)\n" +
                 "  AND (\n" +
                 "\tg.`name` LIKE CONCAT('%',#{keyWord},'%') OR g.`targat` LIKE CONCAT('%',#{keyWord},'%')\n" +
                 "  )\n" +
@@ -327,4 +332,6 @@ public class GroupApi extends BaseController {
         }
         return success(Record.create().set("hotWordList", hotList).set("keyWordList", keywordList), "guessWord");
     }
+
+
 }

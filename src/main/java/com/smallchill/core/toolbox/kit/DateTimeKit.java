@@ -418,6 +418,15 @@ public class DateTimeKit {
 	}
 
 	/**
+	 * 偏移年
+	 * @param date 日期
+	 * @param offsite 偏移月数，正数向未来偏移，负数向历史偏移
+     * @return 偏移后的日期
+     */
+	public static DateTime offsiteYear(Date date, int offsite) {
+		return offsiteDate(date, Calendar.YEAR, offsite);
+	}
+	/**
 	 * 获取指定日期偏移指定时间后的时间
 	 * @param date 基准日期
 	 * @param calendarField 偏移的粒度大小（小时、天、月等）使用Calendar中的常数

@@ -1,5 +1,6 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.common.exception.GroupCloseJoinException;
 import com.smallchill.api.common.exception.UserHasApprovalException;
 import com.smallchill.api.common.exception.UserHasJoinGroupException;
 import com.smallchill.api.common.exception.UserInOthersBlankException;
@@ -106,9 +107,12 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
      * @param groupId 组织ID
      */
     @Override
-    public boolean isMeetConditions(Integer userId, Integer groupId) {
+    public boolean isMeetConditions(Integer userId, Integer groupId) throws GroupCloseJoinException {
         Group group = groupService.findById(groupId);
         UserInfo userInfo = userInfoService.findByUserId(userId);
+        if (group.getIsJoin() == 2) {
+            throw new GroupCloseJoinException();
+        }
         int gender = (group.getSexLimit() == null ? 0 : group.getSexLimit());
         if (gender != 0 && gender != userInfo.getGender()) return false;
         int province = (group.getProvinceLimit() == null ? 0 : group.getProvinceLimit());
@@ -393,13 +397,22 @@ public class GroupApprovalServiceImpl extends BaseService<GroupApproval> impleme
         groupApproval.setThroughTime(DateTimeKit.nowLong());
         this.update(groupApproval);
 
-        UserGroup userGroup = new UserGroup();
-        userGroup.setGroupId(groupApproval.getGroupId());
-        userGroup.setUserId(groupApproval.getUserId());
-        userGroup.setVipEndTime(-1L);
-        userGroup.setType(1);
-        userGroup.setJoinType(2);
-        userGroupService.save(userGroup);
+        UserGroup dict = userGroupService.findByUserIdAndGroupId(userId,groupId);
+        if (dict != null) {
+            dict.setVipEndTime(-1L);
+            dict.setType(1);
+            dict.setJoinType(2);
+            userGroupService.update(dict);
+        }
+        else {
+            UserGroup userGroup = new UserGroup();
+            userGroup.setGroupId(groupApproval.getGroupId());
+            userGroup.setUserId(groupApproval.getUserId());
+            userGroup.setVipEndTime(-1L);
+            userGroup.setType(1);
+            userGroup.setJoinType(2);
+            userGroupService.save(userGroup);
+        }
     }
 
     @Override

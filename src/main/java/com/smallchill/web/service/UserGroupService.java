@@ -19,5 +19,7 @@ public interface UserGroupService extends IService<UserGroup> {
 
     List findMembers(String mobile);
 
+    void renewal(Integer userId, Integer group);
 
+    UserGroup findByUserIdAndGroupId(Integer userId, Integer groupId);
 }
