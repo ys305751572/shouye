@@ -1013,7 +1013,16 @@ public class UserInfoServiceImpl extends BaseService<UserInfo> implements UserIn
         List<UserVo> voList = new ArrayList<>();
         for (Record record : recordList) {
             UserVo userVo = Convert.recordToVo(record);
-            userVo.setPaied(record.getInt("paied"));
+            int paied = record.getInt("paied");
+            int ostatus = record.getInt("ostatus");
+            int status;
+            if (ostatus == 1) {
+                status = 1;
+            }
+            else {
+                status = 2;
+            }
+            userVo.setPaied(status);
             userVo.setValidateInfo(record.getStr("validateInfo"));
             voList.add(userVo);
         }

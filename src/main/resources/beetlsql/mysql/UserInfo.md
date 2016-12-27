@@ -217,13 +217,16 @@ SELECT
   ui.desc,
   ga.status,
   ga.paied,
-  ga.validate_info validateInfo
+  ga.validate_info validateInfo,
+  o.status ostatus
 FROM
   tb_group_approval ga
 LEFT JOIN
   tb_user_info ui
 ON
   ga.`user_id` = ui.`user_id`
+LEFT JOIN 
+    tb_order o ON ga.`id` = o.`ga_id`
 WHERE ga.`group_id` = #{groupId}
   AND ga.`type` = 1 AND ga.`status` = 1
 

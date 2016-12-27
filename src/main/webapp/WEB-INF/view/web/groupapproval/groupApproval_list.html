@@ -144,13 +144,15 @@
                 formatter: function (cellvalue, options, rowObject) {
                     var matchType = rowObject.matchTypeString;
                     var paied;
-                    if(rowObject.paied == 1 && rowObject.ostatus != null && rowObject.ostatus == 2){
+                    var validateInfo = cellvalue;
+                    validateInfo = myReplace(validateInfo);
+                    if(rowObject.ostatus != null && rowObject.ostatus == 1){
                         paied = "";
                     }else {
                         paied = "缴纳待审";
                     }
                     return "<p style='color: #00be67'>"+matchType+"</p>" +
-                            "<p>"+cellvalue+"</p>" +
+                            "<p>"+validateInfo+"</p>" +
                             "<p style='color: #00b3ee'>["+paied+"]</p>"
                 }
             },
@@ -216,6 +218,10 @@
             postData: {sort: "id", order: "desc"}
         });
 
+    }
+
+    function myReplace(str) {
+        return str.replace(/(.{15})/g,'$1\n');
     }
 
     function date_format(data){
@@ -309,7 +315,6 @@
         <div id="grid-pager"></div>
     </div>
 </div>
-
 <!-- 引入列表页所需js -->
 @include("/common/_listscript.html"){}
 <link rel="stylesheet" href="${basePath}/static/zTree/css/zTreeStyle/zTreeStyle.css" />

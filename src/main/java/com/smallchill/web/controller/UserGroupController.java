@@ -275,7 +275,7 @@ public class UserGroupController extends BaseController {
      */
     //消息发送页面(单发)
     @RequestMapping("/message" + "/{id}")
-    public String userMessages(ModelMap mm, @PathVariable String id) {
+    public String userMessages(ModelMap mm, @PathVariable String id, HttpServletRequest request) {
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
         int sendMass = 1;
         String username = "";
@@ -302,12 +302,11 @@ public class UserGroupController extends BaseController {
 
 
         List<Message> messages = messageService.findBy(
-                "from_id = #{fromId} AND send_date >= #{startDate} AND send_date < #{endDate} AND send_mass = #{sendMass} GROUP BY send_date",
+                "from_id = #{fromId} AND send_date >= #{startDate} AND send_date < #{endDate} GROUP BY send_date",
                 Record.create()
                         .set("fromId", group.getId())
                         .set("startDate", TimeUtil.getTimesmorning())
                         .set("endDate", TimeUtil.getTimesnight())
-                        .set("sendMass", sendMass)
         );
 
         mm.put("flag", messages.size());
@@ -325,17 +324,17 @@ public class UserGroupController extends BaseController {
         UserInfo userInfo = new UserInfo();
 
         List<Message> messages = messageService.findBy(
-                "from_id = #{fromId} AND send_date >= #{startDate} AND send_date < #{endDate} AND send_mass = #{sendMass} GROUP BY send_date",
+                "from_id = #{fromId} AND send_date >= #{startDate} AND send_date < #{endDate} GROUP BY send_date",
                 Record.create()
                         .set("fromId", group.getId())
                         .set("startDate", TimeUtil.getTimesmorning())
                         .set("endDate", TimeUtil.getTimesnight())
-                        .set("sendMass", 2)
         );
 
         mm.put("flag", messages.size());
         mm.put("userInfoNum", request.getSession().getAttribute("userGroupNum"));
-        mm.put("userInfo", userInfo);
+        mm.put("username", userInfo.getUsername());
+        mm.put("userId", userInfo.getUserId());
         mm.put("code", CODE);
         return BASE_PATH + "userGroup_message.html";
     }
