@@ -138,6 +138,7 @@
                 var groupId = "${group.id}";
                 var province = $("#province").val();
                 var city = $("#city").val();
+                var groupType = $("#groupType").val();
 
                 var targat = [];
                 var phones = [];
@@ -151,7 +152,7 @@
                     phones.push($(this).val());
                 });
 
-                $.post("${basePath}/${code}/setGroup",{groupId:groupId,avaterId:avaterId,province:province, city:city, targat:JSON.stringify(targat), phones:JSON.stringify(phones)}, function(data){
+                $.post("${basePath}/${code}/setGroup",{groupId:groupId,avaterId:avaterId,province:province,groupType:groupType, city:city, targat:JSON.stringify(targat), phones:JSON.stringify(phones)}, function(data){
                     if(data.code===0){
                         layer.msg(data.message, {
                             time: 500

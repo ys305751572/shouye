@@ -38,4 +38,16 @@ public interface StatusConst {
 
     int SQL_VALUE_ADD_SERVICE_TYPE_INTEREST = 3;    // 感兴趣
     int SQL_VALUE_ADD_SERVICE_TYPE_ACQUAINTANCE = 4; // 熟人
+
+    int ARTICLE_SHOW_FRIEND = 1; // 朋友
+    int ARTICLE_SHOW_INTERESTED = 2; // 对我感兴趣
+    int ARTICLE_SHOW_INTEREST = 3; // 我感兴趣
+    int ARTICLE_SHOW_DAILY = 4; // 日报
+    int ARTICLE_SHOW_MAGAZINE = 5; // 杂志
+
+    int ARTICLE_NOT_PROCESS = 1; // 未处理
+    int ARTICLE_AGREE = 2;  // 通过
+    int ARTICLE_REFUSE = 3; // 未通过
+    int ARTICLE_PUBLISH = 4; // 已发布
+    int ARTICLE_DEL = 5; // 弃稿
 }

@@ -38,12 +38,12 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
     @Autowired
     private GroupService groupService;
 
-    private String USER_BASE_INFO_SQL = " ui.user_id userId,ui.username,IFNULL(ui.avater,'') as avater ,ui.province_city provinceCity,ui.domain,ui.key_word keyWord,ui.organization,ui.professional,ui.per ";
+    private static String USER_BASE_INFO_SQL = " ui.user_id userId,ui.username,IFNULL(ui.avater,'') as avater ,ui.province_city provinceCity,ui.domain,ui.key_word keyWord,ui.organization,ui.professional,ui.per ";
 
     private String sql = "select" + USER_BASE_INFO_SQL + " ,ua.validate_info,ua.introduce_user_id,ua.introduce_user_id_process,ua.group_id, ua.friend_id,ua.status,ua.from_user_id,ua.to_user_id " +
             "from tb_user_approval ua join tb_user_info ui";
 
-    private String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.to_user_id = ui.user_id " +
+    public static String SQL_INTEREST_USER = "select" + USER_BASE_INFO_SQL + " from tb_interest_user i join tb_user_info ui on i.to_user_id = ui.user_id " +
             "left join tb_user_approval ua on \n" +
             "(ua.from_user_id = i.`to_user_id` and ua.to_user_id = #{userId}) or (ua.from_user_id = #{userId} and ua.to_user_id = i.`to_user_id`) \n" +
             "and ua.`status` != 2 \n" +
@@ -53,7 +53,7 @@ public class ShouPageServiceImpl implements ShoupageService, ConstCache {
 
     private String SQL_INTEREST_GROUP = "select " + GROUP_BASE_INFO_SQL + ",ga.status from tb_interest_group i join tb_group g on i.group_id = g.id LEFT JOIN tb_group_approval ga ON i.`group_id` = ga.`group_id` AND ga.`user_id` = #{userId} where i.user_id = #{userId} and i.status = 0";
 
-    private String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i left join tb_user_info ui on i.user_id = ui.user_id "
+    public static String SQL_INTERESTED_USER = "select " + USER_BASE_INFO_SQL + " ,ua.status status,i.status istatus from tb_interest_user i left join tb_user_info ui on i.user_id = ui.user_id "
             + " LEFT JOIN tb_user_approval ua ON (ua.`from_user_id` = ui.`user_id`  AND ua.to_user_id = #{userId}) OR (ua.`from_user_id` = #{userId} \n" +
             " AND ua.`to_user_id` = ui.`user_id` ) where i.to_user_id = #{userId} and (ua.`status` != 4 OR ua.`status` IS NULL) AND (ua.`status` != 2 OR ua.`status` IS NULL) group by i.user_id";
 

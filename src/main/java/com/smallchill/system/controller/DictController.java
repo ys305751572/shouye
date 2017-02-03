@@ -17,6 +17,7 @@ package com.smallchill.system.controller;
 
 import com.smallchill.core.constant.ConstErrorMsg;
 import com.smallchill.system.service.DictService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -123,6 +124,7 @@ public class DictController extends BaseController implements ConstErrorMsg {
     @ResponseBody
     @RequestMapping(KEY_UPDATE)
     public AjaxResult update() {
+        String pid = this.getRequest().getParameter("tfw_dict.pid");
         Dict dict = mapping(PERFIX, Dict.class);
 //        if(dict.getId() == null && dict.getPid() == null && codeIsExist(dict.getCode())) {
 //            return error(CODE_EXIST);

@@ -151,9 +151,15 @@
                     }else {
                         paied = "缴纳待审";
                     }
-                    return "<p style='color: #00be67'>"+matchType+"</p>" +
-                            "<p>"+validateInfo+"</p>" +
-                            "<p style='color: #00b3ee'>["+paied+"]</p>"
+                    var a;
+                    if (paied == "") {
+                        a = "<p style='color: #00be67'>"+matchType+"</p><p>"+validateInfo+"</p>";
+                    }
+                    else {
+                        a = "<p style='color: #00be67'>"+matchType+"</p><p>"+validateInfo+"</p><p style='color: #00b3ee'>["+paied+"]</p>";
+                    }
+
+                    return a;
                 }
             },
             {name:"approvalStatus",index:"approvalStatus", width:120,

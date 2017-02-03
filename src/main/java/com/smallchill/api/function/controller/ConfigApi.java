@@ -33,6 +33,7 @@ public class ConfigApi extends BaseController{
      *             908 : 组织类型
      *             909 : 举报类型
      *             910 : 职业类型
+     *             926 : 内容类型
      * @return result
      */
     @RequestMapping(value = "/selectCode")

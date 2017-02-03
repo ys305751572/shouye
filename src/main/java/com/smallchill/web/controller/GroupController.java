@@ -460,7 +460,6 @@ public class GroupController extends BaseController {
         Group group = groupService.findById(groupId);
         mm.put("group",group);
         mm.put("code",CODE);
-
         if(status==0){
             List<Map<String, Object>> province = provinceCityService.province();
             mm.put("province",province);
@@ -468,6 +467,9 @@ public class GroupController extends BaseController {
             mm.put("groupType", dicts);
             return BASE_PATH +"group_modify.html";
         }else {
+            group.setContent1(StringUtils.isNotBlank(group.getContent1()) ?  group.getContent1().replace("\n","").replace("\t",""): "");
+            group.setContent2(StringUtils.isNotBlank(group.getContent2()) ?  group.getContent2().replace("\n","").replace("\t",""): "");
+            group.setContent3(StringUtils.isNotBlank(group.getContent3()) ?  group.getContent3().replace("\n","").replace("\t",""): "");
             mm.put("status",status);
             return BASE_PATH +"group_content.html";
         }
@@ -475,7 +477,7 @@ public class GroupController extends BaseController {
 
     @RequestMapping(value = "setGroup")
     @ResponseBody
-    public AjaxResult setGroup(Integer groupId,Integer avaterId,Integer province,Integer city,String targat,String phones){
+    public AjaxResult setGroup(Integer groupId,Integer avaterId,Integer groupType,Integer province,Integer city,String targat,String phones){
         try{
             Group group = groupService.findById(groupId);
             Attach attach = attachService.findById(avaterId);
@@ -485,6 +487,7 @@ public class GroupController extends BaseController {
             group.setProvince(province);
             group.setCity(city);
             group.setProvinceCity(_city.getName());
+            group.setType(groupType);
 
             if(StringUtils.isNotBlank(targat)){
                 String[] targats = JsonKit.parse(targat,String[].class);

@@ -103,7 +103,7 @@ public class SelectTag extends Tag {
 
 			StringBuilder sb = new StringBuilder();
 			String sid = "_" + name.split("\\.")[1];
-			sb.append("<select onchange=\"" +sid + "_selectChanged('" + sid + "')\" " + required + " class=\"form-control\" id=\"" + sid + "\"  name=\"" + name + "\">");
+			sb.append("<select onchange=\"" +sid + "_selectChanged('" + sid + "')\" " + required + " class=\"form-control\" id=\"" + sid + "\"  name=\"" + token + name + "\">");
 			sb.append("<option value></option>");
 			
 			for (Map<String, Object> dic : dict) {
