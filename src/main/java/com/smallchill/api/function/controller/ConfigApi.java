@@ -50,10 +50,10 @@ public class ConfigApi extends BaseController{
                         LinkedHashMap<Integer,Dict> dictMap = new LinkedHashMap<>();
                         if (list != null && list.size() > 1) {
                             Dict root = list.get(0);
-                            int rootId = root.getId();
-                            for (Dict dict : list) {
-                                if (dict.getPid() != 0 && dict.getPid() == rootId && dictMap.get(dict.getId()) == null ) {
-                                    dictMap.put(dict.getId(), dict);
+                                    int rootId = root.getId();
+                                    for (Dict dict : list) {
+                                        if (dict.getPid() != 0 && dict.getPid() == rootId && dictMap.get(dict.getId()) == null ) {
+                                            dictMap.put(dict.getId(), dict);
                                 }
                                 else {
                                     Dict superDict = dictMap.get(dict.getPid());

@@ -50,4 +50,8 @@ public interface StatusConst {
     int ARTICLE_REFUSE = 3; // 未通过
     int ARTICLE_PUBLISH = 4; // 已发布
     int ARTICLE_DEL = 5; // 弃稿
+
+    int ARTICLE_FROM_TYPE_PEPOLE = 1; // 个人
+    int ARTICLE_FROM_TYPE_GROUP = 2; // 组织
+    int ARTICLE_FROM_TYPE_OFFICIAL = 3; // 官方
 }

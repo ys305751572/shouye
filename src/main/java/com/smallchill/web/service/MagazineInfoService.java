@@ -13,4 +13,8 @@ import java.util.List;
 public interface MagazineInfoService extends IService<MagazineInfo>{
 
     List<MagazineInfo> findAll2();
+
+    void subscribe(Integer userId, Integer magazineId);
+
+    void unsubscribe(Integer userId, Integer magazineId);
 }

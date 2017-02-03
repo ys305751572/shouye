@@ -26,4 +26,19 @@ public class MagazineInfoServiceImpl extends BaseService<MagazineInfo> implement
         String sql = Blade.dao().getScript("MagazineInfo.listColIdAndName").getSql();
         return Blade.create(MagazineInfo.class).find(sql, null);
     }
+
+    /**
+     * 订阅
+     * @param userId 当前用户ID
+     * @param magazineId 杂志ID
+     */
+    @Override
+    public void subscribe(Integer userId, Integer magazineId) {
+        // TODO 判断是否已经订阅
+    }
+
+    @Override
+    public void unsubscribe(Integer userId, Integer magazineId) {
+        // TODO 判断是否已经订阅
+    }
 }

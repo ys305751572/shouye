@@ -129,13 +129,24 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * @param lastActicleId 最后文章ID
      * @param obj           选择的关系用户类型
      */
-    private void contributeToMyFriend(Integer lastActicleId, String obj) {
+    @Override
+    public void contributeToMyFriend(Integer lastActicleId, String obj) {
         String[] userIds = obj.split(",");
         ArticleShow articleShow;
         for (String userId : userIds) {
             articleShow = createArticleShowBean(lastActicleId, Integer.parseInt(userId), ARTICLE_SHOW_FRIEND);
             articleShowService.save(articleShow);
         }
+    }
+
+    /**
+     * 查询用户发布
+     * @param userId 当前用户ID
+     * @return list
+     */
+    @Override
+    public List<Article> findByUserId(Integer userId) {
+        return this.findBy("fromId = #{fromId} AND from_type = 1",Record.create().set("fromId", userId));
     }
 
     /**
@@ -167,7 +178,8 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * @param lastActicleId 文章ID
      * @param obj           选择的杂志ID
      */
-    private void contributeToMagazine(Integer lastActicleId, String obj) {
+    @Override
+    public void contributeToMagazine(Integer lastActicleId, String obj) {
         String[] idss = obj.split(",");
         try {
             Maganize maganize;
@@ -188,7 +200,8 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     /**
      * 投稿到日报
      */
-    private void contributeToDaily(Integer lastActicleId, String obj) {
+    @Override
+    public void contributeToDaily(Integer lastActicleId, String obj) {
         String[] idss = obj.split(",");
         Daily daily;
         for (String toId : idss) {
