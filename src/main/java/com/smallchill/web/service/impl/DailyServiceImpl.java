@@ -25,9 +25,9 @@ public class DailyServiceImpl extends BaseService<Daily> implements DailyService
      * @return list
      */
     @Override
-    public List<Record> findAllDailys() {
-        String sql = "select id, name from tb_group";
-        List<Record> list = Db.init().selectList(sql);
+    public List<Record> simpleListByUserId(Integer userId) {
+        String sql = Blade.dao().getScript("Daily.simpleListByUserId").getSql();
+        List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));
         for (Record record : list) {
             record.put("name", record.getStr("name") + "日报");
         }
@@ -40,7 +40,7 @@ public class DailyServiceImpl extends BaseService<Daily> implements DailyService
     }
 
     /**
-     * 根据用户ID查询日志列表
+     * 根据用户ID查询日报列表
      *
      * @param userId 当前用户ID
      * @return list

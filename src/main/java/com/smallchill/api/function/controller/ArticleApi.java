@@ -41,6 +41,20 @@ public class ArticleApi extends BaseController {
     @Autowired
     ShieldingService shieldingService;
 
+    @PostMapping(value = "/list")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String listByUserId(Integer userId) {
+        List<ArticleVo> list;
+        try {
+            list = articleService.listByUserId(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success(list);
+    }
+
     /**
      * 查询发布对象
      *
@@ -49,8 +63,8 @@ public class ArticleApi extends BaseController {
     @PostMapping(value = "publishObject")
     @ResponseBody
     public String findPublishObject(Integer userId) {
-        List<MagazineInfo> magazineInfos = magazineInfoService.findAll2();
-        List<Record> dailys = dailyService.findAllDailys();
+        List<MagazineInfo> magazineInfos = magazineInfoService.simpleListByUserId(userId);
+        List<Record> dailys = dailyService.simpleListByUserId(userId);
         return success(Record.create().set("magazineInfos", magazineInfos).set("dailys", dailys), "publishObject");
     }
 
@@ -63,9 +77,9 @@ public class ArticleApi extends BaseController {
      */
     @RequestMapping(value = "/create")
     @ResponseBody
-    public String create(Article article, String obj) {
+    public String create(Article article, Integer userId, String obj) {
         try {
-            articleService.create(article, null, obj, false);
+            articleService.create(article, userId, null, obj);
         } catch (Exception e) {
             return fail();
         }
@@ -75,15 +89,19 @@ public class ArticleApi extends BaseController {
     /**
      * 查询文章详情
      *
-     * @param id 文章ID
+     * @param articleId 文章ID
      * @return result
      */
     @PostMapping(value = "/detail")
     @ResponseBody
-    public String detail(Integer id) {
-
-
-        return null;
+    public String detail(Integer articleId) {
+        ArticleVo articleVo;
+        try {
+            articleVo = articleService.detail(articleId);
+        } catch (Exception e) {
+            return fail();
+        }
+        return success(articleVo);
     }
 
     /**
@@ -96,9 +114,9 @@ public class ArticleApi extends BaseController {
     @PostMapping(value = "/share")
     @ResponseBody
     @Before(UserIdValidate.class)
-    public String share(Integer articleId, String toUserIds) {
+    public String share(Integer articleId, Integer userId, String toUserIds) {
         try {
-            articleService.contributeToMyFriend(articleId, toUserIds, true);
+            articleService.share(articleId, userId, toUserIds);
         } catch (Exception e) {
             return fail();
         }
@@ -111,9 +129,9 @@ public class ArticleApi extends BaseController {
      * @param userId 用户ID
      * @return result
      */
-    @PostMapping(value = "/list/{userId}")
+    @PostMapping(value = "/list/publish")
     @ResponseBody
-    public String listByUserId(Integer userId) {
+    public String publishListByUserId(Integer userId) {
         List<ArticleVo> list;
         try {
             list = ArticleConvert.toArticleVos(articleService.findByUserId(userId));
@@ -121,24 +139,6 @@ public class ArticleApi extends BaseController {
             return fail();
         }
         return success(list);
-    }
-
-    /**
-     * 转发
-     *
-     * @param toUserId  转发用户ID
-     * @param articleId 文章ID
-     * @return result
-     */
-    @PostMapping(value = "/forward")
-    @ResponseBody
-    public String forward(String toUserId, Integer articleId) {
-        try {
-            articleService.contributeToMyFriend(articleId, toUserId, true);
-        } catch (Exception e) {
-            return fail();
-        }
-        return success();
     }
 
     /**
@@ -172,11 +172,11 @@ public class ArticleApi extends BaseController {
      * @param id 数据主键ID
      * @return result
      */
-    @PostMapping(value = "/interest/{id}")
+    @PostMapping(value = "/interest")
     @ResponseBody
     public String interest(Integer id, Integer articleId) {
         try {
-            articleShowService.interest(id,articleId);
+            articleShowService.interest(id, articleId);
         } catch (Exception e) {
             return fail();
         }
@@ -186,15 +186,15 @@ public class ArticleApi extends BaseController {
     /**
      * 文章不感兴趣
      *
-     * @param id 数据主键ID
+     * @param id       数据主键ID
      * @param position 按钮位子 1:机遇列表 2:感兴趣列表
      * @return result
      */
-    @PostMapping(value = "/uninterest/{id}")
+    @PostMapping(value = "/uninterest")
     @ResponseBody
-    public String uninterest(Integer id,Integer articleId, Integer position) {
+    public String uninterest(Integer id, Integer articleId, Integer position) {
         try {
-            articleShowService.uninterest(id,articleId, position);
+            articleShowService.uninterest(id, articleId, position);
         } catch (Exception e) {
             return fail();
         }
@@ -204,7 +204,8 @@ public class ArticleApi extends BaseController {
     /**
      * 屏蔽发布者
      *
-     * @param id 数据主键ID
+     * @param id     数据主键ID
+     * @param userId 当前用户ID
      * @return result
      */
     @PostMapping(value = "/shielding/{id}")
@@ -226,8 +227,6 @@ public class ArticleApi extends BaseController {
      * @return result
      */
     public String delete(Integer id, Integer userId) {
-
-
         return null;
     }
 }

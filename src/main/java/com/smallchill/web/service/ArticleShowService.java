@@ -13,7 +13,7 @@ public interface ArticleShowService extends IService<ArticleShow> {
 
     void uninterest(int id, int articleId, int position);
 
-    void move(int id);
+    void move(int id,int articleId);
 
     void shielding(int fromId, int toId, int type);
 

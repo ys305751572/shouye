@@ -53,8 +53,10 @@ public class ArticleShowServiceImpl extends BaseService<ArticleShow> implements 
      * @param id tb_article_show id
      */
     @Override
-    public void move(int id) {
-        updateInterestById(id, ARTICLE_SHOW_MOVE_TYPE);
+    public void move(int id, int articleId) {
+        updateInterestById(id, ARTICLE_SHOW_INTERESTED_TYPE);
+        // 增加感兴趣数量
+        articleService.addInterestCount(articleId);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.smallchill.web.service;
 
 import com.smallchill.api.function.modal.vo.ArticleVo;
 import com.smallchill.core.base.service.IService;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.Article;
 import org.springframework.web.multipart.MultipartRequest;
 
@@ -14,8 +15,9 @@ import java.util.List;
  */
 public interface ArticleService extends IService<Article>{
 
-    void create(Article article, MultipartRequest multipartRequest, String obj, boolean isUserId);
-    void contributeToMyFriend(Integer lastActicleId, String obj, boolean isRecord);
+    List<ArticleVo> listByUserId(Integer userId);
+    void create(Article article, Integer userId, MultipartRequest multipartRequest, String obj);
+    void contribute(Integer lastActicleId,Integer userId, List<Integer> userIds, int type);
     List<Article> findByUserId(Integer userId);
     void contributeToMagazine(Integer lastActicleId, String obj);
     void contributeToDaily(Integer lastActicleId, String obj);
@@ -24,5 +26,6 @@ public interface ArticleService extends IService<Article>{
     void addReadCount(int articleId);
     void addInterestCount(int articleId);
     void subtractInterestCount(int articleId);
+    void share(int articleId, int userId, String toUserIds);
     void addShareCount(int articleId);
 }

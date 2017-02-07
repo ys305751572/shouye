@@ -1,11 +1,13 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.api.function.meta.consts.StatusConst;
+import com.smallchill.api.function.meta.other.ArticleConvert;
 import com.smallchill.api.function.modal.vo.ArticleVo;
 import com.smallchill.api.function.service.impl.ShouPageServiceImpl;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.Article;
 import com.smallchill.web.model.ArticleShow;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartRequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -38,20 +41,29 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     @Autowired
     private DailyService dailyService;
 
+    /**
+     * 机遇列表
+     *
+     * @param userId 当前用户ID
+     * @return list
+     */
+    @Override
+    public List<ArticleVo> listByUserId(Integer userId) {
+        String sql = Blade.dao().getScript("Acticle.listByUserId").getSql();
+        List<Record> list = Db.init().selectList(sql, Record.create().set("userId", userId));
+        return ArticleConvert.recordsToArticleVos(list);
+    }
+
     @Transactional
     @Override
-    public void create(Article article, MultipartRequest multipartRequest, String obj, boolean isUserId) {
+    public void create(Article article, Integer userId, MultipartRequest multipartRequest, String obj) {
         // 创建文章
         Integer lastActicleId = createActicle(article, multipartRequest);
         String[] objs = obj.split("\\|");
         if (StringUtils.isNotBlank(objs[0])) {
-            // 分享到关系用户
-            if (isUserId) {
-                contributeToMyFriend(lastActicleId, objs[0], false);
-            } else {
-                String userIds = findUserIds(article.getFromId(), obj);
-                contributeToMyFriend(lastActicleId, userIds, false);
-            }
+            contributeToMyFriend(lastActicleId, userId, objs[0]);
+            contributeToInterested(lastActicleId, userId, objs[0]);
+            contributeToIntereste(lastActicleId, userId, objs[0]);
         }
         if (StringUtils.isNotBlank(objs[2])) {
             // 投稿到杂志
@@ -63,30 +75,49 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         }
     }
 
-    private String findUserIds(Integer userId, String obj) {
-        // 1:朋友 2:对我感兴趣 3:我感兴趣的人
-        List<Integer> list = new ArrayList<>();
+    /**
+     * 投稿给我的好友
+     *
+     * @param lastActicleId
+     * @param userId
+     * @param obj
+     */
+    private void contributeToMyFriend(Integer lastActicleId, Integer userId, String obj) {
         if (obj.contains("1")) {
             // 查询朋友
             List<Integer> list1 = friend(userId);
-            list.addAll(list1);
+            contribute(lastActicleId, userId, list1, ARTICLE_SHOW_FRIEND);
         }
-        if (obj.contains("2")) {
+    }
+
+    /**
+     * 投稿给我感兴趣的人
+     *
+     * @param lastActicleId
+     * @param userId
+     * @param obj0
+     */
+    private void contributeToIntereste(Integer lastActicleId, Integer userId, String obj0) {
+        if (obj0.contains("2")) {
             // 查询对我感兴趣的人
             List<Integer> list2 = listInterested(userId);
-            list.addAll(list2);
+            contribute(lastActicleId, userId, list2, ARTICLE_SHOW_INTERESTED);
         }
-        if (obj.contains("3")) {
+    }
+
+    /**
+     * 投稿到对我感兴趣的人
+     *
+     * @param lastActicleId
+     * @param userId
+     * @param obj0
+     */
+    private void contributeToInterested(Integer lastActicleId, Integer userId, String obj0) {
+        if (obj0.contains("3")) {
             // 查询我感兴趣的人
             List<Integer> list3 = listIntereste(userId);
-            list.addAll(list3);
+            contribute(lastActicleId, userId, list3, ARTICLE_SHOW_INTEREST);
         }
-        StringBuilder buffer = new StringBuilder();
-        for (Integer _userId : list) {
-            buffer.append(_userId).append(",");
-
-        }
-        return buffer.substring(0, buffer.length() - 1);
     }
 
     private List<Integer> friend(Integer userId) {
@@ -128,18 +159,14 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * 分享到关系用户
      *
      * @param lastActicleId 最后文章ID
-     * @param obj           选择的关系用户类型
      */
     @Override
-    public void contributeToMyFriend(Integer lastActicleId, String obj, boolean isRecord) {
-        String[] userIds = obj.split(",");
+    public void contribute(Integer lastActicleId, Integer userId, List<Integer> userIds, int type) {
         ArticleShow articleShow;
-        for (String userId : userIds) {
-            articleShow = createArticleShowBean(lastActicleId, Integer.parseInt(userId), ARTICLE_SHOW_FRIEND);
+        for (Integer _userId : userIds) {
+            articleShow = createArticleShowBean(lastActicleId, userId, _userId, type);
             articleShowService.save(articleShow);
         }
-        // TODO 增加分享次数
-
     }
 
     /**
@@ -164,6 +191,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         article.setInterestQuantity(0);
         article.setReadingQuantity(0);
         article.setForwardingQuantity(0);
+        article.setCreateTime(DateTimeKit.nowLong());
         return saveRtId(article);
     }
 
@@ -190,7 +218,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
             for (String toId : idss) {
                 maganize = new Maganize();
                 maganize.setArticleId(lastActicleId);
-                maganize.setType(ARTICLE_SHOW_MAGAZINE);
+                maganize.setType(ARTICLE_FROM_TYPE_PEPOLE);
                 maganize.setMagazineId(Integer.parseInt(toId));
                 maganize.setStatus(ARTICLE_NOT_PROCESS);
                 maganize.setCreateTime(DateTimeKit.nowLong());
@@ -208,15 +236,20 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     public void contributeToDaily(Integer lastActicleId, String obj) {
         String[] idss = obj.split(",");
         Daily daily;
-        for (String toId : idss) {
-            daily = new Daily();
-            daily.setArticleId(lastActicleId);
-            daily.setCreateTime(DateTimeKit.nowLong());
-            daily.setStatus(ARTICLE_NOT_PROCESS);
-            daily.setType(ARTICLE_SHOW_DAILY);
-            daily.setGroupId(Integer.parseInt(toId));
-            dailyService.save(daily);
+        try {
+            for (String toId : idss) {
+                daily = new Daily();
+                daily.setArticleId(lastActicleId);
+                daily.setCreateTime(DateTimeKit.nowLong());
+                daily.setStatus(ARTICLE_NOT_PROCESS);
+                daily.setType(ARTICLE_FROM_TYPE_PEPOLE);
+                daily.setGroupId(Integer.parseInt(toId));
+                dailyService.save(daily);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     /**
@@ -240,17 +273,23 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     @Override
     public ArticleVo detail(Integer id) {
 
-        // TODO 增加阅读量
-        return null;
+        String sql = Blade.dao().getScript("Acticle.findById").getSql();
+        Record record = Db.init().selectOne(sql, Record.create().set("id", id));
+
+        //  增加阅读量
+        addReadCount(id);
+        return ArticleConvert.articleDetailToArticleVo(record);
     }
 
     private void deleteArticleShow(Integer id) {
         articleShowService.deleteBy("article_id = #{articleId}", Record.create().set("articleId", id));
     }
 
-    private ArticleShow createArticleShowBean(Integer articleId, Integer toId, Integer type) {
+    private ArticleShow createArticleShowBean(Integer articleId, Integer fromUserId, Integer toId, Integer type) {
         ArticleShow articleShow = new ArticleShow();
         articleShow.setType(type);
+        articleShow.setFromId(fromUserId);
+        articleShow.setIsIntereste(ARTICLE_SHOW_NOMAL_TYPE);
         articleShow.setArticleId(articleId);
         articleShow.setCreateTime(DateTimeKit.nowLong());
         articleShow.setToId(toId);
@@ -277,10 +316,22 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
 
     /**
      * 减少感兴趣数量
+     *
      * @param articleId 文章ID
      */
     public void subtractInterestCount(int articleId) {
         updateBy("interest_quantity = interest_quantity - 1", "id = #{id}", Record.create().set("id", articleId));
+    }
+
+    @Override
+    public void share(int articleId, int userId, String toUserIds) {
+        String[] toUserIdss = toUserIds.split(",");
+        List<Integer> list = new ArrayList<>();
+        for (String toUserId : toUserIdss) {
+            list.add(Integer.parseInt(toUserId));
+        }
+        contribute(articleId, userId, list, ARTICLE_SHOW_SHARE);
+        addShareCount(articleId);
     }
 
     /**

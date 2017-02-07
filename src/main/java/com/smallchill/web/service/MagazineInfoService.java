@@ -11,6 +11,5 @@ import java.util.List;
  * 2017-01-12 16:37:27
  */
 public interface MagazineInfoService extends IService<MagazineInfo>{
-    List<MagazineInfo> findAll2();
-    List<MagazineInfo> findByUserId(int userId);
+    List<MagazineInfo> simpleListByUserId(int userId);
 }

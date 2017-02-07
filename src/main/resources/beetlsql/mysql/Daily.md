@@ -5,3 +5,17 @@ SELECT * FROM
 (SELECT ug.`group_id` FROM `tb_user_group` ug WHERE ug.`user_id` = #{userId}) ORDER BY as1.create_time DESC)
 AS a1
 GROUP BY a1.`to_id` 
+
+simpleListByUserId
+==================
+SELECT
+    ug.`group_id` as id,
+    g.`name`
+FROM 
+    `tb_user_group` ug 
+LEFT JOIN
+    `tb_group` g 
+ON
+    ug.`group_id` = g.`id`
+WHERE 
+    ug.`user_id` = #{userId}

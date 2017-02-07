@@ -36,7 +36,8 @@ public class MagazineApi extends BaseController{
     @PostMapping(value = "/list")
     @ResponseBody
     public String list() {
-        return success(magazineInfoService.findAll2());
+//        return success(magazineInfoService.findAll2());
+        return null;
     }
 
     /**

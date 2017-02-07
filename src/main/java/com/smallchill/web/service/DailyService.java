@@ -14,10 +14,11 @@ import java.util.List;
 public interface DailyService extends IService<Daily>{
 
     /**
-     * 查询所有日报机构
-     * @return list
+     * 查询日报列表
+     * @param userId 当前用户ID
+     * @return 日报列表
      */
-    List<Record> findAllDailys();
+    List<Record> simpleListByUserId(Integer userId);
 
     /**
      * 查询用户日报
