@@ -20,12 +20,32 @@ public class ArticleShow extends BaseModel {
     private Integer id;
     @Column(name = "article_id")
     private Integer articleId;
+    @Column(name = "from_id")
+    private Integer fromId;
     @Column(name = "to_id")
     private Integer toId;
     @Column(name = "type")
     private Integer type;
+    @Column(name = "is_intereste")
+    private Integer isIntereste;
     @Column(name = "create_time")
     private Long createTime;
+
+    public Integer getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(Integer fromId) {
+        this.fromId = fromId;
+    }
+
+    public Integer getIsIntereste() {
+        return isIntereste;
+    }
+
+    public void setIsIntereste(Integer isIntereste) {
+        this.isIntereste = isIntereste;
+    }
 
     public Integer getId() {
         return id;

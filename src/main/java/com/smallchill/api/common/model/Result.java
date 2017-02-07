@@ -6,6 +6,7 @@ import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.JsonKit;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +82,7 @@ public class Result {
         result.msg = "";
 
         if (data instanceof List) {
-            result.data.put("list", data);
+            result.data.put("list", data == null ? Collections.emptyList() : data);
         } else if (data instanceof Map) {
             String key;
             if(name.length == 0 || StringUtils.isBlank(name[0])) {

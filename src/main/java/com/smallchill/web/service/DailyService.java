@@ -18,4 +18,11 @@ public interface DailyService extends IService<Daily>{
      * @return list
      */
     List<Record> findAllDailys();
+
+    /**
+     * 查询用户日报
+     * @param userId 当前用户ID
+     * @return result
+     */
+    List<Record> listByUserId(Integer userId);
 }

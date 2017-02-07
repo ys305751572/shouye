@@ -40,6 +40,8 @@ public enum ErrorType {
     ERROR_CODE_APP_GROUP_CLOSE_INTRODUCE_FAIL("该组织已关闭引荐结识", 7003),
     ERROR_CODE_APP_GROUP_CLOSE_JOIN_FAIL("该组织已关闭加入申请", 7004),
 
+    ERROR_CODE_APP_MAGAZINE_HASSUBSCRIBE_FAIL("您已经订阅过该杂志", 8001),
+
     ERROR_CODE_APP_PAYERROR_REFUND_FAIL("退款失败", 9001);
 
     private String name;

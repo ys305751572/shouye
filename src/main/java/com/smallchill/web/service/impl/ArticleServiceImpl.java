@@ -1,6 +1,7 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.api.function.meta.consts.StatusConst;
+import com.smallchill.api.function.modal.vo.ArticleVo;
 import com.smallchill.api.function.service.impl.ShouPageServiceImpl;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
@@ -46,10 +47,10 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         if (StringUtils.isNotBlank(objs[0])) {
             // 分享到关系用户
             if (isUserId) {
-                contributeToMyFriend(lastActicleId, objs[0]);
+                contributeToMyFriend(lastActicleId, objs[0], false);
             } else {
                 String userIds = findUserIds(article.getFromId(), obj);
-                contributeToMyFriend(lastActicleId, userIds);
+                contributeToMyFriend(lastActicleId, userIds, false);
             }
         }
         if (StringUtils.isNotBlank(objs[2])) {
@@ -130,23 +131,26 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * @param obj           选择的关系用户类型
      */
     @Override
-    public void contributeToMyFriend(Integer lastActicleId, String obj) {
+    public void contributeToMyFriend(Integer lastActicleId, String obj, boolean isRecord) {
         String[] userIds = obj.split(",");
         ArticleShow articleShow;
         for (String userId : userIds) {
             articleShow = createArticleShowBean(lastActicleId, Integer.parseInt(userId), ARTICLE_SHOW_FRIEND);
             articleShowService.save(articleShow);
         }
+        // TODO 增加分享次数
+
     }
 
     /**
      * 查询用户发布
+     *
      * @param userId 当前用户ID
      * @return list
      */
     @Override
     public List<Article> findByUserId(Integer userId) {
-        return this.findBy("fromId = #{fromId} AND from_type = 1",Record.create().set("fromId", userId));
+        return this.findBy("fromId = #{fromId} AND from_type = 1", Record.create().set("fromId", userId));
     }
 
     /**
@@ -215,6 +219,35 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         }
     }
 
+    /**
+     * 删除文章
+     *
+     * @param id     文章ID
+     * @param userId 当前用户ID
+     */
+    @Override
+    public void deleteById(Integer id, Integer userId) {
+        deleteArticleShow(id);
+        delete(id);
+    }
+
+    /**
+     * 文章详情
+     *
+     * @param id 文章ID
+     * @return 文章详情
+     */
+    @Override
+    public ArticleVo detail(Integer id) {
+
+        // TODO 增加阅读量
+        return null;
+    }
+
+    private void deleteArticleShow(Integer id) {
+        articleShowService.deleteBy("article_id = #{articleId}", Record.create().set("articleId", id));
+    }
+
     private ArticleShow createArticleShowBean(Integer articleId, Integer toId, Integer type) {
         ArticleShow articleShow = new ArticleShow();
         articleShow.setType(type);
@@ -222,5 +255,40 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         articleShow.setCreateTime(DateTimeKit.nowLong());
         articleShow.setToId(toId);
         return articleShow;
+    }
+
+    /**
+     * 新增阅读数量
+     *
+     * @param articleId 文章ID
+     */
+    public void addReadCount(int articleId) {
+        updateBy("reading_quantity = reading_quantity + 1", "id = #{id}", Record.create().set("id", articleId));
+    }
+
+    /**
+     * 新增感兴趣数量
+     *
+     * @param articleId 文章ID
+     */
+    public void addInterestCount(int articleId) {
+        updateBy("interest_quantity = interest_quantity + 1", "id = #{id}", Record.create().set("id", articleId));
+    }
+
+    /**
+     * 减少感兴趣数量
+     * @param articleId 文章ID
+     */
+    public void subtractInterestCount(int articleId) {
+        updateBy("interest_quantity = interest_quantity - 1", "id = #{id}", Record.create().set("id", articleId));
+    }
+
+    /**
+     * 新增分享数量
+     *
+     * @param articleId 文章ID
+     */
+    public void addShareCount(int articleId) {
+        updateBy("forwarding_quantity = forwarding_quantity + 1", "id = #{id}", Record.create().set("id", articleId));
     }
 }

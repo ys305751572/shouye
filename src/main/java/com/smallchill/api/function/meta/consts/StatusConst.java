@@ -54,4 +54,10 @@ public interface StatusConst {
     int ARTICLE_FROM_TYPE_PEPOLE = 1; // 个人
     int ARTICLE_FROM_TYPE_GROUP = 2; // 组织
     int ARTICLE_FROM_TYPE_OFFICIAL = 3; // 官方
+
+    int ARTICLE_SHOW_NOMAL_TYPE = 1; // 正常
+    int ARTICLE_SHOW_INTERESTED_TYPE = 2; // 感兴趣
+    int ARTICLE_SHOW_NUINTERESTED_TYPE = 3; // 不感兴趣
+    int ARTICLE_SHOW_MOVE_TYPE = 4; // 移除
+    int ARTICLE_SHOW_SHIELDING_TYPE = 5; // 屏蔽
 }

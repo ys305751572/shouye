@@ -1,6 +1,7 @@
 package com.smallchill.web.service.impl;
 
 import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.MagazineInfo;
 import com.smallchill.web.service.MagazineInfoService;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class MagazineInfoServiceImpl extends BaseService<MagazineInfo> implement
 
     /**
      * 查询所有杂志
+     *
      * @return list
      */
     @Override
@@ -27,18 +29,9 @@ public class MagazineInfoServiceImpl extends BaseService<MagazineInfo> implement
         return Blade.create(MagazineInfo.class).find(sql, null);
     }
 
-    /**
-     * 订阅
-     * @param userId 当前用户ID
-     * @param magazineId 杂志ID
-     */
     @Override
-    public void subscribe(Integer userId, Integer magazineId) {
-        // TODO 判断是否已经订阅
-    }
-
-    @Override
-    public void unsubscribe(Integer userId, Integer magazineId) {
-        // TODO 判断是否已经订阅
+    public List<MagazineInfo> findByUserId(int userId) {
+        String sql = Blade.dao().getScript("MaganizeSubscribe.SimpleListByUserId").getSql();
+        return find(sql, Record.create().set("userId", userId));
     }
 }

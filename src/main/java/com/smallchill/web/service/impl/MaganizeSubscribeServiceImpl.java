@@ -1,5 +1,7 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.common.exception.MagazineHasSubscribeException;
+import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.model.MaganizeSubscribe;
 import com.smallchill.web.service.MaganizeSubscribeService;
 import org.springframework.stereotype.Service;
@@ -11,4 +13,42 @@ import com.smallchill.core.base.service.BaseService;
  */
 @Service
 public class MaganizeSubscribeServiceImpl extends BaseService<MaganizeSubscribe> implements MaganizeSubscribeService {
+    @Override
+    public boolean isSubscribe(Integer userId, Integer magazineId) {
+        String sql = "SELECT COUNT(*) FROM tb_magazine_subscribe WHERE user_id = #{userId} AND magazine_id = #{magazineId}";
+        return this.isExist(sql, Record.create().set("userId", userId).set("magazineId", magazineId));
+    }
+
+    /**
+     * 订阅
+     *
+     * @param userId     当前用户ID
+     * @param magazineId 杂志ID
+     */
+    @Override
+    public void subscribe(Integer userId, Integer magazineId) throws MagazineHasSubscribeException {
+        // 判断是否已经订阅
+        if (isSubscribe(userId, magazineId)) {
+            throw new MagazineHasSubscribeException();
+        }
+        MaganizeSubscribe maganizeSubscribe = new MaganizeSubscribe();
+        maganizeSubscribe.setMaganizeId(magazineId);
+        maganizeSubscribe.setUserId(userId);
+        save(maganizeSubscribe);
+    }
+
+    /**
+     * 取消订阅
+     *
+     * @param userId     当前用户ID
+     * @param magazineId 杂志ID
+     */
+    @Override
+    public void unsubscribe(Integer userId, Integer magazineId) throws MagazineHasSubscribeException {
+        // 判断是否已经订阅
+        if (isSubscribe(userId, magazineId)) {
+            throw new MagazineHasSubscribeException();
+        }
+        deleteBy("user_id = #{userId} AND magazine_id = #{magazineId}", Record.create().set("userId", userId).set("magazineId", magazineId));
+    }
 }

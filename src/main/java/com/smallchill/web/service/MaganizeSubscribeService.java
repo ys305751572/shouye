@@ -1,5 +1,6 @@
 package com.smallchill.web.service;
 
+import com.smallchill.api.common.exception.MagazineHasSubscribeException;
 import com.smallchill.core.base.service.IService;
 import com.smallchill.web.model.MaganizeSubscribe;
 
@@ -8,5 +9,7 @@ import com.smallchill.web.model.MaganizeSubscribe;
  * 2017-02-03 17:55:49
  */
 public interface MaganizeSubscribeService extends IService<MaganizeSubscribe>{
-
+    boolean isSubscribe(Integer userId, Integer magazineId);
+    void subscribe(Integer userId, Integer magazineId) throws MagazineHasSubscribeException;
+    void unsubscribe(Integer userId, Integer magazineId) throws MagazineHasSubscribeException;
 }
