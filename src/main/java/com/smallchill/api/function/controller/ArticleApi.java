@@ -134,8 +134,9 @@ public class ArticleApi extends BaseController {
     public String publishListByUserId(Integer userId) {
         List<ArticleVo> list;
         try {
-            list = ArticleConvert.toArticleVos(articleService.findByUserId(userId));
+            list = articleService.findByUserId(userId);
         } catch (Exception e) {
+            e.printStackTrace();
             return fail();
         }
         return success(list);
@@ -222,11 +223,28 @@ public class ArticleApi extends BaseController {
     /**
      * 删除文章
      *
-     * @param id     文章ID
-     * @param userId 当前用户ID
+     * @param articleId 文章ID
+     * @param userId    当前用户ID
      * @return result
      */
-    public String delete(Integer id, Integer userId) {
+    @PostMapping(value = "/delete")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String delete(Integer articleId, Integer userId) {
+        try {
+            articleService.deleteById(articleId, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success();
+    }
+
+    @PostMapping(value = "/list/interest")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String listInterest(Integer userId) {
+
         return null;
     }
 }

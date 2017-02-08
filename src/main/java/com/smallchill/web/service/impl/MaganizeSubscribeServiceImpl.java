@@ -15,7 +15,7 @@ import com.smallchill.core.base.service.BaseService;
 public class MaganizeSubscribeServiceImpl extends BaseService<MaganizeSubscribe> implements MaganizeSubscribeService {
     @Override
     public boolean isSubscribe(Integer userId, Integer magazineId) {
-        String sql = "SELECT COUNT(*) FROM tb_magazine_subscribe WHERE user_id = #{userId} AND magazine_id = #{magazineId}";
+        String sql = "SELECT * FROM tb_magazine_subscribe WHERE user_id = #{userId} AND magazine_id = #{magazineId}";
         return this.isExist(sql, Record.create().set("userId", userId).set("magazineId", magazineId));
     }
 
@@ -46,7 +46,7 @@ public class MaganizeSubscribeServiceImpl extends BaseService<MaganizeSubscribe>
     @Override
     public void unsubscribe(Integer userId, Integer magazineId) throws MagazineHasSubscribeException {
         // 判断是否已经订阅
-        if (isSubscribe(userId, magazineId)) {
+        if (!isSubscribe(userId, magazineId)) {
             throw new MagazineHasSubscribeException();
         }
         deleteBy("user_id = #{userId} AND magazine_id = #{magazineId}", Record.create().set("userId", userId).set("magazineId", magazineId));

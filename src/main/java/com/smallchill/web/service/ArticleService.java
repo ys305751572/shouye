@@ -18,7 +18,7 @@ public interface ArticleService extends IService<Article>{
     List<ArticleVo> listByUserId(Integer userId);
     void create(Article article, Integer userId, MultipartRequest multipartRequest, String obj);
     void contribute(Integer lastActicleId,Integer userId, List<Integer> userIds, int type);
-    List<Article> findByUserId(Integer userId);
+    List<ArticleVo> findByUserId(Integer userId);
     void contributeToMagazine(Integer lastActicleId, String obj);
     void contributeToDaily(Integer lastActicleId, String obj);
     void deleteById(Integer id, Integer userId);
@@ -28,4 +28,6 @@ public interface ArticleService extends IService<Article>{
     void subtractInterestCount(int articleId);
     void share(int articleId, int userId, String toUserIds);
     void addShareCount(int articleId);
+    List<ArticleVo> listInterest(Integer userId);
+    List<ArticleVo> listUnInterest(Integer userId);
 }

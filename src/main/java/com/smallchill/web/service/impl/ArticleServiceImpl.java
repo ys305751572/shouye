@@ -176,8 +176,10 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * @return list
      */
     @Override
-    public List<Article> findByUserId(Integer userId) {
-        return this.findBy("fromId = #{fromId} AND from_type = 1", Record.create().set("fromId", userId));
+    public List<ArticleVo> findByUserId(Integer userId) {
+        String sql = Blade.dao().getScript("Acticle.publishListByUserId").getSql();
+        List<Record> records = Db.init().selectList(sql, Record.create().set("userId", userId));
+        return ArticleConvert.publishToArticleVos(records);
     }
 
     /**
@@ -258,10 +260,19 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * @param id     文章ID
      * @param userId 当前用户ID
      */
+    @Transactional
     @Override
     public void deleteById(Integer id, Integer userId) {
         deleteArticleShow(id);
+        deleteDailyAndMagazine(id);
         delete(id);
+    }
+
+    private void deleteDailyAndMagazine(Integer id) {
+        Record record = Record.create().set("articleId", id);
+        String sql = "article_id = #{articleId}";
+        maganizeService.deleteBy(sql, record);
+        dailyService.deleteBy(sql, record);
     }
 
     /**
@@ -341,5 +352,16 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      */
     public void addShareCount(int articleId) {
         updateBy("forwarding_quantity = forwarding_quantity + 1", "id = #{id}", Record.create().set("id", articleId));
+    }
+
+    @Override
+    public List<ArticleVo> listInterest(Integer userId) {
+
+        return null;
+    }
+
+    @Override
+    public List<ArticleVo> listUnInterest(Integer userId) {
+        return null;
     }
 }

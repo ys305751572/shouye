@@ -1,6 +1,8 @@
 package com.smallchill.web.service;
 
+import com.smallchill.api.function.modal.vo.MaganizeInfoVo;
 import com.smallchill.core.base.service.IService;
+import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.web.model.MagazineInfo;
 
 import java.util.List;
@@ -12,4 +14,5 @@ import java.util.List;
  */
 public interface MagazineInfoService extends IService<MagazineInfo>{
     List<MagazineInfo> simpleListByUserId(int userId);
+    JqGrid<MaganizeInfoVo> list(Integer userId,Integer pid, Integer domainId, Integer status);
 }

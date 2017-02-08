@@ -1,5 +1,6 @@
 package com.smallchill.api.function.controller;
 
+import com.smallchill.api.function.meta.other.DailyConvert;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.service.DailyService;
@@ -22,15 +23,16 @@ public class DailyApi extends BaseController {
     @Autowired
     private DailyService dailyService;
 
-    @PostMapping(value = "/list/{userId}")
+    @PostMapping(value = "/mylist")
     @ResponseBody
     public String listByUserId(Integer userId) {
         List<Record> list;
         try {
             list = dailyService.listByUserId(userId);
         } catch (Exception e) {
+            e.printStackTrace();
             return fail();
         }
-        return success(list);
+        return success(DailyConvert.recordToDailyVo(list));
     }
 }

@@ -1,7 +1,10 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.function.modal.vo.MaganizeInfoVo;
 import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.web.model.MagazineInfo;
 import com.smallchill.web.service.MagazineInfoService;
@@ -23,5 +26,16 @@ public class MagazineInfoServiceImpl extends BaseService<MagazineInfo> implement
     public List<MagazineInfo> simpleListByUserId(int userId) {
         String sql = Blade.dao().getScript("MaganizeSubscribe.SimpleListByUserId").getSql();
         return find(sql, Record.create().set("userId", userId));
+    }
+
+    /**
+     * 杂志列表
+     * @param userId 当前用户ID
+     * @param status 订阅状态 1:已订阅 2:未订阅
+     * @return page
+     */
+    @Override
+    public JqGrid<MaganizeInfoVo> list(Integer userId,Integer pid, Integer domainId, Integer status) {
+        return null;
     }
 }

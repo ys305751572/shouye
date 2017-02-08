@@ -15,7 +15,7 @@ public class ArticleConvert {
 
     public static ArticleVo toArticleVo(Article article) {
         ArticleVo vo = new ArticleVo();
-        vo.setId(article.getId());
+        vo.setArticleId(article.getId());
         vo.setCreateTime(article.getCreateTime());
         vo.setForwardingQuantity(article.getForwardingQuantity());
         vo.setInterestQuantity(article.getInterestQuantity());
@@ -65,5 +65,26 @@ public class ArticleConvert {
             vos.add(toArticleVo(record));
         }
         return vos;
+    }
+
+    public static ArticleVo publishToArticleVo(Record record) {
+        ArticleVo vo = new ArticleVo();
+        vo.setArticleId(record.getInt("id"));
+        vo.setTitle(record.getStr("title"));
+        vo.setCover(record.getStr("cover"));
+        vo.setAuthor(record.getStr("username"));
+        vo.setForwardingQuantity(record.getInt("forwarding_quantity"));
+        vo.setInterestQuantity(record.getInt("interest_quantity"));
+        vo.setReadingQWantity(record.getInt("reading_quantity"));
+        vo.setCreateTime(record.getLong("create_time"));
+        return vo;
+    }
+
+    public static List<ArticleVo> publishToArticleVos(List<Record> records) {
+        List<ArticleVo> list = new ArrayList<>();
+        for (Record record : records) {
+            list.add(publishToArticleVo(record));
+        }
+        return list;
     }
 }

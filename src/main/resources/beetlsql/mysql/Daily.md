@@ -1,10 +1,16 @@
 listByUserId
 ============
-SELECT * FROM
-(SELECT * FROM `tb_article_show` as1 WHERE as1.`type` = 4 AND as1.`to_id` IN 
-(SELECT ug.`group_id` FROM `tb_user_group` ug WHERE ug.`user_id` = #{userId}) ORDER BY as1.create_time DESC)
-AS a1
-GROUP BY a1.`to_id` 
+SELECT g.id daily_id,a.`title`,a.`cover`,t1.`audit_time`,g.`name`,t1.status FROM (
+SELECT * FROM `tb_daily` d
+WHERE d.`group_id` IN (
+ SELECT ug.`group_id` FROM `tb_user_group` ug WHERE ug.`user_id` = #{userId}
+) ORDER BY d.`audit_time` DESC
+) AS t1
+LEFT JOIN tb_article a 
+ON a.`id` = t1.article_id
+LEFT JOIN `tb_group` g
+ON t1.group_id = g.`id`
+GROUP BY a.`id`
 
 simpleListByUserId
 ==================

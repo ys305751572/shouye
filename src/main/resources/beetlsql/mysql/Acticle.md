@@ -43,3 +43,15 @@ FROM `tb_article` a
 LEFT JOIN `tfw_dict` d ON a.`article_type` = d.`id`
 LEFT JOIN `tb_user_info` ui ON ui.`user_id` = a.`from_id`
 WHERE a.`id` = #{id}
+
+publishListByUserId
+===================
+SELECT a.id,a.`title`,a.`content`,a.`cover`,a.`forwarding_quantity`,
+a.`interest_quantity`,a.`reading_quantity`,a.create_time,ui.`username`,
+d.`NAME`,a.
+FROM tb_article a 
+LEFT JOIN tb_user_info ui 
+ON a.`from_id` = ui.`user_id` 
+LEFT JOIN tfw_dict d
+ON a.`article_type` = d.`ID`
+WHERE a.`from_id` = #{userId} AND a.`from_type` = 1

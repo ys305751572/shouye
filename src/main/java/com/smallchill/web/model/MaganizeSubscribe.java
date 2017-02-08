@@ -17,7 +17,7 @@ public class MaganizeSubscribe extends BaseModel {
 
     @Column(name = "id")
     private Integer id;
-    @Column(name = "maganize_id")
+    @Column(name = "magazine_id")
     private Integer maganizeId;
     @Column(name = "user_id")
     private Integer userId;
