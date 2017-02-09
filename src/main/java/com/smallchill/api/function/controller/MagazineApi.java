@@ -5,6 +5,7 @@ import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.function.meta.intercept.MagazineInfoIntercept;
 import com.smallchill.api.function.meta.other.MagazineInfoConvert;
+import com.smallchill.api.function.meta.validate.MagazineIdValidate;
 import com.smallchill.api.function.meta.validate.UserIdAndMagazineIdValidate;
 import com.smallchill.api.function.modal.vo.MaganizeInfoVo;
 import com.smallchill.common.base.BaseController;
@@ -13,6 +14,7 @@ import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.web.service.MaganizeService;
 import com.smallchill.web.service.MaganizeSubscribeService;
 import com.smallchill.web.service.MagazineInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 杂志API
@@ -35,6 +38,8 @@ public class MagazineApi extends BaseController {
     MagazineInfoService magazineInfoService;
     @Autowired
     MaganizeSubscribeService maganizeSubscribeService;
+    @Autowired
+    MaganizeService maganizeService;
 
     /**
      * 杂志列表
@@ -53,6 +58,19 @@ public class MagazineApi extends BaseController {
                 ExcludeParams.create().set("userId").set("status").set("pid").set("domainId"));
         page.setRows(MagazineInfoConvert.recordToVos(page.getRows()));
         return success(page);
+    }
+
+    /**
+     * 杂志详情
+     * @param magazineId 杂志ID
+     * @return result
+     */
+    @PostMapping(value = "/detail")
+    @ResponseBody
+    @Before(MagazineIdValidate.class)
+    public String detail(Integer magazineId) {
+        String sql = Blade.dao().getScript("MagazineInfo.detail").getSql();
+        return success(MagazineInfoConvert.recordToVo(Db.init().selectOne(sql, Record.create().set("id", magazineId))));
     }
 
     /**
@@ -107,5 +125,27 @@ public class MagazineApi extends BaseController {
             e.printStackTrace();
             return fail();
         }
+    }
+
+    /**
+     * 根据杂志ID查询文章列表 按照每一天分组
+     *
+     * @param magazineId 杂志ID
+     * @param pagenum    当前页
+     * @param pagesize   每页显示数量
+     * @return result
+     */
+    @PostMapping(value = "/list/id")
+    @ResponseBody
+    @Before(MagazineIdValidate.class)
+    public String listById(Integer magazineId, Integer pagenum, Integer pagesize) {
+        Map<String, Object> resultMap;
+        try {
+            resultMap = maganizeService.listById(magazineId, pagenum, pagesize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success(resultMap, "magazines");
     }
 }

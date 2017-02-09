@@ -58,8 +58,9 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     @Override
     public void create(Article article, Integer userId, MultipartRequest multipartRequest, String obj) {
         // 创建文章
+        article.setFromId(userId);
         Integer lastActicleId = createActicle(article, multipartRequest);
-        String[] objs = obj.split("\\|");
+        String[] objs = obj.split("\\|", 3);
         if (StringUtils.isNotBlank(objs[0])) {
             contributeToMyFriend(lastActicleId, userId, objs[0]);
             contributeToInterested(lastActicleId, userId, objs[0]);
@@ -121,13 +122,8 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     }
 
     private List<Integer> friend(Integer userId) {
-        String sql = Blade.dao().getScript("UserFriend.list").getSql();
-        StringBuilder where = new StringBuilder("");
-        Record _r = Record.create().set("userId", userId);
-        where.append(" where 1 = 1");
-        where.append(" and uf.user_id = #{userId}");
-
-        List<Record> friends = Db.init().selectList(sql + where.toString(), _r);
+        String sql = "select friend_id userId from tb_user_friend where user_id = #{userId}";
+        List<Record> friends = Db.init().selectList(sql, Record.create().set("userId", userId));
         List<Integer> voList = new ArrayList<>();
         for (Record record : friends) {
             voList.add(record.getInt("userId"));
@@ -136,7 +132,10 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     }
 
     private List<Integer> listInterested(Integer userId) {
-        List<Record> list = Db.init().selectList(ShouPageServiceImpl.SQL_INTERESTED_USER, Record.create().set("userId", userId));
+
+        String sql = "select user_id userId from tb_interest_user where to_user_id = #{userId}";
+        List<Record> list = Db.init().selectList(sql,
+                Record.create().set("userId", userId));
         List<Integer> voList = new ArrayList<>();
         for (Record record : list) {
             voList.add(record.getInt("userId"));
@@ -146,9 +145,9 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
 
     private List<Integer> listIntereste(Integer userId) {
 
+        String sql = "select to_user_id userId from tb_interest_user where user_id = #{userId}";
         List<Integer> voList = new ArrayList<>();
-        List<Record> userList = Db.init().selectList(ShouPageServiceImpl.SQL_INTEREST_USER,
-                Record.create().set("userId", userId));
+        List<Record> userList = Db.init().selectList(sql, Record.create().set("userId", userId));
         for (Record user : userList) {
             voList.add(user.getInt("userId"));
         }
@@ -193,6 +192,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         article.setInterestQuantity(0);
         article.setReadingQuantity(0);
         article.setForwardingQuantity(0);
+        article.setFromType(ARTICLE_FROM_TYPE_PEPOLE);
         article.setCreateTime(DateTimeKit.nowLong());
         return saveRtId(article);
     }
@@ -356,7 +356,6 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
 
     @Override
     public List<ArticleVo> listInterest(Integer userId) {
-
         return null;
     }
 

@@ -1,7 +1,11 @@
 package com.smallchill.api.function.controller;
 
 import com.smallchill.api.function.meta.other.DailyConvert;
+import com.smallchill.api.function.meta.validate.DailyValidate;
 import com.smallchill.common.base.BaseController;
+import com.smallchill.core.annotation.Before;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.web.service.DailyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,32 @@ public class DailyApi extends BaseController {
             e.printStackTrace();
             return fail();
         }
-        return success(DailyConvert.recordToDailyVo(list));
+        return success(DailyConvert.recordsToDailyVos(list));
+    }
+
+    /**
+     * @param dailyId 日报ID(组织ID)
+     * @return result
+     */
+    @PostMapping(value = "/list")
+    @ResponseBody
+    @Before(DailyValidate.class)
+    public String listById(Integer dailyId) {
+        String sql = Blade.dao().getScript("Daily.listById").getSql();
+        return success(DailyConvert.recordsToDailyVos(Db.init().selectList(sql, Record.create().set("id", dailyId))));
+    }
+
+    /**
+     * 日报详情
+     *
+     * @param dailyId 日报ID(组织ID)
+     * @return result
+     */
+    @PostMapping(value = "/detail")
+    @ResponseBody
+    @Before(DailyValidate.class)
+    public String detail(Integer dailyId) {
+        String sql = Blade.dao().getScript("Daily.detail").getSql();
+        return success(DailyConvert.recordToDailyVo(Db.init().selectOne(sql, Record.create().set("id", dailyId))));
     }
 }

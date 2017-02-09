@@ -360,6 +360,20 @@ public class DateKit {
 	}
 
 	/**
+	 * 得到n天之后的日期
+	 *
+	 * @param days
+	 * @return
+	 */
+	public static String getAfterDayDate(int days, String pattern) {
+		Calendar canlendar = Calendar.getInstance(); // java.util包
+		canlendar.add(Calendar.DATE, days); // 日期减 如果不够减会将月变动
+		Date date = canlendar.getTime();
+		SimpleDateFormat sdfd = new SimpleDateFormat(pattern);
+		return sdfd.format(date);
+	}
+
+	/**
 	 * 得到n天之后是周几
 	 * 
 	 * @param days
@@ -394,7 +408,7 @@ public class DateKit {
 	public static void main(String[] args) {
 //		System.out.println(getDays());
 //		System.out.println(getAfterDayWeek("3"));
-		System.out.println(getBeforMonth(0));
+		System.out.println(getAfterDayDate(0,"M-dd"));
 	}
 
 	/**

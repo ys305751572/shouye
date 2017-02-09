@@ -25,3 +25,22 @@ ON
     ug.`group_id` = g.`id`
 WHERE 
     ug.`user_id` = #{userId}
+    
+listById
+========
+SELECT a.id article_id, d.id daily_id,a.`title`,d.`audit_time`,g.`name`,
+a.cover
+FROM tb_daily d 
+LEFT JOIN tb_article a 
+ON d.`article_id` = a.`id`
+LEFT JOIN tb_group g 
+ON d.`group_id` = g.`id`
+WHERE d.group_id = #{id}
+
+
+detail
+======
+SELECT g.`id` daily_id,g.`name`,ge.`daily_desc`,ge.`daily_cover` FROM tb_group g
+LEFT JOIN tb_group_extend ge
+ON g.`id` = ge.`group_id`
+WHERE g.`id` = #{id} 

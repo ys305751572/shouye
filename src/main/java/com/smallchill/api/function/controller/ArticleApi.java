@@ -1,5 +1,7 @@
 package com.smallchill.api.function.controller;
 
+import com.smallchill.api.common.kit.ExcludeParams;
+import com.smallchill.api.function.meta.intercept.ArticleIntercept;
 import com.smallchill.api.function.meta.other.ArticleConvert;
 import com.smallchill.api.function.meta.validate.UserIdValidate;
 import com.smallchill.api.function.modal.vo.ArticleVo;
@@ -7,6 +9,7 @@ import com.smallchill.api.function.service.ShieldingService;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.grid.JqGrid;
 import com.smallchill.web.model.Article;
 import com.smallchill.web.model.MagazineInfo;
 import com.smallchill.web.service.ArticleService;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 文章API
@@ -46,13 +51,17 @@ public class ArticleApi extends BaseController {
     @Before(UserIdValidate.class)
     public String listByUserId(Integer userId) {
         List<ArticleVo> list;
+        Map<String, Object> resultMap = new HashMap<>();
         try {
             list = articleService.listByUserId(userId);
+            int count = articleShowService.count("to_id = #{userId} AND is_intereste = 1", Record.create().set("userId", userId));
+            resultMap.put("list", list);
+            resultMap.put("count", count);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
         }
-        return success(list);
+        return success(resultMap, "articleIndex");
     }
 
     /**
@@ -81,6 +90,7 @@ public class ArticleApi extends BaseController {
         try {
             articleService.create(article, userId, null, obj);
         } catch (Exception e) {
+            e.printStackTrace();
             return fail();
         }
         return success();
@@ -102,6 +112,26 @@ public class ArticleApi extends BaseController {
             return fail();
         }
         return success(articleVo);
+    }
+
+    /**
+     * 删除文章
+     *
+     * @param articleId 文章ID
+     * @param userId    当前用户ID
+     * @return result
+     */
+    @PostMapping(value = "/delete")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String delete(Integer articleId, Integer userId) {
+        try {
+            articleService.deleteById(articleId, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fail();
+        }
+        return success();
     }
 
     /**
@@ -203,48 +233,30 @@ public class ArticleApi extends BaseController {
     }
 
     /**
-     * 屏蔽发布者
+     * 我感兴趣文章列表
      *
-     * @param id     数据主键ID
      * @param userId 当前用户ID
      * @return result
      */
-    @PostMapping(value = "/shielding/{id}")
-    @ResponseBody
-    public String shielding(Integer id, Integer userId) {
-        try {
-            shieldingService.shieldingByArticleShowId(id, userId);
-        } catch (Exception e) {
-            return fail();
-        }
-        return success();
-    }
-
-    /**
-     * 删除文章
-     *
-     * @param articleId 文章ID
-     * @param userId    当前用户ID
-     * @return result
-     */
-    @PostMapping(value = "/delete")
-    @ResponseBody
-    @Before(UserIdValidate.class)
-    public String delete(Integer articleId, Integer userId) {
-        try {
-            articleService.deleteById(articleId, userId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return fail();
-        }
-        return success();
-    }
-
     @PostMapping(value = "/list/interest")
     @ResponseBody
     @Before(UserIdValidate.class)
     public String listInterest(Integer userId) {
+        JqGrid page = apiPaginate("Acticle.interestListByUserId", new ArticleIntercept()
+                        .addRecord(Record.create().set("userId", this.getParameter("userId"))
+                                .set("isInterest", 2)),
+                ExcludeParams.create().set("userId"));
+        return success(page);
+    }
 
-        return null;
+    @PostMapping(value = "/list/uninterest")
+    @ResponseBody
+    @Before(UserIdValidate.class)
+    public String listUnInterest(Integer userId) {
+        JqGrid page = apiPaginate("Acticle.interestListByUserId", new ArticleIntercept()
+                        .addRecord(Record.create().set("userId", this.getParameter("userId"))
+                                .set("isInterest", 3)),
+                ExcludeParams.create().set("userId"));
+        return success(page);
     }
 }

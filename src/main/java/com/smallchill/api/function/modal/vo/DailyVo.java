@@ -9,11 +9,38 @@ import com.smallchill.api.common.model.BaseVo;
 public class DailyVo extends BaseVo{
 
     private Integer dailyId;
+    private Integer articleId;
     private String cover;
     private String title;
     private String name;
+    private String groupName;
     private Long createTime;
     private Integer status;
+    private String desc;
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public Integer getArticleId() {
+        return articleId;
+    }
+
+    public void setArticleId(Integer articleId) {
+        this.articleId = articleId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
     public Integer getStatus() {
         return status;
