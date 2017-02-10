@@ -23,6 +23,7 @@ public class MagazineInfoConvert {
         vo.setCover(MapKit.getStr(record, "cover"));
 
         int status = 1;
+        int mi = MapKit.getInt(record, "magazine_id");
         if (MapKit.getInt(record, "magazine_id") != 0) {
             status = 2;
         }

@@ -21,7 +21,7 @@ ON mi.`id` = ms.`magazine_id` AND mi.id = #{id}
 listById
 ========
 SELECT 
-  a.id,a.`title`,a.`cover`
+  a.id,a.`title`,IFNULL(a.`cover`,"") cover
 FROM `tb_magazine` m 
 LEFT JOIN `tb_article` a
 ON m.`article_id` = a.`id`

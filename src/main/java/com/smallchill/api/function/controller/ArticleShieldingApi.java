@@ -39,6 +39,7 @@ public class ArticleShieldingApi extends BaseController {
         try {
             shieldingService.shieldingByArticleShowId(id, userId);
         } catch (Exception e) {
+            e.printStackTrace();
             return fail();
         }
         return success();

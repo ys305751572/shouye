@@ -35,6 +35,8 @@ LEFT JOIN
     	as1.`from_id` = ui2.`user_id`
 WHERE
 	as1.`to_id` = #{userId}
+AND
+    as1.`is_intereste` = 1
 	
 findById
 ========
@@ -48,7 +50,7 @@ publishListByUserId
 ===================
 SELECT a.id,a.`title`,a.`content`,a.`cover`,a.`forwarding_quantity`,
 a.`interest_quantity`,a.`reading_quantity`,a.create_time,ui.`username`,
-d.`NAME`,a.
+d.`NAME` typename
 FROM tb_article a 
 LEFT JOIN tb_user_info ui 
 ON a.`from_id` = ui.`user_id` 
@@ -60,12 +62,12 @@ interestListByUserId
 ====================
 SELECT 
 	as1.`id`,
-	as1.`article_id`,
+	as1.`article_id` articleId,
 	a.`title`,
 	a.`cover`,
-	as1.`create_time` AS push_time,
+	as1.`create_time` AS pushTime,
 	as1.is_intereste,
-	a.create_time,
+	a.create_time createTime,
 	as1.`type`,
     d.`NAME` AS typename,
 	ui.`username`
@@ -85,5 +87,3 @@ ON
 	a.`from_id` = ui.`user_id`
 WHERE
 	as1.`to_id` = #{userId}
-AND
-	as1.`is_intereste`= #{is_Intereste}

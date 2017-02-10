@@ -5,6 +5,7 @@ import com.smallchill.api.function.service.ShieldingService;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.core.toolbox.kit.MapKit;
 import com.smallchill.web.model.ArticleShow;
@@ -55,25 +56,40 @@ public class ShieldingServiceImpl extends BaseService<Shielding> implements Shie
         for (Map map : list) {
             if (MapKit.getInt(map, "type") == 1) {
                 userIds.add(MapKit.getInt(map, "from_id"));
-            } else if (MapKit.getInt(map, "type") == 2 ){
+            } else if (MapKit.getInt(map, "type") == 2) {
                 groupIds.add(MapKit.getInt(map, "from_id"));
             }
         }
-
-        List<Record> users = findUsers(userIds);
-        List<Record> groups = findGroup(groupIds);
+        List<Record> users = new ArrayList<>();
+        List<Record> groups = new ArrayList<>();
+        if (CollectionKit.isNotEmpty(userIds)) {
+            users = findUsers(userIds);
+        }
+        if (CollectionKit.isNotEmpty(groupIds)) {
+            groups = findGroup(groupIds);
+        }
         users.addAll(groups);
         return users;
     }
 
     private List<Record> findUsers(List<Integer> userIds) {
         String sql = Blade.dao().getScript("Shielding.findUsers").getSql();
-        return Db.init().selectList(sql, Record.create().set("ids",userIds.toArray()));
+
+        StringBuilder builder = new StringBuilder();
+        for (Integer userId : userIds) {
+            builder.append(userId).append(",");
+        }
+        return Db.init().selectList(sql, Record.create().set("ids", builder.substring(0, builder.length() - 1)));
     }
 
     private List<Record> findGroup(List<Integer> groupIds) {
         String sql = Blade.dao().getScript("Shielding.findGroups").getSql();
-        return Db.init().selectList(sql, Record.create().set("ids",groupIds.toArray()));
+
+        StringBuilder builder = new StringBuilder();
+        for (Integer groupId : groupIds) {
+            builder.append(groupId).append(",");
+        }
+        return Db.init().selectList(sql, Record.create().set("ids", builder.substring(0, builder.length() - 1)));
     }
 
     private void saveShielding(ArticleShow articleShow, Integer userId) {

@@ -72,6 +72,7 @@ public class ArticleConvert {
         vo.setArticleId(record.getInt("id"));
         vo.setTitle(record.getStr("title"));
         vo.setCover(record.getStr("cover"));
+        vo.setTypename(record.getStr("typename"));
         vo.setAuthor(record.getStr("username"));
         vo.setForwardingQuantity(record.getInt("forwarding_quantity"));
         vo.setInterestQuantity(record.getInt("interest_quantity"));

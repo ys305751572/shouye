@@ -12,7 +12,7 @@ SELECT
         ui.`user_id` AS id,
         ui.`username` AS `name`,
         IFNULL(ui.`avater`,'') AS avater,
-        ui.`province_city` AS province_city,
+        ui.`province_city` AS province_city ,
         ui.`per` AS `special1`,
         ui.`domain` AS `special2`,
         ui.`key_word` AS `special3`,

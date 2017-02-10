@@ -2,7 +2,9 @@ package com.smallchill.web.service.impl;
 
 import com.smallchill.api.function.meta.consts.StatusConst;
 import com.smallchill.api.function.meta.other.ArticleConvert;
+import com.smallchill.api.function.modal.Shielding;
 import com.smallchill.api.function.modal.vo.ArticleVo;
+import com.smallchill.api.function.service.ShieldingService;
 import com.smallchill.api.function.service.impl.ShouPageServiceImpl;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
@@ -40,6 +42,8 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     private MaganizeService maganizeService;
     @Autowired
     private DailyService dailyService;
+    @Autowired
+    private ShieldingService shieldingService;
 
     /**
      * 机遇列表
@@ -87,6 +91,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         if (obj.contains("1")) {
             // 查询朋友
             List<Integer> list1 = friend(userId);
+            filterShielding(list1, userId);
             contribute(lastActicleId, userId, list1, ARTICLE_SHOW_FRIEND);
         }
     }
@@ -102,6 +107,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         if (obj0.contains("2")) {
             // 查询对我感兴趣的人
             List<Integer> list2 = listInterested(userId);
+            filterShielding(list2, userId);
             contribute(lastActicleId, userId, list2, ARTICLE_SHOW_INTERESTED);
         }
     }
@@ -117,6 +123,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         if (obj0.contains("3")) {
             // 查询我感兴趣的人
             List<Integer> list3 = listIntereste(userId);
+            filterShielding(list3, userId);
             contribute(lastActicleId, userId, list3, ARTICLE_SHOW_INTEREST);
         }
     }
@@ -153,6 +160,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         }
         return voList;
     }
+
 
     /**
      * 分享到关系用户
@@ -362,5 +370,21 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     @Override
     public List<ArticleVo> listUnInterest(Integer userId) {
         return null;
+    }
+
+    /**
+     * 过滤屏蔽掉的用户ID
+     *
+     * @param ids
+     * @param userId
+     */
+    @Override
+    public void filterShielding(List<Integer> ids, Integer userId) {
+        List<Shielding> list = shieldingService.findBy(" from_id = #{fromId} AND type = 1", Record.create().set("fromId", userId));
+        for (Shielding shielding : list) {
+            if (ids.contains(shielding.getUserId())) {
+                ids.remove(shielding.getUserId());
+            }
+        }
     }
 }
