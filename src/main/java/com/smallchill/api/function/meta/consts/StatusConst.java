@@ -38,6 +38,7 @@ public interface StatusConst {
 
     int SQL_VALUE_ADD_SERVICE_TYPE_INTEREST = 3;    // 感兴趣
     int SQL_VALUE_ADD_SERVICE_TYPE_ACQUAINTANCE = 4; // 熟人
+    int SQL_VALUE_ADD_SERVICE_TYPE_APPLY = 5; // 报名
 
 
     // ==============================机遇=================================
@@ -64,4 +65,13 @@ public interface StatusConst {
     int ARTICLE_SHOW_NUINTERESTED_TYPE = 3; // 不感兴趣
     int ARTICLE_SHOW_MOVE_TYPE = 4; // 移除
     int ARTICLE_SHOW_SHIELDING_TYPE = 5; // 屏蔽
+
+    // =====================================================================
+    int ACTIVITY_BTN_STATUS_NOMAL = 4000; // 正常
+    int ACTIVITY_BTN_STATUS_ENOUGH = 4001; // 报名人数已满
+    int ACTIVITY_BTN_STATUS_APPLY_END = 4002; // 报名截止
+    int ACTIVITY_BTN_STATUS_END = 4003; // 活动结束
+    int ACTIVITY_BTN_STATUS_NOT_MEMBER = 4004; // 非组织会员不能报名
+    int ACTIVITY_BTN_STATUS_MEMBER = 4005; // 组织会员不能报名
+    int ACTIVITY_BTN_STATUS_NOT_INVITATION = 4006; // 非邀请不能报名
 }

@@ -25,6 +25,8 @@ public class PayConfig {
     public final static String NOTIFY_URL_WEIXIN_GROUP_JOIN = "http://"+ IP +"/blade/api/pay/weixin/group/join/notify";
     public final static String NOTIFY_URL_WEIXIN_VALUEADD = "http://" + IP + "/blade/api/pay/weixin/valueadd/notify";
     public final static String NOTIFY_URL_WEIXIN_RENEWAL = "http://"+ IP +"/blade/api/pay/weixin/renewal/notify";
+    public final static String NOTIFY_URL_WEIXIN_APPLY = "http://"+ IP +"/blade/api/pay/weixin/apply/notify";
+
     /**
      * @param request
      * @param response

@@ -19,12 +19,14 @@ public class ActivityVo extends BaseVo {
     private Long createTime;
     private Long startTime;
     private Long endTime;
-    private Long applyTime;
+    private Long applyEndTime;
     private String address;
     private Integer ceiling;
     private Integer limit;
     private Integer cost;
+    private Integer btnStatus;
 
+    private Integer count;
     private List<UserVo> userVos;
 
     public Integer getActivityId() {
@@ -99,12 +101,16 @@ public class ActivityVo extends BaseVo {
         this.endTime = endTime;
     }
 
-    public Long getApplyTime() {
-        return applyTime;
+    public Long getApplyEndTime() {
+        return applyEndTime;
     }
 
-    public void setApplyTime(Long applyTime) {
-        this.applyTime = applyTime;
+    public void setApplyEndTime(Long applyEndTime) {
+        this.applyEndTime = applyEndTime;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 
     public String getAddress() {
@@ -145,5 +151,17 @@ public class ActivityVo extends BaseVo {
 
     public void setUserVos(List<UserVo> userVos) {
         this.userVos = userVos;
+    }
+
+    public Integer getBtnStatus() {
+        return btnStatus;
+    }
+
+    public void setBtnStatus(Integer btnStatus) {
+        this.btnStatus = btnStatus;
+    }
+
+    public Integer getCount() {
+        return count;
     }
 }

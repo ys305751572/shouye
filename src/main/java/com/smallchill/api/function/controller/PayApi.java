@@ -53,7 +53,7 @@ public class PayApi extends BaseController {
             resultMap = payService.getPrepayId(userId, groupId, cost, validateInfo, matchType, targetType, this.getResponse(), this.getRequest());
         } catch (GroupCloseJoinException e) {
             return fail(ErrorType.ERROR_CODE_APP_GROUP_CLOSE_JOIN_FAIL);
-        }catch (GroupCostException e) {
+        } catch (GroupCostException e) {
             return fail(ErrorType.ERROR_CODE_APP_CANNOT_JOIN_GROUP_FAIL);
         } catch (UserHasApprovalException e) {
             return fail(ErrorType.ERROR_CODE_USERHASAPPROVAL);
@@ -161,5 +161,10 @@ public class PayApi extends BaseController {
     @PostMapping(value = "/weixin/renewal/notify")
     public void wxRenewalNotify() {
         payService.wxRenewalNotify(this.getRequest(), this.getResponse());
+    }
+
+    @PostMapping(value = "/weixin/apply/notify")
+    public void wxApplyNotify() {
+        payService.wxApplyNotify(this.getRequest(), this.getResponse());
     }
 }

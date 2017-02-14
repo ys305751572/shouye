@@ -33,4 +33,6 @@ public interface PayService {
                                            HttpServletResponse response) throws GroupCostException;
 
     void wxRenewalNotify(HttpServletRequest request, HttpServletResponse response);
+
+    void wxApplyNotify(HttpServletRequest request, HttpServletResponse response);
 }

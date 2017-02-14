@@ -4,6 +4,8 @@ import com.smallchill.api.common.exception.*;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.function.meta.consts.StatusConst;
 import com.smallchill.api.function.meta.other.Convert;
+import com.smallchill.api.function.modal.ActivityApply;
+import com.smallchill.api.function.service.ActivityApplyService;
 import com.smallchill.api.function.service.PayService;
 import com.smallchill.api.system.model.PayConfig;
 import com.smallchill.common.pay.refund.MobiMessage;
@@ -56,6 +58,8 @@ public class PayServiceImpl implements PayService, StatusConst {
     private RefundService refundService;
     @Autowired
     private UserGroupService userGroupService;
+    @Autowired
+    private ActivityApplyService activityApplyService;
 
     /**
      * 获取预支付款ID
@@ -311,7 +315,7 @@ public class PayServiceImpl implements PayService, StatusConst {
      * @param response response
      */
     public Map<String, Object> createRenewalOrder(Integer userId, Integer groupId, Double cost, HttpServletRequest request,
-                                   HttpServletResponse response) throws GroupCostException {
+                                                  HttpServletResponse response) throws GroupCostException {
         Double realCost = groupExtendService.getCost(groupId);
         if (realCost != null && !cost.equals(realCost)) {
             throw new GroupCostException();
@@ -352,6 +356,28 @@ public class PayServiceImpl implements PayService, StatusConst {
                 orderService.setOrderSuccess(order);
                 // 修改会员过期时间
                 userGroupService.renewal(order.getUserId(), order.getGroupId());
+            }
+        }
+    }
+
+    @Override
+    public void wxApplyNotify(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> resultMap = parse(request);
+        if (resultMap.get("result_code").equals("SUCCESS")) {
+            // 成功
+            String orderNo = resultMap.get("out_trade_no");
+            Order order = orderService.findByOrderNo(orderNo);
+            if (order != null && order.getStatus() == ORDER_STATUS_ERROR) {
+                // 修改订单状态
+                // 修改用户拓展信息数据
+                orderService.setOrderSuccess(order);
+                // 修改报名状态
+                ActivityApply activityApply = new ActivityApply();
+                activityApply.setActivityId(order.getGroupId());
+                activityApply.setUserId(order.getUserId());
+                activityApply.setCreateTime(DateTimeKit.nowLong());
+                activityApply.setStatus(HAVE_PAY);
+                activityApplyService.save(activityApply);
             }
         }
     }

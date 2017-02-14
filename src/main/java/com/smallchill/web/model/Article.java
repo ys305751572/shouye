@@ -46,6 +46,20 @@ public class Article extends BaseModel {
     private Integer reason;
     @Column(name = "create_time")
     private Long createTime;
+    @Column(name = "apply_end_time")
+    private Long applyEndTime;
+    @Column(name = "province_id")
+    private Integer provinceId;
+    @Column(name = "city_id")
+    private Integer cityId;
+    @Column(name = "address")
+    private String address;
+    @Column(name = "cost")
+    private Integer cost;
+    @Column(name = "limit")
+    private Integer limit;
+    @Column(name = "ceiling")
+    private Integer ceiling;
 
     public Integer getId() {
         return id;
@@ -165,5 +179,61 @@ public class Article extends BaseModel {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getApplyEndTime() {
+        return applyEndTime;
+    }
+
+    public void setApplyEndTime(Long applyEndTime) {
+        this.applyEndTime = applyEndTime;
+    }
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Integer getCost() {
+        return cost;
+    }
+
+    public void setCost(Integer cost) {
+        this.cost = cost;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+    public Integer getCeiling() {
+        return ceiling;
+    }
+
+    public void setCeiling(Integer ceiling) {
+        this.ceiling = ceiling;
     }
 }

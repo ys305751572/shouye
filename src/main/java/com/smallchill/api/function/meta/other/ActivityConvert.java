@@ -32,14 +32,14 @@ public class ActivityConvert {
         vo.setGroupname(MapKit.getStr(map, "groupname"));
         return vo;
     }
-    public ActivityVo recordToVo(Record map) {
+    public static ActivityVo recordToVo(Record map) {
         ActivityVo vo = new ActivityVo();
         vo.setCover(MapKit.getStr(map, "cover"));
         vo.setTitle(MapKit.getStr(map, "title"));
         vo.setCreateTime(MapKit.getLong(map, "pushTime"));
         vo.setActivityId(MapKit.getInt(map, "activityId"));
         vo.setAddress(MapKit.getStr(map, "address"));
-        vo.setApplyTime(MapKit.getLong(map, "applyTime"));
+        vo.setApplyEndTime(MapKit.getLong(map, "applyEndTime"));
         vo.setCeiling(MapKit.getInt(map, "ceiling"));
         vo.setContent(MapKit.getStr(map, "content"));
         vo.setCost(MapKit.getInt(map, "cost"));
@@ -48,6 +48,7 @@ public class ActivityConvert {
         vo.setLimit(MapKit.getInt(map, "limit"));
         vo.setGroupId(MapKit.getInt(map, "groupId"));
         vo.setGroupname(MapKit.getStr(map, "groupname"));
+        vo.setBtnStatus(map.getInt("btnStatus"));
         return vo;
     }
 }
