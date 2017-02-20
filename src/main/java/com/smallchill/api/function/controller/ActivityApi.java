@@ -6,7 +6,6 @@ import com.smallchill.api.common.kit.ExcludeParams;
 import com.smallchill.api.common.model.ErrorType;
 import com.smallchill.api.function.meta.intercept.ActivityIntercept;
 import com.smallchill.api.function.meta.intercept.ApplyUsersIntercept;
-import com.smallchill.api.function.meta.intercept.ArticleIntercept;
 import com.smallchill.api.function.meta.validate.ActivityApplyValidate;
 import com.smallchill.api.function.meta.validate.ActivityIdValidate;
 import com.smallchill.api.function.meta.validate.UserIdValidate;

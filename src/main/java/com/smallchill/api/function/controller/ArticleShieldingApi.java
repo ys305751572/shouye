@@ -54,9 +54,14 @@ public class ArticleShieldingApi extends BaseController {
     @PostMapping(value = "/canel/shielding")
     @ResponseBody
     @Before(UserIdValidate.class)
-    public String canelShielding(String ids) {
+    public String canelShielding(String ids, Integer userId) {
         try {
-            shieldingService.deleteByIds(ids);
+            String[] idss = ids.split("\\|");
+            for (String ids2 : idss) {
+                String[] ids22 = ids2.split(",");
+                shieldingService.deleteBy("from_id = #{fromId} AND type = #{type} AND user_id = #{userId}",
+                        Record.create().set("fromId", ids22[0]).set("type", ids22[1]).set("userId", userId));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return fail();

@@ -13,5 +13,5 @@ import java.util.Map;
  */
 public interface MaganizeService extends IService<Maganize> {
 
-    public Map<String, Object> listById(int maganzieId, int pagenum, int pagesize);
+    List listById(int maganzieId, int pagenum, int pagesize);
 }

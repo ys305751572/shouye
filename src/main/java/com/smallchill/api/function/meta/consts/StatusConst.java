@@ -57,8 +57,9 @@ public interface StatusConst {
     int ARTICLE_DEL = 5; // 弃稿
 
     int ARTICLE_FROM_TYPE_PEPOLE = 1; // 个人
-    int ARTICLE_FROM_TYPE_GROUP = 2; // 组织
+    int ARTICLE_FROM_TYPE_DAILY = 2; // 组织
     int ARTICLE_FROM_TYPE_OFFICIAL = 3; // 官方
+    int ARTICLE_FROM_TYPE_MAGAZINE = 4; // 杂志
 
     int ARTICLE_SHOW_NOMAL_TYPE = 1; // 正常
     int ARTICLE_SHOW_INTERESTED_TYPE = 2; // 感兴趣

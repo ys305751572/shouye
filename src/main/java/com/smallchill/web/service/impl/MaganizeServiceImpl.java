@@ -1,5 +1,6 @@
 package com.smallchill.web.service.impl;
 
+import com.smallchill.api.function.modal.vo.DayMaganzineVo;
 import com.smallchill.core.plugins.dao.Blade;
 import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
@@ -10,6 +11,7 @@ import com.smallchill.web.service.MaganizeService;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,20 +32,22 @@ public class MaganizeServiceImpl extends BaseService<Maganize> implements Magani
      * @return map
      */
     @Override
-    public Map<String, Object> listById(int maganzieId, int pagenum, int pagesize) {
+    public List listById(int maganzieId, int pagenum, int pagesize) {
 
-        Map<String, Object> map = new HashMap<>();
         int start = 0;
         if (pagenum != 1) {
             start = (pagenum - 1) * pagesize + 1;
         }
+        List list = new ArrayList();
         for (int i = start; i < pagesize; i++) {
             String timeParam = DateKit.getAfterDayDate(i, "yyyyMMdd");
             String time = DateKit.getAfterDayDate(i, "M-dd");
-            map.put(time, listById(maganzieId, timeParam));
+            DayMaganzineVo vo = new DayMaganzineVo();
+            vo.setTime(time);
+            vo.setList(listById(maganzieId, timeParam));
+            list.add(vo);
         }
-        map.put("pagenum", pagenum);
-        return map;
+        return list;
     }
 
     /**
@@ -53,6 +57,6 @@ public class MaganizeServiceImpl extends BaseService<Maganize> implements Magani
      */
     private List<Record> listById(int maganzieId, String time) {
         String sql = Blade.dao().getScript("MagazineInfo.listById").getSql();
-        return Db.init().selectList(sql, Record.create().set("id", maganzieId).set("time", time));
+        return Db.init().selectList(sql, Record.create().set("fromId", maganzieId).set("time", time));
     }
 }

@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 报名用户
- * Created by yesong on 2017/2/13 0013.
+ * 文章感兴趣查询拦截器
+ * Created by yesong on 2017/2/15 0015.
  */
-public class ApplyUsersIntercept extends ApiQueryIntercept {
+public class InterestUsersIntercept extends ApiQueryIntercept{
 
     @Override
     public void queryBefore(AopContext ac) {
@@ -70,12 +70,6 @@ public class ApplyUsersIntercept extends ApiQueryIntercept {
                 record.put("keyWord", keyWord);
             }
             record.put("domain", record.get("domain"));
-
-            String professional = MapKit.getStr(record, "professional");
-            if (StringUtils.isNotBlank(professional)) {
-                record.put("professional", professional.split("/")[0]);
-            }
-
             record.remove("province");
             record.remove("city");
             record.remove("groupId");

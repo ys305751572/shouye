@@ -14,6 +14,8 @@ public class ArticleVo extends BaseVo{
     private String content; // 内容
     private String cover; // 封面
     private String fromName; // 来源名字
+    private Integer authorId; // 作者ID
+    private Integer authorType; // 作者类型
     private String author; // 作者
     private String typename; // 文章类型名称
     private Integer readingQWantity; // 阅读量
@@ -22,6 +24,68 @@ public class ArticleVo extends BaseVo{
     private Long createTime; // 创建时间
     private Long pushTime; // 最后时间
     private Integer type; // 类型
+    private Integer mine; // 是否本人
+    private Integer groupId; // 组织ID
+    private String groupname; // 组织名字
+
+    private Integer magazineId;  // 杂志ID
+    private String maganzinename; // 杂志名字
+
+    public Integer getMagazineId() {
+        return magazineId;
+    }
+
+    public void setMagazineId(Integer magazineId) {
+        this.magazineId = magazineId;
+    }
+
+    public String getMaganzinename() {
+        return maganzinename;
+    }
+
+    public void setMaganzinename(String maganzinename) {
+        this.maganzinename = maganzinename;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
+
+    public Integer getAuthorType() {
+        return authorType;
+    }
+
+    public void setAuthorType(Integer authorType) {
+        this.authorType = authorType;
+    }
+
+    public Integer getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Integer authorId) {
+        this.authorId = authorId;
+    }
+
+    public Integer getMine() {
+        return mine;
+    }
+
+    public void setMine(Integer mine) {
+        this.mine = mine;
+    }
 
     public String getTitle() {
         return title;

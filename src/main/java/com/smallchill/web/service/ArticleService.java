@@ -19,7 +19,7 @@ public interface ArticleService extends IService<Article> {
 
     void create(Article article, Integer userId, MultipartRequest multipartRequest, String obj);
 
-    void contribute(Integer lastActicleId, Integer userId, List<Integer> userIds, int type);
+    void contribute(Integer lastActicleId, Integer userId, List<Integer> userIds, int type, int fromType);
 
     List<ArticleVo> findByUserId(Integer userId);
 
@@ -29,7 +29,7 @@ public interface ArticleService extends IService<Article> {
 
     void deleteById(Integer id, Integer userId);
 
-    ArticleVo detail(Integer id);
+    ArticleVo detail(Integer id, Integer userId, Integer authorId, Integer authorType);
 
     void addReadCount(int articleId);
 
@@ -46,4 +46,11 @@ public interface ArticleService extends IService<Article> {
     List<ArticleVo> listUnInterest(Integer userId);
 
     void filterShielding(List<Integer> ids, Integer userId);
+
+    List<Integer> friend(Integer userId);
+
+    List<Integer> listInterested(Integer userId);
+
+    List<Integer> listIntereste(Integer userId);
+
 }

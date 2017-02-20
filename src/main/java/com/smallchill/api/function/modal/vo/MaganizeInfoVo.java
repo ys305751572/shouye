@@ -10,11 +10,20 @@ public class MaganizeInfoVo extends BaseVo{
 
     private Integer maganizeId;
     private String name;
+    private String desc;
     private String groupname;
     private String title;
     private Integer status;
     private String cover;
     private Long createTime;
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
 
     public Long getCreateTime() {
         return createTime;

@@ -4,6 +4,7 @@ import com.smallchill.api.function.meta.consts.StatusConst;
 import com.smallchill.api.function.meta.other.ArticleConvert;
 import com.smallchill.api.function.modal.Shielding;
 import com.smallchill.api.function.modal.vo.ArticleVo;
+import com.smallchill.api.function.modal.vo.UserVo;
 import com.smallchill.api.function.service.ShieldingService;
 import com.smallchill.api.function.service.impl.ShouPageServiceImpl;
 import com.smallchill.core.plugins.dao.Blade;
@@ -11,10 +12,7 @@ import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
-import com.smallchill.web.model.Article;
-import com.smallchill.web.model.ArticleShow;
-import com.smallchill.web.model.Daily;
-import com.smallchill.web.model.Maganize;
+import com.smallchill.web.model.*;
 import com.smallchill.web.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +42,10 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
     private DailyService dailyService;
     @Autowired
     private ShieldingService shieldingService;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private UserInfoService userInfoService;
 
     /**
      * 机遇列表
@@ -92,7 +94,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
             // 查询朋友
             List<Integer> list1 = friend(userId);
             filterShielding(list1, userId);
-            contribute(lastActicleId, userId, list1, ARTICLE_SHOW_FRIEND);
+            contribute(lastActicleId, userId, list1, ARTICLE_SHOW_FRIEND, ARTICLE_FROM_TYPE_PEPOLE);
         }
     }
 
@@ -108,7 +110,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
             // 查询对我感兴趣的人
             List<Integer> list2 = listInterested(userId);
             filterShielding(list2, userId);
-            contribute(lastActicleId, userId, list2, ARTICLE_SHOW_INTERESTED);
+            contribute(lastActicleId, userId, list2, ARTICLE_SHOW_INTERESTED, ARTICLE_FROM_TYPE_PEPOLE);
         }
     }
 
@@ -124,11 +126,12 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
             // 查询我感兴趣的人
             List<Integer> list3 = listIntereste(userId);
             filterShielding(list3, userId);
-            contribute(lastActicleId, userId, list3, ARTICLE_SHOW_INTEREST);
+            contribute(lastActicleId, userId, list3, ARTICLE_SHOW_INTEREST, ARTICLE_FROM_TYPE_PEPOLE);
         }
     }
 
-    private List<Integer> friend(Integer userId) {
+    @Override
+    public List<Integer> friend(Integer userId) {
         String sql = "select friend_id userId from tb_user_friend where user_id = #{userId}";
         List<Record> friends = Db.init().selectList(sql, Record.create().set("userId", userId));
         List<Integer> voList = new ArrayList<>();
@@ -138,7 +141,8 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         return voList;
     }
 
-    private List<Integer> listInterested(Integer userId) {
+    @Override
+    public List<Integer> listInterested(Integer userId) {
 
         String sql = "select user_id userId from tb_interest_user where to_user_id = #{userId}";
         List<Record> list = Db.init().selectList(sql,
@@ -150,7 +154,8 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         return voList;
     }
 
-    private List<Integer> listIntereste(Integer userId) {
+    @Override
+    public List<Integer> listIntereste(Integer userId) {
 
         String sql = "select to_user_id userId from tb_interest_user where user_id = #{userId}";
         List<Integer> voList = new ArrayList<>();
@@ -168,10 +173,23 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * @param lastActicleId 最后文章ID
      */
     @Override
-    public void contribute(Integer lastActicleId, Integer userId, List<Integer> userIds, int type) {
+    public void contribute(Integer lastActicleId, Integer userId, List<Integer> userIds, int type, int fromType) {
         ArticleShow articleShow;
         for (Integer _userId : userIds) {
-            articleShow = createArticleShowBean(lastActicleId, userId, _userId, type);
+            articleShow = createArticleShowBean(lastActicleId, userId, _userId, type, fromType);
+            articleShowService.save(articleShow);
+        }
+    }
+
+    /**
+     * 分享到关系用户
+     *
+     * @param lastActicleId 最后文章ID
+     */
+    public void contribute(Integer lastActicleId, Integer userId, List<Integer> userIds, int type, int fromType, int shareId) {
+        ArticleShow articleShow;
+        for (Integer _userId : userIds) {
+            articleShow = createArticleShowBean(lastActicleId, userId, _userId, type, fromType, shareId);
             articleShowService.save(articleShow);
         }
     }
@@ -290,28 +308,71 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * @return 文章详情
      */
     @Override
-    public ArticleVo detail(Integer id) {
-
+    public ArticleVo detail(Integer id, Integer userId, Integer authorId, Integer authorType) {
         String sql = Blade.dao().getScript("Acticle.findById").getSql();
         Record record = Db.init().selectOne(sql, Record.create().set("id", id));
 
+        ArticleVo vo = ArticleConvert.articleDetailToArticleVo(record);
+        int fromId = record.getInt("from_id");
+        int fromType = record.getInt("from_type");
+        if (fromType == 1 && fromId == userId) {
+            vo.setMine(1);
+            UserInfo userInfo = userInfoService.findByUserId(fromId);
+            vo.setAuthor(userInfo.getUsername());
+            if (authorType == 2) {
+                // 日报
+                Group group = groupService.findById(authorId);
+                vo.setGroupId(authorId);
+                vo.setGroupname(group.getName());
+            } else if (authorType == 3) {
+                // 杂志
+                String sql2 = "SELECT mi.name magazinename,g.id,g.`name` groupname FROM `tb_magazine_info` mi " +
+                        "LEFT JOIN tb_group g ON mi.`group_id` = g.id WHERE mi.`id` = #{id}";
+                Record record1 = Db.init().selectOne(sql2, Record.create().set("id", authorId));
+                vo.setGroupId(record1.getInt("id"));
+                vo.setGroupname(record1.getStr("groupname"));
+                vo.setMagazineId(authorId);
+                vo.setMaganzinename(record1.getStr("magazinename"));
+            }
+        } else if (fromType == 2) {
+            vo.setMine(2);
+            Group group = groupService.findById(fromId);
+            vo.setGroupId(fromId);
+            vo.setGroupname(group.getName());
+        } else if (fromType == 4) {
+            // 杂志
+            String sql2 = "SELECT mi.name magazinename,g.id,g.`name` groupname FROM `tb_magazine_info` mi " +
+                    "LEFT JOIN tb_group g ON mi.`group_id` = g.id WHERE mi.`id` = #{id}";
+            Record record1 = Db.init().selectOne(sql2, Record.create().set("id", fromId));
+            vo.setGroupId(record1.getInt("id"));
+            vo.setGroupname(record1.getStr("groupname"));
+            vo.setMagazineId(fromId);
+            vo.setMaganzinename(record1.getStr("magazinename"));
+        }
         //  增加阅读量
         addReadCount(id);
-        return ArticleConvert.articleDetailToArticleVo(record);
+        return vo;
     }
 
     private void deleteArticleShow(Integer id) {
         articleShowService.deleteBy("article_id = #{articleId}", Record.create().set("articleId", id));
     }
 
-    private ArticleShow createArticleShowBean(Integer articleId, Integer fromUserId, Integer toId, Integer type) {
+    private ArticleShow createArticleShowBean(Integer articleId, Integer fromUserId, Integer toId, Integer type, Integer fromType) {
         ArticleShow articleShow = new ArticleShow();
         articleShow.setType(type);
         articleShow.setFromId(fromUserId);
         articleShow.setIsIntereste(ARTICLE_SHOW_NOMAL_TYPE);
+        articleShow.setFromType(fromType);
         articleShow.setArticleId(articleId);
         articleShow.setCreateTime(DateTimeKit.nowLong());
         articleShow.setToId(toId);
+        return articleShow;
+    }
+
+    private ArticleShow createArticleShowBean(Integer articleId, Integer fromUserId, Integer toId, Integer type, Integer fromType, Integer share) {
+        ArticleShow articleShow = createArticleShowBean(articleId, fromUserId, toId, type, fromType);
+        articleShow.setShareId(share);
         return articleShow;
     }
 
@@ -349,7 +410,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         for (String toUserId : toUserIdss) {
             list.add(Integer.parseInt(toUserId));
         }
-        contribute(articleId, userId, list, ARTICLE_SHOW_SHARE);
+        contribute(articleId, userId, list, ARTICLE_SHOW_SHARE, ARTICLE_FROM_TYPE_PEPOLE, userId);
         addShareCount(articleId);
     }
 

@@ -41,7 +41,9 @@ public class ArticleConvert {
         vo.setAuthor(record.getStr("username"));
         vo.setCover(record.getStr("cover"));
         vo.setPushTime(record.getLong("push_time"));
+        vo.setAuthorId(record.getInt("userId"));
         vo.setFromName(record.getStr("sharename"));
+        vo.setAuthorType(record.getInt("type2"));
         vo.setType(record.getInt("type"));
         vo.setTitle(record.getStr("title"));
         return vo;
@@ -52,6 +54,8 @@ public class ArticleConvert {
         vo.setTypename(record.getStr("typename"));
         vo.setArticleId(record.getInt("id"));
         vo.setAuthor(record.getStr("username"));
+        vo.setAuthorId(record.getInt("from_id"));
+        vo.setAuthorType(record.getInt("from_type"));
         vo.setCover(record.getStr("cover"));
         vo.setPushTime(record.getLong("push_time"));
         vo.setTitle(record.getStr("title"));

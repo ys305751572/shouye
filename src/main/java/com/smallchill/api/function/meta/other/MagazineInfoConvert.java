@@ -40,7 +40,7 @@ public class MagazineInfoConvert {
         vo.setMaganizeId(MapKit.getInt(record, "id"));
         vo.setName(MapKit.getStr(record, "name"));
         vo.setCover(MapKit.getStr(record, "cover"));
-
+        vo.setDesc(record.getStr("desc"));
         int status = 1;
         if (MapKit.getInt(record, "magazine_id") != 0) {
             status = 2;

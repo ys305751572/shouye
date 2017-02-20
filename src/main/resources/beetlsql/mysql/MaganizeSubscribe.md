@@ -1,5 +1,7 @@
 listByUserId
 ============
+SELECT * FROM 
+(
 SELECT a.`id`,a.`title`,a.`cover`,mi.`name`,mi.`id` maganize_id,m.`audit_time`,mi.`status`
 FROM `tb_magazine_info` mi 
 LEFT JOIN `tb_magazine` m 
@@ -13,7 +15,9 @@ SELECT * FROM
 UNION ALL
 SELECT mi.id FROM `tb_userinfo_domain` ud LEFT JOIN 
 `tb_magazine_info` mi ON ud.domain_id = mi.domain_id WHERE ud.user_id = #{userId} AND mi.id IS NOT NULL)  AS t1 GROUP BY t1.id
-)  AND (mi.status = 2 or mi.status = 4)
+)  AND (mi.status = 2 OR mi.status = 4) ORDER BY audit_time DESC
+) AS t1 GROUP BY maganize_id
+
 
 
 SimpleListByUserId

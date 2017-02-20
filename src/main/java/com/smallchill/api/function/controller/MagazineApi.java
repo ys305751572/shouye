@@ -138,14 +138,14 @@ public class MagazineApi extends BaseController {
     @PostMapping(value = "/list/id")
     @ResponseBody
     @Before(MagazineIdValidate.class)
-    public String listById(Integer magazineId, Integer pagenum, Integer pagesize) {
-        Map<String, Object> resultMap;
+    public String listById(Integer magazineId, Integer pageNum, Integer pageSize) {
+        List list;
         try {
-            resultMap = maganizeService.listById(magazineId, pagenum, pagesize);
+            list = maganizeService.listById(magazineId, pageNum, pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
         }
-        return success(resultMap, "magazines");
+        return success(list, "magazines");
     }
 }

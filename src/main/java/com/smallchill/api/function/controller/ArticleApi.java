@@ -1,7 +1,10 @@
 package com.smallchill.api.function.controller;
 
 import com.smallchill.api.common.kit.ExcludeParams;
+import com.smallchill.api.common.model.Result;
+import com.smallchill.api.function.meta.intercept.ApplyUsersIntercept;
 import com.smallchill.api.function.meta.intercept.ArticleIntercept;
+import com.smallchill.api.function.meta.intercept.ArticlePageIntercept;
 import com.smallchill.api.function.meta.other.ArticleConvert;
 import com.smallchill.api.function.meta.validate.UserIdValidate;
 import com.smallchill.api.function.modal.vo.ArticleVo;
@@ -10,6 +13,7 @@ import com.smallchill.common.base.BaseController;
 import com.smallchill.core.annotation.Before;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.grid.JqGrid;
+import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.web.model.Article;
 import com.smallchill.web.model.MagazineInfo;
 import com.smallchill.web.service.ArticleService;
@@ -50,18 +54,18 @@ public class ArticleApi extends BaseController {
     @ResponseBody
     @Before(UserIdValidate.class)
     public String listByUserId(Integer userId) {
-        List<ArticleVo> list;
-        Map<String, Object> resultMap = new HashMap<>();
+        JqGrid page;
         try {
-            list = articleService.listByUserId(userId);
-            int count = articleShowService.count("to_id = #{userId} AND is_intereste = 1", Record.create().set("userId", userId));
-            resultMap.put("list", list);
-            resultMap.put("count", count);
+            page = apiPaginate("Acticle.listByUserId", new ArticlePageIntercept().addRecord(Record.create()
+            .set("userId", getParameter("userId"))), ExcludeParams.create().set("userId"));
+//            int count = articleShowService.count("to_id = #{userId} AND is_intereste = 1", Record.create().set("userId", userId));
+//            resultMap.put("page", Result.success(page));
+//            resultMap.put("count", count);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
         }
-        return success(resultMap, "articleIndex");
+        return success(page);
     }
 
     /**
@@ -74,7 +78,16 @@ public class ArticleApi extends BaseController {
     public String findPublishObject(Integer userId) {
         List<MagazineInfo> magazineInfos = magazineInfoService.simpleListByUserId(userId);
         List<Record> dailys = dailyService.simpleListByUserId(userId);
-        return success(Record.create().set("magazineInfos", magazineInfos).set("dailys", dailys), "publishObject");
+
+        List<Integer> list1 = articleService.friend(userId);
+        List<Integer> list2 = articleService.listIntereste(userId);
+        List<Integer> list3 = articleService.listInterested(userId);
+
+        Record record = Record.create().set("magazineInfos", magazineInfos).set("dailys", dailys);
+        record.set("friendCount", CollectionKit.isNotEmpty(list1) ? list1.size() : 0)
+                .set("interestCount", CollectionKit.isNotEmpty(list2) ? list2.size() : 0)
+                .set("interestedCount", CollectionKit.isNotEmpty(list3) ? list3.size() : 0);
+        return success(record, "publishObject");
     }
 
     /**
@@ -104,14 +117,35 @@ public class ArticleApi extends BaseController {
      */
     @PostMapping(value = "/detail")
     @ResponseBody
-    public String detail(Integer articleId) {
+    public String detail(Integer articleId, Integer userId, Integer authorId, Integer authorType) {
         ArticleVo articleVo;
         try {
-            articleVo = articleService.detail(articleId);
+            articleVo = articleService.detail(articleId, userId, authorId, authorType);
         } catch (Exception e) {
+            e.printStackTrace();
             return fail();
         }
         return success(articleVo);
+    }
+
+    /**
+     * 文章感兴趣用户列表
+     *
+     * @param articleId 文章ID
+     * @param userId    用户ID
+     * @return result
+     */
+    @PostMapping(value = "/detail/userlist")
+    @ResponseBody
+    public String detailInterestUserList(Integer articleId, Integer userId) {
+        Article article = articleService.findById(articleId);
+        if (article.getFromId() == userId && article.getFromType() == 1) {
+            JqGrid page = apiPaginate("Acticle.interestUserListByArticleId", new ApplyUsersIntercept().addRecord(
+                    Record.create().set("activityId", articleId).set("userId", userId)
+            ), ExcludeParams.create().set("activityId").set("userId"));
+            return success(page);
+        }
+        return success();
     }
 
     /**
