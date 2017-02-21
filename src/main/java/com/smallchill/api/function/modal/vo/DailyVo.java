@@ -13,7 +13,7 @@ public class DailyVo extends BaseVo{
     private String cover;
     private String title;
     private String name;
-    private String groupName;
+    private String groupname;
     private Long createTime;
     private Integer status;
     private String desc;
@@ -34,12 +34,12 @@ public class DailyVo extends BaseVo{
         this.articleId = articleId;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroupname() {
+        return groupname;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
     }
 
     public Integer getStatus() {

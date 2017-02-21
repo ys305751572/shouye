@@ -2,6 +2,8 @@ package com.smallchill.api.function.modal.vo;
 
 import com.smallchill.api.common.model.BaseVo;
 
+import java.util.List;
+
 /**
  * 文章VO
  * Created by yesong on 2017/2/3 0003.
@@ -30,6 +32,18 @@ public class ArticleVo extends BaseVo{
 
     private Integer magazineId;  // 杂志ID
     private String maganzinename; // 杂志名字
+
+    private Integer isInterest; // 是否感兴趣
+
+    private List<String> urls;
+
+    public Integer getIsInterest() {
+        return isInterest;
+    }
+
+    public void setIsInterest(Integer isInterest) {
+        this.isInterest = isInterest;
+    }
 
     public Integer getMagazineId() {
         return magazineId;
@@ -197,5 +211,13 @@ public class ArticleVo extends BaseVo{
 
     public void setArticleId(Integer articleId) {
         this.articleId = articleId;
+    }
+
+    public List<String> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<String> urls) {
+        this.urls = urls;
     }
 }

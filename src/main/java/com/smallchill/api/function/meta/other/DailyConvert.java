@@ -35,7 +35,7 @@ public class DailyConvert {
         vo.setTitle(record.getStr("title"));
         vo.setDailyId(record.getInt("daily_id"));
         vo.setName(record.getStr("name") + "日报");
-        vo.setGroupName(record.getStr("name"));
+        vo.setGroupname(record.getStr("name"));
         vo.setDesc(record.getStr("daily_desc"));
         vo.setCover(record.getStr("daily_cover"));
         return vo;

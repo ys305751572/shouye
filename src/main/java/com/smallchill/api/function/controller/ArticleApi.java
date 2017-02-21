@@ -26,6 +26,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,12 +57,30 @@ public class ArticleApi extends BaseController {
     @Before(UserIdValidate.class)
     public String listByUserId(Integer userId) {
         JqGrid page;
+        List<MagazineInfo> magazineInfos = magazineInfoService.simpleListByUserId(userId);
+        List<Record> dailys = dailyService.simpleListByUserId(userId);
+
+        StringBuilder maganzineIds = new StringBuilder();
+        if (CollectionKit.isNotEmpty(magazineInfos)) {
+            for (MagazineInfo magazineInfo : magazineInfos) {
+                maganzineIds.append(magazineInfo.getId()).append(",");
+            }
+        }
+
+        StringBuffer dailyIds = new StringBuffer();
+        if (CollectionKit.isNotEmpty(dailys)) {
+            for (Record record : dailys) {
+                dailyIds.append(record.getInt("id")).append(",");
+            }
+        }
+
         try {
             page = apiPaginate("Acticle.listByUserId", new ArticlePageIntercept().addRecord(Record.create()
-            .set("userId", getParameter("userId"))), ExcludeParams.create().set("userId"));
-//            int count = articleShowService.count("to_id = #{userId} AND is_intereste = 1", Record.create().set("userId", userId));
-//            resultMap.put("page", Result.success(page));
-//            resultMap.put("count", count);
+            .set("userId", getParameter("userId"))
+                            .set("maganzineIds", StringUtils.isNotBlank(maganzineIds) ? maganzineIds.substring(0, maganzineIds.length() - 1) : "")
+                            .set("dailyIds", StringUtils.isNotBlank(dailyIds) ? dailyIds.substring(0, dailyIds.length() - 1) : "")),
+                    ExcludeParams.create().set("userId")
+                   );
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
@@ -99,9 +119,9 @@ public class ArticleApi extends BaseController {
      */
     @RequestMapping(value = "/create")
     @ResponseBody
-    public String create(Article article, Integer userId, String obj) {
+    public String create(Article article, Integer userId, String obj, MultipartRequest request) {
         try {
-            articleService.create(article, userId, null, obj);
+            articleService.create(article, userId, request, obj);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();

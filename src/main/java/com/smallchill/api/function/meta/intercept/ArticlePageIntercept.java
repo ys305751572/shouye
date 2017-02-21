@@ -12,5 +12,7 @@ public class ArticlePageIntercept extends ApiQueryIntercept{
     @Override
     public void queryBefore(AopContext ac) {
         setParma("userId", ac);
+        setParma("maganzineIds", ac);
+        setParma("dailyIds", ac);
     }
 }

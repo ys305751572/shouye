@@ -28,15 +28,30 @@ UNION ALL
 SELECT as1.id,as1.article_id,g.name,as1.`create_time`,as1.type,as1.share_id,as1.from_id,as1.from_type FROM tb_article_show as1
 LEFT JOIN tb_group g
 ON as1.`from_id` = g.id 
-WHERE as1.`from_type` = 2 AND as1.`to_id` = #{userId} AND as1.`is_intereste` = 1
+WHERE as1.`from_type` = 2 AND as1.type != 8 AND as1.`to_id` = #{userId} AND as1.`is_intereste` = 1
+
+UNION ALL
+
+SELECT as1.id,as1.article_id,g.name,as1.`create_time`,as1.type,as1.share_id,as1.from_id,as1.from_type
+FROM tb_article_show as1
+LEFT JOIN tb_group g
+ON as1.`from_id` = g.id 
+LEFT JOIN tb_activity_interest ai
+ON ai.article_id = as1.article_id and ai.user_id = #{userId}
+WHERE as1.`from_type` = 2 AND as1.type = 8
+AND ai.id IS NULL
 
 UNION ALL
 
 SELECT as1.id,as1.article_id,mi.name,as1.`create_time`,as1.type,as1.share_id,as1.from_id,as1.from_type FROM tb_article_show as1
 LEFT JOIN tb_magazine_info mi
 ON as1.`from_id` = mi.id
-WHERE as1.`from_type` = 4 AND as1.`to_id` = #{userId} AND as1.`is_intereste` = 1
+WHERE as1.`from_type` = 4 AND (as1.`to_id` = #{userId} OR as1.`from_id` IN (#{maganzineIds}))AND as1.`is_intereste` = 1
 
+UNION ALL
+
+SELECT as1.id,as1.article_id,'官方' AS `name`,as1.`create_time`,as1.type,as1.share_id,as1.from_id,as1.from_type FROM tb_article_show as1
+WHERE as1.`from_type` = 3 AND as1.`to_id` = #{userId} AND as1.`is_intereste` = 1
 ) AS t1
 LEFT JOIN `tb_article` a
 ON t1.article_id = a.`id`
@@ -45,13 +60,12 @@ ON a.`article_type` = d.`ID`
 LEFT JOIN `tb_user_info` ui2
 ON t1.share_id = ui2.user_id
 ORDER BY t1.create_time DESC
-
 	
 findById
 ========
 SELECT a.`id`,a.`title`,a.`content`, a.`cover`,d.`NAME` typename,
 a.`from_id`,a.`from_type`,a.create_time push_time
-FROM `tb_article` a 
+FROM `tb_article` a
 LEFT JOIN `tfw_dict` d ON a.`article_type` = d.`id`
 WHERE a.`id` = #{id}
 

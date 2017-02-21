@@ -1,5 +1,6 @@
 package com.smallchill.web.service.impl;
 
+import com.qiniu.util.StringMap;
 import com.smallchill.api.function.meta.consts.StatusConst;
 import com.smallchill.api.function.meta.other.ArticleConvert;
 import com.smallchill.api.function.modal.Shielding;
@@ -12,6 +13,7 @@ import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
 import com.smallchill.core.toolbox.kit.CollectionKit;
 import com.smallchill.core.toolbox.kit.DateTimeKit;
+import com.smallchill.core.toolbox.kit.UploadKit;
 import com.smallchill.web.model.*;
 import com.smallchill.web.service.*;
 import org.apache.commons.lang3.StringUtils;
@@ -19,11 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smallchill.core.base.service.BaseService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -214,13 +218,15 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      * @param multipartRequest 文件
      */
     private Integer createActicle(Article article, MultipartRequest multipartRequest) {
-        uploadImage(multipartRequest);
         article.setInterestQuantity(0);
         article.setReadingQuantity(0);
         article.setForwardingQuantity(0);
         article.setFromType(ARTICLE_FROM_TYPE_PEPOLE);
         article.setCreateTime(DateTimeKit.nowLong());
-        return saveRtId(article);
+        int articleId = saveRtId(article);
+        String cover = uploadImage(multipartRequest, articleId);
+        updateBy("cover = #{cover}", "id = #{articleId}", Record.create().set("cover", cover).set("articleId", articleId));
+        return articleId;
     }
 
     /**
@@ -228,8 +234,18 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
      *
      * @param multipartRequest 文件
      */
-    private void uploadImage(MultipartRequest multipartRequest) {
-
+    private String uploadImage(MultipartRequest multipartRequest, Integer articleId) {
+        Map<String, MultipartFile> map = multipartRequest.getFileMap();
+        String firstUrl = "";
+        for (Map.Entry<String, MultipartFile> entity : map.entrySet()) {
+            MultipartFile file = entity.getValue();
+            StringMap resultMap = UploadKit.upload(UploadKit.changeFile(file));
+            String url = UploadKit.domain + resultMap.get("key");
+            Db.init().insert("insert into tb_article_image(article_id, url) values (#{articleId}, #{url})",
+                    Record.create().set("articleId", articleId).set("url", url));
+            firstUrl = url;
+        }
+        return firstUrl;
     }
 
     /**
@@ -312,11 +328,44 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
         String sql = Blade.dao().getScript("Acticle.findById").getSql();
         Record record = Db.init().selectOne(sql, Record.create().set("id", id));
 
+        List<Record> urlList = Db.init().selectList("select url from tb_article_image ai where ai.article_id = #{id}",
+                Record.create().set("id", id));
+
+        List<String> urls = new ArrayList<>();
+        if (CollectionKit.isNotEmpty(urlList)) {
+            for (Record record1 : urlList) {
+                urls.add(record1.getStr("url"));
+            }
+        }
         ArticleVo vo = ArticleConvert.articleDetailToArticleVo(record);
+        vo.setUrls(urls);
         int fromId = record.getInt("from_id");
         int fromType = record.getInt("from_type");
-        if (fromType == 1 && fromId == userId) {
-            vo.setMine(1);
+
+        String s1 = "select is_intereste from tb_article_show as1 where as1.article_id = #{articleId} " +
+                "AND to_id = #{userId} AND from_id = #{fromId} AND from_type = #{fromType}";
+        Record r1 = Db.init().selectOne(s1, Record.create().set("userId", userId).set("articleId", id)
+                .set("fromId", authorId).set("fromType", authorType));
+        vo.setIsInterest(1);
+
+        if (r1 != null && r1.getInt("is_intereste") == 2) {
+            vo.setIsInterest(2);
+        } else if (r1 != null && r1.getInt("is_intereste") == 3) {
+            vo.setIsInterest(3);
+        }
+
+        String s2 = "select is_intereste from tb_activity_interest ai where ai.article_id = #{articleId} AND ai.user_id = #{userId}";
+        Record r2 = Db.init().selectOne(s2, Record.create().set("articleId", id).set("userId", userId));
+
+        if (r2 != null && r2.getInt("is_intereste") == 1) {
+            vo.setIsInterest(2);
+        } else if (r2 != null && r2.getInt("is_intereste") == 2) {
+            vo.setIsInterest(3);
+        }
+        if (fromType == 1) {
+            if (fromId == userId) {
+                vo.setMine(1);
+            }
             UserInfo userInfo = userInfoService.findByUserId(fromId);
             vo.setAuthor(userInfo.getUsername());
             if (authorType == 2) {
@@ -324,7 +373,8 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
                 Group group = groupService.findById(authorId);
                 vo.setGroupId(authorId);
                 vo.setGroupname(group.getName());
-            } else if (authorType == 3) {
+                vo.setAuthorType(2);
+            } else if (authorType == 4) {
                 // 杂志
                 String sql2 = "SELECT mi.name magazinename,g.id,g.`name` groupname FROM `tb_magazine_info` mi " +
                         "LEFT JOIN tb_group g ON mi.`group_id` = g.id WHERE mi.`id` = #{id}";
@@ -333,12 +383,14 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
                 vo.setGroupname(record1.getStr("groupname"));
                 vo.setMagazineId(authorId);
                 vo.setMaganzinename(record1.getStr("magazinename"));
+                vo.setAuthorType(4);
             }
         } else if (fromType == 2) {
             vo.setMine(2);
             Group group = groupService.findById(fromId);
             vo.setGroupId(fromId);
             vo.setGroupname(group.getName());
+            vo.setAuthorType(2);
         } else if (fromType == 4) {
             // 杂志
             String sql2 = "SELECT mi.name magazinename,g.id,g.`name` groupname FROM `tb_magazine_info` mi " +
@@ -348,6 +400,7 @@ public class ArticleServiceImpl extends BaseService<Article> implements ArticleS
             vo.setGroupname(record1.getStr("groupname"));
             vo.setMagazineId(fromId);
             vo.setMaganzinename(record1.getStr("magazinename"));
+            vo.setAuthorType(4);
         }
         //  增加阅读量
         addReadCount(id);
