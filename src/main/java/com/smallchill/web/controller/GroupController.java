@@ -3,6 +3,7 @@ package com.smallchill.web.controller;
 import com.smallchill.api.function.modal.vo.SendVo;
 import com.smallchill.common.base.BaseController;
 import com.smallchill.common.task.TimeWorkManager;
+import com.smallchill.common.vo.ShiroUser;
 import com.smallchill.common.vo.User;
 import com.smallchill.core.constant.Cst;
 import com.smallchill.core.interfaces.ILoader;
@@ -384,7 +385,7 @@ public class GroupController extends BaseController {
                 }
                 groupVo.setTelphone(telphone);
             }
-
+            int groupId = groupService.saveGroup(groupVo);
             //新增一个组织管理员
             User user = new User();
             String pwd = groupVo.getPassword();
@@ -403,9 +404,8 @@ public class GroupController extends BaseController {
             user.setRoleid("2");
             user.setStatus(1);
             user.setCreatetime(new Date());
+            user.setGroupid(groupId);
             Blade.create(User.class).save(user);
-
-            groupService.saveGroup(groupVo);
         }catch (RuntimeException e){
             e.printStackTrace();
             return error(SAVE_FAIL_MSG);
@@ -420,6 +420,7 @@ public class GroupController extends BaseController {
     @RequestMapping(KEY_UPDATE)
     public String update(ModelMap mm){
         Group group = (Group) ShiroKit.getSession().getAttribute("groupAdmin");
+        ShiroUser shiroUser = ShiroKit.getUser();
         GroupExtend groupExtend = new GroupExtend();
         GroupBank groupBank = new GroupBank();
         if(group!=null){

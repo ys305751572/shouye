@@ -27,6 +27,7 @@ public class User extends BaseModel {
 	private Integer version;
 	private Date birthday;
 	private Date createtime;
+	private Integer groupid;
 
 	@AutoID
 	@SeqID(name = "SEQ_USER")
@@ -142,4 +143,11 @@ public class User extends BaseModel {
 		this.createtime = createtime;
 	}
 
+	public Integer getGroupid() {
+		return groupid;
+	}
+
+	public void setGroupid(Integer groupid) {
+		this.groupid = groupid;
+	}
 }

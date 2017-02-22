@@ -59,7 +59,8 @@ public class DefaultShiroFactroy implements IShiro{
 		for (int i = 0; i < roles.length; i++) {
 			roleList.add(roles[i]);
 		}
-		return new ShiroUser(user.getId(), user.getDeptid(), user.getAccount(), user.getName(), roleList);
+		Integer groupId = user.getGroupid();
+		return new ShiroUser(user.getId(), user.getDeptid(), user.getAccount(), user.getName(), roleList, groupId != null, groupId);
 	}
 
 	public List<Map<String, Object>> findPermissionsByRoleId(final Object userId, String roleId) {

@@ -12,6 +12,9 @@ import java.util.Map;
  * 2017-01-13 17:00:33
  */
 public interface MaganizeService extends IService<Maganize> {
-
+    // ============================接口API===========================
     List listById(int maganzieId, int pagenum, int pagesize);
+
+    // ========================后台管理==============================
+
 }

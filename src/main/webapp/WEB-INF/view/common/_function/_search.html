@@ -10,12 +10,10 @@
             <input type="hidden" id="type" value="${x.type!}">
             <input type="hidden" id="index" value="${xLP.index}">
         </div>
-
         <div id="divinput${xLP.index }" class="keyword">
             <input type="text" id="inputs${xLP.index }" class="form-control" style="margin:10px 10px 0 0;width: auto"/>
         </div>
         <input type="hidden" id="hides${xLP.index }"/>
-
         <span class="input-group-btn"></span>
     </div>
     @}
@@ -166,7 +164,6 @@
         if(index == 1){
             search();
         }
-
     }
 
     function doDelete(btn) {
@@ -194,10 +191,6 @@
         var where = (BladeTool.isEmpty(filter)) ? "" : filter.replace("}", "");
         var index = 1;
 
-//        console.log("------------------------search---------------------------------");
-//        console.log("---where1---");
-//        console.log(where);
-
         myMap.forEach(function (value, key) {
             if (BladeTool.isNotEmpty(key) && BladeTool.isNotEmpty(value)) {
                 if (index == 1) {
@@ -209,9 +202,6 @@
             }
         });
 
-//        console.log("---where2---");
-//        console.log(where);
-
         if (BladeTool.isNotEmpty(where) && BladeTool.isEmpty(exwhere)) {
             where += "}";
         }
@@ -221,9 +211,6 @@
         else {
             where = BladeTool.format(exwhere);
         }
-        console.log("---where3---");
-        console.log(where);
-
         var chk = 1;
 
         myMap.forEach(function (value, key) {
@@ -237,17 +224,11 @@
         } else {
             where = encodeURI(where);
         }
-
-//		where = (BladeTool.isEmpty(key1) && BladeTool.isEmpty(key2) && BladeTool.isEmpty(where)) ? "" : encodeURI(where);
-
         var pageNum = $jqGrid.getGridParam('page');
         $jqGrid.jqGrid("setGridParam", {
             postData: {where: where},
             page: (isAutoPage) ? pageNum : 1
         }).trigger("reloadGrid");
-//        console.log("---where4---");
-//        console.log(where);
-//        console.log("------------------------end---------------------------------")
     }
 
     function changethis(key, value, type, num) {
@@ -403,7 +384,4 @@
             content: "${basePath}/ztree/open/" + type + "/" + index + "/" + name + "/0/radio/0"
         });
     }
-
-
-
 </script>

@@ -18,12 +18,12 @@ AND a.`city_id` = #{cityId}
 AND FROM_UNIXTIME(a.`create_time`/1000,'%Y%m%d')  = #{time}
 @}
 AND 
-(a.`article_type` = 232 
-OR (as1.`is_all` = 1)
+a.`article_type` = 232 
+AND (
+as1.`is_all` = 1
 OR (as1.`type` = 4 AND a.`from_id` IN (#{dailyIds}))
-OR (as1.`type` = 5 AND a.`from_id` IN (#{maganzineIds})))
-
-
+OR (as1.`type` = 5 AND a.`from_id` IN (#{maganzineIds}))
+)
 
 detail
 ======

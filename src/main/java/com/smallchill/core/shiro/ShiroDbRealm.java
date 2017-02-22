@@ -51,13 +51,9 @@ public class ShiroDbRealm extends AuthorizingRealm {
 		log.info("Shiro登录认证启动");
 		IShiro shiroFactory = ShiroManager.me().getDefaultShiroFactory();
 		UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
-		
 		User user = shiroFactory.user(token.getUsername());
-
 		ShiroUser shiroUser = shiroFactory.shiroUser(user);
-
 		SimpleAuthenticationInfo info = shiroFactory.info(shiroUser, user, getName());
-
 		log.info("Shiro登录认证完毕");
 		return info;
 	}
@@ -101,5 +97,4 @@ public class ShiroDbRealm extends AuthorizingRealm {
 		credentialsMatcher.setHashIterations(ShiroKit.hashIterations);
 		setCredentialsMatcher(credentialsMatcher);
 	}
-
 }

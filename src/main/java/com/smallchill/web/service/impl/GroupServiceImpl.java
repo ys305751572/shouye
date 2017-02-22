@@ -55,10 +55,11 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
      */
     @Transactional
     @Override
-    public void saveGroup(GroupVo groupVo) {
+    public int saveGroup(GroupVo groupVo) {
+        int groupId = 0;
         try {
             // 1.group
-            int groupId = saveGroupInfo(groupVo);
+            groupId = saveGroupInfo(groupVo);
             // 2.groupBank
             saveGroupBank(groupVo, groupId);
             // 3.groupTag
@@ -66,6 +67,7 @@ public class GroupServiceImpl extends BaseService<Group> implements GroupService
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return groupId;
     }
 
     /**

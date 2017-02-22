@@ -22,7 +22,7 @@ public interface GroupService extends IService<Group> {
      *
      * @param groupVo 组织信息
      */
-    void saveGroup(GroupVo groupVo);
+    int saveGroup(GroupVo groupVo);
 
     /**
      * 编辑组织信息

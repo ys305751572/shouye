@@ -43,13 +43,19 @@ public class ShiroUser implements Serializable {
 	private Object subDepts;// 子部门集合
 	private Object subRoles;// 子角色集合
 	private Object subUsers;// 子账号集合
+	private Boolean isAdmin; // 是否官方账号
+	private Integer groupId; // 组织后台用户ID
 
-	public ShiroUser(Object id, Object deptId, String loginName, String name, List<String> roleList) {
+	public ShiroUser(Object id, Object deptId, String loginName, String name, List<String> roleList, Boolean isAdmin, Integer groupId) {
 		this.id = id;
 		this.deptId = deptId;
 		this.deptName = Func.getDeptName(deptId);
 		this.loginName = loginName;
 		this.name = name;
+
+		this.isAdmin = isAdmin;
+		this.groupId = groupId;
+
 		this.roleList = roleList;
 		this.roles = CollectionKit.join(roleList.toArray(), ",");
 		
@@ -187,6 +193,22 @@ public class ShiroUser implements Serializable {
 
 	public void setSubUsers(Object subUsers) {
 		this.subUsers = subUsers;
+	}
+
+	public Boolean getAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(Boolean admin) {
+		isAdmin = admin;
+	}
+
+	public Integer getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
 	}
 
 	/**
