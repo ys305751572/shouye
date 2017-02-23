@@ -18,7 +18,7 @@ public class MagazineInfoConvert {
     public static MaganizeInfoVo recordToVo(CaseInsensitiveHashMap record) {
         MaganizeInfoVo vo = new MaganizeInfoVo();
         vo.setGroupname(MapKit.getStr(record, "groupname"));
-        vo.setMaganizeId(MapKit.getInt(record, "id"));
+        vo.setMagazineId(MapKit.getInt(record, "id"));
         vo.setName(MapKit.getStr(record, "name"));
         vo.setCover(MapKit.getStr(record, "cover"));
 
@@ -37,7 +37,7 @@ public class MagazineInfoConvert {
     public static MaganizeInfoVo recordToVo(Record record) {
         MaganizeInfoVo vo = new MaganizeInfoVo();
         vo.setGroupname(MapKit.getStr(record, "groupname"));
-        vo.setMaganizeId(MapKit.getInt(record, "id"));
+        vo.setMagazineId(MapKit.getInt(record, "id"));
         vo.setName(MapKit.getStr(record, "name"));
         vo.setCover(MapKit.getStr(record, "cover"));
         vo.setDesc(record.getStr("desc"));
@@ -65,7 +65,7 @@ public class MagazineInfoConvert {
         MaganizeInfoVo vo;
         for (Record record : records) {
             vo = new MaganizeInfoVo();
-            vo.setMaganizeId(record.getInt("maganize_id"));
+            vo.setMagazineId(record.getInt("maganize_id"));
             vo.setCover(record.getStr("cover"));
             vo.setStatus(record.getInt("status"));
             vo.setName(record.getStr("name"));

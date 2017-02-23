@@ -8,7 +8,7 @@ import com.smallchill.api.common.model.BaseVo;
  */
 public class MaganizeInfoVo extends BaseVo{
 
-    private Integer maganizeId;
+    private Integer magazineId;
     private String name;
     private String desc;
     private String groupname;
@@ -49,12 +49,12 @@ public class MaganizeInfoVo extends BaseVo{
         this.cover = cover;
     }
 
-    public Integer getMaganizeId() {
-        return maganizeId;
+    public Integer getMagazineId() {
+        return magazineId;
     }
 
-    public void setMaganizeId(Integer maganizeId) {
-        this.maganizeId = maganizeId;
+    public void setMagazineId(Integer magazineId) {
+        this.magazineId = magazineId;
     }
 
     public String getName() {

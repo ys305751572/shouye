@@ -2,7 +2,9 @@ package com.smallchill.web.service.impl;
 
 import com.smallchill.api.function.meta.consts.StatusConst;
 import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
 import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.DateTimeKit;
 import com.smallchill.web.model.ArticleShow;
 import com.smallchill.web.service.ArticleService;
 import com.smallchill.web.service.ArticleShowService;
@@ -27,8 +29,8 @@ public class ArticleShowServiceImpl extends BaseService<ArticleShow> implements 
      * @param id tb_article_show id
      */
     @Override
-    public void interest(int id, int articleId) {
-        updateInterestById(id, ARTICLE_SHOW_INTERESTED_TYPE);
+    public void interest(int id, int articleId, int userId) {
+        updateInterestById(id, ARTICLE_SHOW_INTERESTED_TYPE, userId);
         // 增加感兴趣数量
         articleService.addInterestCount(articleId);
     }
@@ -39,8 +41,8 @@ public class ArticleShowServiceImpl extends BaseService<ArticleShow> implements 
      * @param id tb_article_show id
      */
     @Override
-    public void uninterest(int id, int articleId, int position) {
-        updateInterestById(id, ARTICLE_SHOW_NUINTERESTED_TYPE);
+    public void uninterest(int id, int articleId, int position, int userId) {
+        updateInterestById(id, ARTICLE_SHOW_NUINTERESTED_TYPE, userId);
         if (position == 2) {
             // 减少感兴趣数量
             articleService.subtractInterestCount(articleId);
@@ -53,8 +55,8 @@ public class ArticleShowServiceImpl extends BaseService<ArticleShow> implements 
      * @param id tb_article_show id
      */
     @Override
-    public void move(int id, int articleId) {
-        updateInterestById(id, ARTICLE_SHOW_INTERESTED_TYPE);
+    public void move(int id, int articleId, int userId) {
+        updateInterestById(id, ARTICLE_SHOW_INTERESTED_TYPE, userId);
         // 增加感兴趣数量
         articleService.addInterestCount(articleId);
     }
@@ -66,7 +68,7 @@ public class ArticleShowServiceImpl extends BaseService<ArticleShow> implements 
      * @param type
      */
     @Override
-    public void shielding(int fromId, int toId, int type) {
+    public void shielding(int fromId, int toId, int type, int userId) {
         updateBy("is_intereste = 5", "from_id = #{fromId} AND to_id = #{toId} AND type = #{type}",
                 Record.create().set("fromId", fromId).set("toId", toId).set("type", type));
     }
@@ -78,7 +80,16 @@ public class ArticleShowServiceImpl extends BaseService<ArticleShow> implements 
      * @param type 感兴趣状态
      */
     @Override
-    public void updateInterestById(int id, int type) {
-        this.updateBy("is_intereste = #{type}", "id = #{id}", Record.create().set("type", type).set("id", id));
+    public void updateInterestById(int id, int type, int userId) {
+        ArticleShow articleShow = this.findById(id);
+        if(articleShow.getType() == 8) {
+            Db.init().insert("insert into tb_activity_interest(article_id,user_id,is_intereste,create_time)" +
+                    "values (#{articleId}, #{userId}, #{type},#{createTime})",
+                    Record.create().set("articleId", articleShow.getArticleId())
+                    .set("userId", userId).set("type", type).set("createTime", DateTimeKit.nowLong()));
+        }
+        else {
+            this.updateBy("is_intereste = #{type}", "id = #{id}", Record.create().set("type", type).set("id", id));
+        }
     }
 }

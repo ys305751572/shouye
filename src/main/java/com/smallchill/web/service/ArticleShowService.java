@@ -9,13 +9,13 @@ import com.smallchill.web.model.ArticleShow;
  */
 public interface ArticleShowService extends IService<ArticleShow> {
 
-    void interest(int id, int articleId);
+    void interest(int id, int articleId, int userId);
 
-    void uninterest(int id, int articleId, int position);
+    void uninterest(int id, int articleId, int position, int userId);
 
-    void move(int id,int articleId);
+    void move(int id,int articleId, int userId);
 
-    void shielding(int fromId, int toId, int type);
+    void shielding(int fromId, int toId, int type, int userId);
 
-    void updateInterestById(int id, int type);
+    void updateInterestById(int id, int type, int userId);
 }

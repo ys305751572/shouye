@@ -75,4 +75,5 @@ public interface StatusConst {
     int ACTIVITY_BTN_STATUS_NOT_MEMBER = 4004; // 非组织会员不能报名
     int ACTIVITY_BTN_STATUS_MEMBER = 4005; // 组织会员不能报名
     int ACTIVITY_BTN_STATUS_NOT_INVITATION = 4006; // 非邀请不能报名
+    int ACTIVITY_BTN_STATUS_HAS_APPLY = 4007; // 已经报名
 }

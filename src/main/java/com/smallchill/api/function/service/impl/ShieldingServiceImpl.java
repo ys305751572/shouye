@@ -30,7 +30,7 @@ public class ShieldingServiceImpl extends BaseService<Shielding> implements Shie
     public void shieldingByArticleShowId(Integer articleShowId, Integer userId) {
         ArticleShow articleShow = articleShowService.findById(articleShowId);
         saveShielding(articleShow, userId);
-        articleShowService.shielding(articleShow.getFromId(), articleShow.getToId(), articleShow.getType());
+        articleShowService.shielding(articleShow.getFromId(), articleShow.getToId(), articleShow.getType(), userId);
     }
 
     /**

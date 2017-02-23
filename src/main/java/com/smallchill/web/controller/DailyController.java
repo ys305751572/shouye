@@ -1,5 +1,6 @@
 package com.smallchill.web.controller;
 
+import com.smallchill.web.meta.intercept.DailyAndMagazineMgrIntercept;
 import com.smallchill.web.model.Daily;
 import com.smallchill.web.service.DailyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +24,24 @@ import com.smallchill.core.toolbox.kit.JsonKit;
 public class DailyController extends BaseController {
 	private static String CODE = "daily";
 	private static String PERFIX = "tb_daily";
-	private static String LIST_SOURCE = "Daily.list";
-	private static String BASE_PATH = "/platform/daily/";
+	private static String LIST_SOURCE = "DailyMgr.list";
+	private static String BASE_PATH = "/web/daily/";
+	private static String ARTICLE_PATH = "/web/article/";
 	
 	@Autowired
 	DailyService service;
-	
-	@RequestMapping(KEY_MAIN)
-	public String index(ModelMap mm) {
+
+	@RequestMapping("/article_index")
+	public String articleIndex(ModelMap mm) {
 		mm.put("code", CODE);
-		return BASE_PATH + "daily.html";
+		return ARTICLE_PATH + "article_index.html";
+	}
+
+	@RequestMapping(KEY_MAIN)
+	public String index(ModelMap mm, Integer status) {
+		mm.put("code", CODE);
+		mm.put("status", status);
+		return ARTICLE_PATH + "article.html";
 	}
 
 	@RequestMapping(KEY_ADD)
@@ -61,8 +70,10 @@ public class DailyController extends BaseController {
 
 	@ResponseBody
 	@RequestMapping(KEY_LIST)
-	public Object list() {
-		Object grid = paginate(LIST_SOURCE);
+	public Object list(Integer status) {
+		DailyAndMagazineMgrIntercept dailyAndMagazineMgrIntercept = new DailyAndMagazineMgrIntercept();
+		dailyAndMagazineMgrIntercept.setStatus(status);
+		Object grid = paginate(LIST_SOURCE, dailyAndMagazineMgrIntercept);
 		return grid;
 	}
 

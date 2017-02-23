@@ -6,31 +6,33 @@
 <body>
 <ul id="myTab" class="nav nav-tabs">
     <li class="active">
-        <a href="#group_list_page" data-toggle="tab" onclick="showPage('group_list_page','${basePath}/group/group_index')">
+        <a href="#group_audit_page1" data-toggle="tab" onclick="showPage('group_audit_page1','${basePath}/daily/?status=4')">
             已发布
         </a>
     </li>
     <li>
-        <a href="#group_audit_page" data-toggle="tab" onclick="showPage('group_audit_page','${basePath}/groupAudit/group_audit')">
+        <a href="#group_audit_page2" data-toggle="tab" onclick="showPage('group_audit_page2','${basePath}/groupAudit/group_audit')">
             未发布
         </a>
     </li>
     <li>
-        <a href="#group_audit_page" data-toggle="tab" onclick="showPage('group_audit_page','${basePath}/groupAudit/group_audit')">
+        <a href="#group_audit_page3" data-toggle="tab" onclick="showPage('group_audit_page3','${basePath}/groupAudit/group_audit')">
             未审核
         </a>
     </li>
 </ul>
 <div id="myTabContent" class="tab-content">
-    <div class="tab-pane fade in active" id="group_list_page">
+    <div class="tab-pane fade in active" id="group_audit_page1">
     </div>
-    <div class="tab-pane fade" id="group_audit_page">
+    <div class="tab-pane fade" id="group_audit_page2">
+    </div>
+    <div class="tab-pane fade" id="group_audit_page3">
     </div>
 </div>
 
 <script type="text/javascript">
     $(function(){
-        showPage('group_list_page','${basePath}/group/group_index');
+        showPage('group_audit_page1','${basePath}/daily/?status=1');
     });
 
 

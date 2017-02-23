@@ -29,6 +29,16 @@ public class ActivityVo extends BaseVo {
     private Integer count;
     private List<UserVo> userVos;
 
+    private Integer isInterest;
+
+    public Integer getIsInterest() {
+        return isInterest;
+    }
+
+    public void setIsInterest(Integer isInterest) {
+        this.isInterest = isInterest;
+    }
+
     public Integer getActivityId() {
         return activityId;
     }

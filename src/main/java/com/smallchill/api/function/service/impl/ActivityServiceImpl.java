@@ -68,10 +68,23 @@ public class ActivityServiceImpl extends BaseService<Article> implements Activit
         String sql = Blade.dao().getScript("Activity.detail").getSql();
         Record record = Db.init().selectOne(sql, Record.create().set("id", activityId));
         record.set("btnStatus", getBtnStatus(activityId, userId));
+        Record r1 = isInterest(activityId, userId);
+        if (r1 != null && r1.getInt("is_intereste") == 1) {
+            record.set("isInterest", 2);
+        }
+        else if (r1 != null && r1.getInt("is_intereste") == 2){
+            record.set("isInterest", 3);
+        }
+        else {
+            record.set("isInterest", 1);
+        }
         return ActivityConvert.recordToVo(record);
     }
 
-
+    private Record isInterest(Integer activityId, Integer userId) {
+        return Db.init().selectOne("select is_intereste from tb_activity_interest ai where ai.article_id = #{articleId} AND ai.user_id = #{userId}",
+                Record.create().set("articleId", activityId).set("userId", userId));
+    }
 
     /**
      * 活动报名
@@ -162,7 +175,7 @@ public class ActivityServiceImpl extends BaseService<Article> implements Activit
      * @return list
      */
     @Override
-    public Map<Integer, List<Record>> myList(Integer userId) {
+    public List myList(Integer userId) {
         String sql = Blade.dao().getScript("Activity.myList").getSql();
         List<Record> records = Db.init().selectList(sql, Record.create().set("userId", userId));
         return groupMap(records);
@@ -246,6 +259,12 @@ public class ActivityServiceImpl extends BaseService<Article> implements Activit
                 return ACTIVITY_BTN_STATUS_NOT_INVITATION;
             }
         }
+        // 是否已经报名
+        boolean flag2 = Db.init().isExist("select * from article_id = #{articleId} and user_id = #{userId}",
+                Record.create().set("articleId", activityId).set("userId", userId));
+        if (flag2) {
+            return ACTIVITY_BTN_STATUS_HAS_APPLY;
+        }
         return btnStatus;
     }
 
@@ -256,8 +275,9 @@ public class ActivityServiceImpl extends BaseService<Article> implements Activit
      * @param records list
      * @return map
      */
-    private Map<Integer, List<Record>> groupMap(List<Record> records) {
-        Map<Integer, List<Record>> groupMap = new HashMap<>();
+    private List groupMap(List<Record> records) {
+        Map<String, Object> groupMap = new HashMap<>();
+        List<Map> list = new ArrayList<>();
         List<Record> list1 = new ArrayList<>();
         List<Record> list2 = new ArrayList<>();
         List<Record> list3 = new ArrayList<>();
@@ -278,9 +298,19 @@ public class ActivityServiceImpl extends BaseService<Article> implements Activit
                 }
             }
         }
-        groupMap.put(1, list1);
-        groupMap.put(2, list2);
-        groupMap.put(3, list3);
-        return groupMap;
+        groupMap.put("type", 1); // 未开始
+        groupMap.put("list", list1);
+        list.add(groupMap);
+
+        groupMap = new HashMap<>();
+        groupMap.put("type", 2); // 进行中
+        groupMap.put("list", list2);
+        list.add(groupMap);
+
+        groupMap = new HashMap<>();
+        groupMap.put("type", 3);
+        groupMap.put("list", list3);
+        list.add(groupMap);
+        return list;
     }
 }

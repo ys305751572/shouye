@@ -259,10 +259,11 @@ public class ArticleApi extends BaseController {
      */
     @PostMapping(value = "/interest")
     @ResponseBody
-    public String interest(Integer id, Integer articleId) {
+    public String interest(Integer id, Integer articleId, Integer userId) {
         try {
-            articleShowService.interest(id, articleId);
+            articleShowService.interest(id, articleId, userId);
         } catch (Exception e) {
+            e.printStackTrace();
             return fail();
         }
         return success();
@@ -277,9 +278,9 @@ public class ArticleApi extends BaseController {
      */
     @PostMapping(value = "/uninterest")
     @ResponseBody
-    public String uninterest(Integer id, Integer articleId, Integer position) {
+    public String uninterest(Integer id, Integer articleId, Integer position, Integer userId) {
         try {
-            articleShowService.uninterest(id, articleId, position);
+            articleShowService.uninterest(id, articleId, position, userId);
         } catch (Exception e) {
             return fail();
         }

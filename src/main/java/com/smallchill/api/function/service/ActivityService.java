@@ -30,7 +30,7 @@ public interface ActivityService extends IService<Article> {
 
     Integer getCost(Integer activityId);
 
-    Map<Integer, List<Record>> myList(Integer userId);
+    List myList(Integer userId);
 
     boolean isConform(Integer activityId, Integer userId) throws ApiException;
 }

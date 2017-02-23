@@ -1,6 +1,6 @@
 list
 ====
-SELECT a.`id`,a.`title`,a.content,a.`create_time` pushTime,IFNULL(a.`cover`,"") cover,
+SELECT as1.id,a.`id` activityId,a.`title`,a.content,a.`create_time` pushTime,IFNULL(a.`cover`,"") cover,
 g.`name` groupname
 FROM tb_article_show as1 
 LEFT JOIN tb_article a
@@ -66,7 +66,7 @@ GROUP BY userId
 
 myList
 ======
-SELECT a.id, a.`title`,a.`create_time` pushTime,g.id,g.`name` groupname,
+SELECT a.id activityId, a.`title`,a.`create_time` pushTime,g.id,g.`name` groupname,
 a.start_time startTime, a.end_time endTime
 FROM `tb_activity_apply` aa
 LEFT JOIN `tb_article` a

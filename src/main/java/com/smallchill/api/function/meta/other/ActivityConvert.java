@@ -49,6 +49,7 @@ public class ActivityConvert {
         vo.setGroupId(MapKit.getInt(map, "groupId"));
         vo.setGroupname(MapKit.getStr(map, "groupname"));
         vo.setBtnStatus(map.getInt("btnStatus"));
+        vo.setIsInterest(map.getInt("isInterest"));
         return vo;
     }
 }

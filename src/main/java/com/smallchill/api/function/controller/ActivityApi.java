@@ -188,13 +188,13 @@ public class ActivityApi extends BaseController {
     @PostMapping(value = "/myList")
     @ResponseBody
     public String myList(Integer userId) {
-        Map<Integer, List<Record>> resultMap;
+        List list;
         try {
-            resultMap = activityService.myList(userId);
+            list = activityService.myList(userId);
         } catch (Exception e) {
             e.printStackTrace();
             return fail();
         }
-        return success(resultMap, "myActivitys");
+        return success(list);
     }
 }
