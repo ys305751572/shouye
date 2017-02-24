@@ -20,12 +20,12 @@ import com.smallchill.core.toolbox.kit.JsonKit;
  * 2017-01-11 14:36:12
  */
 @Controller
-@RequestMapping("/acticle")
+@RequestMapping("/article")
 public class ArticleController extends BaseController {
-    private static String CODE = "acticle";
+    private static String CODE = "article";
     private static String PERFIX = "tb_article";
     private static String LIST_SOURCE = "Acticle.list";
-    private static String BASE_PATH = "/platform/acticle/";
+    private static String BASE_PATH = "/web/article/";
 
     @Autowired
     ArticleService service;
@@ -39,7 +39,7 @@ public class ArticleController extends BaseController {
     @RequestMapping(KEY_ADD)
     public String add(ModelMap mm) {
         mm.put("code", CODE);
-        return BASE_PATH + "acticle_view.html";
+        return BASE_PATH + "article_add.html";
     }
 
     @RequestMapping(KEY_EDIT + "/{id}")

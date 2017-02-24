@@ -5,155 +5,166 @@
 @layout("/common/_curd/_container.html"){
 
 <script type="text/javascript">
-	var ctx = "${basePath}";
-	var grid_selector = "#grid-table";
-	var pager_selector = "#grid-pager";
-	
-	$(function(){
-		initGrid();
-		initMenuBtn("btns", "${code}");
-	});
-	
-	function initGrid(){
-		var grid_url = ctx + "/${code}/list?status=${status}";
-		var _colnames = [
-				"序列",
-				"封面",
-				"标题",
-				"内容类型",
-				"作者",
-				"作者类型",
-				"阅读",
-				"感兴趣",
-				"分享",
-				"创建时间",
-				"通过时间",
-				"状态",
-				"违规记录",
-				"操作"
-		];
-		var _colmodel = [
-			{name:"id", index:"id", width:100, hidden:true},
-			{name:"cover", index:"cover", width:100,
-				formatter : function(cellvalue) {
-					return "<img src='"+cellvalue+"' width='100' height='100'>";
-				}
-			},
-			{name:"title", index:"title", width:100},
-			{name:"typename", index:"typename", width:100},
-			{name:"author", index:"author", width:100},
-			{name:"from_type", index:"from_type", width:100,
-				formatter : function(cellvalue) {
-					if (cellvalue == 1) {
-						return "个人";
-					}
-					else {
-						return "组织";
-					}
-				}
-			},
-			{name:"reading_quantity", index:"reading_quantity", width:100},
-			{name:"interest_quantity", index:"interest_quantity", width:100},
-			{name:"forwarding_quantity", index:"forwarding_quantity", width:100},
-			{name:"create_time", index:"create_time", width:100,
-				formatter : function(cellvalue) {
-					return date_format(cellvalue);
-				}
-			},
-			{name:"audit_time", index:"audit_time", width:100,
-				formatter : function(cellvalue) {
-					return date_format(cellvalue);
-				}
-			},
-			{name:"status", index:"status", width:100,
-				formatter : function(cellvalue) {
-					if (cellvalue == 1) {
-						return "未审核";
-					}
-					else if (cellvalue == 2){
-						return "通过";
-					}
-					else if (cellvalue == 3){
-						return "未通过";
-					}
-					else if (cellvalue == 4) {
-						return "已发布";
-					}
-					else {
-						return "弃稿";
-					}
-				}
-			},
-			{name:"reason", index:"reason", width:100,
-				formatter : function(cellvalue) {
-					return cellvalue == null || cellvalue == '' ? "/" : cellvalue;
-				}
-			},
-			{
-				width: 100,
-				formatter: function (cellvalue, options, rowObject) {
-					var id = rowObject.id;
-					var status = rowObject.status;
-					var gName = rowObject.gName;
+    var ctx = "${basePath}";
+    var grid_selector = "#grid-table";
+    var pager_selector = "#grid-pager";
 
-					var departure = "<button title='封号' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + gName + "\',\'" + 1 + "\')\">" +
-							"<i class='fa fa-circle-o'></i> 封号</button>";
+    $(function () {
+        initGrid();
+        initMenuBtn("btns", "${code}");
+        initCol("${status}");
+    });
 
-					var enterprise = "<button title='解封' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\',\'" + gName + "\',\'" + 2 + "\')\">" +
-							"<i class='fa fa-circle'></i> 解封</button>";
+    function initCol(status) {
+//        $(grid_selector).setGridParam().hideCol(_this.val()).trigger("reloadGrid");
+//        $(grid_selector).setGridWidth(width);
+    }
 
-					if (status == "-1") {
-						return departure;
-					} else {
-						return enterprise;
-					}
+    function initGrid() {
+        var grid_url = ctx + "/${code}/list?status=${status}";
+        var _colnames = [
+            "序列",
+            "封面",
+            "标题",
+            "内容类型",
+            "作者",
+            "作者类型",
+            "阅读",
+            "感兴趣",
+            "分享",
+            "创建时间",
+            "通过时间",
+            "状态",
+            "违规记录",
+            "操作"
+        ];
+        var _colmodel = [
+            {name: "id", index: "id", width: 100, hidden: true},
+            {
+                name: "cover", index: "cover", width: 100,
+                formatter: function (cellvalue) {
+                    return "<img src='" + cellvalue + "' width='100' height='100'>";
+                }
+            },
+            {name: "title", index: "title", width: 100},
+            {name: "typename", index: "typename", width: 100},
+            {name: "author", index: "author", width: 100},
+            {
+                name: "from_type", index: "from_type", width: 100,
+                formatter: function (cellvalue) {
+                    if (cellvalue == 1) {
+                        return "个人";
+                    }
+                    else {
+                        return "组织";
+                    }
+                }
+            },
+            {name: "reading_quantity", index: "reading_quantity", width: 100},
+            {name: "interest_quantity", index: "interest_quantity", width: 100},
+            {name: "forwarding_quantity", index: "forwarding_quantity", width: 100},
+            {
+                name: "create_time", index: "create_time", width: 100,
+                formatter: function (cellvalue) {
+                    return date_format(cellvalue);
+                }
+            },
+            {
+                name: "audit_time", index: "audit_time", width: 100,
+                formatter: function (cellvalue) {
+                    return date_format(cellvalue);
+                }
+            },
+            {
+                name: "status", index: "status", width: 100,
+                formatter: function (cellvalue) {
+                    if (cellvalue == 1) {
+                        return "未审核";
+                    }
+                    else if (cellvalue == 2) {
+                        return "通过";
+                    }
+                    else if (cellvalue == 3) {
+                        return "未通过";
+                    }
+                    else if (cellvalue == 4) {
+                        return "已发布";
+                    }
+                    else {
+                        return "弃稿";
+                    }
+                }
+            },
+            {
+                name: "reason", index: "reason", width: 100,
+                formatter: function (cellvalue) {
+                    return cellvalue == null || cellvalue == '' ? "/" : cellvalue;
+                }
+            },
+            {
+                width: 100,
+                formatter: function (cellvalue, options, rowObject) {
+                    var id = rowObject.id;
+                    var status = rowObject.status;
+                    var gName = rowObject.gName;
 
-				}
-			}
+                    var departure = "<button title='封号' class='btn btn-primary btn-circle edit' data-toggle='modal' data-target='banned' onclick=\"banned(\'" + id + "\',\'" + gName + "\',\'" + 1 + "\')\">" +
+                            "<i class='fa fa-circle-o'></i> 封号</button>";
 
-		];
-		
-		jQuery(grid_selector).jqGrid({
-			url : grid_url,
-		    shrinkToFit : true,
-			colNames : _colnames,
-			colModel : _colmodel, 
-			jsonReader : {id :"id"},
-			pager : pager_selector,
-			postData : {sort : "id", order : "desc"}
-		});
-	}
+                    var enterprise = "<button title='解封' class='btn btn-primary btn-circle edit' onclick=\"banned(\'" + id + "\',\'" + gName + "\',\'" + 2 + "\')\">" +
+                            "<i class='fa fa-circle'></i> 解封</button>";
 
-	function date_format(data){
-		var d = new Date(data);    //根据时间戳生成的时间对象
+                    if (status == "-1") {
+                        return departure;
+                    } else {
+                        return enterprise;
+                    }
 
-		var date = (d.getFullYear()) + "-" +
-				(d.getMonth() + 1) + "-" +
-				(d.getDate()) + " " +
-				(d.getHours()) + ":" +
-				(d.getMinutes()) + ":" +
-				(d.getSeconds());
-		return date;
-	}
+                }
+            }
+        ];
+
+        jQuery(grid_selector).jqGrid({
+            url: grid_url,
+            shrinkToFit: true,
+            colNames: _colnames,
+            colModel: _colmodel,
+            jsonReader: {id: "id"},
+            pager: pager_selector,
+            postData: {sort: "id", order: "desc"}
+        });
+    }
+
+    function date_format(data) {
+        var d = new Date(data);    //根据时间戳生成的时间对象
+
+        var date = (d.getFullYear()) + "-" +
+                (d.getMonth() + 1) + "-" +
+                (d.getDate()) + " " +
+                (d.getHours()) + ":" +
+                (d.getMinutes()) + ":" +
+                (d.getSeconds());
+        return date;
+    }
 </script>
 
 
-	<!-- 配置 grid -->
-	<div class="row">
-		<div class="col-xs-12 tb-grid">
-			<!-- 配置 查询 -->
-			@ var _col=[
-			@		{name:"文章类型", index:"article_type", type:"selectId_926"}
-			@];
-			@ include("/common/_function/_search.html",{"col":_col}){}
-			<!-- 按钮 -->
-			<div class="welljq well-sm" id="btns"></div>
-			<!-- grid -->
-			<table id="grid-table"></table>
-			<!-- 分页-->
-			<div id="grid-pager"></div>
-		</div>
-	</div>
-	<!-- 引入所需的js -->
-	@include("/common/_listscript.html"){}
+<!-- 配置 grid -->
+<div class="row">
+    <div class="col-xs-12 tb-grid">
+        <!-- 配置 查询 -->
+        @ var _col=[
+        @ {name:"文章类型", index:"article_type", type:"selectId_926"}
+        @];
+        @ include("/common/_function/_search.html",{"col":_col}){}
+        <!-- 按钮 -->
+        <div class="welljq well-sm" id="btns"></div>
+        <!-- grid -->
+        <table id="grid-table"></table>
+        <!-- 分页-->
+        <div id="grid-pager"></div>
+    </div>
+</div>
+<!-- 引入所需的js -->
+@include("/common/_listscript.html"){}
 @}
